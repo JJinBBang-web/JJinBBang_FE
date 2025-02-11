@@ -1,12 +1,3 @@
----
-name: "[BUG] - Bug report"
-about: "\U0001F41B Bug Issue template"
-title: "[BUG] - "
-labels: Bug
-assignees: ''
-
----
-
 ## 어떤 버그인가요?
 > 어떤 버그인지 간결하게 설명해주세요
 
