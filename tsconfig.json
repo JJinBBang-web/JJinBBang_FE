@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ESNext"
+        ],
+        "allowJs": true,
+        "skipLibCheck": false,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "isolatedModules": false, // 나중에 수정
+        "noEmit": true,
+        "jsx": "react-jsx",
+    },
+    "include": [
+        "src", "src/svg.d.ts"
+    ],
+}
