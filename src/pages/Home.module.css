@@ -1,0 +1,10 @@
+.content {
+    position: relative;
+    max-width: 394px;
+    width: 100%;
+    height: fit-content;
+    background-color: grey;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+}

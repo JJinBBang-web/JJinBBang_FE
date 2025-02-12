@@ -1,25 +1,51 @@
 import React from 'react';
 import logo from './logo.svg';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import Home from './pages/Home';
+import Map from './pages/Map';
+import Heart from './pages/HeartListPage';
+import MyPage from './pages/MyPage';
+import Nav from './components/Nav';
+import { RecoilRoot } from 'recoil';
 
-function App() {
+const queryClient = new QueryClient()
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+
+  // TODO : 로그인 추가
+
+
+  const showHeaderAndNav = ![
+    // TODO : header, Nav 안들어가는 라우터 표시
+    '',''
+  ].includes(location.pathname);
+
+  // TODO : 나중에 showHeaderAndNav && <Header/> 헤더 추가
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      {showHeaderAndNav}
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/map' element={<Map />} />
+        <Route path='/heart' element={<Heart />} />
+        <Route path='/mypage' element={<MyPage />}/>
+      </Routes>
+      {showHeaderAndNav && <Nav />}
+    </>
+  )
 }
 
+const App: React.FC = () => {
+  return (
+    <RecoilRoot>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </RecoilRoot>
+  );
+};
 export default App;

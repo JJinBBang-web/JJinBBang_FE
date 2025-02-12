@@ -1,1 +1,36 @@
 /* 전역 css 파일 : 폰트, 색상, 리셋코드 작성 */
+.content {
+    position: relative;
+    max-width: 394px;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--block-background);
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+:root {
+    /* 색상 */
+    --primary-color : #F46940;
+    --block-blue : #4379F4;
+    --block-yellow : #FEA509;
+    --block-salmon : #FFF5E9;
+    --block-background : #F2F4F7;
+    --black : #090A0A;
+    --white : #FFFFFF;
+
+    --color-gray80 : #484E58;
+    --color-gray60 : #7D859A;
+    --color-gray40 : #B4BBCD;
+    --color-gray20 : #DADEE8;
+
+}
