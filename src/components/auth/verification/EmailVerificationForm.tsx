@@ -1,32 +1,62 @@
 // src/components/auth/verification/EmailVerificationForm.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../../../styles/auth/EmailVerification.module.css';
 import AuthInput from '../common/AuthInput';
 import AuthButton from '../common/AuthButton';
+import { useAuth } from '../../../hooks/useAuth';
 
-interface EmailVerificationFormProps {
-  onSubmit: (email: string, code: string) => void;
-}
-
-const EmailVerificationForm = ({ onSubmit }: EmailVerificationFormProps) => {
-  const [email, setEmail] = useState('');
+const EmailVerificationForm = () => {
+  const navigate = useNavigate();
+  const { auth, setEmail, updateVerificationStatus } = useAuth();
   const [verificationCode, setVerificationCode] = useState('');
-  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [inputEmail, setInputEmail] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // 이메일 전송 로직 구현 예정
-    setIsEmailSent(true);
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  const handleVerificationSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(email, verificationCode);
+    setError(null);
+
+    if (!validateEmail(inputEmail)) {
+      setError('유효한 이메일 주소를 입력해주세요.');
+      return;
+    }
+
+    try {
+      // API 연동 예정
+      setEmail(inputEmail);
+      updateVerificationStatus('pending');
+    } catch (error) {
+      setError('이메일 전송에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handleVerificationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (verificationCode.length !== 6) {
+      setError('6자리 인증코드를 입력해주세요.');
+      return;
+    }
+
+    try {
+      // API 연동 예정
+      updateVerificationStatus('verified');
+      navigate('/auth/signup');
+    } catch (error) {
+      setError('인증에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
     <div className={styles.container}>
-      {!isEmailSent ? (
+      {auth.verificationStatus === 'none' ? (
         <form onSubmit={handleEmailSubmit} className={styles.form}>
           <h2 className={styles.title}>학생용 이메일로 인증해주세요!</h2>
           <p className={styles.description}>
@@ -36,8 +66,9 @@ const EmailVerificationForm = ({ onSubmit }: EmailVerificationFormProps) => {
           <AuthInput
             type="email"
             placeholder="학생용 이메일을 입력해 주세요."
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={inputEmail}
+            onChange={(e) => setInputEmail(e.target.value)}
+            error={error || undefined}
           />
           <AuthButton type="submit" variant="primary">
             인증
@@ -47,21 +78,22 @@ const EmailVerificationForm = ({ onSubmit }: EmailVerificationFormProps) => {
         <form onSubmit={handleVerificationSubmit} className={styles.form}>
           <h2 className={styles.title}>인증코드를 입력해 주세요.</h2>
           <p className={styles.description}>
-            메일이 오지 않나요? 이메일 서비스 제공자 사정에 의해 수신까지 30분
-            정도가 소요될 수 있어요. 메일 주소, 스팸함, 용량 등을 확인해보시고,
-            [재발송]을 눌러 다시 요청해 주세요
+            이메일 서비스 제공자 사정에 의해 수신까지 30분 정도가 소요될 수
+            있어요. 메일 주소, 스팸함, 용량 등을 확인해보시고, 재발송을 눌러
+            다시 요청해 주세요
           </p>
           <AuthInput
             type="number"
             placeholder="인증코드 6자리 입력"
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
+            error={error || undefined}
           />
           <div className={styles.buttonGroup}>
             <AuthButton
               type="button"
               variant="secondary"
-              onClick={() => setIsEmailSent(false)}
+              onClick={() => updateVerificationStatus('none')}
             >
               재발송
             </AuthButton>
