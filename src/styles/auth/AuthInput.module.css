@@ -42,3 +42,12 @@
   margin-top: 4px;
   margin-bottom: 0;
 }
+
+.input:disabled {
+  background-color: var(--color-gray20);
+  cursor: not-allowed;
+}
+
+.input:disabled::placeholder {
+  color: var(--color-gray60);
+}

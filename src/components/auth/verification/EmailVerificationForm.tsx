@@ -1,6 +1,8 @@
 // src/components/auth/verification/EmailVerificationForm.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { authApi } from '../../../api/auth';
 import styles from '../../../styles/auth/EmailVerification.module.css';
 import AuthInput from '../common/AuthInput';
 import AuthButton from '../common/AuthButton';
@@ -13,27 +15,41 @@ const EmailVerificationForm = () => {
   const [inputEmail, setInputEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const sendEmailMutation = useMutation({
+    mutationFn: authApi.sendVerificationEmail,
+    onSuccess: () => {
+      setEmail(inputEmail);
+      updateVerificationStatus('pending');
+      setError(null);
+    },
+    onError: () => {
+      setError('이메일 전송에 실패했습니다. 다시 시도해주세요.');
+    },
+  });
+
+  const verifyCodeMutation = useMutation({
+    mutationFn: () =>
+      authApi.verifyEmailCode(auth.email || '', verificationCode),
+    onSuccess: () => {
+      updateVerificationStatus('verified');
+      navigate('/auth/signup');
+    },
+    onError: () => {
+      setError('인증에 실패했습니다. 올바른 인증번호를 입력해주세요.');
+    },
+  });
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!validateEmail(inputEmail)) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inputEmail)) {
       setError('유효한 이메일 주소를 입력해주세요.');
       return;
     }
 
-    try {
-      // API 연동 예정
-      setEmail(inputEmail);
-      updateVerificationStatus('pending');
-    } catch (error) {
-      setError('이메일 전송에 실패했습니다. 다시 시도해주세요.');
-    }
+    sendEmailMutation.mutate(inputEmail);
   };
 
   const handleVerificationSubmit = async (e: React.FormEvent) => {
@@ -45,14 +61,10 @@ const EmailVerificationForm = () => {
       return;
     }
 
-    try {
-      // API 연동 예정
-      updateVerificationStatus('verified');
-      navigate('/auth/signup');
-    } catch (error) {
-      setError('인증에 실패했습니다. 다시 시도해주세요.');
-    }
+    verifyCodeMutation.mutate();
   };
+
+  const isLoading = sendEmailMutation.isPending || verifyCodeMutation.isPending;
 
   return (
     <div className={styles.container}>
@@ -69,9 +81,10 @@ const EmailVerificationForm = () => {
             value={inputEmail}
             onChange={(e) => setInputEmail(e.target.value)}
             error={error || undefined}
+            disabled={isLoading}
           />
-          <AuthButton type="submit" variant="primary">
-            인증
+          <AuthButton type="submit" variant="primary" disabled={isLoading}>
+            {isLoading ? '처리중...' : '인증'}
           </AuthButton>
         </form>
       ) : (
@@ -88,17 +101,19 @@ const EmailVerificationForm = () => {
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
             error={error || undefined}
+            disabled={isLoading}
           />
           <div className={styles.buttonGroup}>
             <AuthButton
               type="button"
               variant="secondary"
               onClick={() => updateVerificationStatus('none')}
+              disabled={isLoading}
             >
               재발송
             </AuthButton>
-            <AuthButton type="submit" variant="primary">
-              확인
+            <AuthButton type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? '처리중...' : '확인'}
             </AuthButton>
           </div>
         </form>

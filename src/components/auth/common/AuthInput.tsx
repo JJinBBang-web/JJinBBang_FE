@@ -9,6 +9,7 @@ interface AuthInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   label?: string;
+  disabled?: boolean; // disabled prop 추가
 }
 
 const AuthInput = ({
@@ -18,6 +19,7 @@ const AuthInput = ({
   onChange,
   error,
   label,
+  disabled = false, // 기본값 설정
 }: AuthInputProps) => {
   return (
     <div className={styles.inputContainer}>
@@ -28,6 +30,7 @@ const AuthInput = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        disabled={disabled}
       />
       {error && <p className={styles.errorText}>{error}</p>}
     </div>
