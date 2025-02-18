@@ -1,15 +1,25 @@
 // src/pages/MyPage.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
 import characterIcon from '../assets/image/characterIcon.svg';
 import pencilIcon from '../assets/image/pencilIcon.svg';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 
 const MyPage: React.FC = () => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleKakaoLogin = () => {
+    // 카카오 로그인 처리 로직
+    setShowLoginModal(false);
+    setIsLoggedIn(true);
+  };
+
   return (
-    <div className={`content ${styles.container}`}>
+    <div className="content">
       <h1 className={styles.title}>나의 찐빵</h1>
 
       <div className={styles.guide}>
@@ -18,7 +28,10 @@ const MyPage: React.FC = () => {
       </div>
 
       <div className={styles.menuList}>
-        <button className={styles.menuItem}>
+        <button
+          className={styles.menuItem}
+          onClick={() => setShowLoginModal(true)}
+        >
           <img src={characterIcon} alt="character" />
           <span>로그인을 해주세요</span>
           <img src={arrowIcon} alt="arrow" />
@@ -43,6 +56,13 @@ const MyPage: React.FC = () => {
           <p>앗! 아직 등록된 찐빵이 없어요!</p>
         </div>
       </div>
+
+      {showLoginModal && (
+        <KakaoLoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLogin={handleKakaoLogin}
+        />
+      )}
     </div>
   );
 };
