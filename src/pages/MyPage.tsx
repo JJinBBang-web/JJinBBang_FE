@@ -10,12 +10,10 @@ import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 
 const MyPage: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleKakaoLogin = () => {
     // 카카오 로그인 처리 로직
     setShowLoginModal(false);
-    setIsLoggedIn(true);
   };
 
   return (
@@ -60,7 +58,6 @@ const MyPage: React.FC = () => {
       {showLoginModal && (
         <KakaoLoginModal
           onClose={() => setShowLoginModal(false)}
-          onLogin={handleKakaoLogin}
         />
       )}
     </div>
