@@ -8,31 +8,22 @@ export const useAuth = () => {
   const updateVerificationStatus = (
     status: AuthState['verificationStatus']
   ) => {
-    setAuth((prev) => ({
+    setAuth((prev: AuthState) => ({
       ...prev,
       verificationStatus: status,
     }));
   };
 
   const setEmail = (email: string) => {
-    setAuth((prev) => ({
+    setAuth((prev: AuthState) => ({
       ...prev,
       email,
     }));
-  };
-
-  const resetAuth = () => {
-    setAuth({
-      isAuthenticated: false,
-      email: null,
-      verificationStatus: 'none',
-    });
   };
 
   return {
     auth,
     updateVerificationStatus,
     setEmail,
-    resetAuth,
   };
 };
