@@ -4,38 +4,44 @@ import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
 import characterIcon from '../assets/image/characterIcon.svg';
+import pencilIcon from '../assets/image/pencilIcon.svg';
+import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 
 const MyPage: React.FC = () => {
   return (
-    <div className="content">
+    <div className={`content ${styles.container}`}>
       <h1 className={styles.title}>나의 찐빵</h1>
 
-      <div className={styles.infoContainer}>
-        <div className={styles.banner}>
-          <img src={questionIcon} alt="question" />
-          <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
-        </div>
+      <div className={styles.guide}>
+        <img src={questionIcon} alt="question" className={styles.guideIcon} />
+        <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
+      </div>
 
-        <button className={styles.loginButton}>
-          <div className={styles.buttonContent}>
-            <img
-              src={characterIcon}
-              alt="character"
-              className={styles.character}
-            />
-            <span>로그인을 해주세요</span>
-            <img src={arrowIcon} alt="arrow" className={styles.arrow} />
+      <div className={styles.menuList}>
+        <button className={styles.menuItem}>
+          <img src={characterIcon} alt="character" />
+          <span>로그인을 해주세요</span>
+          <img src={arrowIcon} alt="arrow" />
+        </button>
+
+        <button className={styles.menuItem}>
+          <img src={pencilIcon} alt="pencil" />
+          <div>
+            <span className={styles.menuTitle}>찐빵 작성하기</span>
+            <span className={styles.menuDescription}>
+              찐심이 담긴 실거주 후기를 공유해주세요!
+            </span>
           </div>
+          <img src={arrowIcon} alt="arrow" />
         </button>
       </div>
 
-      <div className={styles.emptyStateContainer}>
-        <img
-          src={characterIcon}
-          alt="empty state"
-          className={styles.emptyCharacter}
-        />
-        <p>앗! 아직 등록된 찐빵이 없어요!</p>
+      <div className={styles.reviewContainer}>
+        <h2>나의 찐빵</h2>
+        <div className={styles.emptyState}>
+          <img src={emptyCharacterIcon} alt="empty character" />
+          <p>앗! 아직 등록된 찐빵이 없어요!</p>
+        </div>
       </div>
     </div>
   );
