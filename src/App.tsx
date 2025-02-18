@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import logo from './logo.svg';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -6,36 +7,36 @@ import Home from './pages/Home';
 import Map from './pages/Map';
 import Heart from './pages/HeartListPage';
 import MyPage from './pages/MyPage';
+import EmailVerificationPage from './pages/auth/EmailVerificationPage';
 import Nav from './components/Nav';
 import { RecoilRoot } from 'recoil';
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
   const location = useLocation();
 
-  // TODO : 로그인 추가
-
-
+  // auth 경로에서는 Nav를 표시하지 않음
   const showHeaderAndNav = ![
-    // TODO : header, Nav 안들어가는 라우터 표시
-    '',''
+    '/auth/verify',
+    '/auth/signup',
+    '/auth/login',
   ].includes(location.pathname);
 
-  // TODO : 나중에 showHeaderAndNav && <Header/> 헤더 추가
   return (
     <>
       {showHeaderAndNav}
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/map' element={<Map />} />
-        <Route path='/heart' element={<Heart />} />
-        <Route path='/mypage' element={<MyPage />}/>
+        <Route path="/" element={<Home />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/heart" element={<Heart />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/auth/*" element={<EmailVerificationPage />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
-  )
-}
+  );
+};
 
 const App: React.FC = () => {
   return (
@@ -48,4 +49,5 @@ const App: React.FC = () => {
     </RecoilRoot>
   );
 };
+
 export default App;
