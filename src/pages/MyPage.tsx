@@ -6,14 +6,55 @@ import arrowIcon from '../assets/image/arrowIcon.svg';
 import characterIcon from '../assets/image/characterIcon.svg';
 import pencilIcon from '../assets/image/pencilIcon.svg';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
+
+interface UserProfile {
+  isLoggedIn: boolean;
+  nickname: string;
+  school: string;
+  isVerified: boolean;
+}
 
 const MyPage: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  // 임시 로그인 상태 - 추후 전역 상태 관리로 변경 예정
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    isLoggedIn: true,
+    nickname: '익명의 찐빵이',
+    school: '찐빵대학교',
+    isVerified: false,
+  });
 
-  const handleKakaoLogin = () => {
-    // 카카오 로그인 처리 로직
-    setShowLoginModal(false);
+  const renderProfileSection = () => {
+    if (!userProfile.isLoggedIn) {
+      return (
+        <button
+          className={styles.menuItem}
+          onClick={() => setShowLoginModal(true)}
+        >
+          <img src={characterIcon} alt="character" />
+          <span>로그인을 해주세요</span>
+          <img src={arrowIcon} alt="arrow" />
+        </button>
+      );
+    }
+
+    return (
+      <button className={styles.menuItem}>
+        <img src={profileIcon} alt="profile" className={styles.profileIcon} />
+        <div className={styles.profileInfo}>
+          <span className={styles.nickname}>{userProfile.nickname}</span>
+          <div className={styles.schoolInfo}>
+            <span className={styles.schoolName}>{userProfile.school}</span>
+            <span className={styles.verificationStatus}>
+              {userProfile.isVerified ? '인증완료' : '미인증'}
+            </span>
+          </div>
+        </div>
+        <img src={arrowIcon} alt="arrow" />
+      </button>
+    );
   };
 
   return (
@@ -26,14 +67,7 @@ const MyPage: React.FC = () => {
       </div>
 
       <div className={styles.menuList}>
-        <button
-          className={styles.menuItem}
-          onClick={() => setShowLoginModal(true)}
-        >
-          <img src={characterIcon} alt="character" />
-          <span>로그인을 해주세요</span>
-          <img src={arrowIcon} alt="arrow" />
-        </button>
+        {renderProfileSection()}
 
         <button className={styles.menuItem}>
           <img src={pencilIcon} alt="pencil" />
@@ -56,9 +90,7 @@ const MyPage: React.FC = () => {
       </div>
 
       {showLoginModal && (
-        <KakaoLoginModal
-          onClose={() => setShowLoginModal(false)}
-        />
+        <KakaoLoginModal onClose={() => setShowLoginModal(false)} />
       )}
     </div>
   );
