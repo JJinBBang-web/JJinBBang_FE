@@ -1,5 +1,6 @@
 // src/pages/MyPage.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
@@ -17,8 +18,8 @@ interface UserProfile {
 }
 
 const MyPage: React.FC = () => {
+  const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  // 임시 로그인 상태 - 추후 전역 상태 관리로 변경 예정
   const [userProfile, setUserProfile] = useState<UserProfile>({
     isLoggedIn: true,
     nickname: '익명의 찐빵이',
@@ -41,7 +42,10 @@ const MyPage: React.FC = () => {
     }
 
     return (
-      <button className={styles.menuItem}>
+      <button
+        className={styles.menuItem}
+        onClick={() => navigate('/myaccount')}
+      >
         <img src={profileIcon} alt="profile" className={styles.profileIcon} />
         <div className={styles.profileInfo}>
           <span className={styles.nickname}>{userProfile.nickname}</span>
