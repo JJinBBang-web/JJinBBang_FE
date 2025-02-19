@@ -6,8 +6,7 @@ if (!KAKAO_CLIENT_ID || !REDIRECT_URI) {
   console.error('카카오 인증 정보가 설정되지 않았습니다.');
 }
 
-export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-
+export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${window.location.origin}/auth/kakao&response_type=code`;
 export const initializeKakaoSDK = () => {
   if (!window.Kakao) {
     const script = document.createElement('script');

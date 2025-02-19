@@ -1,0 +1,13 @@
+/* src/styles/auth/KakaoAuthPage.module.css */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--white);
+}
+
+.loadingContainer p {
+  font-size: 16px;
+  color: var(--color-gray80);
+}

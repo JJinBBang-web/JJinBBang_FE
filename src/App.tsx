@@ -9,6 +9,8 @@ import Heart from './pages/HeartListPage';
 import MyPage from './pages/MyPage';
 import EmailVerificationPage from './pages/auth/EmailVerificationPage';
 import Nav from './components/Nav';
+import KakaoCallback from './pages/auth/KakaoCallback';
+import KakaoAuthPage from './pages/auth/KakaoAuthPage';
 import { RecoilRoot } from 'recoil';
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const AppContent: React.FC = () => {
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/auth/*" element={<EmailVerificationPage />} />
+        <Route path="/auth/kakao" element={<KakaoAuthPage />} />
+        <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
