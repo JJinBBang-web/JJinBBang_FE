@@ -13,6 +13,7 @@ import KakaoCallback from './pages/auth/KakaoCallback';
 import KakaoAuthPage from './pages/auth/KakaoAuthPage';
 import AccountAuthPage from './pages/auth/AccountAuthPage';
 import NewStudentVerification from './pages/auth/NewStudentVerification';
+import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
 import { RecoilRoot } from 'recoil';
 
 const queryClient = new QueryClient();
@@ -20,13 +21,15 @@ const queryClient = new QueryClient();
 const AppContent: React.FC = () => {
   const location = useLocation();
 
-  // auth 경로에서는 Nav를 표시하지 않음
   const showHeaderAndNav = ![
     '/auth/verify',
     '/auth/signup',
     '/auth/login',
     '/myaccount',
     '/auth/student/new',
+    '/auth/student/current',
+    '/auth/kakao',
+    '/auth/kakao/callback',
   ].includes(location.pathname);
 
   return (
@@ -37,9 +40,16 @@ const AppContent: React.FC = () => {
         <Route path="/map" element={<Map />} />
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
-        <Route path="/auth/*" element={<EmailVerificationPage />} />
-        <Route path="/myaccount" element={<AccountAuthPage />} />{' '}
-        <Route path="/auth/student/new" element={<NewStudentVerification />} />
+        <Route path="/myaccount" element={<AccountAuthPage />} />
+        <Route path="/auth">
+          <Route path="verify" element={<EmailVerificationPage />} />
+          <Route path="kakao" element={<KakaoAuthPage />} />
+          <Route path="kakao/callback" element={<KakaoCallback />} />
+          <Route path="student">
+            <Route path="new" element={<NewStudentVerification />} />
+            <Route path="current" element={<CurrentStudentVerification />} />
+          </Route>
+        </Route>
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
