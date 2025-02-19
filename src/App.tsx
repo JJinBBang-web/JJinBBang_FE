@@ -12,6 +12,7 @@ import Nav from './components/Nav';
 import KakaoCallback from './pages/auth/KakaoCallback';
 import KakaoAuthPage from './pages/auth/KakaoAuthPage';
 import AccountAuthPage from './pages/auth/AccountAuthPage';
+import NewStudentVerification from './pages/auth/NewStudentVerification';
 import { RecoilRoot } from 'recoil';
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const AppContent: React.FC = () => {
     '/auth/signup',
     '/auth/login',
     '/myaccount',
+    '/auth/student/new',
   ].includes(location.pathname);
 
   return (
@@ -37,6 +39,7 @@ const AppContent: React.FC = () => {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/auth/*" element={<EmailVerificationPage />} />
         <Route path="/myaccount" element={<AccountAuthPage />} />{' '}
+        <Route path="/auth/student/new" element={<NewStudentVerification />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
