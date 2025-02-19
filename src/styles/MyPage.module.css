@@ -151,3 +151,9 @@
   height: 48px;
   border-radius: 50%;
 }
+
+.verificationComplete {
+  font-size: 14px;
+  color: var(--primary-color);
+  font-weight: 500;
+}

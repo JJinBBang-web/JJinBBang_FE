@@ -1,7 +1,7 @@
 // src/pages/auth/CurrentStudentVerification.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { authState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/CurrentStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
