@@ -1,7 +1,7 @@
 // src/pages/auth/CurrentStudentVerification.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { authState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/CurrentStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
@@ -16,34 +16,50 @@ const CurrentStudentVerification: React.FC = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const validateEmail = (email: string) => {
-    if (!email) return null;
-    if (!email.includes('@')) return '이메일 주소 형식을 확인해 주세요!';
-    if (!email.endsWith('.ac.kr')) return '이메일 주소 형식을 확인해 주세요!';
-    return null;
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setError(validateEmail(newEmail));
   };
 
-  useEffect(() => {
-    if (email) {
-      setError(validateEmail(email));
-    } else {
-      setError(null);
+  // 이메일 유효성 검사 함수 수정
+  const validateEmail = (email: string) => {
+    if (!email) return null;
+
+    // 기본 이메일 형식 검사
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return '이메일 주소 형식을 확인해 주세요!';
     }
-  }, [email]);
+
+    // 학교 이메일 도메인 검사
+    if (!email.endsWith('.ac.kr')) {
+      return '학교 이메일 주소만 사용 가능합니다!';
+    }
+
+    return null;
+  };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || error) return;
 
     setIsComplete(true);
-    setAuth({
+    setAuth((prev) => ({
+      ...prev,
       isAuthenticated: true,
       email: email,
       verificationStatus: 'verified',
-    });
+    }));
   };
 
   const handleConfirm = () => {
+    setAuth((prev) => ({
+      ...prev,
+      isAuthenticated: true,
+      email: email,
+      verificationStatus: 'verified',
+    }));
     navigate('/mypage');
   };
 
@@ -98,7 +114,7 @@ const CurrentStudentVerification: React.FC = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               placeholder="학생용 이메일을 입력해 주세요."
               className={`${styles.emailInput} ${
                 error ? styles.inputError : ''

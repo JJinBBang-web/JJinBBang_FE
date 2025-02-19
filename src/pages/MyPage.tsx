@@ -1,12 +1,15 @@
 // src/pages/MyPage.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { authState } from '../recoil/auth/atoms';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
 import characterIcon from '../assets/image/characterIcon.svg';
 import pencilIcon from '../assets/image/pencilIcon.svg';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import verifiedCharacterIcon from '../assets/image/verifiedCharacterIcon.svg';
 import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 
@@ -26,7 +29,6 @@ const MyPage: React.FC = () => {
     school: '찐빵대학교',
     isVerified: false,
   });
-
   const renderProfileSection = () => {
     if (!userProfile.isLoggedIn) {
       return (
@@ -40,7 +42,6 @@ const MyPage: React.FC = () => {
         </button>
       );
     }
-
     return (
       <button
         className={styles.menuItem}
@@ -60,19 +61,15 @@ const MyPage: React.FC = () => {
       </button>
     );
   };
-
   return (
     <div className="content">
       <h1 className={styles.title}>나의 찐빵</h1>
-
       <div className={styles.guide}>
         <img src={questionIcon} alt="question" className={styles.guideIcon} />
         <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
       </div>
-
       <div className={styles.menuList}>
         {renderProfileSection()}
-
         <button className={styles.menuItem}>
           <img src={pencilIcon} alt="pencil" />
           <div>
@@ -84,7 +81,6 @@ const MyPage: React.FC = () => {
           <img src={arrowIcon} alt="arrow" />
         </button>
       </div>
-
       <div className={styles.reviewContainer}>
         <h2>나의 찐빵</h2>
         <div className={styles.emptyState}>
@@ -92,12 +88,10 @@ const MyPage: React.FC = () => {
           <p>앗! 아직 등록된 찐빵이 없어요!</p>
         </div>
       </div>
-
       {showLoginModal && (
         <KakaoLoginModal onClose={() => setShowLoginModal(false)} />
       )}
     </div>
   );
 };
-
 export default MyPage;
