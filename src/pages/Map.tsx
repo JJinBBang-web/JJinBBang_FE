@@ -9,7 +9,7 @@ const Map = () => {
 
     return (
         <div className="content">
-            <div className={styles.header_bar}>
+            <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
                 <SearchBar/>
             </div>

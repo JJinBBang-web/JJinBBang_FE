@@ -27,15 +27,15 @@ const FilterBar = () => {
                 </button>
                 {/* 각종 필터들 */}
                 <button className={styles.filter_btn}>
-                    <p>후기별</p>
+                    <p className={styles.filter_text}>후기별</p>
                     <img src={iconDown} alt="down"/>
                 </button>
                 <button className={styles.filter_btn}>
-                    <p>대학교</p>
+                    <p className={styles.filter_text}>대학교</p>
                     <img src={iconDown} alt="down"/>
                 </button>
                 <button className={styles.filter_btn}>
-                    <p>계약 형태/조건</p>
+                    <p className={styles.filter_text}>계약 형태/조건</p>
                     <img src={iconDown} alt="down"/>
                 </button>
             </div>
