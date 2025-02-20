@@ -25,6 +25,10 @@
   height: 24px;
 }
 
+.flippedIcon {
+  transform: scaleX(-1);
+}
+
 .container {
   padding: 20px 16px;
 }
@@ -38,6 +42,7 @@
   background-color: var(--white);
   border-radius: 16px;
   margin-bottom: 12px;
+  cursor: pointer;
 }
 
 .verificationSection h2,
@@ -46,6 +51,7 @@
   font-weight: 500;
   color: var(--black);
   margin: 0;
+  cursor: pointer;
 }
 
 .verificationButton,

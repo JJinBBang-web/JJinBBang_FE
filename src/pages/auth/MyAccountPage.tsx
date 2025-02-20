@@ -11,27 +11,27 @@ const MyAccountPage: React.FC = () => {
     <div className="content">
       <header className={styles.header}>
         <button onClick={() => navigate(-1)} className={styles.backButton}>
-          <img src={arrowIcon} alt="back" />
+          <img src={arrowIcon} alt="back" className={styles.flippedIcon} />
         </button>
         <h1>내 계정</h1>
       </header>
 
       <div className={styles.container}>
-        <section className={styles.verificationSection}>
+        <section
+          className={styles.verificationSection}
+          onClick={() => navigate('/auth/student/new')}
+        >
           <h2>신입생 인증</h2>
-          <button
-            className={styles.verificationButton}
-            onClick={() => navigate('/auth/student/new')}
-          >
+          <button className={styles.verificationButton}>
             <img src={arrowIcon} alt="forward" />
           </button>
         </section>
-        <section className={styles.verificationSection}>
+        <section
+          className={styles.verificationSection}
+          onClick={() => navigate('/auth/student/current')}
+        >
           <h2>재학생 인증</h2>
-          <button
-            className={styles.verificationButton}
-            onClick={() => navigate('/auth/student/current')}
-          >
+          <button className={styles.verificationButton}>
             <img src={arrowIcon} alt="forward" />
           </button>
         </section>

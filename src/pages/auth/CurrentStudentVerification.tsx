@@ -92,7 +92,7 @@ const CurrentStudentVerification: React.FC = () => {
     <div className="content">
       <header className={styles.header}>
         <button onClick={() => navigate(-1)} className={styles.backButton}>
-          <img src={arrowIcon} alt="back" />
+          <img src={arrowIcon} alt="back" className={styles.flippedIcon} />
         </button>
       </header>
       <main className={styles.container}>

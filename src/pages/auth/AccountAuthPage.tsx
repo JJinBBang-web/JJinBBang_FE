@@ -12,7 +12,7 @@ const AccountAuthPage: React.FC = () => {
     <div className="content">
       <header className={styles.header}>
         <button onClick={() => navigate(-1)} className={styles.backButton}>
-          <img src={arrowIcon} alt="back" />
+          <img src={arrowIcon} alt="back" className={styles.flippedIcon} />
         </button>
         <h1>내 계정</h1>
       </header>

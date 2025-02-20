@@ -22,6 +22,10 @@
   cursor: pointer;
 }
 
+.flippedIcon {
+  transform: scaleX(-1);
+}
+
 .content {
   padding: 20px 16px;
 }

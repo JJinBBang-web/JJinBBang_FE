@@ -18,6 +18,10 @@
   height: 24px;
 }
 
+.flippedIcon {
+  transform: scaleX(-1);
+}
+
 .container {
   display: flex;
   flex-direction: column;
