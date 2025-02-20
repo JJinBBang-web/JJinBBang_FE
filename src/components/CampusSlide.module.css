@@ -1,0 +1,115 @@
+.campus_slide {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.campus_inner_slide {
+  position: relative;
+  display: flex;
+  width: 320px;
+  height: 220px;
+  border-radius: 16px;
+  gap: 10px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 10px;
+  margin: -10px;
+  -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 */
+  transform: translateZ(0); /* GPU 가속 활성화 */
+  will-change: scroll-position;
+}
+.campus_slide_inner {
+  position: relative;
+  display: flex;
+  width: fit-content;
+}
+.campus_slide::-webkit-scrollbar {
+  display: none;
+}
+
+.campus_slide:active {
+  cursor: grabbing;
+}
+
+.campus {
+  position: relative;
+  display: flex;
+  width: 155px;
+  min-width: 155px;
+  height: 220px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: 2px 2px 18px 0px rgba(0, 0, 0, 0.08);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  box-sizing: border-box;
+  isolation: isolate; /* box-shadow가 스크롤 너비에 영향을 주지 않도록 */
+}
+
+.campus_image {
+  position: absolute;
+  top: 23px;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.univ_name {
+  position: absolute;
+  top: 160px;
+  width: 100%;
+  color: #111;
+  text-align: center;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.6px;
+  margin: 0;
+}
+.campus_name_container {
+  position: absolute;
+  top: 186px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.campus_name {
+  color: #676767;
+  text-align: center;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%; /* 18px */
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.dot_container {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
