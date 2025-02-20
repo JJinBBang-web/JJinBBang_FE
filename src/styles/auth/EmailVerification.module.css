@@ -1,0 +1,35 @@
+/* src/styles/auth/EmailVerification.module.css */
+.container {
+  padding: 24px;
+  height: 100vh;
+  background-color: var(--white);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--black);
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--color-gray60);
+  line-height: 1.5;
+  margin: 0;
+  margin-bottom: 24px;
+}
+
+.buttonGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}

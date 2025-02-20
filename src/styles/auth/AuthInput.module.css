@@ -1,0 +1,53 @@
+/* src/styles/auth/AuthInput.module.css */
+.inputContainer {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  color: var(--color-gray80);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--color-gray20);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--black);
+  background-color: var(--white);
+  transition: all 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--color-gray40);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.error {
+  border-color: var(--primary-color);
+}
+
+.errorText {
+  color: var(--primary-color);
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.input:disabled {
+  background-color: var(--color-gray20);
+  cursor: not-allowed;
+}
+
+.input:disabled::placeholder {
+  color: var(--color-gray60);
+}

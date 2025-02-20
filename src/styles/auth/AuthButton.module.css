@@ -1,0 +1,34 @@
+/* src/styles/auth/AuthButton.module.css */
+.button {
+  width: 100%;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Spoqa Han Sans Neo', sans-serif;
+}
+
+.primary {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+}
+
+.primary:disabled {
+  background-color: var(--color-gray40);
+  cursor: not-allowed;
+}
+
+.secondary {
+  background-color: var(--white);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.secondary:disabled {
+  border-color: var(--color-gray40);
+  color: var(--color-gray40);
+  cursor: not-allowed;
+}
