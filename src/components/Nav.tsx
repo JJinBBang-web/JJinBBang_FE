@@ -34,8 +34,8 @@ const Nav = () => {
 
     return (
         <div className={styles.navbar_div}>
-            <div>
-                <NavLink to="/" className={styles.navbar_tab}>
+            <div className={styles.navbar_tab}>
+                <NavLink to="/" className={styles.navbar_nav}>
                     <img 
                     src={activeNav === 1 ? nav_home_on : nav_home_off} 
                     alt="home"
@@ -43,8 +43,8 @@ const Nav = () => {
                     <p className={activeNav === 1 ? styles.navbar_title : styles.navbar_text}>홈</p>
                 </NavLink>
             </div>
-            <div>
-                <NavLink to="/heart" className={styles.navbar_tab}>
+            <div className={styles.navbar_tab}>
+                <NavLink to="/heart" className={styles.navbar_nav}>
                     <img 
                     src={activeNav === 2 ? nav_heart_on : nav_heart_off}
                     alt="heart"
@@ -52,8 +52,8 @@ const Nav = () => {
                     <p className={activeNav === 2 ? styles.navbar_title : styles.navbar_text}>관심목록</p>
                 </NavLink>
             </div>
-            <div>
-                <NavLink to="/map" className={styles.navbar_tab}>
+            <div className={styles.navbar_tab}>
+                <NavLink to="/map" className={styles.navbar_nav}>
                     <img 
                     src={activeNav === 3 ? nav_map_on : nav_map_off} 
                     alt="map"
@@ -61,8 +61,8 @@ const Nav = () => {
                     <p className={activeNav === 3 ? styles.navbar_title : styles.navbar_text}>지도</p>
                 </NavLink>
             </div>
-            <div>
-                <NavLink to="/mypage" className={styles.navbar_tab}>
+            <div className={styles.navbar_tab}>
+                <NavLink to="/mypage" className={styles.navbar_nav}>
                     <img 
                     src={activeNav === 4 ? nav_mypage_on : nav_mypage_off} 
                     alt="mypage"
