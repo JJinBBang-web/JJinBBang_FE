@@ -1,0 +1,67 @@
+.filter_bar {
+    width: 100%;
+    height: 60px;
+    position: relative;
+    padding: 4px 16px;
+    overflow-x: auto; /* 가로 스크롤 가능하도록 설정 */
+}
+.filter_bar::-webkit-scrollbar {
+    display: none;
+}
+.filter_slide_bar {
+    width: 112%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.filter_icon_btn {
+    height: 34px;
+    background-color: var(--white);
+    border-radius: 12px;
+    border: none;
+    padding: 0 14px;
+    box-shadow: 8px 2px 18px 0px rgba(0,0,0,0.08);
+    margin-right: 3px;
+    position: sticky;
+    left: 0px;
+    z-index: 2; /* 다른 버튼 위에 올라오도록 설정 */
+    white-space: nowrap;
+}
+.filter_btn {
+    height: 34px;
+    background-color: var(--white);
+    border-radius: 12px;
+    border: none;
+    padding: 0 14px;
+    box-shadow: 8px 2px 18px 0px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 3px;
+    white-space: nowrap;
+}
+
+.filter_last_btn {
+    height: 34px;
+    background-color: var(--white);
+    border-radius: 12px;
+    border: none;
+    padding: 0 14px;
+    box-shadow: 8px 2px 18px 0px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 16px 3px 0;
+    white-space: nowrap;
+}
+p {
+    margin: 0;
+    padding: 0;
+    padding-right: 4px;
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 24px;
+    color: var(--color-gray80);
+}

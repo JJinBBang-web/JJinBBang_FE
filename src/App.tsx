@@ -16,6 +16,7 @@ import AccountAuthPage from './pages/auth/AccountAuthPage';
 import NewStudentVerification from './pages/auth/NewStudentVerification';
 import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
 import { RecoilRoot } from 'recoil';
+import ModalBottomSheet from './components/util/ModalBottomSheet';
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AppContent />
+          <ModalBottomSheet/>
         </BrowserRouter>
       </QueryClientProvider>
     </RecoilRoot>
