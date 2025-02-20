@@ -79,7 +79,8 @@
 
 .emailInput.inputError {
   box-shadow: 0px 0px 0px 1px var(--primary-color);
-  padding-left: 44px;
+  text-indent: 28px; /* 텍스트만 오른쪽으로 이동 */
+  padding: 0 16px;
 }
 
 .emailInput::placeholder {
