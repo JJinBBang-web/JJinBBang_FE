@@ -11,14 +11,13 @@
 }
 
 body,
-html {
+html, div {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
 }
-
-
 
 :root {
     /* 색상 */
@@ -30,9 +29,10 @@ html {
     --black : #090A0A;
     --white : #FFFFFF;
 
-    --color-gray80 : #484E58;
-    --color-gray60 : #7D859A;
-    --color-gray40 : #B4BBCD;
-    --color-gray20 : #DADEE8;
+    --color-gray80 : #3F3F3F;
+    --color-gray60 : #676767;
+    --color-gray40 : #B5B5B5;
+    --color-gray20 : #E8E8E8;
+    --color-gray10 : #EEEEEE;
 
 }
