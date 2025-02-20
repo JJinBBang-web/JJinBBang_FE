@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./PreviewReview.module.css";
-import campus_arrow from "../assets/image/image.png";
 import heartIconOn from "../assets/image/heartIconOn.svg";
 import heartIconOff from "../assets/image/heartIconOff.svg";
 import starIconOn from "../assets/image/starIconOn.svg";
