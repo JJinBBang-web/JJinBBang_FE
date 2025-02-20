@@ -1,11 +1,8 @@
-// 상태관리
-
 import { atom } from "recoil";
 
-
 // 매물 유형 상태
-export const houseTypeState = atom<string> ({
-    key: "houseTypeState",
+export const housingTypeState = atom<string> ({
+    key: "housingTypeState",
     default: "전체",
 })
 
