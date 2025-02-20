@@ -2,7 +2,7 @@ import { useRecoilState } from "recoil"
 import { searchKeywordState } from "../../recoil/map/mapRecoilState"
 import styles from "./SearchBar.module.css"
 import '../../styles/global.css'
-import searchIcon from "../../assets/image/searchIcon.svg"
+import searchIcon from "../../assets/image/iconSearch.svg"
 
 
 const SearchBar = () => {

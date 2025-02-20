@@ -8,6 +8,7 @@ import Heart from './pages/HeartListPage';
 import MyPage from './pages/MyPage';
 import Nav from './components/Nav';
 import { RecoilRoot } from 'recoil';
+import ModalBottomSheet from './components/util/ModalBottomSheet';
 
 const queryClient = new QueryClient()
 
@@ -43,6 +44,7 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AppContent />
+          <ModalBottomSheet/>
         </BrowserRouter>
       </QueryClientProvider>
     </RecoilRoot>
