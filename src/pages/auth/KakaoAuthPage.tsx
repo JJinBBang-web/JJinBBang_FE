@@ -1,26 +1,59 @@
 // src/pages/auth/KakaoAuthPage.tsx
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../../styles/auth/KakaoAuthPage.module.css';
+import TermsAgreementModal from '../../components/auth/TermsAgreementModal';
+import SignupCompleteModal from '../../components/auth/SignupCompleteModal';
 
 const KakaoAuthPage: React.FC = () => {
   const navigate = useNavigate();
+  const [showTerms, setShowTerms] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
 
   useEffect(() => {
-    // 카카오 로그인 성공 처리
     const code = new URL(window.location.href).searchParams.get('code');
-
     if (code) {
-      // 임시로 마이페이지로 리다이렉트
-      navigate('/mypage');
+      setShowTerms(true);
     }
-  }, [navigate]);
+  }, []);
+
+  const handleTermsClose = () => {
+    setShowTerms(false);
+    navigate('/mypage');
+  };
+
+  const handleTermsComplete = () => {
+    setShowTerms(false);
+    setShowComplete(true);
+  };
+
+  const handleConfirm = () => {
+    navigate('/mypage');
+  };
+
+  const handleVerify = () => {
+    navigate('/myaccount');
+  };
 
   return (
     <div className="content">
       <div className={styles.loadingContainer}>
         <p>로그인 진행 중입니다...</p>
       </div>
+
+      {showTerms && (
+        <TermsAgreementModal
+          onClose={handleTermsClose}
+          onComplete={handleTermsComplete}
+        />
+      )}
+
+      {showComplete && (
+        <SignupCompleteModal
+          onConfirm={handleConfirm}
+          onVerify={handleVerify}
+        />
+      )}
     </div>
   );
 };
