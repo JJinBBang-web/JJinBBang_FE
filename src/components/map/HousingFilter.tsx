@@ -2,6 +2,7 @@ import { useRecoilState } from "recoil";
 import { housingTypeState } from "../../recoil/map/mapRecoilState";
 import housingIcon from "../../assets/image/housingIcon.svg"
 import styles from './HousingFilter.module.css'
+import '../../styles/global.css'
 
 
 const HousingFilter = () => {
