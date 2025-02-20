@@ -11,6 +11,7 @@ import EmailVerificationPage from './pages/auth/EmailVerificationPage';
 import Nav from './components/Nav';
 import KakaoCallback from './pages/auth/KakaoCallback';
 import KakaoAuthPage from './pages/auth/KakaoAuthPage';
+import MyAccountPage from './pages/auth/MyAccountPage';
 import AccountAuthPage from './pages/auth/AccountAuthPage';
 import NewStudentVerification from './pages/auth/NewStudentVerification';
 import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
@@ -46,6 +47,7 @@ const AppContent: React.FC = () => {
           <Route path="kakao" element={<KakaoAuthPage />} />
           <Route path="kakao/callback" element={<KakaoCallback />} />
           <Route path="student">
+            <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
             <Route path="current" element={<CurrentStudentVerification />} />
           </Route>

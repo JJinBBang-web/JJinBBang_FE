@@ -19,21 +19,19 @@ const MyAccountPage: React.FC = () => {
       <div className={styles.container}>
         <section className={styles.verificationSection}>
           <h2>신입생 인증</h2>
-          <button className={styles.verificationButton}>
+          <button
+            className={styles.verificationButton}
+            onClick={() => navigate('/auth/student/new')}
+          >
             <img src={arrowIcon} alt="forward" />
           </button>
         </section>
-
         <section className={styles.verificationSection}>
           <h2>재학생 인증</h2>
-          <button className={styles.verificationButton}>
-            <img src={arrowIcon} alt="forward" />
-          </button>
-        </section>
-
-        <section className={styles.serviceSection}>
-          <h2>서비스 탈퇴</h2>
-          <button className={styles.serviceButton}>
+          <button
+            className={styles.verificationButton}
+            onClick={() => navigate('/auth/student/current')}
+          >
             <img src={arrowIcon} alt="forward" />
           </button>
         </section>

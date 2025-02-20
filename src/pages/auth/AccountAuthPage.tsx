@@ -23,23 +23,24 @@ const AccountAuthPage: React.FC = () => {
           <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
         </div>
 
-        <div className={styles.authOptions}>
-          <button
-            className={styles.authButton}
-            onClick={() => navigate('/auth/student/new')}
-          >
-            <span className={styles.buttonText}>신입생 인증</span>
-            <img src={arrowIcon} alt="forward" />
-          </button>
+        <button
+          className={styles.profileButton}
+          onClick={() => navigate('/auth/student/verify')}
+        >
+          <div className={styles.profileInfo}>
+            <h2>내 계정</h2>
+            <div className={styles.profile}>
+              <span>익명의 찐빵이</span>
+              <span className={styles.status}>미인증</span>
+            </div>
+          </div>
+          <img src={arrowIcon} alt="forward" />
+        </button>
 
-          <button
-            className={styles.authButton}
-            onClick={() => navigate('/auth/student/current')}
-          >
-            <span className={styles.buttonText}>재학생 인증</span>
-            <img src={arrowIcon} alt="forward" />
-          </button>
-        </div>
+        <button className={styles.serviceButton}>
+          <span>서비스 탈퇴</span>
+          <img src={arrowIcon} alt="forward" />
+        </button>
       </div>
     </div>
   );

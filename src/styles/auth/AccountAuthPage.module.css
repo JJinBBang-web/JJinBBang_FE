@@ -4,6 +4,7 @@
   align-items: center;
   padding: 12px 16px;
   background-color: var(--white);
+  position: relative;
 }
 
 .header h1 {
@@ -21,11 +22,6 @@
   cursor: pointer;
 }
 
-.backButton img {
-  width: 24px;
-  height: 24px;
-}
-
 .content {
   padding: 20px 16px;
 }
@@ -37,7 +33,7 @@
   background-color: var(--white);
   padding: 12px 16px;
   border-radius: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .banner img {
@@ -51,13 +47,9 @@
   margin: 0;
 }
 
-.authOptions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.authButton {
+.profileButton,
+.serviceButton {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -65,17 +57,35 @@
   border: none;
   border-radius: 16px;
   padding: 16px;
+  margin-bottom: 12px;
   cursor: pointer;
-  width: 100%;
 }
 
-.buttonText {
+.profileInfo h2 {
   font-size: 16px;
   font-weight: 500;
   color: var(--black);
+  margin: 0 0 4px 0;
+  text-align: left;
 }
 
-.authButton img {
-  width: 24px;
-  height: 24px;
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile span {
+  font-size: 14px;
+  color: var(--color-gray60);
+}
+
+.status {
+  color: var(--primary-color) !important;
+}
+
+.serviceButton span {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--black);
 }
