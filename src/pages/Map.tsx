@@ -3,6 +3,7 @@ import '../styles/global.css'
 import HousingFilter from '../components/map/HousingFilter';
 import SearchBar from '../components/map/SearchBar';
 import styles from "./Map.module.css";
+import FilterBar from '../components/map/FilterBar';
 
 const Map = () => {
 
@@ -12,6 +13,7 @@ const Map = () => {
                 <HousingFilter/>
                 <SearchBar/>
             </div>
+            <FilterBar/>
         </div>
     )
 }
