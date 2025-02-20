@@ -1,0 +1,48 @@
+.banner {
+  position: relative;
+  width: 394px;
+  height: 85px;
+  flex-shrink: 0;
+  background-color: var(--primary-color);
+  overflow: hidden;
+}
+
+.banner_text_container {
+  position: absolute;
+  top: 18.5px;
+  left: 18px;
+  display: flex;
+  width: 216px;
+  height: 48px;
+  flex-direction: column;
+}
+
+.banner_text_1 {
+  color: var(--white);
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px; /* 21px */
+  letter-spacing: -0.6px;
+  margin: 0px;
+  white-space: nowrap;
+}
+
+.banner_text_2 {
+  color: var(--white);
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 27px; /* 27px */
+  letter-spacing: -0.6px;
+  margin: 0px;
+  white-space: nowrap;
+}
+
+.banner_img {
+  position: absolute;
+  top: -6.4px;
+  right: 11.7px;
+}
