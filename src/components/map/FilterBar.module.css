@@ -9,6 +9,7 @@
     display: none;
 }
 .filter_slide_bar {
+    width: 112%;
     display: flex;
     flex-direction: row;
     align-items: center;
