@@ -1,17 +1,38 @@
 /* 전역 css 파일 : 폰트, 색상, 리셋코드 작성 */
+@font-face {
+  font-family: 'Spoqa Han Sans Neo';
+  src: url('../assets/fonts/SpoqaHanSansNeo-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Spoqa Han Sans Neo';
+  src: url('../assets/fonts/SpoqaHanSansNeo-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Spoqa Han Sans Neo';
+  src: url('../assets/fonts/SpoqaHanSansNeo-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
 .content {
-    position: relative;
-    max-width: 393px;
-    width: 100%;
-    height: 100vh;
-    background-color: var(--block-background);
-    margin-left: auto;
-    margin-right: auto;
-    overflow-y: auto;
+  position: relative;
+  max-width: 393px;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--block-background);
+  margin-left: auto;
+  margin-right: auto;
+  overflow-y: auto;
 }
 
 body,
-html, div {
+div {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -37,3 +58,15 @@ html, div {
     --color-gray10 : #EEEEEE;
 
 }
+
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Spoqa Han Sans Neo', -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', sans-serif;
+}
+
