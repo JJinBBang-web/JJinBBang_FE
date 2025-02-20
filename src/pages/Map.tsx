@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import '../styles/global.css'
+import HousingFilter from '../components/map/HousingFilter';
+import SearchBar from '../components/map/SearchBar';
+import styles from "./Map.module.css";
 
-const Map: React.FC = () => {
+const Map = () => {
 
     return (
         <div className="content">
-            <h1>Map</h1>
+            <div className={styles.header_bar}>
+                <HousingFilter/>
+                <SearchBar/>
+            </div>
         </div>
     )
 }

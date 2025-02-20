@@ -1,0 +1,6 @@
+.header_bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 16px;
+}
