@@ -4,7 +4,7 @@
 
     width: 100%;
     max-width: 393px;
-    height: 56vh;
+    height: fit-content;
     padding: 0 24px;
     padding-bottom: 34px;
 
@@ -30,8 +30,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 12%;
     z-index: 9999;
+    margin: 16px 0;
 }
 .header_divider {
     width: 50px;
@@ -47,10 +47,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 16%;
+    margin: 16px 0;
 }
 
 .sheet_title {
+    margin: 0;
+    padding: 0;
     font-size: 20px;
     letter-spacing: -0.6px;
     line-height: 150%;
