@@ -39,6 +39,15 @@
     line-height: 150%;
 }
 
+.selected {
+    border: 1px solid var(--primary-color);
+    background-color: var(--block-selected);
+}
+
+.selected_text {
+    color: var(--primary-color);
+}
+
 /* 버튼 */
 .btn_content {
     width: 100%;
@@ -63,6 +72,11 @@
     color: var(--color-gray40);
 }
 
+.reset_btn_active {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
 .confirm_btn {
     width: 49%;
     height: 54px;
@@ -75,4 +89,9 @@
     letter-spacing: -0.6px;
     line-height: 22px;
     color: var(--white);
+}
+.confirm_btn_active {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+
 }

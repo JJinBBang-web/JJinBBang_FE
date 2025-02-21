@@ -5,6 +5,9 @@ import office from "../../assets/image/houseIconOffice.svg"
 import domitory from "../../assets/image/houseIconDomitory.svg"
 import gosiwon from "../../assets/image/houseIconGosiwon.svg"
 import styles from "./HousingFilterModal.module.css"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilState"
+import { isSheetOpenState } from "../../recoil/util/utilRecoilState"
 
 const housingTypes = [
     { id : "room", label : "원/투룸", icon : room},
@@ -16,19 +19,43 @@ const housingTypes = [
 ]
 
 const HousingFilterModal = () => {
+    // 임시 유형 함수
+    const [selectedType, setSelectedType] = useRecoilState(selectedTypeState);
+    // 타입 설정 함수
+    const [, setHousingType] = useRecoilState(housingTypeState);
+    // 현재 타입
+    const housingType = useRecoilValue(housingTypeState);
+    // 모달 상태관리
+    const [,setBottomSheet] = useRecoilState(isSheetOpenState)
+
+    // 확인 버튼 활성화 조건: 현재 housingType과 다를 때
+    const isConfirmActive = selectedType !== housingType;
+    
+    // 초기화 버튼 활성화 조건: "전체"가 아닐 때
+    const isResetActive = selectedType !== "전체";
+
+
     return (
         <div className={styles.content}>
             <div className={styles.grid_content}>
                 {housingTypes.map((option) => (
-                    <button key={option.id} className={styles.type_btn}>
+                    <button key={option.id} className={`${styles.type_btn} ${selectedType === option.label ? styles.selected : ""}`} 
+                    onClick={() => setSelectedType(option.label)}>
                         <img src={option.icon} alt={option.id} width="44px" />
-                        <p className={styles.type_text}>{option.label}</p>
+                        <p className={`${styles.type_text} ${selectedType === option.id ? styles.selected_text : ""}`}>{option.label}</p>
                     </button>
                 ))}
             </div>
             <div className={styles.btn_content}>
-                <button className={styles.reset_btn}>초기화</button>
-                <button className={styles.confirm_btn}>확인</button>
+                <button className={`${styles.reset_btn} ${isResetActive ? styles.reset_btn_active : ""}`} 
+                onClick={() => setSelectedType("전체")}>초기화</button>
+                <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
+                onClick={() => {
+                        if (isConfirmActive) {
+                            setHousingType(selectedType);
+                            setBottomSheet({ isOpen: false, type: null }); 
+                        }
+                    }}>확인</button>
             </div>
         </div>
     )
