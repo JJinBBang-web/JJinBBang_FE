@@ -5,6 +5,10 @@ import iconClose from "../../assets/image/iconClose.svg"
 import HousingFilterModal from "../map/HousingFilterModal"
 import '../../styles/global.css'
 import { useEffect, useState } from "react"
+import ReviewTypeFilterModal from "../map/ReviewTypeFilterModal"
+import UniversityFilterModal from "../map/UniversityFilterModal"
+import ContractFilterModal from "../map/ContractFilterModal"
+import JjinFilterModal from "../map/JjinFilterModal"
 
 
 const ModalBottomSheet = () => {
@@ -50,6 +54,10 @@ const ModalBottomSheet = () => {
                 <img src={iconClose} width="24px" onClick={() => setBottomSheet({ isOpen: false, type: null })}/>
             </div>
             {type === "housing" && <HousingFilterModal/>}
+            {type === "reviewType" && <ReviewTypeFilterModal/>}
+            {type === "university" && <UniversityFilterModal/>}
+            {type === "contract" && <ContractFilterModal/>}
+            {type === "jjinFilter" && <JjinFilterModal/>}
         </div>
         </>
     )
