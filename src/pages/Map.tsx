@@ -8,7 +8,7 @@ import FilterBar from '../components/map/FilterBar';
 const Map = () => {
 
     return (
-        <div className="content">
+        <div className="content" >
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
                 <SearchBar/>
