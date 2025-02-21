@@ -59,9 +59,12 @@ const ModalBottomSheet = () => {
             </div>
             <div className={styles.sheet_title_wrap}>
                 {/* 제목설정 */}
-                <p className={styles.sheet_title}>
-                    {type ? titleMap[type] : "목록"}
-                </p>
+                <div className={styles.sheet_info_wrap}>
+                    <p className={styles.sheet_title}>
+                        {type ? titleMap[type] : "목록"}
+                    </p>
+                    {type === "jjinFilter" && <p className={styles.sheet_info}>원하는 키워드를 1개~5개 골라주세요!</p>}
+                </div>
                 <img src={iconClose} width="24px" onClick={closeModal}/>
             </div>
             {type === "housing" && <HousingFilterModal/>}
