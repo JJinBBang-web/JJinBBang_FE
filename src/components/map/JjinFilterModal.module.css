@@ -1,0 +1,151 @@
+.content {
+    margin: 8px 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.filter_wrap {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto; /* 가로 스크롤 허용 */
+    white-space: nowrap; /* 요소가 줄 바꿈되지 않도록 설정 */
+    gap: 24px; /* 필터 카테고리 간 간격 */
+    padding-bottom: 8px; /* 스크롤바와 컨텐츠 간 여백 */
+}
+
+.filter_wrap::-webkit-scrollbar{
+    display: none;
+}
+
+.jjin_filter_wrap {
+    position: relative;
+    height: 366px;
+}
+
+.jjin_filter {
+    height: 290px;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden; /* 가로 스크롤 허용 */
+    overflow-y: auto; /* 세로 스크롤 방지 */
+}
+
+.title {
+    margin: 0;
+    margin-bottom: 8px;
+    padding: 0;
+    color: var(--color-gray80);
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+}
+
+.filter_btn {
+    margin: 0;
+    padding: 0;
+    
+    width: fit-content;
+    height: 48px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid var(--color-gray20);
+    border-radius: 10px;
+    background-color: var(--white);
+
+    gap: 6px;
+    padding: 14px 13px;
+    margin: 5px 0;
+}
+
+.filter_icon {
+    width: 20px;
+    height: 20px;
+}
+
+.filter_text {
+    margin: 0;
+    padding: 0;
+    color: var(--color-gray60);
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 2px;
+}
+
+/* scroll btn */
+.bottom_btn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+
+    border-radius: 50px;
+    border: 1px solid var(--color-gray10);
+    background-color: var(--white);
+    width: 40px;
+    height: 40px;
+
+    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.11);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 버튼 */
+.btn_content {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.reset_btn {
+    width: 49%;
+    height: 54px;
+
+    border: 1px solid var(--color-gray40);
+    border-radius: 14px;
+    background-color: var(--white);
+
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--color-gray40);
+}
+
+.reset_btn_active {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.confirm_btn {
+    width: 49%;
+    height: 54px;
+
+    border: 1px solid var(--color-gray40);
+    border-radius: 14px;
+    background-color: var(--color-gray40);
+
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--white);
+}
+.confirm_btn_active {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+
+}

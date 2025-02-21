@@ -29,10 +29,10 @@
   margin-left: auto;
   margin-right: auto;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
-body,
-div {
+body{
     margin: 0;
     padding: 0;
     width: 100%;
@@ -48,6 +48,7 @@ div {
     --block-salmon : #FFF5E9;
     --block-background : #F2F4F7;
     --block-popup : #e5e8eb;
+    --block-selected : #FFF7F4;
     --black : #090A0A;
     --white : #FFFFFF;
 
@@ -69,4 +70,3 @@ html {
     'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', sans-serif;
 }
-

@@ -11,7 +11,7 @@ const SearchBar = () => {
 
     // UI 개발
     return (
-        <div className={styles.search_bar}>
+        <div className={`${styles.container} ${styles.search_bar}`}>
             <input
                 type="text"
                 value={keyword}

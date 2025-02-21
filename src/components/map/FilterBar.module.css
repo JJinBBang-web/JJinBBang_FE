@@ -2,7 +2,7 @@
     width: 100%;
     height: 60px;
     position: relative;
-    padding: 4px 16px;
+    padding: 8px 16px;
     overflow-x: auto; /* 가로 스크롤 가능하도록 설정 */
 }
 .filter_bar::-webkit-scrollbar {
@@ -41,6 +41,9 @@
     margin: 0 3px;
     white-space: nowrap;
 }
+.filter_btn_select {
+    background-color: var(--block-selected);
+}
 
 .filter_last_btn {
     height: 34px;
@@ -56,7 +59,7 @@
     margin: 0 16px 3px 0;
     white-space: nowrap;
 }
-p {
+.filter_text {
     margin: 0;
     padding: 0;
     padding-right: 4px;
@@ -64,4 +67,12 @@ p {
     letter-spacing: -0.6px;
     line-height: 24px;
     color: var(--color-gray80);
+}
+
+.filter_text_select {
+    color: var(--primary-color);
+}
+
+.filter_icon_select{
+    filter: invert(50%) sepia(46%) saturate(2380%) hue-rotate(336deg) brightness(100%) contrast(92%);
 }

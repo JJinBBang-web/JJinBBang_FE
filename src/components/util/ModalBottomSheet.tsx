@@ -1,15 +1,22 @@
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState"
 import styles from "./ModalBottomSheet.module.css"
 import iconClose from "../../assets/image/iconClose.svg"
 import HousingFilterModal from "../map/HousingFilterModal"
 import '../../styles/global.css'
 import { useEffect, useState } from "react"
+import ReviewTypeFilterModal from "../map/ReviewTypeFilterModal"
+import UniversityFilterModal from "../map/UniversityFilterModal"
+import ContractFilterModal from "../map/ContractFilterModal"
+import JjinFilterModal from "../map/JjinFilterModal"
+import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilState"
 
 
 const ModalBottomSheet = () => {
     const [{ isOpen, type }, setBottomSheet] = useRecoilState(isSheetOpenState);
     const [isRendered, setIsRendered] = useState(false);
+    const [,setSelectedType] = useRecoilState(selectedTypeState);
+    const housingType = useRecoilValue(housingTypeState);
 
     console.log("isOpen:", isOpen, "type:", type); // 상태 변경 확인
 
@@ -21,7 +28,15 @@ const ModalBottomSheet = () => {
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
+    
 
+    const closeModal = () => {
+        setBottomSheet({ isOpen: false, type: null });
+    
+        if (type === "housing") {
+            setSelectedType(housingType);
+        }
+    };
     
     if (!isOpen) return null;
 
@@ -37,19 +52,26 @@ const ModalBottomSheet = () => {
     return (
         <>
         <div className={`${styles.overlay} ${isOpen ? styles.open : ""}`} 
-                 onClick={() => setBottomSheet({ isOpen: false, type: null })} />
+                 onClick={closeModal} />
         <div className={`${styles.sheet} ${isOpen ? styles.open : ""}`}>
             <div className={styles.sheet_header}>
                 <div className={styles.header_divider}>.</div>
             </div>
             <div className={styles.sheet_title_wrap}>
                 {/* 제목설정 */}
-                <p className={styles.sheet_title}>
-                    {type ? titleMap[type] : "목록"}
-                </p>
-                <img src={iconClose} width="24px" onClick={() => setBottomSheet({ isOpen: false, type: null })}/>
+                <div className={styles.sheet_info_wrap}>
+                    <p className={styles.sheet_title}>
+                        {type ? titleMap[type] : "목록"}
+                    </p>
+                    {type === "jjinFilter" && <p className={styles.sheet_info}>원하는 키워드를 1개~5개 골라주세요!</p>}
+                </div>
+                <img src={iconClose} width="24px" onClick={closeModal}/>
             </div>
             {type === "housing" && <HousingFilterModal/>}
+            {type === "reviewType" && <ReviewTypeFilterModal/>}
+            {type === "university" && <UniversityFilterModal/>}
+            {type === "contract" && <ContractFilterModal/>}
+            {type === "jjinFilter" && <JjinFilterModal/>}
         </div>
         </>
     )
