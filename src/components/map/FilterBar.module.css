@@ -41,6 +41,9 @@
     margin: 0 3px;
     white-space: nowrap;
 }
+.filter_btn_select {
+    background-color: var(--block-selected);
+}
 
 .filter_last_btn {
     height: 34px;
@@ -64,4 +67,12 @@
     letter-spacing: -0.6px;
     line-height: 24px;
     color: var(--color-gray80);
+}
+
+.filter_text_select {
+    color: var(--primary-color);
+}
+
+.filter_icon_select{
+    filter: invert(50%) sepia(46%) saturate(2380%) hue-rotate(336deg) brightness(100%) contrast(92%);
 }

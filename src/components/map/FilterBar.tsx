@@ -12,13 +12,6 @@ const FilterBar = () => {
     const [filters, setFilters] = useRecoilState(filterState)
     // 바텀시트 열닫 상태
     const [, setBottomSheet] = useRecoilState(isSheetOpenState);
-    
-
-
-    // const handleFilterChange = (type: keyof typeof filters, value: string) => {
-    //     setFilters((prev) => ({ ...prev, [type]: value }));
-    //     setOpenFilter(null);
-    //   };
 
 
     return (
@@ -31,11 +24,11 @@ const FilterBar = () => {
                     <img src={iconFilter} alt="filter"/>
                 </button>
                 {/* 각종 필터들 */}
-                <button className={styles.filter_btn} onClick={() => {
+                <button className={`${styles.filter_btn} ${styles.filter_btn_select}`} onClick={() => {
                 console.log("바텀시트 열기 클릭!"); 
                 setBottomSheet({ isOpen: true, type: "reviewType" }); }}>
-                    <p className={styles.filter_text}>후기별</p>
-                    <img src={iconDown} alt="down"/>
+                    <p className={`${styles.filter_text} ${styles.filter_text_select}`}>{filters.reviewType}</p>
+                    <img src={iconDown} alt="down" className={styles.filter_icon_select}/>
                 </button>
                 <button className={styles.filter_btn} onClick={() => {
                 console.log("바텀시트 열기 클릭!"); 

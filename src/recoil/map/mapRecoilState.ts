@@ -29,7 +29,7 @@ interface FilterStateType {
 export const filterState = atom<FilterStateType>({
     key: "filterState",
     default :  {
-        reviewType: "전체",
+        reviewType: "후기별",
         university: "전체",
         contractType: "전체",
       },
