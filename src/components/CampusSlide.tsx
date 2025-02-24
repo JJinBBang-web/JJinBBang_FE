@@ -4,15 +4,29 @@ import campus_arrow from "../assets/image/campusArrow.svg";
 import select_dot from "../assets/image/selectDot.svg";
 import not_select_dot from "../assets/image/notSelectDot.svg";
 
+const SLIDE_WIDTH = 165;
+
 interface CampusItem {
   img: string;
   univ: string;
   campus: string;
+  scrollLeft?: number; // ✅ 선택적(optional) 속성으로 변경
 }
 
-const Campus: React.FC<CampusItem> = ({ img, univ, campus }) => {
+
+const Campus: React.FC<CampusItem> = ({ img, univ, campus,scrollLeft }) => {
+
   return (
-    <div className={styles.campus}>
+    <div
+      className={styles.campus}
+      onClick={() => {
+        
+        if (typeof scrollLeft === "number" && scrollLeft % SLIDE_WIDTH === 0) {
+          
+          window.location.href = "https://www.naver.com"; // 현재 창에서 이동
+        }
+      }}
+    >
       <img
         src={img}
         alt={`${univ} ${campus}`}
@@ -41,7 +55,6 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const [isSnapping, setIsSnapping] = useState(false); // 스냅 동작 중인지 확인하는 상태 추가
 
-  const SLIDE_WIDTH = 165;
   const THRESHOLD = SLIDE_WIDTH / 16; // 임계값을 더 크게 설정
 
   const getClientX = (e: React.MouseEvent | React.TouchEvent): number => {
@@ -66,13 +79,15 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
     if (slideRef.current) {
       const x = getClientX(e);
       const walk = startX - x;
-      slideRef.current.scrollLeft = scrollLeft + walk;
+      slideRef.current.scrollLeft = (scrollLeft as number) + walk;
+      setScrollLeft(slideRef.current.scrollLeft);
     }
   };
 
   const handleEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
+    snapToSlide();
   };
 
   const snapToSlide = React.useCallback(() => {
@@ -92,13 +107,12 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
       }
     }
 
-
     newIndex = Math.max(0, Math.min(newIndex, campusList.length - 2));
     slideRef.current.scrollTo({
       left: newIndex * SLIDE_WIDTH,
       behavior: "smooth",
     });
-
+    setScrollLeft(slideRef.current.scrollLeft);
     setCurrentIndex(newIndex);
   }, [THRESHOLD, campusList.length, currentIndex]);
 
@@ -122,6 +136,8 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
   }, [isSnapping, snapToSlide]);
 
   useEffect(() => {
+    if (isDragging) return;
+
     const currentSlideRef = slideRef.current;
     if (currentSlideRef) {
       currentSlideRef.addEventListener("scroll", handleScroll);
@@ -135,7 +151,7 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
         clearTimeout(scrollTimeout.current);
       }
     };
-  }, [handleScroll]);
+  }, [handleScroll, isDragging]);
 
   return (
     <div className={styles.campus_slide}>
@@ -157,6 +173,7 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
             img={item.img}
             univ={item.univ}
             campus={item.campus}
+            scrollLeft={scrollLeft}
           />
         ))}
       </div>

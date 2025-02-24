@@ -33,8 +33,8 @@ const Nav = () => {
 
 
     return (
-        <div className={styles.navbar_div}>
-            <div className={styles.navbar_tab}>
+        <div className={`${styles.container} ${styles.navbar_div}`}>
+            <div className={`${styles.container} ${styles.navbar_tab}`}>
                 <NavLink to="/" className={styles.navbar_nav}>
                     <img 
                     src={activeNav === 1 ? nav_home_on : nav_home_off} 
