@@ -26,7 +26,7 @@ const FloorInputPage: React.FC = () => {
 
   const handleNext = () => {
     if (buildingName && selectedFloor) {
-      navigate('/review/price', {
+      navigate('/review/result', {
         state: {
           ...location.state,
           buildingName,

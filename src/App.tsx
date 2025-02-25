@@ -39,6 +39,7 @@ const AppContent: React.FC = () => {
     '/auth/kakao/callback',
     '/review/type',
     '/review/address',
+    '/review/result',
     '/review/floor',
     '/review/price',
   ].includes(location.pathname);
@@ -65,7 +66,7 @@ const AppContent: React.FC = () => {
         <Route path="/review">
           <Route path="type" element={<ReviewTypePage />} />
           <Route path="address" element={<AddressSearchPage />} />
-          <Route path="address/result" element={<AddressResultPage />} />
+          <Route path="result" element={<AddressResultPage />} />
           <Route path="floor" element={<FloorInputPage />} />
           <Route path="price" element={<PriceInputPage />} />
         </Route>
