@@ -19,7 +19,10 @@ import ReviewTypePage from './pages/review/ReviewTypePage';
 import AddressSearchPage from './pages/review/AddressSearchPage';
 import AddressResultPage from './pages/review/AddressResultPage';
 import FloorInputPage from './pages/review/FloorInputPage';
-import PriceInputPage from './pages/review/PriceInputPage';
+import PaymentTypePage from './pages/review/PaymentTypePage';
+import JeonseInputPage from './pages/review/JeonseInputPage';
+import WolseInputPage from './pages/review/WolseInputPage';
+
 import { RecoilRoot } from 'recoil';
 import ModalBottomSheet from './components/util/ModalBottomSheet';
 
@@ -42,6 +45,8 @@ const AppContent: React.FC = () => {
     '/review/result',
     '/review/floor',
     '/review/price',
+    '/review/jeonse',
+    '/review/wolse',
   ].includes(location.pathname);
 
   return (
@@ -68,7 +73,9 @@ const AppContent: React.FC = () => {
           <Route path="address" element={<AddressSearchPage />} />
           <Route path="result" element={<AddressResultPage />} />
           <Route path="floor" element={<FloorInputPage />} />
-          <Route path="price" element={<PriceInputPage />} />
+          <Route path="price" element={<PaymentTypePage />} />
+          <Route path="jeonse" element={<JeonseInputPage />} />
+          <Route path="wolse" element={<WolseInputPage />} />
         </Route>
       </Routes>
       {showHeaderAndNav && <Nav />}

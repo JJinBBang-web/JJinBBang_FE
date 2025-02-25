@@ -1,105 +1,185 @@
 // src/pages/review/PriceInputPage.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/review/PriceInput.module.css';
+import closeIcon from '../../assets/image/iconClose.svg';
 
-interface PriceInfo {
-  deposit: string;
-  monthlyRent: string;
-  maintenanceFee: string;
+interface LocationState {
+  address: {
+    roadAddress: string;
+    jibunAddress: string;
+    buildingName: string;
+  };
+  buildingName: string;
+  floor: string;
 }
 
 const PriceInputPage: React.FC = () => {
   const navigate = useNavigate();
-  const [priceInfo, setPriceInfo] = useState<PriceInfo>({
-    deposit: '',
-    monthlyRent: '',
-    maintenanceFee: '',
-  });
+  const location = useLocation();
+  const locationState = location.state as LocationState;
+
+  const [activeTab, setActiveTab] = useState<'전세' | '월세'>('전세');
+  const [deposit, setDeposit] = useState<string>('');
+  const [monthlyRent, setMonthlyRent] = useState<string>('');
+  const [managementFee, setManagementFee] = useState<string>('');
+
+  const handleTabChange = (tab: '전세' | '월세') => {
+    setActiveTab(tab);
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    // 입력값에서 숫자만 추출
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setter(value);
+  };
 
   const formatNumber = (value: string) => {
-    const number = value.replace(/[^\d]/g, '');
-    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (!value) return '';
+    return Number(value).toLocaleString();
   };
 
-  const handleInputChange = (field: keyof PriceInfo, value: string) => {
-    setPriceInfo({
-      ...priceInfo,
-      [field]: formatNumber(value),
+  const handleNext = () => {
+    const priceData = {
+      contractType: activeTab,
+      deposit: Number(deposit),
+      monthlyRent: activeTab === '월세' ? Number(monthlyRent) : 0,
+      managementFee: Number(managementFee),
+    };
+
+    navigate('/review/room-info', {
+      state: {
+        ...locationState,
+        priceData,
+      },
     });
   };
+
+  const isNextEnabled =
+    deposit !== '' && (activeTab === '전세' || monthlyRent !== '');
 
   return (
     <div className="content">
       <div className={styles.container}>
         <header className={styles.header}>
-          <button className={styles.backButton} onClick={() => navigate(-1)}>
-            <img src="/assets/image/closeIcon.svg" alt="close" />
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill}></div>
+          </div>
+          <button
+            className={styles.closeButton}
+            onClick={() => navigate('/mypage')}
+          >
+            <img src={closeIcon} alt="close" />
           </button>
-          <h1>월세 계약 조건은 어떻게 되나요?</h1>
         </header>
 
-        <div className={styles.inputContainer}>
-          <div className={styles.inputGroup}>
-            <label>보증금</label>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                value={priceInfo.deposit}
-                onChange={(e) => handleInputChange('deposit', e.target.value)}
-                placeholder="0"
-              />
-              <span className={styles.unit}>만원</span>
-            </div>
-          </div>
+        <h1 className={styles.title}>
+          {activeTab === '전세'
+            ? '전세 계약 조건은 어떻게 되나요?'
+            : '월세 계약 조건은 어떻게 되나요?'}
+        </h1>
 
-          <div className={styles.inputGroup}>
-            <label>월세</label>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                value={priceInfo.monthlyRent}
-                onChange={(e) =>
-                  handleInputChange('monthlyRent', e.target.value)
-                }
-                placeholder="0"
-              />
-              <span className={styles.unit}>만원</span>
-            </div>
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label>관리비</label>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                value={priceInfo.maintenanceFee}
-                onChange={(e) =>
-                  handleInputChange('maintenanceFee', e.target.value)
-                }
-                placeholder="0"
-              />
-              <span className={styles.unit}>만원</span>
-            </div>
-          </div>
+        <div className={styles.tabContainer}>
+          <button
+            className={`${styles.tabButton} ${
+              activeTab === '전세' ? styles.active : ''
+            }`}
+            onClick={() => handleTabChange('전세')}
+          >
+            전세
+          </button>
+          <button
+            className={`${styles.tabButton} ${
+              activeTab === '월세' ? styles.active : ''
+            }`}
+            onClick={() => handleTabChange('월세')}
+          >
+            월세
+          </button>
         </div>
 
-        <div className={styles.buttonContainer}>
-          <button
-            className={styles.previousButton}
-            onClick={() => navigate(-1)}
-          >
-            이전
-          </button>
-          <button
-            className={styles.nextButton}
-            // 여기서 다음 페이지로 이동하거나 리뷰 정보 제출
-            onClick={() => navigate('/review/complete')}
-          >
-            다음
-          </button>
+        <div className={styles.inputGroup}>
+          {activeTab === '전세' ? (
+            <>
+              <div className={styles.inputContainer}>
+                <label className={styles.label}>전세</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={formatNumber(deposit)}
+                    onChange={(e) => handleInputChange(e, setDeposit)}
+                    placeholder="0"
+                  />
+                  <span className={styles.unit}>만원</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.inputContainer}>
+                <label className={styles.label}>보증금</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={formatNumber(deposit)}
+                    onChange={(e) => handleInputChange(e, setDeposit)}
+                    placeholder="0"
+                  />
+                  <span className={styles.unit}>만원</span>
+                </div>
+              </div>
+
+              <div className={styles.inputContainer}>
+                <label className={styles.label}>월세</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={formatNumber(monthlyRent)}
+                    onChange={(e) => handleInputChange(e, setMonthlyRent)}
+                    placeholder="0"
+                  />
+                  <span className={styles.unit}>만원</span>
+                </div>
+              </div>
+            </>
+          )}
+
+          <div className={styles.inputContainer}>
+            <label className={styles.label}>관리비</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="text"
+                className={styles.input}
+                value={formatNumber(managementFee)}
+                onChange={(e) => handleInputChange(e, setManagementFee)}
+                placeholder="0"
+              />
+              <span className={styles.unit}>만원</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      <footer className={styles.footer}>
+        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+          이전
+        </button>
+        <button
+          className={`${styles.nextButton} ${
+            isNextEnabled ? styles.enabled : ''
+          }`}
+          onClick={handleNext}
+          disabled={!isNextEnabled}
+        >
+          다음
+        </button>
+      </footer>
     </div>
   );
 };
