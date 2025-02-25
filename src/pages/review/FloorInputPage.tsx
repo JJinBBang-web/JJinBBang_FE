@@ -1,82 +1,103 @@
 // src/pages/review/FloorInputPage.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/review/FloorInput.module.css';
+import closeIcon from '../../assets/image/iconClose.svg';
 
-interface BuildingInfo {
-  buildingName: string;
-  unit: string;
-  floor: string;
+interface LocationState {
+  address: {
+    roadAddress: string;
+    jibunAddress: string;
+    buildingName: string;
+  };
 }
 
 const FloorInputPage: React.FC = () => {
   const navigate = useNavigate();
-  const [buildingInfo, setBuildingInfo] = useState<BuildingInfo>({
-    buildingName: '',
-    unit: '',
-    floor: '',
-  });
+  const location = useLocation();
+  const { address } = (location.state as LocationState) || {
+    address: { roadAddress: '', jibunAddress: '', buildingName: '' },
+  };
+
+  const [buildingName, setBuildingName] = useState(address.buildingName || '');
+  const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
+
+  const floors = ['반지하', '저층', '중층', '고층', '옥탑'];
+
+  const handleNext = () => {
+    if (buildingName && selectedFloor) {
+      navigate('/review/price', {
+        state: {
+          ...location.state,
+          buildingName,
+          floor: selectedFloor,
+        },
+      });
+    }
+  };
+
+  const isNextEnabled = buildingName.trim() !== '' && selectedFloor !== null;
 
   return (
     <div className="content">
       <div className={styles.container}>
         <header className={styles.header}>
-          <button className={styles.backButton} onClick={() => navigate(-1)}>
-            <img src="/assets/image/closeIcon.svg" alt="close" />
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill}></div>
+          </div>{' '}
+          <button
+            className={styles.closeButton}
+            onClick={() => navigate('/mypage')}
+          >
+            <img src={closeIcon} alt="close" />
           </button>
-          <h1>정확한 주소가 맞나요?</h1>
         </header>
 
-        <div className={styles.addressBox}>
-          <div className={styles.currentAddress}>
-            경남 진주시 내동로348번길 10 [가좌동 573-1]
-          </div>
-          <button className={styles.reSearchButton}>주소 재검색</button>
+        <h1 className={styles.title}>건물명 및 상세주소가 있으면 좋겠어요!</h1>
+
+        <div className={styles.inputSection}>
+          <label className={styles.label}>건물명</label>
+          <input
+            type="text"
+            className={styles.buildingInput}
+            value={buildingName}
+            onChange={(e) => setBuildingName(e.target.value)}
+            placeholder="예) 찐빵주공아파트"
+          />
         </div>
 
-        <div className={styles.detailInputs}>
-          <div className={styles.inputGroup}>
-            <label>건물명</label>
-            <input
-              type="text"
-              value={buildingInfo.buildingName}
-              onChange={(e) =>
-                setBuildingInfo({
-                  ...buildingInfo,
-                  buildingName: e.target.value,
-                })
-              }
-              placeholder="진주가좌그린빌주공아파트"
-            />
+        <div className={styles.floorSection}>
+          <label className={styles.label}>층수</label>
+          <div className={styles.floorOptions}>
+            {floors.map((floor) => (
+              <button
+                key={floor}
+                className={`${styles.floorButton} ${
+                  selectedFloor === floor ? styles.selected : ''
+                }`}
+                onClick={() => setSelectedFloor(floor)}
+              >
+                {floor}
+              </button>
+            ))}
           </div>
-
-          <div className={styles.floorInputs}>
-            <label>층수</label>
-            <div className={styles.floorButtons}>
-              <button>반지하</button>
-              <button>저층</button>
-              <button>중층</button>
-              <button>고층</button>
-              <button>옥탑</button>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.buttonContainer}>
-          <button
-            className={styles.previousButton}
-            onClick={() => navigate(-1)}
-          >
-            이전
-          </button>
-          <button
-            className={styles.nextButton}
-            onClick={() => navigate('/review/price')}
-          >
-            다음
-          </button>
         </div>
       </div>
+
+      <footer className={styles.footer}>
+        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+          이전
+        </button>
+        <button
+          className={`${styles.nextButton} ${
+            isNextEnabled ? styles.enabled : ''
+          }`}
+          onClick={handleNext}
+          disabled={!isNextEnabled}
+        >
+          다음
+        </button>
+      </footer>
     </div>
   );
 };
