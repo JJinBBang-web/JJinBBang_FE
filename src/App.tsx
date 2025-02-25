@@ -15,6 +15,11 @@ import MyAccountPage from './pages/auth/MyAccountPage';
 import AccountAuthPage from './pages/auth/AccountAuthPage';
 import NewStudentVerification from './pages/auth/NewStudentVerification';
 import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
+import ReviewTypePage from './pages/review/ReviewTypePage';
+import AddressSearchPage from './pages/review/AddressSearchPage';
+import AddressResultPage from './pages/review/AddressResultPage';
+import FloorInputPage from './pages/review/FloorInputPage';
+import PriceInputPage from './pages/review/PriceInputPage';
 import { RecoilRoot } from 'recoil';
 import ModalBottomSheet from './components/util/ModalBottomSheet';
 
@@ -32,6 +37,10 @@ const AppContent: React.FC = () => {
     '/auth/student/current',
     '/auth/kakao',
     '/auth/kakao/callback',
+    '/review/type',
+    '/review/address',
+    '/review/floor',
+    '/review/price',
   ].includes(location.pathname);
 
   return (
@@ -53,6 +62,13 @@ const AppContent: React.FC = () => {
             <Route path="current" element={<CurrentStudentVerification />} />
           </Route>
         </Route>
+        <Route path="/review">
+          <Route path="type" element={<ReviewTypePage />} />
+          <Route path="address" element={<AddressSearchPage />} />
+          <Route path="address/result" element={<AddressResultPage />} />
+          <Route path="floor" element={<FloorInputPage />} />
+          <Route path="price" element={<PriceInputPage />} />
+        </Route>
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
@@ -65,7 +81,7 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AppContent />
-          <ModalBottomSheet/>
+          <ModalBottomSheet />
         </BrowserRouter>
       </QueryClientProvider>
     </RecoilRoot>

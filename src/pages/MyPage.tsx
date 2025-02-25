@@ -70,7 +70,10 @@ const MyPage: React.FC = () => {
       </div>
       <div className={styles.menuList}>
         {renderProfileSection()}
-        <button className={styles.menuItem}>
+        <button
+          className={styles.menuItem}
+          onClick={() => navigate('/review/type')}
+        >
           <img src={pencilIcon} alt="pencil" />
           <div>
             <span className={styles.menuTitle}>찐빵 작성하기</span>
