@@ -6,7 +6,7 @@
   padding: 12px 16px;
   background-color: var(--white);
   position: relative;
-  background-color: var(--color-gray10);
+  background-color: var(--block-background);
 }
 
 .header h1 {

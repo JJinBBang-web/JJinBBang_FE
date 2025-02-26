@@ -5,7 +5,7 @@
   padding: 12px 16px;
   background-color: var(--white);
   border-bottom: 1px solid var(--color-);
-  background-color: var(--color-gray10);
+  background-color: var(--block-background);
 }
 
 .header h1 {
