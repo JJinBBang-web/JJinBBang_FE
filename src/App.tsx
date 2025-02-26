@@ -15,6 +15,7 @@ import MyAccountPage from './pages/auth/MyAccountPage';
 import AccountAuthPage from './pages/auth/AccountAuthPage';
 import NewStudentVerification from './pages/auth/NewStudentVerification';
 import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
+import StudentEmailVerification from './pages/auth/StudentEmailVerification';
 import ReviewTypePage from './pages/review/ReviewTypePage';
 import AddressSearchPage from './pages/review/AddressSearchPage';
 import AddressResultPage from './pages/review/AddressResultPage';
@@ -41,6 +42,7 @@ const AppContent: React.FC = () => {
     '/auth/student/current',
     '/auth/kakao',
     '/auth/kakao/callback',
+    '/auth/student/email-verification',
     '/review/type',
     '/review/address',
     '/review/result',
@@ -68,6 +70,10 @@ const AppContent: React.FC = () => {
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
             <Route path="current" element={<CurrentStudentVerification />} />
+            <Route
+              path="email-verification"
+              element={<StudentEmailVerification />}
+            />
           </Route>
         </Route>
         <Route path="/review">

@@ -1,6 +1,6 @@
 // src/pages/auth/CurrentStudentVerification.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { authState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/CurrentStudentVerification.module.css';
@@ -11,9 +11,12 @@ import warningIcon from '../../assets/image/warningIcon.svg';
 
 const CurrentStudentVerification: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useSetRecoilState(authState);
   const [email, setEmail] = useState('');
-  const [isComplete, setIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(
+    location.state?.verified || false
+  );
   const [error, setError] = useState<string | null>(null);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,13 +47,7 @@ const CurrentStudentVerification: React.FC = () => {
     e.preventDefault();
     if (!email || error) return;
 
-    setIsComplete(true);
-    setAuth((prev) => ({
-      ...prev,
-      isAuthenticated: true,
-      email: email,
-      verificationStatus: 'verified',
-    }));
+    navigate('/auth/student/email-verification', { state: { email } });
   };
 
   const handleConfirm = () => {
