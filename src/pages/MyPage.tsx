@@ -87,7 +87,7 @@ const MyPage: React.FC = () => {
       <div className={styles.reviewContainer}>
         <h2>나의 찐빵</h2>
         <div className={styles.emptyState}>
-          <img src={emptyCharacterIcon} alt="empty character" />
+          <img src={emptyCharacterIcon} className="emptyIcon" alt="empty character" />
           <p>앗! 아직 등록된 찐빵이 없어요!</p>
         </div>
       </div>

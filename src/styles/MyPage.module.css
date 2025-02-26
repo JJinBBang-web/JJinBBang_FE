@@ -11,7 +11,6 @@
   color: var(--black);
   margin: 0;
   padding: 12px 0;
-  background-color: var(--white);
 }
 
 .guide {
@@ -107,8 +106,8 @@
 }
 
 .emptyState img {
-  width: 80px;
-  height: 80px;
+  width: 180px;
+  height: 108px;
   margin-bottom: 12px;
 }
 
