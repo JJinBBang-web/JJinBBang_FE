@@ -1,6 +1,6 @@
 .sheet {
     box-sizing: border-box;
-    position: fixed; /* 고정 위치 */
+    position: absolute; /* 고정 위치 */
 
     width: 100%;
     max-width: 393px;
@@ -16,12 +16,12 @@
 
     left: 50%; /* 화면의 가로 중심으로 이동 */
     bottom: 0;
-    transform: translate(-50%, 100%); /* X축 -50%로 가운데 정렬, Y축 100%로 숨김 */
+    transform: translate(-50%, 100%);
     transition: transform 0.3s ease-in-out; /* 부드러운 애니메이션 */
 }
 
 .sheet.open {
-    transform: translate(-50%, 0); /* X축 -50%로 가운데 정렬, Y축 100%로 숨김 */
+    transform: translate(-50%, 0);
 }
 
 .sheet_header {
