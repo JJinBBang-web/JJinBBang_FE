@@ -55,7 +55,7 @@ const ModalBottomSheet = () => {
                  onClick={closeModal} />
         <div className={`${styles.sheet} ${isOpen ? styles.open : ""}`}>
             <div className={styles.sheet_header}>
-                <div className={styles.header_divider}>.</div>
+                <div className={styles.header_divider}></div>
             </div>
             <div className={styles.sheet_title_wrap}>
                 {/* 제목설정 */}
