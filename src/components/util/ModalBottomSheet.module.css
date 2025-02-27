@@ -1,10 +1,11 @@
 .sheet {
     box-sizing: border-box;
-    position: absolute; /* 고정 위치 */
+    position: fixed; /* 고정 위치 */
 
     width: 100%;
     max-width: 393px;
-    height: fit-content;
+    max-height: 980vh;
+    min-height: 20vh;
     padding: 0 24px;
     padding-bottom: 34px;
 
