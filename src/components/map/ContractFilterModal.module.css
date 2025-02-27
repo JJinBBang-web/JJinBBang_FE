@@ -9,6 +9,10 @@
     justify-content: space-around;
 }
 
+.text_nbsp {
+    margin-left: 4px;
+}
+
 /* 계약 style */
 .contract_wrap {
     margin: 0;
@@ -225,6 +229,11 @@
     box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.16);
 
     top: -12px !important;
+}
+
+.thumb:focus {
+    background: var(--white);
+    box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.16);
 }
 
 

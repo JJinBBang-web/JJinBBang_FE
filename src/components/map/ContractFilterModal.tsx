@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil";
-import styles from "./ContentFilterModal.module.css"
+import styles from "./ContractFilterModal.module.css"
 import { monthlyRentRangeState, securityRangeState } from "../../recoil/map/mapRecoilState";
 import { useCallback, useEffect } from "react";
 import Slider from "react-slider";
@@ -34,13 +34,13 @@ const ContractFilterModal = () => {
                     <label className={styles.checkbox_wrap}>
                         <input type="checkbox"/>
                         <span className={styles.checkmark}></span>
-                        관리비 포함
+                        관리비<span className={styles.text_nbsp}>포함</span>
                     </label>
                 </div>
                 <div className={styles.condition_content}>
                     <div className={styles.content_wrap}>
                         <p>보증금(전세금)</p>
-                        <p>{formatSecurityValue(securityRange[1])}만원 이하</p>
+                        <p>{formatSecurityValue(securityRange[1])}만원<span className={styles.text_nbsp}>이하</span></p>
                     </div>
                     <div className={styles.content_range}>
                         <Slider className={styles.slider}
@@ -70,7 +70,7 @@ const ContractFilterModal = () => {
                         </div>
                         <div className={styles.range_text}>
                             <p>0만원</p>
-                            <p>5000만원 이상</p>
+                            <p>5000만원<span className={styles.text_nbsp}>이상</span></p>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@ const ContractFilterModal = () => {
                 <div className={styles.condition_content}>
                     <div className={styles.content_wrap}>
                         <p>월세</p>
-                        <p>{formatMonthlyRentValue(monthlyRentRange[1])}만원 이하</p>
+                        <p>{formatMonthlyRentValue(monthlyRentRange[1])}만원<span className={styles.text_nbsp}>이하</span></p>
                     </div>
                     <div className={styles.content_range}>
                         <Slider className={styles.slider}
@@ -108,7 +108,7 @@ const ContractFilterModal = () => {
                         </div>
                         <div className={styles.range_text}>
                             <p>0만원</p>
-                            <p>500만원 이상</p>
+                            <p>500만원<span className={styles.text_nbsp}>이상</span></p>
                         </div>
                     </div>
                 </div>
