@@ -1,0 +1,24 @@
+.starRating {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.starButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filled svg {
+  fill: var(--primary-color, #ff6b3f);
+}
+
+.empty svg {
+  fill: #dadee8;
+}
