@@ -1,0 +1,222 @@
+.content {
+    margin: 8px 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+/* 계약 style */
+.contract_wrap {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+
+    margin-bottom: 12px;
+}
+.contract_btn {
+    height: 34px;
+    background-color: var(--white);
+    border: 1px solid var(--color-gray20);
+    border-radius: 12px;
+    padding: 4px 13px;
+    margin: 0 2.5px;
+
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    word-spacing: 24px;
+    color: var(--color-gray80);
+}
+.divider {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 8px;
+
+    background-color: var(--color-gray10);
+    margin: 12px 0;
+}
+
+/* 조건 style */
+.condition_wrap {
+    margin: 12px 0;
+}
+
+.condition_wrap div, p {
+    margin: 0;
+    padding: 0;
+}
+
+.condition_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px !important;
+}
+
+.condition_header p {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+    word-spacing: 160%;
+    color: var(--color-gray80);
+}
+
+/* 체크박스 style */
+.checkbox_wrap {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    letter-spacing: -0.6px;
+    word-spacing: 150%;
+    color: var(--color-gray80);
+    cursor: pointer;
+}
+/* 체크박스 숨기기 */
+.checkbox_wrap input[type="checkbox"] {
+    display: none;
+}
+
+/* 커스텀 체크박스 스타일 */
+.checkbox_wrap .checkmark {
+    width: 20px;
+    height: 20px;
+    background-color: var(--white);
+    border: 1px solid var(--color-gray20);
+    border-radius: 4px;
+    position: relative;
+    margin-right: 6px;
+    /* transition: background-color 0.2s ease, border-color 0.2s ease; */
+}
+
+/* 체크 시 스타일 */
+.checkbox_wrap input[type="checkbox"]:checked + .checkmark {
+    border-color: var(--primary-color);
+}
+
+/* 체크된 상태의 체크 아이콘 */
+.checkbox_wrap .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6.5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--primary-color);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* 체크된 후 아이콘 표시 */
+.checkbox_wrap input[type="checkbox"]:checked + .checkmark:after {
+    display: block;
+}
+
+.content_wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px !important;
+}
+.content_wrap p {
+    font-size: 14px;
+    letter-spacing: -0.6px;
+    word-spacing: 150%;
+    color: var(--color-gray80);
+}
+
+.content_info {
+    display: flex;
+    flex-direction: column;
+}
+
+.range {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 14px !important;
+}
+
+.range hr {
+    margin: 0;
+    padding: 0;
+    width: 2px;
+    height: 11px;
+    
+    border: none;
+    background-color: var(--color-gray20);
+}
+
+.range_text {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 4px 0 !important;
+}
+.range_text p {
+    font-size: 12px;
+    letter-spacing: -0.5px;
+    word-spacing: 150%;
+    color: var(--color-gray60);
+}
+
+.divider2 {
+    margin: 18px 0;
+    border: 1px solid var(--color-gray10);
+}
+
+/* 버튼 */
+.btn_content {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.reset_btn {
+    width: 49%;
+    height: 54px;
+
+    border: 1px solid var(--color-gray40);
+    border-radius: 14px;
+    background-color: var(--white);
+
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--color-gray40);
+}
+
+.reset_btn_active {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.confirm_btn {
+    width: 49%;
+    height: 54px;
+
+    border: 1px solid var(--color-gray40);
+    border-radius: 14px;
+    background-color: var(--color-gray40);
+
+    font-size: 16px;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--white);
+}
+.confirm_btn_active {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
