@@ -57,7 +57,7 @@ const PhotoUploadPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    navigate('/review/content', {
+    navigate('/review/filter-ad', {
       state: {
         ...locationState,
         photos,
