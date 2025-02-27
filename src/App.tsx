@@ -25,6 +25,7 @@ import JeonseInputPage from './pages/review/JeonseInputPage';
 import WolseInputPage from './pages/review/WolseInputPage';
 import RoomInfoPage from './pages/review/PhotoUploadPage';
 import ReviewAdvantagePage from './pages/review/ReviewAdvantagePage';
+import ReviewDisadvantagePage from './pages/review/ReviewDisadvantagePage';
 
 import { RecoilRoot } from 'recoil';
 import ModalBottomSheet from './components/util/ModalBottomSheet';
@@ -53,6 +54,7 @@ const AppContent: React.FC = () => {
     '/review/wolse',
     '/review/room-info',
     '/review/filter-ad',
+    '/review/filter-disad',
   ].includes(location.pathname);
 
   return (
@@ -87,7 +89,11 @@ const AppContent: React.FC = () => {
           <Route path="jeonse" element={<JeonseInputPage />} />
           <Route path="wolse" element={<WolseInputPage />} />
           <Route path="room-info" element={<RoomInfoPage />} />
-          <Route path="filter-ad" element={<ReviewAdvantagePage />} />{' '}
+          <Route path="filter-ad" element={<ReviewAdvantagePage />} />
+          <Route
+            path="filter-disad"
+            element={<ReviewDisadvantagePage />}
+          />{' '}
         </Route>
       </Routes>
       {showHeaderAndNav && <Nav />}

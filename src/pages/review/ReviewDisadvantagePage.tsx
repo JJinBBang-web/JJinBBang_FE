@@ -6,18 +6,19 @@ import {
   FilterCategory,
   FilterItem,
 } from '../../recoil/util/filterRecoilState';
-import styles from '../../styles/review/ReviewAdvantage.module.css';
+import styles from '../../styles/review/ReviewDisadvantage.module.css';
 import iconClose from '../../assets/image/iconClose.svg';
 
 // 위치 상태 인터페이스 정의
 interface LocationState {
   photos?: string[]; // 업로드한 사진 URL 배열
+  advantages?: string[]; // 선택한 장점 태그 배열
 }
 
-const ReviewAdvantagePage: React.FC = () => {
+const ReviewDisadvantagePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { photos } = (location.state as LocationState) || {};
+  const { photos, advantages } = (location.state as LocationState) || {};
   const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const maxSelections = 5;
@@ -40,11 +41,12 @@ const ReviewAdvantagePage: React.FC = () => {
 
   // 다음 단계로 이동하는 함수
   const handleNext = () => {
-    // 다음 단계로 이동하면서 선택된 장점 정보 전달
-    navigate('/review/filter-disad', {
+    // 다음 단계(리뷰 내용 작성 페이지)로 이동하면서 지금까지 수집한 정보 전달
+    navigate('/review/content', {
       state: {
         photos,
-        advantages: selectedFilters,
+        advantages,
+        disadvantages: selectedFilters,
       },
     });
   };
@@ -62,9 +64,10 @@ const ReviewAdvantagePage: React.FC = () => {
 
       <div className={styles.content}>
         <div className={styles.title_area}>
-          <h1 className={styles.main_title}>이 찐빵의 장점은 무엇인가요?</h1>
+          <h1 className={styles.main_title}>이 찐빵의 단점은 무엇인가요?</h1>
           <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         </div>
+
         {filters.map((category: FilterCategory) => (
           <div className={styles.jjin_filter_wrap} key={category.id}>
             <p className={styles.title}>{category.category}</p>
@@ -89,6 +92,7 @@ const ReviewAdvantagePage: React.FC = () => {
           </div>
         ))}
       </div>
+
       <footer className={styles.footer}>
         <button className={styles.prevButton} onClick={() => navigate(-1)}>
           이전
@@ -107,4 +111,4 @@ const ReviewAdvantagePage: React.FC = () => {
   );
 };
 
-export default ReviewAdvantagePage;
+export default ReviewDisadvantagePage;
