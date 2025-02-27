@@ -1,11 +1,28 @@
+import { useRecoilState } from "recoil";
 import styles from "./ContentFilterModal.module.css"
+import { monthlyRentRangeState, securityRangeState } from "../../recoil/map/mapRecoilState";
+import { useCallback, useEffect } from "react";
+import Slider from "react-slider";
+
 
 const ContractFilterModal = () => {
+    const [securityRange, setSecurityRange] = useRecoilState(securityRangeState);
+    const [monthlyRentRange, setMonthlyRentRange] = useRecoilState(monthlyRentRangeState);
+
+    // 보증금 값 조정
+    const formatSecurityValue = useCallback((value: number) => {
+        return value === 5000 ? value : value * 100;
+    }, []);
+    // 월세 값 조정
+    const formatMonthlyRentValue = useCallback((value: number) => {
+        return value === 500 ? value : value <= 40 ? value * 5 : 200 + (value-40) * 10;
+    }, []);
+    
     return (
         <div className={styles.content}>
             {/* 계약형태 */}
             <div className={styles.contract_wrap}>
-                <button className={styles.contract_btn}>전체</button>
+                <button className={`${styles.contract_btn} ${styles.selected_btn}`}>전체</button>
                 <button className={styles.contract_btn}>월세</button>
                 <button className={styles.contract_btn}>전세</button>
             </div>
@@ -23,11 +40,24 @@ const ContractFilterModal = () => {
                 <div className={styles.condition_content}>
                     <div className={styles.content_wrap}>
                         <p>보증금(전세금)</p>
-                        <p>전체</p>
+                        <p>{formatSecurityValue(securityRange[1])}만원 이하</p>
                     </div>
                     <div className={styles.content_range}>
-                        <input type="range"></input>
-                        <input type="range"></input>
+                        <Slider className={styles.slider}
+                            min={0}
+                            max={50}
+                            step={1}
+                            value={securityRange}
+                            onChange={setSecurityRange}
+                            renderTrack={(props, state) => (
+                                <div {...props} className={
+                                    state.index === 0 || state.index === 2
+                                    ? styles.track 
+                                    : styles.trackSelected
+                                } />
+                            )}
+                            renderThumb={(props) => <div {...props} className={styles.thumb} />}
+                        />
                     </div>
                     <div className={styles.content_info}>
                     <div className={styles.range}>
@@ -48,11 +78,24 @@ const ContractFilterModal = () => {
                 <div className={styles.condition_content}>
                     <div className={styles.content_wrap}>
                         <p>월세</p>
-                        <p>전체</p>
+                        <p>{formatMonthlyRentValue(monthlyRentRange[1])}만원 이하</p>
                     </div>
                     <div className={styles.content_range}>
-                        <input type="range"></input>
-                        <input type="range"></input>
+                        <Slider className={styles.slider}
+                            min={0}
+                            max={70}
+                            step={1}
+                            value={monthlyRentRange}
+                            onChange={setMonthlyRentRange}
+                            renderTrack={(props, state) => (
+                                <div {...props} className={
+                                    state.index === 0 || state.index === 2
+                                    ? styles.track 
+                                    : styles.trackSelected
+                                } />
+                            )}
+                            renderThumb={(props) => <div {...props} className={styles.thumb} />}
+                        />
                     </div>
                     <div className={styles.content_info}>
                         <div className={styles.range}>

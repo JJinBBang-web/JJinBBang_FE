@@ -35,6 +35,17 @@ export const filterState = atom<FilterStateType>({
       },
 })
 
+// 계약/가격 조건 필터 상태
+export const securityRangeState = atom<[number, number]>({
+    key : "securityRangeState",
+    default : [0, 5000],
+})
+
+export const monthlyRentRangeState = atom<[number, number]>({
+    key : "monthlyRentRangeState",
+    default : [0, 500],
+})
+
 
 // 지도 마커 데이터 상태
 export const markersState = atom({
