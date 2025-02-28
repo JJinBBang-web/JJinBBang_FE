@@ -88,6 +88,12 @@ export const universitiesState = atom({
     default : universityData,
 })
 
+// 선택한 대학교 상태
+export const selectedUniversityState = atom<number | null>({
+    key: "selectedUniversityState",
+    default: null,
+})
+
 // 대학교 필터링
 export const universitiesFilterState = selector({
     key : "universitiesFilterState",

@@ -12,6 +12,12 @@ export const selectedTypeState = atom<string | null> ({
     default: null,
 })
 
+// 임시 변경 상태 (num)
+export const selectedTypeNumState = atom<number | null> ({
+    key: "selectedTypeNumState",
+    default: null,
+})
+
 // 검색 키워드 상태
 export const searchKeywordState = atom<string>({
     key: "searchKeywordState",
@@ -21,7 +27,7 @@ export const searchKeywordState = atom<string>({
 // 필터 상태 타입 정의
 interface FilterStateType {
     reviewType: string;
-    university: string;
+    university: number | null;
     contractType: string;
 }
 
@@ -30,7 +36,7 @@ export const filterState = atom<FilterStateType>({
     key: "filterState",
     default :  {
         reviewType: "후기별",
-        university: "전체",
+        university: null,
         contractType: "전체",
       },
 })
