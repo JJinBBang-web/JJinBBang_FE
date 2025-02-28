@@ -108,6 +108,7 @@
   border-radius: 16px;
   background: var(--white);
   box-sizing: border-box;
+  margin-bottom: 115px;
 }
 
 .previewHeader {
@@ -144,8 +145,10 @@
 }
 
 .adver {
+  position: fixed;
+  bottom: 10.5vh;
   display: flex;
-  width: 100%;
+  width: 393px;
   min-height: 85px;
   justify-content: center;
   align-items: center;
