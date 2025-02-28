@@ -17,6 +17,7 @@ import NewStudentVerification from './pages/auth/NewStudentVerification';
 import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
 import { RecoilRoot } from 'recoil';
 import ModalBottomSheet from './components/util/ModalBottomSheet';
+import Review from './pages/Review';
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const AppContent: React.FC = () => {
     '/auth/student/current',
     '/auth/kakao',
     '/auth/kakao/callback',
+    '/review'
   ].includes(location.pathname);
 
   return (
@@ -53,6 +55,7 @@ const AppContent: React.FC = () => {
             <Route path="current" element={<CurrentStudentVerification />} />
           </Route>
         </Route>
+        <Route path='/review' element={<Review/>}/>
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
