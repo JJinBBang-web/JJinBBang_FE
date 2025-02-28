@@ -74,6 +74,11 @@
     justify-content: center;
 }
 
+.selected_uni_btn {
+    background-color: var(--block-selected);
+    border: 1px solid var(--primary-color);
+}
+
 .uni_title {
     margin: 0;
     padding: 0;
@@ -90,6 +95,9 @@
     letter-spacing: -0.6px;
     line-height: 150%;
     color: var(--color-gray60);
+}
+.selected_text {
+    color: var(--primary-color);
 }
 
 /* 버튼 */

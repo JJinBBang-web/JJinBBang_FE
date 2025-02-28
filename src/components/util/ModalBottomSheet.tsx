@@ -9,14 +9,17 @@ import ReviewTypeFilterModal from "../map/ReviewTypeFilterModal"
 import UniversityFilterModal from "../map/UniversityFilterModal"
 import ContractFilterModal from "../map/ContractFilterModal"
 import JjinFilterModal from "../map/JjinFilterModal"
-import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilState"
+import { filterState, housingTypeState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
+import { selectedUniversityState } from "../../recoil/map/universityRecoilState"
 
 
 const ModalBottomSheet = () => {
     const [{ isOpen, type }, setBottomSheet] = useRecoilState(isSheetOpenState);
     const [isRendered, setIsRendered] = useState(false);
     const [,setSelectedType] = useRecoilState(selectedTypeState);
+    const [, setSelectedTypeNum] = useRecoilState(selectedTypeNumState);
     const housingType = useRecoilValue(housingTypeState);
+    const university = useRecoilValue(filterState).university;
 
     console.log("isOpen:", isOpen, "type:", type); // 상태 변경 확인
 
@@ -35,6 +38,9 @@ const ModalBottomSheet = () => {
     
         if (type === "housing") {
             setSelectedType(housingType);
+        } 
+        if (type == "university") {
+            setSelectedTypeNum(university);
         }
     };
     
