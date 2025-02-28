@@ -1,6 +1,6 @@
 import { useRecoilState } from "recoil"
-import { filterState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
-import { useState } from "react";
+import { depositRangeState, filterState, maintenanceCostState, monthlyRentRangeState, selectedContractState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
+import { use, useState } from "react";
 import iconFilter from "../../assets/image/iconFilter.svg"
 import iconDown from "../../assets/image/downIcon.svg"
 import styles from "./FilterBar.module.css"
@@ -12,9 +12,12 @@ const FilterBar = () => {
     const [filters, setFilters] = useRecoilState(filterState)
     // 바텀시트 열닫 상태
     const [, setBottomSheet] = useRecoilState(isSheetOpenState);
-    const [, setSelectedType] = useRecoilState(selectedTypeState);
     const [, setSelectedTypeNum] = useRecoilState(selectedTypeNumState);
-    
+    const [, setSelectedContractState] = useRecoilState(selectedContractState);
+    const [, setMaintenanceCostState] = useRecoilState(maintenanceCostState);
+    const [, setDepositRangeState] = useRecoilState(depositRangeState);
+    const [, setMonthlyRentRange] = useRecoilState(monthlyRentRangeState);
+
     return (
         <div className={styles.filter_bar}>
             <div className={styles.filter_slide_bar}>
@@ -37,11 +40,15 @@ const FilterBar = () => {
                     <p className={`${styles.filter_text} ${filters.university ? styles.filter_text_select : ""}`}>대학교</p>
                     <img src={iconDown} alt="down" className={filters.university ? styles.filter_icon_select : ""}/>
                 </button>
-                <button className={styles.filter_btn} onClick={() => {
-                console.log("바텀시트 열기 클릭!"); 
+                <button className={`${styles.filter_btn} ${filters.contractType!=="ALL" || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_btn_select : ""}`} 
+                onClick={() => {
+                setSelectedContractState(filters.contractType);
+                setMaintenanceCostState(filters.inMaintenanceCost);
+                setDepositRangeState([filters.depositMin, filters.depositMax]);
+                setMonthlyRentRange([filters.monthlyRentMin, filters.monthlyRentMax]);
                 setBottomSheet({ isOpen: true, type: "contract" }); }}>
-                    <p className={styles.filter_text}>계약 형태/조건</p>
-                    <img src={iconDown} alt="down"/>
+                    <p className={`${styles.filter_text} ${filters.contractType!=="ALL" || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_text_select : ""}`}>계약 형태/조건</p>
+                    <img src={iconDown} alt="down" className={filters.contractType!=="ALL" || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_icon_select : ""}/>
                 </button>
             </div>
         </div>

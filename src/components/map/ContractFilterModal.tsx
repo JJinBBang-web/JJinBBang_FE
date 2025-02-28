@@ -1,8 +1,9 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./ContractFilterModal.module.css"
-import { monthlyRentRangeState, depositRangeState, selectedTypeState, selectedContractState, filterState } from "../../recoil/map/mapRecoilState";
+import { monthlyRentRangeState, depositRangeState, selectedTypeState, selectedContractState, filterState, maintenanceCostState } from "../../recoil/map/mapRecoilState";
 import { useCallback, useEffect } from "react";
 import Slider from "react-slider";
+import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
 
 const contractType = [
     {text : "전체", type : "ALL"},
@@ -14,20 +15,41 @@ const ContractFilterModal = (isOpen: unknown) => {
     const [depositRange, setDepositRange] = useRecoilState(depositRangeState);
     const [monthlyRentRange, setMonthlyRentRange] = useRecoilState(monthlyRentRangeState);
     const [selectedContract, setSelectedContract] = useRecoilState(selectedContractState);
+    const [maintenanceCost, setMaintenanceCost] = useRecoilState(maintenanceCostState);
 
-    const [filter, ] = useRecoilState(filterState);
+    const [filter, setFilters] = useRecoilState(filterState);
+
+    // 모달 상태관리
+    const [,setBottomSheet] = useRecoilState(isSheetOpenState)
 
     // 보증금 값 조정
-    const formatDepositValue = useCallback((value: number) => {
-        return value === 5000 ? value : value * 100;
+    const formatDepositValue = useCallback((value: number|null) => {
+        if(value == null) {
+            return null;
+        } else {
+            return value === 5000 ? value : value * 100;
+        }
     }, []);
     // 월세 값 조정
-    const formatMonthlyRentValue = useCallback((value: number) => {
-        return value === 500 ? value : value <= 40 ? value * 5 : 200 + (value-40) * 10;
+    const formatMonthlyRentValue = useCallback((value: number|null) => {
+        if(value == null) {
+            return null;
+        } else {
+            return value === 500 ? value : value <= 40 ? value * 5 : 200 + (value-40) * 10;
+        }
     }, []);
 
-    const isDepositRangeDefault = depositRange[0] === 0 && depositRange[1] === 5000;
-    const isMonthlyRentRangeDefault = monthlyRentRange[0] === 0 && monthlyRentRange[1] === 500;
+    const isDepositRangeDefault = depositRange[0] === 0 && depositRange[1] === null;
+    const isMonthlyRentRangeDefault = monthlyRentRange[0] === 0 && monthlyRentRange[1] === null;
+
+    const maxDepositValue = 5000;
+    const maxMonthlyRentValue = 500;
+
+    // 보증금 값 처리
+    const adjustedDepositRange = depositRange.map(value => value === null ? maxDepositValue : value) as [number, number];
+
+    // 월세 값 처리
+    const adjustedMonthlyRentRange = monthlyRentRange.map(value => value === null ? maxMonthlyRentValue : value) as [number, number];
 
     // 변수 설정
     const contract = filter.contractType;
@@ -37,10 +59,11 @@ const ContractFilterModal = (isOpen: unknown) => {
     const monthlyRentMax = filter.monthlyRentMax;
     const inMaintenanceCost = filter.inMaintenanceCost;
 
-    // 확인 & 초기화 버튼 활성화
-    const isConfirmActive = selectedContract !== contract;
-    const isResetActive = selectedContract !== "ALL";
+    
 
+    // 확인 & 초기화 버튼 활성화
+    const isConfirmActive = selectedContract !== contract || maintenanceCost !== inMaintenanceCost || !isDepositRangeDefault || !isMonthlyRentRangeDefault;
+    const isResetActive = selectedContract !== "ALL" || maintenanceCost !== false || !isDepositRangeDefault || !isMonthlyRentRangeDefault;
 
     return (
         <div className={styles.content}>
@@ -60,7 +83,10 @@ const ContractFilterModal = (isOpen: unknown) => {
                 <div className={styles.condition_header}>
                     <p>조건</p>
                     <label className={styles.checkbox_wrap}>
-                        <input type="checkbox"/>
+                        <input type="checkbox"
+                            checked={maintenanceCost}
+                            onChange={() => setMaintenanceCost(!maintenanceCost)}
+                        />
                         <span className={styles.checkmark}></span>
                         관리비<span className={styles.text_nbsp}>포함</span>
                     </label>
@@ -79,7 +105,7 @@ const ContractFilterModal = (isOpen: unknown) => {
                             min={0}
                             max={50}
                             step={1}
-                            value={depositRange}
+                            value={adjustedDepositRange}
                             onChange={setDepositRange}
                             renderTrack={(props, state) => (
                                 <div {...props} className={
@@ -121,7 +147,7 @@ const ContractFilterModal = (isOpen: unknown) => {
                             min={0}
                             max={70}
                             step={1}
-                            value={monthlyRentRange}
+                            value={adjustedMonthlyRentRange}
                             onChange={setMonthlyRentRange}
                             renderTrack={(props, state) => (
                                 <div {...props} className={
@@ -151,11 +177,27 @@ const ContractFilterModal = (isOpen: unknown) => {
             </div>
             <div className={styles.btn_content}>
                 <button className={`${styles.reset_btn} ${isResetActive ? styles.reset_btn_active : ""}`} 
-                onClick={() => setSelectedContract("ALL")}
+                onClick={() => {
+                    setSelectedContract("ALL");
+                    setMaintenanceCost(false);
+                    setDepositRange([0, null]);
+                    setMonthlyRentRange([0,null]);
+                }}
                 >초기화</button>
                 <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
                 onClick={() => {
                         if (isConfirmActive) {
+                            setFilters((prev) =>({
+                                ...prev,
+                                contractType : selectedContract,
+                                inMaintenanceCost : maintenanceCost,
+                                depositMin : formatDepositValue(depositRange[0]),
+                                depositMax : depositRange[1] === null ? null : formatDepositValue(depositRange[1]),
+                                monthlyRentMin : formatMonthlyRentValue(monthlyRentRange[0]),
+                                monthlyRentMax : monthlyRentRange[1] === null ? null : formatMonthlyRentValue(monthlyRentRange[1]),
+                            }));
+                            setBottomSheet({ isOpen: false, type: null });
+                            console.log(selectedContract,maintenanceCost, formatDepositValue(depositRange[0]), formatDepositValue(depositRange[1]), formatMonthlyRentValue(monthlyRentRange[0]),formatMonthlyRentValue(monthlyRentRange[1]))
                         }
                     }}
                     >확인</button>

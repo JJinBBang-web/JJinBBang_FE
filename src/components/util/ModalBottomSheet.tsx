@@ -9,7 +9,7 @@ import ReviewTypeFilterModal from "../map/ReviewTypeFilterModal"
 import UniversityFilterModal from "../map/UniversityFilterModal"
 import ContractFilterModal from "../map/ContractFilterModal"
 import JjinFilterModal from "../map/JjinFilterModal"
-import { filterState, housingTypeState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
+import { depositRangeState, filterState, housingTypeState, maintenanceCostState, monthlyRentRangeState, selectedContractState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
 import { selectedUniversityState } from "../../recoil/map/universityRecoilState"
 
 
@@ -18,8 +18,18 @@ const ModalBottomSheet = () => {
     const [isRendered, setIsRendered] = useState(false);
     const [,setSelectedType] = useRecoilState(selectedTypeState);
     const [, setSelectedTypeNum] = useRecoilState(selectedTypeNumState);
+    const [, setSelectedContractState] = useRecoilState(selectedContractState);
+    const [, setMaintenanceCostState] = useRecoilState(maintenanceCostState);
+    const [, setDepositRangeState] = useRecoilState(depositRangeState);
+    const [, setMonthlyRentRange] = useRecoilState(monthlyRentRangeState);
     const housingType = useRecoilValue(housingTypeState);
     const university = useRecoilValue(filterState).university;
+    const contractType = useRecoilValue(filterState).contractType;
+    const depositMin = useRecoilValue(filterState).depositMin;
+    const depositMax = useRecoilValue(filterState).depositMax;
+    const monthlyRentMin = useRecoilValue(filterState).monthlyRentMin;
+    const monthlyRentMax = useRecoilValue(filterState).monthlyRentMax;
+    const inMaintenanceCost = useRecoilValue(filterState).inMaintenanceCost;
 
     console.log("isOpen:", isOpen, "type:", type); // 상태 변경 확인
 
@@ -41,6 +51,12 @@ const ModalBottomSheet = () => {
         } 
         if (type == "university") {
             setSelectedTypeNum(university);
+        }
+        if (type == "contract") {
+            setSelectedContractState(contractType);
+            setDepositRangeState([depositMin,depositMax]);
+            setMonthlyRentRange([monthlyRentMin,monthlyRentMax]);
+            setMaintenanceCostState(inMaintenanceCost);
         }
     };
     
