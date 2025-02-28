@@ -11,7 +11,7 @@ const contractType = [
     {text : "전세", type : "DEPOSIT_RENT"},
 ]
 
-const ContractFilterModal = (isOpen: unknown) => {
+const ContractFilterModal = () => {
     const [depositRange, setDepositRange] = useRecoilState(depositRangeState);
     const [monthlyRentRange, setMonthlyRentRange] = useRecoilState(monthlyRentRangeState);
     const [selectedContract, setSelectedContract] = useRecoilState(selectedContractState);
@@ -23,27 +23,22 @@ const ContractFilterModal = (isOpen: unknown) => {
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
 
     // 보증금 값 조정
-    const formatDepositValue = useCallback((value: number|null) => {
-        if(value == null) {
-            return null;
-        } else {
-            return value === 5000 ? value : value * 100;
-        }
-    }, []);
-    // 월세 값 조정
-    const formatMonthlyRentValue = useCallback((value: number|null) => {
-        if(value == null) {
-            return null;
-        } else {
-            return value === 500 ? value : value <= 40 ? value * 5 : 200 + (value-40) * 10;
-        }
-    }, []);
+    const formatDepositValue = (value: number | null) =>
+        value == null ? null : value === 5000 ? value : value * 100;
+      
+      const formatMonthlyRentValue = (value: number | null) =>
+        value == null ? null : value === 500 ? value : value <= 40 ? value * 5 : 200 + (value - 40) * 10;
+      
 
     const isDepositRangeDefault = depositRange[0] === 0 && depositRange[1] === null;
     const isMonthlyRentRangeDefault = monthlyRentRange[0] === 0 && monthlyRentRange[1] === null;
 
     const maxDepositValue = 5000;
     const maxMonthlyRentValue = 500;
+
+    // TODO : 백엔드로 넘길 때 -> format 처리
+    console.log(depositRange, monthlyRentRange);
+ 
 
     // 보증금 값 처리
     const adjustedDepositRange = depositRange.map(value => value === null ? maxDepositValue : value) as [number, number];
@@ -60,10 +55,9 @@ const ContractFilterModal = (isOpen: unknown) => {
     const inMaintenanceCost = filter.inMaintenanceCost;
 
     
-
     // 확인 & 초기화 버튼 활성화
-    const isConfirmActive = selectedContract !== contract || maintenanceCost !== inMaintenanceCost || !isDepositRangeDefault || !isMonthlyRentRangeDefault;
-    const isResetActive = selectedContract !== "ALL" || maintenanceCost !== false || !isDepositRangeDefault || !isMonthlyRentRangeDefault;
+    const isConfirmActive = selectedContract !== contract || maintenanceCost !== inMaintenanceCost || JSON.stringify(depositRange) !== JSON.stringify([depositMin, depositMax]) || JSON.stringify(monthlyRentRange) !== JSON.stringify([monthlyRentMin, monthlyRentMax]);
+    const isResetActive = selectedContract !== "ALL" || maintenanceCost !== false || JSON.stringify(depositRange) !== JSON.stringify([0, null]) || JSON.stringify(monthlyRentRange) !== JSON.stringify([0, null]);
 
     return (
         <div className={styles.content}>
@@ -191,10 +185,10 @@ const ContractFilterModal = (isOpen: unknown) => {
                                 ...prev,
                                 contractType : selectedContract,
                                 inMaintenanceCost : maintenanceCost,
-                                depositMin : formatDepositValue(depositRange[0]),
-                                depositMax : depositRange[1] === null ? null : formatDepositValue(depositRange[1]),
-                                monthlyRentMin : formatMonthlyRentValue(monthlyRentRange[0]),
-                                monthlyRentMax : monthlyRentRange[1] === null ? null : formatMonthlyRentValue(monthlyRentRange[1]),
+                                depositMin : depositRange[0],
+                                depositMax : depositRange[1] === null ? null : depositRange[1],
+                                monthlyRentMin : monthlyRentRange[0],
+                                monthlyRentMax : monthlyRentRange[1] === null ? null : monthlyRentRange[1],
                             }));
                             setBottomSheet({ isOpen: false, type: null });
                             console.log(selectedContract,maintenanceCost, formatDepositValue(depositRange[0]), formatDepositValue(depositRange[1]), formatMonthlyRentValue(monthlyRentRange[0]),formatMonthlyRentValue(monthlyRentRange[1]))
