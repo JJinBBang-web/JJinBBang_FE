@@ -29,6 +29,12 @@ export const selectedTypeNumState = atom<number | null> ({
     default: null,
 })
 
+// 임시 변경 상태 (찐필터)
+export const selectedJjinFilterState = atom<[string, string] | null>({
+    key : "selectedJjinFilterState",
+    default : null,
+})
+
 // 검색 키워드 상태
 export const searchKeywordState = atom<string>({
     key: "searchKeywordState",
@@ -45,6 +51,7 @@ interface FilterStateType {
     monthlyRentMin : number | null;
     monthlyRentMax : number | null;
     inMaintenanceCost : boolean | undefined;
+    reviewKeyword : [string, string] | null;
 }
 
 // 필터 상태
@@ -59,6 +66,7 @@ export const filterState = atom<FilterStateType>({
         monthlyRentMin : 0,
         monthlyRentMax : null,
         inMaintenanceCost : false,
+        reviewKeyword : null,
       },
 })
 

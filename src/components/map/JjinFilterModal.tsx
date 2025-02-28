@@ -4,9 +4,15 @@ import styles from "./JjinFilterModal.module.css";
 import iconDown from "../../assets/image/iconDown.svg"
 import iconUp from "../../assets/image/iconUp.svg"
 import { useRef, useState } from "react";
+import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
+import { selectedJjinFilterState } from "../../recoil/map/mapRecoilState";
 
 const JjinFilterModal = () => {
     const [filters, setFilters] = useRecoilState(JjinFilterState);
+    const [selectedJjinFilter, setSelectedJjinFilter] = useRecoilState(selectedJjinFilterState);
+
+    // 모달 상태관리
+    const [,setBottomSheet] = useRecoilState(isSheetOpenState)
     
     // 스크롤 상태 관리
     const [scrolled, setScrolled] = useState<{[key:number]:Boolean}>({});
@@ -37,6 +43,11 @@ const JjinFilterModal = () => {
             }));
         }
     };
+
+    // 확인버튼 활성화 조건
+    // const isConfirmActive = selectedTypeNum !== university.university;
+    // // 초기화버튼 활성화 조건
+    // const isResetActive = selectedTypeNum !== null;
 
     return (
         <div className={styles.content}>
