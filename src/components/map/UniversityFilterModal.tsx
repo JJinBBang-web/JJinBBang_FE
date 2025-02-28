@@ -29,7 +29,6 @@ const UniversityFilterModal = () => {
 
     // 확인버튼 활성화 조건
     const isConfirmActive = selectedTypeNum !== university.university;
-    console.log(isConfirmActive);
     // 초기화버튼 활성화 조건
     const isResetActive = selectedTypeNum !== null;
 

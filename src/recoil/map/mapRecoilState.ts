@@ -6,13 +6,19 @@ export const housingTypeState = atom<string | null> ({
     default: "전체",
 })
 
-// 임시 변경 상태
+// 임시 변경 상태 (하우징)
 export const selectedTypeState = atom<string | null> ({
     key: "selectedTypeState",
     default: null,
 })
 
-// 임시 변경 상태 (num)
+// 임시 변경 상태 (하우징)
+export const selectedContractState = atom<string> ({
+    key: "selectedContractState",
+    default: "ALL",
+})
+
+// 임시 변경 상태 (대학교)
 export const selectedTypeNumState = atom<number | null> ({
     key: "selectedTypeNumState",
     default: null,
@@ -29,6 +35,11 @@ interface FilterStateType {
     reviewType: string;
     university: number | null;
     contractType: string;
+    depositMin : number;
+    depositMax : number | null;
+    monthlyRentMin : number;
+    monthlyRentMax : number | null;
+    inMaintenanceCost : Boolean;
 }
 
 // 필터 상태
@@ -37,13 +48,18 @@ export const filterState = atom<FilterStateType>({
     default :  {
         reviewType: "후기별",
         university: null,
-        contractType: "전체",
+        contractType: "ALL",
+        depositMin : 0,
+        depositMax : null,
+        monthlyRentMin : 0,
+        monthlyRentMax : null,
+        inMaintenanceCost : false,
       },
 })
 
 // 계약/가격 조건 필터 상태
-export const securityRangeState = atom<[number, number]>({
-    key : "securityRangeState",
+export const depositRangeState = atom<[number, number]>({
+    key : "depositRangeState",
     default : [0, 5000],
 })
 

@@ -1,30 +1,58 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./ContractFilterModal.module.css"
-import { monthlyRentRangeState, securityRangeState } from "../../recoil/map/mapRecoilState";
+import { monthlyRentRangeState, depositRangeState, selectedTypeState, selectedContractState, filterState } from "../../recoil/map/mapRecoilState";
 import { useCallback, useEffect } from "react";
 import Slider from "react-slider";
 
+const contractType = [
+    {text : "전체", type : "ALL"},
+    {text : "월세", type : "MONTHLY_RENT"},
+    {text : "전세", type : "DEPOSIT_RENT"},
+]
 
-const ContractFilterModal = () => {
-    const [securityRange, setSecurityRange] = useRecoilState(securityRangeState);
+const ContractFilterModal = (isOpen: unknown) => {
+    const [depositRange, setDepositRange] = useRecoilState(depositRangeState);
     const [monthlyRentRange, setMonthlyRentRange] = useRecoilState(monthlyRentRangeState);
+    const [selectedContract, setSelectedContract] = useRecoilState(selectedContractState);
+
+    const [filter, ] = useRecoilState(filterState);
 
     // 보증금 값 조정
-    const formatSecurityValue = useCallback((value: number) => {
+    const formatDepositValue = useCallback((value: number) => {
         return value === 5000 ? value : value * 100;
     }, []);
     // 월세 값 조정
     const formatMonthlyRentValue = useCallback((value: number) => {
         return value === 500 ? value : value <= 40 ? value * 5 : 200 + (value-40) * 10;
     }, []);
-    
+
+    const isDepositRangeDefault = depositRange[0] === 0 && depositRange[1] === 5000;
+    const isMonthlyRentRangeDefault = monthlyRentRange[0] === 0 && monthlyRentRange[1] === 500;
+
+    // 변수 설정
+    const contract = filter.contractType;
+    const depositMin = filter.depositMin;
+    const depositMax = filter.depositMax;
+    const monthlyRentMin = filter.monthlyRentMin;
+    const monthlyRentMax = filter.monthlyRentMax;
+    const inMaintenanceCost = filter.inMaintenanceCost;
+
+    // 확인 & 초기화 버튼 활성화
+    const isConfirmActive = selectedContract !== contract;
+    const isResetActive = selectedContract !== "ALL";
+
+
     return (
         <div className={styles.content}>
             {/* 계약형태 */}
             <div className={styles.contract_wrap}>
-                <button className={`${styles.contract_btn} ${styles.selected_btn}`}>전체</button>
-                <button className={styles.contract_btn}>월세</button>
-                <button className={styles.contract_btn}>전세</button>
+                {contractType.map((con) => 
+                    <button key={con.type} className={`${styles.contract_btn} ${ selectedContract === con.type ? styles.selected_btn : ""}`}
+                    onClick={()=> {
+                        setSelectedContract(con.type);
+                    }}
+                    >{con.text}</button>
+                )}
             </div>
             <div className={styles.divider}></div>
             {/* 계약조건 */}
@@ -40,15 +68,19 @@ const ContractFilterModal = () => {
                 <div className={styles.condition_content}>
                     <div className={styles.content_wrap}>
                         <p>보증금(전세금)</p>
-                        <p>{formatSecurityValue(securityRange[1])}만원<span className={styles.text_nbsp}>이하</span></p>
+                        {
+                            isDepositRangeDefault
+                            ? <p>전체</p>
+                            : <p>{formatDepositValue(depositRange[0])}만원<span>~</span>{formatDepositValue(depositRange[1])}만원</p>
+                        }
                     </div>
                     <div className={styles.content_range}>
                         <Slider className={styles.slider}
                             min={0}
                             max={50}
                             step={1}
-                            value={securityRange}
-                            onChange={setSecurityRange}
+                            value={depositRange}
+                            onChange={setDepositRange}
                             renderTrack={(props, state) => (
                                 <div {...props} className={
                                     state.index === 0 || state.index === 2
@@ -78,7 +110,11 @@ const ContractFilterModal = () => {
                 <div className={styles.condition_content}>
                     <div className={styles.content_wrap}>
                         <p>월세</p>
-                        <p>{formatMonthlyRentValue(monthlyRentRange[1])}만원<span className={styles.text_nbsp}>이하</span></p>
+                        {
+                            isMonthlyRentRangeDefault
+                            ? <p>전체</p>
+                            : <p>{formatMonthlyRentValue(monthlyRentRange[0])}만원<span>~</span>{formatMonthlyRentValue(monthlyRentRange[1])}만원</p>
+                        }
                     </div>
                     <div className={styles.content_range}>
                         <Slider className={styles.slider}
@@ -114,16 +150,14 @@ const ContractFilterModal = () => {
                 </div>
             </div>
             <div className={styles.btn_content}>
-                <button className={`${styles.reset_btn}`} 
-                // onClick={() => setSelectedType("전체")}
+                <button className={`${styles.reset_btn} ${isResetActive ? styles.reset_btn_active : ""}`} 
+                onClick={() => setSelectedContract("ALL")}
                 >초기화</button>
-                <button className={`${styles.confirm_btn}`} 
-                // onClick={() => {
-                //         if (isConfirmActive) {
-                //             setHousingType(selectedType);
-                //             setBottomSheet({ isOpen: false, type: null }); 
-                //         }
-                //     }}
+                <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
+                onClick={() => {
+                        if (isConfirmActive) {
+                        }
+                    }}
                     >확인</button>
             </div>
         </div>
