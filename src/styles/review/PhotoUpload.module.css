@@ -1,20 +1,16 @@
 /* src/styles/review/PhotoUpload.module.css */
 .container {
   display: flex;
-  padding: 0 16px;
-  background-color: var(--white);
-}
-
-.container {
-  display: flex;
   flex-direction: column;
-  padding: 0 16px;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 112px);
+  background-color: var(--white);
+  overflow: hidden;
 }
 
 .header {
   position: relative;
-  padding-top: 12px;
+  padding: 24px 0 16px;
+  background-color: var(--white);
 }
 
 .closeButton {
@@ -32,7 +28,7 @@
   height: 4px;
   background-color: var(--color-gray20);
   border-radius: 2px;
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 .progressFill {
@@ -44,15 +40,29 @@
 
 .title {
   font-size: 22px;
-  font-weight: 700;
-  color: var(--black);
-  margin: 32px 0 32px;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  margin: 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .subtitle {
   font-size: 16px;
   color: var(--color-gray60);
-  margin-bottom: 12px;
+  margin: 8px 0 12px 4px;
+}
+
+.subtitle span {
+  color: var(--color-gray40);
+}
+
+.scrollContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 16px;
 }
 
 .photoGrid {
@@ -81,10 +91,9 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 20x;
-  height: 20px;
+  width: 24x;
+  height: 24px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 1, 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,7 +110,7 @@
 
 .addPhotoBox {
   aspect-ratio: 1;
-  border: 1px dashed var(--color-gray20);
+  border: 1.5px solid var(--color-gray20);
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -120,7 +129,7 @@
   font-size: 14px;
   color: var(--color-gray40);
   text-align: left;
-  margin-top: 4px;
+  margin: 4px 0 0 4px;
 }
 
 .footer {
@@ -129,17 +138,17 @@
   left: 0;
   right: 0;
   display: flex;
+  gap: 12px;
   max-width: 393px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 12px 16px 44px;
   background-color: var(--white);
-  border-top: 1px solid var(--color-gray20);
 }
 
 .prevButton,
 .nextButton {
   flex: 1;
-  height: 52px;
+  height: 56px;
   border-radius: 16px;
   font-size: 16px;
   font-weight: 500;
@@ -148,20 +157,18 @@
 
 .prevButton {
   background-color: var(--color-gray20);
-  border: 1px solid var(--color-gray20);
   color: var(--color-gray60);
-  margin-right: 8px;
+  border: none;
 }
 
 .nextButton {
-  background-color: var(--primary-color);
-  border: none;
+  background-color: var(--color-gray40);
   color: var(--white);
+  border: none;
 }
 
 .nextButton.enabled {
   background-color: var(--primary-color);
-  opacity: 1;
 }
 
 .nextButton:disabled {

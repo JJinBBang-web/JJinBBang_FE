@@ -85,42 +85,46 @@ const PhotoUploadPage: React.FC = () => {
 
         <h1 className={styles.title}>직접 촬영한 찐거주 사진을 올려주세요!</h1>
 
-        <div className={styles.subtitle}>찐거주 사진 (2장 이상)</div>
-
-        <div className={styles.photoGrid}>
-          {photos.map((photo, index) => (
-            <div key={index} className={styles.photoItem}>
-              <img
-                src={photo}
-                alt={`uploaded ${index}`}
-                className={styles.photo}
-              />
-              <button
-                className={styles.removeButton}
-                onClick={() => handleRemovePhoto(index)}
-              >
-                <img src={closeImageIcon} alt="remove" />
-              </button>
-            </div>
-          ))}
-
-          {photos.length < 20 && (
-            <div className={styles.addPhotoBox} onClick={handleAddPhoto}>
-              <img src={plusIcon} alt="add" className={styles.plusIcon} />
-            </div>
-          )}
-
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
+        <div className={styles.subtitle}>
+          찐거주 사진 &nbsp;
+          <span>(2장 이상)</span>
         </div>
 
-        <div className={styles.photoCount}>{photos.length}/20장</div>
+        <div className={styles.scrollContainer}>
+          <div className={styles.photoGrid}>
+            {photos.map((photo, index) => (
+              <div key={index} className={styles.photoItem}>
+                <img
+                  src={photo}
+                  alt={`uploaded ${index}`}
+                  className={styles.photo}
+                />
+                <button
+                  className={styles.removeButton}
+                  onClick={() => handleRemovePhoto(index)}
+                >
+                  <img src={closeImageIcon} alt="remove" />
+                </button>
+              </div>
+            ))}
+
+            {photos.length < 20 && (
+              <div className={styles.addPhotoBox} onClick={handleAddPhoto}>
+                <img src={plusIcon} alt="add" className={styles.plusIcon} />
+              </div>
+            )}
+
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+            />
+          </div>{' '}
+          <div className={styles.photoCount}>{photos.length}/20장</div>
+        </div>
       </div>
 
       <footer className={styles.footer}>
