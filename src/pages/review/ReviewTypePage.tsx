@@ -16,7 +16,7 @@ const ReviewTypePage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedType) {
-      navigate('/review/address', {
+      navigate('/review/input-address', {
         state: {
           ...locationState,
           buildingType: selectedType,
