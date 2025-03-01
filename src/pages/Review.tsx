@@ -1,6 +1,10 @@
+import styles from './Review.module.css'
+
 const Review: React.FC = () => {
     return (
-        <div></div>
+        <div className={styles.content}>
+            
+        </div>
     )
 }
 
