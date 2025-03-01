@@ -1,3 +1,4 @@
+// src/components/review/StarRating.tsx
 import React, { useState } from 'react';
 import styles from '../../styles/review/StarRating.module.css';
 
@@ -40,8 +41,6 @@ const StarRating: React.FC<StarRatingProps> = ({
               height={size}
               viewBox="0 0 24 24"
               fill={starValue <= (hover || rating) ? color : 'none'}
-              stroke={color}
-              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >

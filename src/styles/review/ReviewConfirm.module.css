@@ -1,3 +1,4 @@
+/* src/styles/review/ReviewConfirm.module.css */
 .header {
   padding: 16px;
   display: flex;
@@ -33,12 +34,12 @@
   margin-bottom: 24px;
   overflow-y: auto;
   flex: 1;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .infoContainer::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
 .infoItem {
@@ -103,13 +104,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
+  align-items: flex-start;
   margin: -2px;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  background-color: var(--color-gray20);
+  background-color: #dadee8;
   padding: 0 8px;
   border-radius: 4px;
   font-size: 14px;
@@ -125,28 +127,27 @@
   margin-right: 4px;
 }
 
+.reviewTextContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .reviewText {
   max-height: 100px;
   overflow-y: auto;
   text-align: left;
-  position: relative;
   font-size: 14px;
   color: #484e58;
-  padding-right: 24px;
   line-height: 1.5;
-  width: 100%;
+  flex: 1;
 }
 
-.scrollIcon {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding-bottom: 4px;
-}
-
-.ArrowIcon {
+.arrowIcon {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .buttonContainer {
@@ -178,29 +179,120 @@
 }
 
 /* Modal Styles */
-.ratingModal {
+.ratingModal,
+.cancelModal,
+.confirmModal {
   width: 100%;
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
-.ratingTitle {
+/* src/styles/review/ReviewConfirm.module.css */
+
+/* 모달 관련 스타일 수정 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
+}
+
+.modalContainer {
+  width: 100%;
+  max-width: 393px;
+  background-color: white;
+  border-radius: 24px 24px 0 0;
+  padding-bottom: 20px;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modalHandle {
+  width: 60px;
+  height: 4px;
+  background-color: #dadee8;
+  border-radius: 2px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.reviewTextContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.starsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.starIcon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.starIcon:hover {
+  transform: scale(1.1);
+}
+
+.ratingTitle,
+.modalTitle {
   font-size: 22px;
   font-weight: 600;
+  margin-top: 20px;
   margin-bottom: 8px;
 }
 
-.ratingSubtitle {
+.ratingSubtitle,
+.modalSubtitle {
   font-size: 14px;
   color: #7d859a;
   text-align: center;
   margin-bottom: 24px;
 }
 
+.starsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.starIcon {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
 .uploadButton {
   width: 100%;
+  max-width: 320px;
   background-color: #ff6b3f;
   border: none;
   border-radius: 16px;
@@ -209,32 +301,12 @@
   color: #ffffff;
   cursor: pointer;
   margin-top: 32px;
+  font-size: 14px;
 }
 
 .uploadButton:disabled {
   background-color: #dadee8;
   cursor: not-allowed;
-}
-
-.cancelModal,
-.confirmModal {
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.modalTitle {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.modalSubtitle {
-  font-size: 14px;
-  color: #7d859a;
-  text-align: center;
-  margin-bottom: 24px;
 }
 
 .characterImage {
@@ -246,6 +318,7 @@
 .modalButtons {
   display: flex;
   width: 100%;
+  max-width: 320px;
   gap: 12px;
   margin-top: 16px;
 }

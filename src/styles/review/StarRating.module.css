@@ -1,4 +1,10 @@
+/* src/styles/review/StarRating.module.css */
 .starRating {
+  width: 100%;
+  max-width: 360px;
+  height: 20vh;
+  background-color: var(--white);
+  border-radius: 24px 24px 0 0;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -16,9 +22,9 @@
 }
 
 .filled svg {
-  fill: var(--primary-color, #ff6b3f);
+  fill: var(--primary-color);
 }
 
 .empty svg {
-  fill: #dadee8;
+  fill: var(--color-gray20);
 }

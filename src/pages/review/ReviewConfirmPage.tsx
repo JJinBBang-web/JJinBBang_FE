@@ -1,14 +1,16 @@
+// src/pages/review/ReviewConfirmPage.tsx
+// ReviewConfirmPage.tsx 전체 코드
 import { useNavigate, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
 import { JjinFilterState } from '../../recoil/util/filterRecoilState';
 import styles from '../../styles/review/ReviewConfirm.module.css';
-import Modal from '../../components/review/Modal';
-import StarRating from '../../components/review/StarRating';
 import characterIcon from '../../assets/image/characterIcon.svg';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
+import starFilledIcon from '../../assets/image/starIconOnRed.svg';
+import starEmptyIcon from '../../assets/image/starIconOff.svg';
 
 interface LocationState {
   address?: {
@@ -29,6 +31,7 @@ interface LocationState {
   disadvantages?: string[];
   content?: string;
   from?: string;
+  housingType?: string; // 추가된 타입
 }
 
 const ReviewConfirmPage: React.FC = () => {
@@ -41,9 +44,49 @@ const ReviewConfirmPage: React.FC = () => {
 
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // 컴포넌트 마운트 시 저장된 상태 로드
+  useEffect(() => {
+    const savedState = localStorage.getItem('reviewState');
+    if (savedState) {
+      setReview((prev) => ({ ...prev, ...JSON.parse(savedState) }));
+    }
+  }, []);
+
+  // 데이터 로딩 로직
+  useEffect(() => {
+    console.log('현재 review 상태:', review);
+    console.log('Location state:', locationState);
+
+    if (locationState && Object.keys(locationState).length > 0) {
+      setReview((prev) => ({
+        ...prev,
+        housingType: locationState.housingType || prev.housingType || '',
+        pros: locationState.advantages || prev.pros || [],
+        cons: locationState.disadvantages || prev.cons || [],
+        content: locationState.content || prev.content || '',
+        images: locationState.photos || prev.images || [],
+        address: locationState.address?.roadAddress || prev.address || '',
+        addressDetail:
+          locationState.address?.jibunAddress || prev.addressDetail || '',
+        detailedAddress: locationState.buildingName
+          ? `${locationState.buildingName} ${locationState.floor || '저층'}`
+          : prev.detailedAddress || '',
+        contractType: locationState.paymentType || prev.contractType || '',
+        deposit: locationState.priceData?.deposit || prev.deposit || 0,
+        monthlyRent:
+          locationState.priceData?.monthlyRent !== undefined
+            ? locationState.priceData.monthlyRent
+            : prev.monthlyRent || 0,
+        managementFee:
+          locationState.priceData?.managementFee || prev.managementFee || 0,
+      }));
+    }
+  }, [locationState, setReview]);
 
   const getIconFromLabel = (label: string): string => {
     let iconSrc = '';
@@ -57,55 +100,10 @@ const ReviewConfirmPage: React.FC = () => {
     return iconSrc;
   };
 
-  useEffect(() => {
-    if (locationState && Object.keys(locationState).length > 0) {
-      setReview((prev) => ({
-        ...prev,
-        pros: locationState.advantages || prev.pros,
-        cons: locationState.disadvantages || prev.cons,
-        content: locationState.content || prev.content,
-        images: locationState.photos || prev.images,
-      }));
-    }
-
-    if (locationState.address) {
-      setReview((prev) => ({
-        ...prev,
-        address: locationState.address?.roadAddress || prev.address,
-        addressDetail:
-          locationState.address?.jibunAddress || prev.addressDetail,
-      }));
-    }
-
-    if (locationState.buildingName) {
-      setReview((prev) => ({
-        ...prev,
-        detailedAddress: `${locationState.buildingName} ${
-          locationState.floor || '저층'
-        }`,
-      }));
-    }
-
-    if (locationState.paymentType) {
-      setReview((prev) => ({
-        ...prev,
-        contractType: locationState.paymentType || prev.contractType,
-      }));
-    }
-
-    if (locationState.priceData) {
-      setReview((prev) => ({
-        ...prev,
-        deposit: locationState.priceData?.deposit || prev.deposit,
-        monthlyRent:
-          locationState.priceData?.monthlyRent !== undefined
-            ? locationState.priceData.monthlyRent
-            : prev.monthlyRent,
-        managementFee:
-          locationState.priceData?.managementFee || prev.managementFee,
-      }));
-    }
-  }, [locationState, setReview]);
+  const handleItemClick = (navigationFunction: () => void) => {
+    localStorage.setItem('reviewState', JSON.stringify(review));
+    navigationFunction();
+  };
 
   const handleBack = () => {
     navigate(-1);
@@ -277,17 +275,23 @@ const ReviewConfirmPage: React.FC = () => {
         </h1>
 
         <div className={styles.infoContainer}>
-          <div className={styles.infoItem} onClick={navigateToHousingType}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToHousingType)}
+          >
             <span className={styles.label}>찐빵 유형</span>
             <div className={styles.value}>
               <span className={styles.valueText}>
                 {review.housingType || ''}
               </span>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToAddress}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToAddress)}
+          >
             <span className={styles.label}>주소</span>
             <div className={styles.value}>
               <div>
@@ -296,31 +300,40 @@ const ReviewConfirmPage: React.FC = () => {
                   {review.addressDetail || ''}
                 </span>
               </div>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToDetailedAddress}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToDetailedAddress)}
+          >
             <span className={styles.label}>상세 주소</span>
             <div className={styles.value}>
               <span className={styles.valueText}>
                 {review.detailedAddress || ''}
               </span>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToContractType}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToContractType)}
+          >
             <span className={styles.label}>계약 형태</span>
             <div className={styles.value}>
               <span className={styles.valueText}>
                 {review.contractType || ''}
               </span>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToContractDetails}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToContractDetails)}
+          >
             <span className={styles.label}>계약 조건</span>
             <div className={styles.value}>
               <div className={styles.contractDetails}>
@@ -338,11 +351,14 @@ const ReviewConfirmPage: React.FC = () => {
                     : ''}
                 </span>
               </div>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToPros}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToPros)}
+          >
             <span className={styles.label}>장점</span>
             <div className={styles.value}>
               <div className={styles.tagsContainer}>
@@ -350,11 +366,14 @@ const ReviewConfirmPage: React.FC = () => {
                   {renderTags(review.pros, true)}
                 </div>
               </div>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToCons}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToCons)}
+          >
             <span className={styles.label}>단점</span>
             <div className={styles.value}>
               <div className={styles.tagsContainer}>
@@ -362,21 +381,18 @@ const ReviewConfirmPage: React.FC = () => {
                   {renderTags(review.cons, false)}
                 </div>
               </div>
-              <img src={ArrowIcon} alt="arrow" />
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
 
-          <div className={styles.infoItem} onClick={navigateToContent}>
+          <div
+            className={styles.infoItem}
+            onClick={() => handleItemClick(navigateToContent)}
+          >
             <span className={styles.label}>글 후기</span>
-            <div className={styles.reviewText}>
-              {review.content || ''}
-              <div className={styles.scrollIcon}>
-                <img
-                  src={ArrowIcon}
-                  alt="scroll"
-                  className={styles.ArrowIcon}
-                />
-              </div>
+            <div className={styles.reviewTextContainer}>
+              <div className={styles.reviewText}>{review.content || ''}</div>
+              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
           </div>
         </div>
@@ -392,80 +408,118 @@ const ReviewConfirmPage: React.FC = () => {
       </div>
 
       {showRatingModal && (
-        <Modal onClose={() => setShowRatingModal(false)}>
-          <div className={styles.ratingModal}>
-            <h2 className={styles.ratingTitle}>찐빵을 업로드 할까요?</h2>
-            <p className={styles.ratingSubtitle}>
-              작성해 주신 찐빵의 총점을 매겨 찐빵을 업로드해 보세요!
-            </p>
-            <StarRating
-              rating={rating}
-              onRate={setRating}
-              size={40}
-              color="#FF6B3F"
-            />
-            <button
-              className={styles.uploadButton}
-              onClick={handleSubmitRating}
-              disabled={rating === 0}
-            >
-              업로드
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {showCancelModal && (
-        <Modal onClose={() => setShowCancelModal(false)}>
-          <div className={styles.cancelModal}>
-            <h2 className={styles.modalTitle}>작성을 중단할까요?</h2>
-            <p className={styles.modalSubtitle}>
-              지금까지 작성해 주신 내용은 저장되지 않아요!
-            </p>
-            <img
-              src={characterIcon}
-              alt="찐빵 캐릭터"
-              className={styles.characterImage}
-            />
-            <div className={styles.modalButtons}>
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowRatingModal(false)}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHandle}></div>
+            <div className={styles.ratingModal}>
+              <h2 className={styles.ratingTitle}>찐빵을 업로드 할까요?</h2>
+              <p className={styles.ratingSubtitle}>
+                작성해 주신 찐빵의 총점을 매겨 찐빵을 업로드해 보세요!
+              </p>
+              <div className={styles.starsContainer}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <img
+                    key={star}
+                    src={
+                      star <= (hoveredRating || rating)
+                        ? starFilledIcon
+                        : starEmptyIcon
+                    }
+                    alt={star <= rating ? '채워진 별' : '빈 별'}
+                    className={styles.starIcon}
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoveredRating(star)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                  />
+                ))}
+              </div>
               <button
-                className={styles.cancelButton}
-                onClick={() => setShowCancelModal(false)}
+                className={styles.uploadButton}
+                onClick={handleSubmitRating}
+                disabled={rating === 0}
               >
-                이전
-              </button>
-              <button
-                className={styles.confirmButton}
-                onClick={() => navigate('/')}
-              >
-                중단
+                업로드
               </button>
             </div>
           </div>
-        </Modal>
+        </div>
+      )}
+
+      {showCancelModal && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowCancelModal(false)}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHandle}></div>
+            <div className={styles.cancelModal}>
+              <h2 className={styles.modalTitle}>작성을 중단할까요?</h2>
+              <p className={styles.modalSubtitle}>
+                지금까지 작성해 주신 내용은 저장되지 않아요!
+              </p>
+              <img
+                src={characterIcon}
+                alt="찐빵 캐릭터"
+                className={styles.characterImage}
+              />
+              <div className={styles.modalButtons}>
+                <button
+                  className={styles.cancelButton}
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  이전
+                </button>
+                <button
+                  className={styles.confirmButton}
+                  onClick={() => navigate('/')}
+                >
+                  중단
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {showConfirmModal && (
-        <Modal onClose={() => !isSubmitting && setShowConfirmModal(false)}>
-          <div className={styles.confirmModal}>
-            <h2 className={styles.modalTitle}>찐빵 업로드 완료</h2>
-            <p className={styles.modalSubtitle}>
-              나의 찐빵에서 내가 작성한 찐빵을 확인하세요!
-            </p>
-            <img
-              src={characterIcon}
-              alt="찐빵 캐릭터"
-              className={styles.characterImage}
-            />
-            <button
-              className={styles.confirmButton}
-              onClick={handleConfirmSubmit}
-              disabled={isSubmitting}
-            >
-              확인
-            </button>
+        <div
+          className={styles.modalOverlay}
+          onClick={() => !isSubmitting && setShowConfirmModal(false)}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHandle}></div>
+            <div className={styles.confirmModal}>
+              <h2 className={styles.modalTitle}>찐빵 업로드 완료</h2>
+              <p className={styles.modalSubtitle}>
+                나의 찐빵에서 내가 작성한 찐빵을 확인하세요!
+              </p>
+              <img
+                src={characterIcon}
+                alt="찐빵 캐릭터"
+                className={styles.characterImage}
+              />
+              <button
+                className={styles.confirmButton}
+                onClick={handleConfirmSubmit}
+                disabled={isSubmitting}
+              >
+                확인
+              </button>
+            </div>
           </div>
-        </Modal>
+        </div>
       )}
     </div>
   );
