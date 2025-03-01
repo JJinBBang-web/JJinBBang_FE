@@ -1,38 +1,28 @@
-/* ✅ 헤더 */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* src/styles/review/AddressSearch.module.css */
+.container {
   width: 100%;
-  padding: 16px;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-  position: relative;
-}
-
-.backButton {
-  position: absolute;
-  left: 16px;
-  background: none;
-  border: none;
-  cursor: pointer;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
-  font-size: 18px;
+  padding: 36px 0 18px;
+  font-size: 22px;
   font-weight: bold;
+  text-align: center;
+  background-color: var(--white);
 }
 
 .postcodeBox {
-  flex: 1;
+  margin: 0 auto;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background-color: var(--white);
+  overflow: hidden;
+  flex: 1;
 }
 
 .postcodeContainer {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 }
