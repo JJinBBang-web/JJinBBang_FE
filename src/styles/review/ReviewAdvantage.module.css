@@ -3,30 +3,21 @@
   max-width: 393px;
   width: 100%;
   height: 100vh;
-  margin-left: auto;
-  margin-right: auto;
   overflow-y: auto;
 }
 
 .container {
-  width: 100%;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  height: calc(100vh - 112px);
+  background-color: var(--white);
+  overflow: hidden;
 }
 
 .header {
   position: relative;
-  max-width: 393px;
-  width: 100%;
-  margin: auto;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  padding: 24px 0 16px;
   background-color: var(--white);
-  display: flex;
-  flex-direction: column;
 }
 
 .closeButton {
@@ -44,7 +35,7 @@
   height: 4px;
   background-color: var(--color-gray20);
   border-radius: 2px;
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 .progressFill {
@@ -54,51 +45,33 @@
   border-radius: 2px;
 }
 
-.photo_preview {
-  padding: 16px;
-  background-color: var(--white);
-  margin-bottom: 12px;
-}
-
-.preview_image {
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  margin: 24px 0 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.content {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-}
-
-.title_area {
-  margin-bottom: 24px;
-}
-
-.main_title {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--black);
-  margin: 0 0 8px 0;
 }
 
 .sub_title {
-  font-size: 14px;
-  color: var(--color-gray60);
-  margin: 0;
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--color-gray40);
 }
 
 .jjin_filter_wrap {
   margin-bottom: 24px;
 }
 
-.title {
+.filter_title {
   font-size: 16px;
-  font-weight: 600;
-  color: var(--black);
-  margin: 0 0 12px 0;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--color-gray60);
 }
 
 .jjin_filter {
@@ -140,9 +113,10 @@
   left: 0;
   right: 0;
   display: flex;
+  gap: 12px;
   max-width: 393px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 12px 16px 44px;
   background-color: var(--white);
 }
 
@@ -157,15 +131,14 @@
 }
 
 .prevButton {
-  background-color: #eeeeee;
-  color: var(--black);
+  background-color: var(--color-gray20);
+  color: var(--color-gray60);
   border: none;
-  margin-right: 8px;
 }
 
 .nextButton {
-  background-color: #cccccc;
-  color: #ffffff;
+  background-color: var(--color-gray40);
+  color: var(--white);
   border: none;
 }
 
