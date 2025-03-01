@@ -126,14 +126,14 @@
 }
 
 .prevButton {
-  background-color: #eeeeee;
-  color: var(--black);
+  background-color: var(--color-gray20);
+  color: var(--color-gray60);
   border: none;
 }
 
 .nextButton {
-  background-color: #cccccc;
-  color: #ffffff;
+  background-color: var(--color-gray40);
+  color: var(--white);
   border: none;
 }
 

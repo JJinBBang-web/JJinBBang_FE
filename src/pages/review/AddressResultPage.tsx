@@ -31,7 +31,6 @@ const AddressResultPage: React.FC = () => {
   }, [address.roadAddress]);
 
   const handleNext = () => {
-    // 다음 단계로 이동하는 로직
     navigate('/review/price', {
       state: {
         ...location.state,
@@ -55,7 +54,7 @@ const AddressResultPage: React.FC = () => {
         </header>
         <div className={styles.titleBox}>
           <span className={styles.title}>
-            정확한 주소가 맞나요?{' '}
+            정확한 주소가 맞나요?
             <button
               className={styles.searchButton}
               onClick={() => navigate('/review/address')}
@@ -81,7 +80,6 @@ const AddressResultPage: React.FC = () => {
             <p className={styles.floor}>{floor}</p>
           </div>
         </div>
-
         <div id="map" className={styles.map}>
           <div className={styles.mapPlaceholder}>
             <p>지도가 표시될 영역입니다</p>
