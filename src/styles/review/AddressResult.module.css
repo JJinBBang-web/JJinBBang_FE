@@ -155,11 +155,7 @@
 }
 
 .nextButton {
-  background-color: var(--color-gray40);
+  background-color: var(--primary-color);
   color: var(--white);
   border: none;
-}
-
-.nextButton.enabled {
-  background-color: var(--primary-color);
 }
