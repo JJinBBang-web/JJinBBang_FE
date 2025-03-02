@@ -1,7 +1,7 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../../styles/review/ReviewContent.module.css';
-import iconClose from '../../assets/image/iconClose.svg';
+import closeIcon from '../../assets/image/iconClose.svg';
 
 interface LocationState {
   photos?: string[];
@@ -17,6 +17,10 @@ const AutoHeightTextarea: React.FC<{
   maxLength: number;
 }> = ({ value, onChange, placeholder, maxLength }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 플레이스홀더를 상수로 정의
+  const formattedPlaceholder =
+    '찐거주 후기를 위해 특징과 장단점을 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제';
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
@@ -40,7 +44,7 @@ const AutoHeightTextarea: React.FC<{
       className={styles.contentTextarea}
       value={value}
       onChange={onChange}
-      placeholder={placeholder}
+      placeholder={formattedPlaceholder}
       maxLength={maxLength}
       autoFocus
     />
@@ -63,10 +67,6 @@ const ReviewContentPage: React.FC = () => {
     }
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
   const handleNext = () => {
     if (content.trim().length === 0) {
       alert('내용을 입력해주세요.');
@@ -84,29 +84,30 @@ const ReviewContentPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <button onClick={handleGoBack} className={styles.closeButton}>
-          <img src={iconClose} alt="닫기" />
-        </button>
-        <div className={styles.progressBar}>
-          <div className={styles.progressFill}></div>
-        </div>
-      </div>
+    <div className="content">
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill}></div>
+          </div>
+          <button
+            className={styles.closeButton}
+            onClick={() => navigate('/mypage')}
+          >
+            <img src={closeIcon} alt="close" />
+          </button>
+        </header>
 
-      <div className={styles.content}>
-        <div className={styles.title_area}>
-          <p className={styles.main_title}>
-            마지막으로 이 찐빵에 대해
-            <br /> 좀 더 자세하게 알려줄 수 있나요?
-          </p>
-        </div>
+        <h1 className={styles.title}>
+          마지막으로 이 찐빵에 대해
+          <br></br>좀 더 자세하게 알려줄 수 있나요?
+        </h1>
 
         <div className={styles.textareaContainer}>
           <AutoHeightTextarea
             value={content}
             onChange={handleContentChange}
-            placeholder="찐거주 후기를 위해 특징과 장단점을 적어주세요! 자세한 이야기는 짠빵 유저들에게 큰 도움이 돼요!&#13;&#10;ex) 학교까지의 거리, 집주인과의 문제"
+            placeholder=""
             maxLength={maxLength}
           />
           <div className={styles.charCount}>
