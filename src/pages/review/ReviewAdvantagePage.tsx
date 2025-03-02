@@ -69,24 +69,26 @@ const ReviewAdvantagePage: React.FC = () => {
             <div className={styles.jjin_filter_wrap} key={category.id}>
               <p className={styles.filter_title}>{category.category}</p>
               <div className={styles.jjin_filter}>
-                {category.filter.map((item: FilterItem, index: number) => (
-                  <button
-                    key={index}
-                    className={`${styles.filter_btn} ${
-                      selectedFilters.includes(item.label)
-                        ? styles.selected
-                        : ''
-                    }`}
-                    onClick={() => handleFilterClick(item.label)}
-                  >
-                    <img
-                      src={item.icon}
-                      alt={item.label}
-                      className={styles.filter_icon}
-                    />
-                    <p className={styles.filter_text}>{item.label}</p>
-                  </button>
-                ))}
+                {category.positiveFilters.map(
+                  (item: FilterItem, index: number) => (
+                    <button
+                      key={index}
+                      className={`${styles.filter_btn} ${
+                        selectedFilters.includes(item.label)
+                          ? styles.selected
+                          : ''
+                      }`}
+                      onClick={() => handleFilterClick(item.label)}
+                    >
+                      <img
+                        src={item.icon}
+                        alt={item.label}
+                        className={styles.filter_icon}
+                      />
+                      <p className={styles.filter_text}>{item.label}</p>
+                    </button>
+                  )
+                )}
               </div>
             </div>
           ))}

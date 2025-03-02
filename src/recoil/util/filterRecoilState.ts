@@ -56,7 +56,8 @@ export interface FilterItem {
 export interface FilterCategory {
   category: string;
   id: string;
-  filter: FilterItem[];
+  positiveFilters: FilterItem[];
+  negativeFilters: FilterItem[];
 }
 
 export const JjinFilterState = atom<FilterCategory[]>({
@@ -65,7 +66,7 @@ export const JjinFilterState = atom<FilterCategory[]>({
     {
       category: '위치/주변환경',
       id: 'location',
-      filter: [
+      positiveFilters: [
         { label: '교통이 편리해요', icon: PO_LO_01 },
         { label: '주변 환경이 깨끗해요', icon: PO_LO_02 },
         { label: '동네가 조용해요', icon: PO_LO_03 },
@@ -74,6 +75,8 @@ export const JjinFilterState = atom<FilterCategory[]>({
         { label: '학교와 가까워요', icon: PO_LO_06 },
         { label: '동네가 안전해요', icon: PO_LO_07 },
         { label: '이웃들이 친절해요', icon: PO_LO_08 },
+      ],
+      negativeFilters: [
         { label: '교통이 불편해요', icon: NE_LO_01 },
         { label: '환경이 지저분해요', icon: NE_LO_02 },
         { label: '동네가 시끄러워요', icon: NE_LO_03 },
@@ -87,7 +90,7 @@ export const JjinFilterState = atom<FilterCategory[]>({
     {
       category: '집 내부 상태',
       id: 'house',
-      filter: [
+      positiveFilters: [
         { label: '채광이 좋아요', icon: PO_ST_01 },
         { label: '통풍이 잘 돼요', icon: PO_ST_02 },
         { label: '방음이 잘 돼요', icon: PO_ST_03 },
@@ -95,6 +98,8 @@ export const JjinFilterState = atom<FilterCategory[]>({
         { label: '냉난방이 잘 돼요', icon: PO_ST_05 },
         { label: '배수와 수압이 좋아요', icon: PO_ST_06 },
         { label: '곰팡이가 없어요', icon: PO_ST_07 },
+      ],
+      negativeFilters: [
         { label: '채광이 부족해요', icon: NE_ST_01 },
         { label: '통풍이 안돼요', icon: NE_ST_02 },
         { label: '방음이 안돼요', icon: NE_ST_03 },
@@ -106,22 +111,24 @@ export const JjinFilterState = atom<FilterCategory[]>({
     },
     {
       category: '편의시설과 관리',
-      id: 'management',
-      filter: [
-        { label: '주차가 편리해요', icon: PO_MT_01 },
-        { label: '엘리베이터가 있어요', icon: PO_MT_02 },
-        { label: '쓰레기 처리가 편해요', icon: PO_MT_03 },
-        { label: '관리비가 합리적이에요', icon: PO_MT_04 },
-        { label: '인터넷이 잘 돼요', icon: PO_MT_05 },
-        { label: '관리가 정기적이에요', icon: PO_MT_06 },
-        { label: '이사가 편했어요', icon: PO_MT_07 },
-        { label: '주차가 어려워요', icon: NE_MT_01 },
-        { label: '관리가 부족해요', icon: NE_MT_02 },
-        { label: '이사가 힘들었어요', icon: NE_MT_03 },
-        { label: '인터넷이 느려요', icon: NE_MT_04 },
-        { label: '엘리베이터가 없어요', icon: NE_MT_05 },
-        { label: '관리비가 비싸요', icon: NE_MT_06 },
-        { label: '쓰레기 처리가 불편해요', icon: NE_MT_07 },
+      id: 'maintenance',
+      positiveFilters: [
+        { label: '주차장이 넉넉해요', icon: PO_MT_01 },
+        { label: '엘리베이터가 깨끗해요', icon: PO_MT_02 },
+        { label: '관리비가 적당해요', icon: PO_MT_03 },
+        { label: '공용시설이 잘 관리돼요', icon: PO_MT_04 },
+        { label: 'CCTV가 잘 설치되어 있어요', icon: PO_MT_05 },
+        { label: '경비원이 친절해요', icon: PO_MT_06 },
+        { label: '시설 유지보수가 잘돼요', icon: PO_MT_07 },
+      ],
+      negativeFilters: [
+        { label: '주차장이 부족해요', icon: NE_MT_01 },
+        { label: '엘리베이터가 더러워요', icon: NE_MT_02 },
+        { label: '관리비가 너무 비싸요', icon: NE_MT_03 },
+        { label: '공용시설 관리가 부족해요', icon: NE_MT_04 },
+        { label: 'CCTV가 부족해요', icon: NE_MT_05 },
+        { label: '경비 서비스가 미흡해요', icon: NE_MT_06 },
+        { label: '시설 유지보수가 안돼요', icon: NE_MT_07 },
       ],
     },
   ],

@@ -91,12 +91,15 @@ const ReviewConfirmPage: React.FC = () => {
   const getIconFromLabel = (label: string): string => {
     let iconSrc = '';
     filters.forEach((category) => {
-      category.filter.forEach((item) => {
-        if (item.label === label) {
-          iconSrc = item.icon;
+      [...category.positiveFilters, ...category.negativeFilters].forEach(
+        (item) => {
+          if (item.label === label) {
+            iconSrc = item.icon;
+          }
         }
-      });
+      );
     });
+
     return iconSrc;
   };
 
