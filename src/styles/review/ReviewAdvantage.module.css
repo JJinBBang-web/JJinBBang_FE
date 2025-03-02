@@ -1,9 +1,8 @@
 .content {
-  position: relative;
-  max-width: 393px;
-  width: 100%;
-  height: 100vh;
+  flex: 1;
   overflow-y: auto;
+  position: relative;
+  padding-bottom: 60px;
 }
 
 .container {
@@ -144,4 +143,27 @@
 
 .nextButton.enabled {
   background-color: var(--primary-color);
+}
+
+.scrollTopButton {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 25px;
+  background-color: white;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  z-index: 100;
+  transform: rotate(90deg);
+}
+
+.scrollTopButton img {
+  width: 24px;
+  height: 24px;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import {
@@ -8,6 +8,7 @@ import {
 } from '../../recoil/util/filterRecoilState';
 import styles from '../../styles/review/ReviewAdvantage.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
+import backArrowIcon from '../../assets/image/backArrowIcon.svg';
 
 interface LocationState {
   photos?: string[];
@@ -20,8 +21,8 @@ const ReviewAdvantagePage: React.FC = () => {
   const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const maxSelections = 5;
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  // 필터 선택 토글 함수
   const handleFilterClick = (label: string) => {
     if (selectedFilters.includes(label)) {
       setSelectedFilters(
@@ -32,12 +33,16 @@ const ReviewAdvantagePage: React.FC = () => {
     }
   };
 
-  const handleGoBack = () => {
-    navigate(-1);
+  const scrollToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
   };
 
   const handleNext = () => {
-    // 다음 단계로 이동하면서 선택된 장점 정보 전달
     navigate('/review/filter-disad', {
       state: {
         photos,
@@ -60,11 +65,10 @@ const ReviewAdvantagePage: React.FC = () => {
             <img src={closeIcon} alt="close" />
           </button>
         </header>
-
         <h1 className={styles.title}>이 찐빵의 장점은 무엇인가요?</h1>
         <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
 
-        <div className={styles.content}>
+        <div className={styles.content} ref={contentRef}>
           {filters.map((category: FilterCategory) => (
             <div className={styles.jjin_filter_wrap} key={category.id}>
               <p className={styles.filter_title}>{category.category}</p>
@@ -93,21 +97,26 @@ const ReviewAdvantagePage: React.FC = () => {
             </div>
           ))}
         </div>
-        <footer className={styles.footer}>
-          <button className={styles.prevButton} onClick={() => navigate(-1)}>
-            이전
-          </button>
-          <button
-            className={`${styles.nextButton} ${
-              selectedFilters.length > 0 ? styles.enabled : ''
-            }`}
-            onClick={handleNext}
-            disabled={selectedFilters.length === 0}
-          >
-            다음
-          </button>
-        </footer>
       </div>
+
+      <button className={styles.scrollTopButton} onClick={scrollToTop}>
+        <img src={backArrowIcon} alt="위로 가기" />
+      </button>
+
+      <footer className={styles.footer}>
+        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+          이전
+        </button>
+        <button
+          className={`${styles.nextButton} ${
+            selectedFilters.length > 0 ? styles.enabled : ''
+          }`}
+          onClick={handleNext}
+          disabled={selectedFilters.length === 0}
+        >
+          다음
+        </button>
+      </footer>
     </div>
   );
 };
