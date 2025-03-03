@@ -1,5 +1,4 @@
 // src/pages/review/ReviewConfirmPage.tsx
-// ReviewConfirmPage.tsx 전체 코드
 import { useNavigate, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -31,7 +30,7 @@ interface LocationState {
   disadvantages?: string[];
   content?: string;
   from?: string;
-  housingType?: string; // 추가된 타입
+  housingType?: string;
 }
 
 const ReviewConfirmPage: React.FC = () => {
@@ -59,9 +58,6 @@ const ReviewConfirmPage: React.FC = () => {
 
   // 데이터 로딩 로직
   useEffect(() => {
-    console.log('현재 review 상태:', review);
-    console.log('Location state:', locationState);
-
     if (locationState && Object.keys(locationState).length > 0) {
       setReview((prev) => ({
         ...prev,
@@ -245,7 +241,7 @@ const ReviewConfirmPage: React.FC = () => {
     });
   };
 
-  const renderTags = (tags: string[], isProsTags: boolean) => {
+  const renderTags = (tags: string[]) => {
     if (tags && tags.length > 0) {
       return tags.map((tag, index) => (
         <span key={index} className={styles.tag}>
@@ -264,150 +260,160 @@ const ReviewConfirmPage: React.FC = () => {
 
   return (
     <div className="content">
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={handleClose}>
-          <img src={closeIcon} alt="close" />
-        </button>
-      </div>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <button className={styles.closeButton} onClick={handleClose}>
+            <img src={closeIcon} alt="close" />
+          </button>
+        </div>
 
-      <div className={styles.pageContent}>
-        <h1 className={styles.title}>
-          찐빵 업로드를 위해
-          <br />
-          입력한 정보를 확인해 주세요!
-        </h1>
+        <div className={styles.pageContent}>
+          <h1 className={styles.title}>
+            찐빵 업로드를 위해
+            <br />
+            입력한 정보를 확인해 주세요!
+          </h1>
 
-        <div className={styles.infoContainer}>
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToHousingType)}
-          >
-            <span className={styles.label}>찐빵 유형</span>
-            <div className={styles.value}>
-              <span className={styles.valueText}>
-                {review.housingType || ''}
-              </span>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
-            </div>
-          </div>
-
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToAddress)}
-          >
-            <span className={styles.label}>주소</span>
-            <div className={styles.value}>
-              <div>
-                <span className={styles.valueText}>{review.address || ''}</span>
-                <span className={styles.subAddress}>
-                  {review.addressDetail || ''}
-                </span>
-              </div>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
-            </div>
-          </div>
-
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToDetailedAddress)}
-          >
-            <span className={styles.label}>상세 주소</span>
-            <div className={styles.value}>
-              <span className={styles.valueText}>
-                {review.detailedAddress || ''}
-              </span>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
-            </div>
-          </div>
-
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToContractType)}
-          >
-            <span className={styles.label}>계약 형태</span>
-            <div className={styles.value}>
-              <span className={styles.valueText}>
-                {review.contractType || ''}
-              </span>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
-            </div>
-          </div>
-
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToContractDetails)}
-          >
-            <span className={styles.label}>계약 조건</span>
-            <div className={styles.value}>
-              <div className={styles.contractDetails}>
+          <div className={styles.infoContainer}>
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToHousingType)}
+            >
+              <span className={styles.label}>찐빵 유형</span>
+              <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {review.deposit ? `보증금 ${review.deposit}만원` : ''}
+                  {review.housingType || ''}
                 </span>
-                {!review.contractType || review.contractType === '월세' ? (
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
+
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToAddress)}
+            >
+              <span className={styles.label}>주소</span>
+              <div className={styles.value}>
+                <div>
                   <span className={styles.valueText}>
-                    {review.monthlyRent ? `월세 ${review.monthlyRent}만원` : ''}
+                    {review.address || ''}
                   </span>
-                ) : null}
+                  <span className={styles.subAddress}>
+                    {review.addressDetail || ''}
+                  </span>
+                </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
+
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToDetailedAddress)}
+            >
+              <span className={styles.label}>상세 주소</span>
+              <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {review.managementFee
-                    ? `관리비 ${review.managementFee}만원`
-                    : ''}
+                  {review.detailedAddress || ''}
                 </span>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
-          </div>
 
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToPros)}
-          >
-            <span className={styles.label}>장점</span>
-            <div className={styles.value}>
-              <div className={styles.tagsContainer}>
-                <div className={styles.tags}>
-                  {renderTags(review.pros, true)}
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToContractType)}
+            >
+              <span className={styles.label}>계약 형태</span>
+              <div className={styles.value}>
+                <span className={styles.valueText}>
+                  {review.contractType || ''}
+                </span>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
+
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToContractDetails)}
+            >
+              <span className={styles.label}>계약 조건</span>
+              <div className={styles.value}>
+                <div className={styles.contractDetails}>
+                  <span className={styles.valueText}>
+                    {review.deposit ? `보증금 ${review.deposit}만원` : ''}
+                  </span>
+                  {!review.contractType || review.contractType === '월세' ? (
+                    <span className={styles.valueText}>
+                      {review.monthlyRent
+                        ? `월세 ${review.monthlyRent}만원`
+                        : ''}
+                    </span>
+                  ) : null}
+                  <span className={styles.valueText}>
+                    {review.managementFee
+                      ? `관리비 ${review.managementFee}만원`
+                      : ''}
+                  </span>
                 </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
-          </div>
 
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToCons)}
-          >
-            <span className={styles.label}>단점</span>
-            <div className={styles.value}>
-              <div className={styles.tagsContainer}>
-                <div className={styles.tags}>
-                  {renderTags(review.cons, false)}
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToPros)}
+            >
+              <span className={styles.label}>장점</span>
+              <div className={styles.value}>
+                <div className={styles.tagsContainer}>
+                  <div className={styles.tags}>
+                    {renderTags(review.cons || [])}
+                  </div>
                 </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
             </div>
-          </div>
 
-          <div
-            className={styles.infoItem}
-            onClick={() => handleItemClick(navigateToContent)}
-          >
-            <span className={styles.label}>글 후기</span>
-            <div className={styles.reviewTextContainer}>
-              <div className={styles.reviewText}>{review.content || ''}</div>
-              <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToCons)}
+            >
+              <span className={styles.label}>단점</span>
+              <div className={styles.value}>
+                <div className={styles.tagsContainer}>
+                  <div className={styles.tags}>
+                    {renderTags(review.pros || [])}
+                  </div>
+                </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
+
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToContent)}
+            >
+              <span className={styles.label}>글 후기</span>
+              <div className={styles.value}>
+                <div className={styles.reviewTextContainer}>
+                  <span className={styles.reviewText}>
+                    {review.content || ''}
+                  </span>
+                </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className={styles.buttonContainer}>
+        <footer className={styles.footer}>
           <button className={styles.prevButton} onClick={handleBack}>
             이전
           </button>
           <button className={styles.nextButton} onClick={handleRateReview}>
             다음
           </button>
-        </div>
+        </footer>
       </div>
 
       {showRatingModal && (

@@ -1,12 +1,24 @@
 /* src/styles/review/ReviewConfirm.module.css */
-.header {
-  padding: 16px;
+.container {
   display: flex;
-  align-items: center;
-  background-color: white;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--white);
+  overflow: hidden;
+  padding: 0 16px;
 }
 
-.backButton {
+.header {
+  position: relative;
+  padding-top: 24px;
+  margin-bottom: 32px;
+  background-color: var(--white);
+}
+
+.closeButton {
+  position: absolute;
+  top: 24px;
+  left: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -14,40 +26,31 @@
 }
 
 .pageContent {
-  padding: 0 16px 24px;
-  height: calc(100vh - 140px);
   display: flex;
   flex-direction: column;
-  background-color: white;
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
 }
 
 .title {
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   line-height: 1.4;
 }
 
 .infoContainer {
-  background-color: #f2f4f7;
+  background-color: #f5f5f5;
   border-radius: 16px;
-  margin-bottom: 24px;
-  overflow-y: auto;
-  flex: 1;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.infoContainer::-webkit-scrollbar {
-  display: none;
+  margin-bottom: 20px;
 }
 
 .infoItem {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
   padding: 16px;
-  border-bottom: 1px solid #dadee8;
-  margin: 0 16px;
+  border-bottom: 1.5px solid var(--color-gray20);
   cursor: pointer;
 }
 
@@ -57,33 +60,29 @@
 
 .label {
   font-weight: 500;
-  color: #484e58;
+  color: var(--color-gray80);
   flex-shrink: 0;
-  margin-right: 12px;
+  text-align: left;
+  min-width: 80px;
 }
 
 .value {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  align-items: flex-start;
+  flex: 1;
+  justify-content: space-between;
   gap: 8px;
-  color: #000000;
-  text-align: left;
-  max-width: 70%;
 }
 
 .valueText {
-  text-align: left;
-}
-
-.value > div {
-  text-align: left;
+  font-size: 14px;
+  color: var(--color-gray80);
 }
 
 .subAddress {
   display: block;
   font-size: 14px;
-  color: #7d859a;
+  color: var(--color-gray60);
   margin-top: 4px;
   text-align: left;
 }
@@ -96,29 +95,32 @@
 }
 
 .tagsContainer {
-  max-width: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  width: 100%;
   overflow: hidden;
 }
 
 .tags {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: flex-start;
-  margin: -2px;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
-  background-color: #dadee8;
-  padding: 0 8px;
-  border-radius: 4px;
-  font-size: 14px;
+  background-color: #e5e5e5;
+  padding: 0.225rem 0.3rem;
+  border-radius: 6px;
+  font-size: 12px;
   white-space: nowrap;
-  height: 24px;
-  border: none;
-  margin: 2px;
 }
 
 .tagIcon {
@@ -128,10 +130,10 @@
 }
 
 .reviewTextContainer {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .reviewText {
@@ -139,60 +141,54 @@
   overflow-y: auto;
   text-align: left;
   font-size: 14px;
-  color: #484e58;
+  color: var(--color-gray60);
   line-height: 1.5;
-  flex: 1;
+  width: 100%;
 }
 
 .arrowIcon {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
-.buttonContainer {
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   gap: 12px;
-  padding: 16px 0;
+  max-width: 393px;
+  margin: 0 auto;
+  padding: 12px 16px 32px;
+  background-color: var(--white);
+}
+
+.prevButton,
+.nextButton {
+  flex: 1;
+  height: 56px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .prevButton {
-  flex: 1;
-  background-color: #f2f4f7;
+  background-color: var(--color-gray20);
+  color: var(--color-gray60);
   border: none;
-  border-radius: 16px;
-  padding: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #000000;
 }
 
 .nextButton {
-  flex: 1;
-  background-color: #ff6b3f;
+  background-color: var(--primary-color);
+  color: var(--white);
   border: none;
-  border-radius: 16px;
-  padding: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  color: #ffffff;
 }
 
 /* Modal Styles */
-.ratingModal,
-.cancelModal,
-.confirmModal {
-  width: 100%;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-
-/* src/styles/review/ReviewConfirm.module.css */
-
-/* 모달 관련 스타일 수정 */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -236,11 +232,15 @@
   transform: translateX(-50%);
 }
 
-.reviewTextContainer {
-  display: flex;
-  align-items: center;
+.ratingModal,
+.cancelModal,
+.confirmModal {
   width: 100%;
-  justify-content: space-between;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
 
 .starsContainer {
@@ -275,19 +275,6 @@
   color: #7d859a;
   text-align: center;
   margin-bottom: 24px;
-}
-
-.starsContainer {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.starIcon {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
 }
 
 .uploadButton {
