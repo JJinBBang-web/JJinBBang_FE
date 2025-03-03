@@ -122,7 +122,7 @@ const PhotoUploadPage: React.FC = () => {
               onChange={handleFileChange}
               style={{ display: 'none' }}
             />
-          </div>{' '}
+          </div>
           <div className={styles.photoCount}>{photos.length}/20장</div>
         </div>
       </div>

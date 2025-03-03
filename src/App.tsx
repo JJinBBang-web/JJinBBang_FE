@@ -99,7 +99,7 @@ const AppContent: React.FC = () => {
           <Route path="filter-ad" element={<ReviewAdvantagePage />} />
           <Route path="filter-disad" element={<ReviewDisadvantagePage />} />
           <Route path="content" element={<ReviewContentPage />} />
-          <Route path="confirm" element={<ReviewConfirmPage />} />{' '}
+          <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
       </Routes>
       {showHeaderAndNav && <Nav />}

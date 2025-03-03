@@ -5,11 +5,12 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
 import { JjinFilterState } from '../../recoil/util/filterRecoilState';
 import styles from '../../styles/review/ReviewConfirm.module.css';
-import characterIcon from '../../assets/image/characterIcon.svg';
+import emptyCharacterIcon from '../../assets/image/emptyCharacterIcon.svg';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';
 import starEmptyIcon from '../../assets/image/starIconOff.svg';
+import checkIcon from '../../assets/image/checkIconActive.svg';
 
 interface LocationState {
   address?: {
@@ -35,6 +36,7 @@ interface LocationState {
 
 const ReviewConfirmPage: React.FC = () => {
   const navigate = useNavigate();
+  const reviewData = useRecoilValue(reviewState);
   const location = useLocation();
   const locationState = (location.state as LocationState) || {};
 
@@ -140,11 +142,13 @@ const ReviewConfirmPage: React.FC = () => {
     }
   };
 
-  // Navigation handlers with state preservation
   const navigateToHousingType = () => {
+    // 현재 리뷰 상태를 로컬 스토리지에 저장
+    localStorage.setItem('reviewState', JSON.stringify(review));
+
     navigate('/review/type', {
       state: {
-        ...locationState,
+        ...review, // 전체 리뷰 상태를 전달
         from: 'confirm',
       },
     });
@@ -298,9 +302,6 @@ const ReviewConfirmPage: React.FC = () => {
                   <span className={styles.valueText}>
                     {review.address || ''}
                   </span>
-                  <span className={styles.subAddress}>
-                    {review.addressDetail || ''}
-                  </span>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -314,6 +315,8 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <span className={styles.valueText}>
                   {review.detailedAddress || ''}
+                  <br />
+                  {review.floorType || ''}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -473,12 +476,13 @@ const ReviewConfirmPage: React.FC = () => {
             <div className={styles.cancelModal}>
               <h2 className={styles.modalTitle}>작성을 중단할까요?</h2>
               <p className={styles.modalSubtitle}>
-                지금까지 작성해 주신 내용은 저장되지 않아요!
+                지금까지 작성해 주신 내용은
+                <br /> 저장되지 않아요!
               </p>
               <img
-                src={characterIcon}
-                alt="찐빵 캐릭터"
-                className={styles.characterImage}
+                src={emptyCharacterIcon}
+                alt="비어있는 찐빵 캐릭터"
+                className={styles.emptyCharacterIcon}
               />
               <div className={styles.modalButtons}>
                 <button
@@ -489,7 +493,7 @@ const ReviewConfirmPage: React.FC = () => {
                 </button>
                 <button
                   className={styles.confirmButton}
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/myPage')}
                 >
                   중단
                 </button>
@@ -510,15 +514,16 @@ const ReviewConfirmPage: React.FC = () => {
           >
             <div className={styles.modalHandle}></div>
             <div className={styles.confirmModal}>
+              <img
+                src={checkIcon}
+                alt="완료"
+                className={styles.checkIconImage}
+              />
               <h2 className={styles.modalTitle}>찐빵 업로드 완료</h2>
               <p className={styles.modalSubtitle}>
-                나의 찐빵에서 내가 작성한 찐빵을 확인하세요!
+                나의 찐빵에서 <br />
+                내가 작성한 찐빵을 확인하세요!
               </p>
-              <img
-                src={characterIcon}
-                alt="찐빵 캐릭터"
-                className={styles.characterImage}
-              />
               <button
                 className={styles.confirmButton}
                 onClick={handleConfirmSubmit}

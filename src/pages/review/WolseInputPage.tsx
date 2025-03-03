@@ -1,6 +1,7 @@
-// src/pages/review/WolseInputPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { reviewState } from '../../recoil/review/reviewAtoms';
 import styles from '../../styles/review/PriceInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
@@ -13,22 +14,41 @@ interface LocationState {
   buildingName: string;
   floor: string;
   paymentType: string;
+  from?: string;
 }
 
 const WolseInputPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = location.state as LocationState;
+  const { from, address, buildingName, floor, paymentType } =
+    (location.state as LocationState) || {};
+  const [review, setReview] = useRecoilState(reviewState);
 
-  const [deposit, setDeposit] = useState<string>('');
-  const [monthlyRent, setMonthlyRent] = useState<string>('');
-  const [managementFee, setManagementFee] = useState<string>('');
+  const [deposit, setDeposit] = useState<string>(
+    review.deposit ? review.deposit.toString() : ''
+  );
+  const [monthlyRent, setMonthlyRent] = useState<string>(
+    review.monthlyRent ? review.monthlyRent.toString() : ''
+  );
+  const [managementFee, setManagementFee] = useState<string>(
+    review.managementFee ? review.managementFee.toString() : ''
+  );
+
+  useEffect(() => {
+    // 수정 모드일 경우 기존 상태 복원
+    if (from === 'confirm') {
+      setDeposit(review.deposit ? review.deposit.toString() : '');
+      setMonthlyRent(review.monthlyRent ? review.monthlyRent.toString() : '');
+      setManagementFee(
+        review.managementFee ? review.managementFee.toString() : ''
+      );
+    }
+  }, [from, review]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => {
-    // 입력값에서 숫자만 추출
     const value = e.target.value.replace(/[^0-9]/g, '');
     setter(value);
   };
@@ -39,18 +59,46 @@ const WolseInputPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    const updatedReview = {
+      ...review,
+      contractType: paymentType,
+      deposit: Number(deposit),
+      monthlyRent: Number(monthlyRent),
+      managementFee: Number(managementFee) || null,
+    };
+
+    setReview(updatedReview);
+    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+
     const priceData = {
       deposit: Number(deposit),
       monthlyRent: Number(monthlyRent),
-      managementFee: Number(managementFee),
+      managementFee: Number(managementFee) || null,
     };
 
-    navigate('/review/room-info', {
-      state: {
-        ...locationState,
-        priceData,
-      },
-    });
+    if (from === 'confirm') {
+      navigate('/review/confirm', {
+        state: {
+          ...location.state,
+          priceData,
+        },
+      });
+    } else {
+      navigate('/review/room-info', {
+        state: {
+          ...location.state,
+          priceData,
+        },
+      });
+    }
+  };
+
+  const handleBack = () => {
+    if (from === 'confirm') {
+      navigate('/review/confirm');
+    } else {
+      navigate(-1);
+    }
   };
 
   const isNextEnabled = deposit !== '' && monthlyRent !== '';
@@ -118,7 +166,7 @@ const WolseInputPage: React.FC = () => {
       </div>
 
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
         <button

@@ -1,5 +1,7 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { reviewState } from '../../recoil/review/reviewAtoms';
 import styles from '../../styles/review/ReviewContent.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
@@ -7,9 +9,9 @@ interface LocationState {
   photos?: string[];
   advantages?: string[];
   disadvantages?: string[];
+  from?: string;
 }
 
-// 텍스트 에어리어 자동 높이 조절 컴포넌트
 const AutoHeightTextarea: React.FC<{
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -18,22 +20,17 @@ const AutoHeightTextarea: React.FC<{
 }> = ({ value, onChange, placeholder, maxLength }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 플레이스홀더를 상수로 정의
   const formattedPlaceholder =
     '찐거주 후기를 위해 특징과 장단점을 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제';
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-
     textarea.style.height = 'inherit';
-
-    // 스크롤 높이만큼 높이 설정 (최소 150px)
     const computedHeight = Math.max(150, textarea.scrollHeight);
     textarea.style.height = `${computedHeight}px`;
   };
 
-  // 컴포넌트 마운트, 업데이트 시 높이 조절
   useLayoutEffect(() => {
     adjustHeight();
   }, [value]);
@@ -54,14 +51,21 @@ const AutoHeightTextarea: React.FC<{
 const ReviewContentPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { photos, advantages, disadvantages } =
+  const { photos, advantages, disadvantages, from } =
     (location.state as LocationState) || {};
 
-  const [content, setContent] = useState('');
+  const [review, setReview] = useRecoilState(reviewState);
+  const [content, setContent] = useState(review.description || '');
+
+  useEffect(() => {
+    if (from === 'confirm') {
+      setContent(review.description || '');
+    }
+  }, [from, review]);
+
   const maxLength = 1000;
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // 최대 글자수 내에서만 변경 허용
     if (e.target.value.length <= maxLength) {
       setContent(e.target.value);
     }
@@ -73,14 +77,39 @@ const ReviewContentPage: React.FC = () => {
       return;
     }
 
-    navigate('/review/confirm', {
-      state: {
-        photos,
-        advantages,
-        disadvantages,
-        content,
-      },
-    });
+    const updatedReview = {
+      ...review,
+      description: content,
+    };
+
+    setReview(updatedReview);
+    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+
+    if (from === 'confirm') {
+      navigate('/review/confirm', {
+        state: {
+          ...location.state,
+          content,
+        },
+      });
+    } else {
+      navigate('/review/confirm', {
+        state: {
+          photos,
+          advantages,
+          disadvantages,
+          content,
+        },
+      });
+    }
+  };
+
+  const handleBack = () => {
+    if (from === 'confirm') {
+      navigate('/review/confirm');
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
@@ -97,12 +126,10 @@ const ReviewContentPage: React.FC = () => {
             <img src={closeIcon} alt="close" />
           </button>
         </header>
-
         <h1 className={styles.title}>
           마지막으로 이 찐빵에 대해
           <br></br>좀 더 자세하게 알려줄 수 있나요?
         </h1>
-
         <div className={styles.textareaContainer}>
           <AutoHeightTextarea
             value={content}
@@ -116,9 +143,8 @@ const ReviewContentPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
         <button

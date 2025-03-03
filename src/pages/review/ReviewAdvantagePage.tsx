@@ -1,54 +1,88 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   JjinFilterState,
   FilterCategory,
   FilterItem,
 } from '../../recoil/util/filterRecoilState';
+import { reviewState } from '../../recoil/review/reviewAtoms';
 import styles from '../../styles/review/ReviewAdvantage.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
 
 interface LocationState {
   photos?: string[];
+  from?: string;
+  advantages?: string[];
 }
 
 const ReviewAdvantagePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { photos } = (location.state as LocationState) || {};
+  const { photos, from, advantages } = (location.state as LocationState) || {};
   const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [review, setReview] = useRecoilState(reviewState);
+
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(
+    advantages || review.pros || []
+  );
   const maxSelections = 5;
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleFilterClick = (label: string) => {
-    if (selectedFilters.includes(label)) {
-      setSelectedFilters(
-        selectedFilters.filter((item: string) => item !== label)
-      );
-    } else if (selectedFilters.length < maxSelections) {
-      setSelectedFilters([...selectedFilters, label]);
+  useEffect(() => {
+    // 수정 모드일 경우 기존 상태 복원
+    if (from === 'confirm') {
+      setSelectedFilters(review.pros || []);
     }
+  }, [from, review]);
+
+  const handleFilterClick = (label: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(label)
+        ? prev.filter((item) => item !== label)
+        : prev.length < maxSelections
+        ? [...prev, label]
+        : prev
+    );
   };
 
   const scrollToTop = () => {
-    if (contentRef.current) {
-      contentRef.current.scrollTo({
-        top: 0,
-        behavior: 'smooth',
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNext = () => {
+    const updatedReview = {
+      ...review,
+      pros: selectedFilters,
+    };
+
+    setReview(updatedReview);
+    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+
+    if (from === 'confirm') {
+      navigate('/review/confirm', {
+        state: {
+          ...location.state,
+          advantages: selectedFilters,
+        },
+      });
+    } else {
+      navigate('/review/filter-disad', {
+        state: {
+          ...location.state,
+          advantages: selectedFilters,
+        },
       });
     }
   };
 
-  const handleNext = () => {
-    navigate('/review/filter-disad', {
-      state: {
-        photos,
-        advantages: selectedFilters,
-      },
-    });
+  const handleBack = () => {
+    if (from === 'confirm') {
+      navigate('/review/confirm');
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
@@ -67,7 +101,6 @@ const ReviewAdvantagePage: React.FC = () => {
         </header>
         <h1 className={styles.title}>이 찐빵의 장점은 무엇인가요?</h1>
         <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
-
         <div className={styles.content} ref={contentRef}>
           {filters.map((category: FilterCategory) => (
             <div className={styles.jjin_filter_wrap} key={category.id}>
@@ -98,13 +131,11 @@ const ReviewAdvantagePage: React.FC = () => {
           ))}
         </div>
       </div>
-
       <button className={styles.scrollTopButton} onClick={scrollToTop}>
         <img src={backArrowIcon} alt="위로 가기" />
       </button>
-
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
         <button

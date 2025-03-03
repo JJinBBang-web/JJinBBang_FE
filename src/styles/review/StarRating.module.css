@@ -1,7 +1,5 @@
 /* src/styles/review/StarRating.module.css */
 .starRating {
-  width: 100%;
-  max-width: 360px;
   height: 20vh;
   background-color: var(--white);
   border-radius: 24px 24px 0 0;

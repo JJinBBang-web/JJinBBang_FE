@@ -1,3 +1,4 @@
+// src/recoil/atoms/reviewAtoms.ts
 import { atom } from 'recoil';
 
 export interface ReviewState {
@@ -5,6 +6,7 @@ export interface ReviewState {
   address: string;
   addressDetail: string;
   detailedAddress: string;
+  floorType: string;
   contractType: string;
   deposit: number | null;
   monthlyRent: number | null;
@@ -14,6 +16,7 @@ export interface ReviewState {
   content: string;
   rating: number;
   images: string[];
+  description: string;
 }
 
 export const reviewState = atom<ReviewState>({
@@ -23,6 +26,7 @@ export const reviewState = atom<ReviewState>({
     address: '',
     addressDetail: '',
     detailedAddress: '',
+    floorType: '',
     contractType: '',
     deposit: null,
     monthlyRent: null,
@@ -32,5 +36,6 @@ export const reviewState = atom<ReviewState>({
     content: '',
     rating: 0,
     images: [],
+    description: '',
   },
 });
