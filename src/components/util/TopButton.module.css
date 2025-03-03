@@ -1,0 +1,25 @@
+.content {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: fixed;
+    bottom: 3%;
+    right: 0;
+    margin-right: 16px;
+}
+
+.topBtn {
+    border-radius: 50px;
+    border: 1px solid var(--color-gray10);
+    background-color: var(--white);
+    width: 45px;
+    height: 45px;
+    
+    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.11);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

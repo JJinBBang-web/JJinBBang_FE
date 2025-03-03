@@ -3,6 +3,7 @@ import styles from "./Building.module.css"
 import Header from "../components/Header";
 import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
+import TopButton from "../components/util/TopButton";
 
 const Building: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -34,6 +35,7 @@ const Building: React.FC = () => {
                 {/* 리뷰모음 */}
             </div>
             {/* 탑버튼 */}
+            <TopButton/>
         </div>
     )
 }
