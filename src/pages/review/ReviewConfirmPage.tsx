@@ -370,7 +370,7 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div className={styles.tagsContainer}>
                   <div className={styles.tags}>
-                    {renderTags(review.cons || [])}
+                    {renderTags(review.pros || [])}
                   </div>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
@@ -385,7 +385,7 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div className={styles.tagsContainer}>
                   <div className={styles.tags}>
-                    {renderTags(review.pros || [])}
+                    {renderTags(review.cons || [])}
                   </div>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
