@@ -138,13 +138,16 @@
 }
 
 .schoolName {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--color-gray60);
 }
 
 .verificationStatus {
   font-size: 14px;
   color: var(--primary-color);
+  padding: 0.1875rem 0.375rem;
+  border-radius: 0.25rem;
+  background: #fff7f4;
 }
 
 .profileIcon {
