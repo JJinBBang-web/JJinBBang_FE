@@ -93,7 +93,7 @@ const CurrentStudentVerification: React.FC = () => {
         </button>
       </header>
       <main className={styles.container}>
-        <h1>학생용 이메일로 인증해주세요!</h1>
+        <h1 className={styles.title}>학생용 이메일로 인증해주세요!</h1>
         <p className={styles.description}>
           새로운 계정으로 인증할 경우, 기존 인증은 해제돼요.
           <br />
