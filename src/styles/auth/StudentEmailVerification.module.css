@@ -35,7 +35,8 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  align-items: center;
+  width: 100%;
 }
 
 .inputContainer {
@@ -43,7 +44,10 @@
   width: 100%;
   max-width: 330px;
   margin-bottom: 24px;
-  left: 1px;
+  right: 16px;
+  input:focus {
+    outline: none;
+  }
 }
 
 .codeInput {
@@ -51,16 +55,17 @@
   height: 52px;
   padding: 0 16px;
   background-color: var(--white);
-  border: 1px solid var(--color-gray20);
+  border: none;
   border-radius: 16px;
   font-size: 16px;
   color: var(--black);
-  outline: none;
+  padding: 0.25rem 0.9375rem;
 }
 
 .codeInput::placeholder {
   color: var(--color-gray40);
-  font-size: 14px;
+  font-size: 15x;
+  padding-left: 0.25rem;
 }
 
 .inputError {
@@ -78,30 +83,32 @@
 }
 
 .errorText {
+  position: absolute;
+  left: 16px;
+  top: calc(100% + 4px);
+  font-size: 12px;
   color: var(--primary-color);
-  font-size: 14px;
-  margin-top: 8px;
-  margin-left: 2px;
+  margin: 0;
 }
 
 .buttonContainer {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   display: flex;
-  max-width: 393px;
-  margin: 0 auto 50px;
-  gap: 8px;
+  gap: 12px;
+  width: 100%;
+  bottom: 2.75rem;
+  left: 16px;
+  right: 16px;
+  max-width: 360px;
+  margin: 0 auto;
 }
 
 .confirmButton,
 .resendButton {
   flex: 1;
   height: 52px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 500;
+  border-radius: 13px;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -123,4 +130,9 @@
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
+}
+
+.disabledButton {
+  background-color: var(--color-gray40) !important;
+  cursor: not-allowed !important;
 }

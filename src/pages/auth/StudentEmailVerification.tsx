@@ -37,7 +37,7 @@ const StudentEmailVerification: React.FC = () => {
       ...prev,
       isAuthenticated: true,
       verificationStatus: 'verified',
-      email: 'student@university.ac.kr', // 테스트용 이메일 설정
+      email: 'student@gnu.ac.kr', // 테스트용 이메일 설정
     }));
 
     // 인증 완료 페이지로 돌아가면서 완료 상태로 설정
@@ -58,13 +58,11 @@ const StudentEmailVerification: React.FC = () => {
           <img src={arrowIcon} alt="back" />
         </button>
       </header>
+
       <main className={styles.container}>
         <h1 className={styles.title}>인증코드를 입력해 주세요.</h1>
-
         <p className={styles.description}>
-          메일이 오지 않나요?
-          <br />
-          <br />
+          메일이 오지 않나요? <br /> <br />
           이메일 서비스 제공자 사정에 의해 수신까지 30분 정도가 소요될 수
           있어요. 메일 주소, 스팸함, 용량 등을 확인해보시고, [재발송]을 눌러
           다시 요청해 주세요
@@ -82,9 +80,13 @@ const StudentEmailVerification: React.FC = () => {
             <input
               type="text"
               value={code}
-              onChange={(e) =>
-                setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))
-              }
+              onChange={(e) => {
+                setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6));
+                if (step === 'error') {
+                  setStep('code');
+                  setError(null);
+                }
+              }}
               placeholder="인증코드를 입력해 주세요."
               className={`${styles.codeInput} ${
                 step === 'error' ? styles.inputError : ''
@@ -104,7 +106,18 @@ const StudentEmailVerification: React.FC = () => {
             >
               재발송
             </button>
-            <button type="submit" className={styles.confirmButton}>
+            <button
+              type="submit"
+              className={styles.confirmButton}
+              disabled={code.length === 0}
+              style={{
+                backgroundColor:
+                  code.length === 0
+                    ? 'var(--color-gray40)'
+                    : 'var(--primary-color)',
+                cursor: code.length === 0 ? 'not-allowed' : 'pointer',
+              }}
+            >
               확인
             </button>
           </div>

@@ -1,7 +1,7 @@
 /* src/styles/auth/MyAccountPage.module.css */
 .header {
   display: flex;
-  padding: 12px 16px;
+  padding-top: 4vh;
   background-color: var(--white);
   position: relative;
   background-color: var(--block-background);
@@ -13,7 +13,7 @@
   flex: 1;
   text-align: center;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .backButton {
@@ -26,13 +26,13 @@
   z-index: 1;
 }
 
+.flippedIcon {
+  transform: scaleX(-1);
+}
+
 .backButton img {
   width: 24px;
   height: 24px;
-}
-
-.flippedIcon {
-  transform: scaleX(-1);
 }
 
 .container {

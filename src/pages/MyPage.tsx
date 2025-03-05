@@ -88,35 +88,40 @@ const MyPage: React.FC = () => {
   return (
     <div className="content">
       <h1 className={styles.title}>나의 찐빵</h1>
-      <div className={styles.guide}>
-        <img src={questionIcon} alt="question" className={styles.guideIcon} />
-        <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
-      </div>
-      <div className={styles.menuList}>
-        {renderProfileSection()}
-        <button
-          className={styles.menuItem}
-          onClick={() => navigate('/review/type')}
-        >
-          <img src={pencilIcon} alt="pencil" />
-          <div>
-            <span className={styles.menuTitle}>찐빵 작성하기</span>
-            <span className={styles.menuDescription}>
-              찐심이 담긴 실거주 후기를 공유해주세요!
-            </span>
+      {/* 인증 완료 상태에서는 가이드 div를 표시하지 않음 */}
+      {auth.verificationStatus !== 'verified' && (
+        <div className={styles.guide}>
+          <img src={questionIcon} alt="question" className={styles.guideIcon} />
+          <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
+        </div>
+      )}
+      <div className={styles.container}>
+        <div className={styles.menuList}>
+          {renderProfileSection()}
+          <button
+            className={styles.menuItem}
+            onClick={() => navigate('/review/type')}
+          >
+            <img src={pencilIcon} alt="pencil" />
+            <div>
+              <span className={styles.menuTitle}>찐빵 작성하기</span>
+              <span className={styles.menuDescription}>
+                찐심이 담긴 실거주 후기를 공유해주세요!
+              </span>
+            </div>
+            <img src={arrowIcon} alt="arrow" />
+          </button>
+        </div>
+        <div className={styles.reviewContainer}>
+          <h2>나의 찐빵</h2>
+          <div className={styles.emptyState}>
+            <img
+              src={emptyCharacterIcon}
+              className="emptyIcon"
+              alt="empty character"
+            />
+            <p>앗! 아직 등록된 찐빵이 없어요!</p>
           </div>
-          <img src={arrowIcon} alt="arrow" />
-        </button>
-      </div>
-      <div className={styles.reviewContainer}>
-        <h2>나의 찐빵</h2>
-        <div className={styles.emptyState}>
-          <img
-            src={emptyCharacterIcon}
-            className="emptyIcon"
-            alt="empty character"
-          />
-          <p>앗! 아직 등록된 찐빵이 없어요!</p>
         </div>
       </div>
       {showLoginModal && (

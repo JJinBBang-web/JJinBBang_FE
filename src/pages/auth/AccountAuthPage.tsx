@@ -31,11 +31,18 @@ const AccountAuthPage: React.FC = () => {
         </button>
         <h1>내 계정</h1>
       </header>
-      <div className={styles.content}>
-        <div className={styles.banner}>
-          <img src={questionIcon} alt="question" />
-          <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
-        </div>
+      <div className={styles.container}>
+        {/* 인증 완료 상태에서는 가이드 div를 표시하지 않음 */}
+        {auth.verificationStatus !== 'verified' && (
+          <div className={styles.guide}>
+            <img
+              src={questionIcon}
+              alt="question"
+              className={styles.guideIcon}
+            />
+            <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
+          </div>
+        )}
         <button
           className={styles.profileButton}
           onClick={() => navigate('/auth/student/verify')}
