@@ -20,16 +20,12 @@ const NewStudentVerification: React.FC = () => {
   ) => {
     const files = event.target.files;
     if (!files?.length) return;
-
     try {
       const file = files[0];
       validateFile(file);
-
       setFile(file);
-      setVerificationStatus('uploading');
-
-      await uploadFile(file);
-      setVerificationStatus('pending');
+      // API 연동 대신 바로 complete 상태로 변경
+      setVerificationStatus('complete');
     } catch (error) {
       alert(
         error instanceof Error ? error.message : '파일 업로드에 실패했습니다.'
@@ -66,7 +62,6 @@ const NewStudentVerification: React.FC = () => {
             </label>
           </>
         );
-
       case 'pending':
         return (
           <div className={styles.statusContainer}>
@@ -79,7 +74,6 @@ const NewStudentVerification: React.FC = () => {
             <p>진행 상황은 추후 알림을 통해 알려드릴게요!</p>
           </div>
         );
-
       case 'complete':
         return (
           <div className={styles.statusContainer}>
@@ -92,12 +86,21 @@ const NewStudentVerification: React.FC = () => {
             <p>증명서 확인에는 7일 정도가 소요돼요</p>
             <p>빠른 확인을 위해 찐빵이가 노력할게요!</p>
             <div className={styles.buttonGroup}>
-              <button
+              {/* <button
                 onClick={() => navigate(-1)}
                 className={styles.cancelButton}
               >
                 재업로드
-              </button>
+              </button> */}
+              <label className={styles.cancelButton}>
+                <input
+                  type="file"
+                  accept=".pdf,image/*"
+                  onChange={handleFileUpload}
+                  hidden
+                />
+                재업로드
+              </label>
               <button
                 onClick={() => navigate('/mypage')}
                 className={styles.confirmButton}
@@ -107,7 +110,6 @@ const NewStudentVerification: React.FC = () => {
             </div>
           </div>
         );
-
       default:
         return null;
     }
