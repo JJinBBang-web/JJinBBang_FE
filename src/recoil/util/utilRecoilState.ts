@@ -7,3 +7,11 @@ export const isSheetOpenState = atom<{
     key: "isSheetOpenState",
     default: { isOpen: false, type: null },
   });
+
+export const isGeneralSheetOpenState = atom <{
+    isOpen : boolean,
+    type : "ratingStars" | "complete" | "writeStop" | "deleteReview" | "reportReview" | null;
+}> ({
+    key : "isGeneralSheetOpenState",
+    default : {isOpen:false, type : null}
+})
