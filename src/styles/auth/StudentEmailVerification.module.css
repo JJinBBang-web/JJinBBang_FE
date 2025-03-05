@@ -1,4 +1,27 @@
 /* src/styles/auth/StudentEmailVerification.module.css */
+.content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 393px;
+  margin: 0 auto;
+  background-color: var(--block-background);
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  position: relative;
+  overflow: hidden;
+}
+
 .header {
   padding: 16px 0;
   margin-bottom: 16px;
@@ -10,10 +33,6 @@
   cursor: pointer;
   padding: 0 16px;
   transform: scaleX(-1);
-}
-
-.container {
-  padding: 0 16px;
 }
 
 .title {
@@ -76,7 +95,7 @@
 
 .warningIcon {
   position: absolute;
-  top: 18px;
+  top: 16px;
   left: 16px;
   width: 20px;
   height: 20px;
@@ -95,7 +114,7 @@
   position: fixed;
   display: flex;
   gap: 12px;
-  width: 100%;
+  width: calc(100% - 32px);
   bottom: 2.75rem;
   left: 16px;
   right: 16px;
@@ -133,6 +152,6 @@
 }
 
 .disabledButton {
-  background-color: var(--color-gray40) !important;
-  cursor: not-allowed !important;
+  background-color: var(--color-gray40);
+  cursor: not-allowed;
 }
