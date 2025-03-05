@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
 import TopButton from "../components/util/TopButton";
+import BuildingReviewList from "../components/detail/BuildingReviewList";
 
 const Building: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -33,6 +34,7 @@ const Building: React.FC = () => {
                 <BuildingInfo/>
                 <hr/>
                 {/* 리뷰모음 */}
+                <BuildingReviewList/>
             </div>
             {/* 탑버튼 */}
             <TopButton/>
