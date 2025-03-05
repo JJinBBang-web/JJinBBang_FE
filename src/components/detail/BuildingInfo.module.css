@@ -16,6 +16,11 @@
 
     margin-bottom: 8px;
 }
+.buildingTypeWrap {
+    display: flex;
+    flex-direction: row;
+    gap:4px;
+}
 .buildingType {
     display: flex;
     box-sizing: border-box;
