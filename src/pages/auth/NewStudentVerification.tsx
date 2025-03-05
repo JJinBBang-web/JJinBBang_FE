@@ -1,6 +1,8 @@
 // src/pages/auth/NewStudentVerification.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { authState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/NewStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
@@ -14,6 +16,7 @@ const NewStudentVerification: React.FC = () => {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>('initial');
   const [file, setFile] = useState<File | null>(null);
+  const [auth, setAuth] = useRecoilState(authState);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -32,6 +35,15 @@ const NewStudentVerification: React.FC = () => {
       );
       setVerificationStatus('initial');
     }
+  };
+
+  const handleConfirm = () => {
+    // 인증 상태를 pending으로 설정
+    setAuth((prev) => ({
+      ...prev,
+      verificationStatus: 'pending',
+    }));
+    navigate('/mypage');
   };
 
   const renderContent = () => {
@@ -86,12 +98,6 @@ const NewStudentVerification: React.FC = () => {
             <p>증명서 확인에는 7일 정도가 소요돼요</p>
             <p>빠른 확인을 위해 찐빵이가 노력할게요!</p>
             <div className={styles.buttonGroup}>
-              {/* <button
-                onClick={() => navigate(-1)}
-                className={styles.cancelButton}
-              >
-                재업로드
-              </button> */}
               <label className={styles.cancelButton}>
                 <input
                   type="file"
@@ -101,10 +107,7 @@ const NewStudentVerification: React.FC = () => {
                 />
                 재업로드
               </label>
-              <button
-                onClick={() => navigate('/mypage')}
-                className={styles.confirmButton}
-              >
+              <button onClick={handleConfirm} className={styles.confirmButton}>
                 확인
               </button>
             </div>

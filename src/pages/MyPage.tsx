@@ -1,7 +1,7 @@
 // src/pages/MyPage.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atoms';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
@@ -23,12 +23,26 @@ interface UserProfile {
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [auth, setAuth] = useRecoilState(authState);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     isLoggedIn: true,
     nickname: '익명의 찐빵이',
     school: '찐빵대학교',
     isVerified: false,
   });
+
+  // 인증 상태에 따른 텍스트 표시
+  const getVerificationStatus = () => {
+    switch (auth.verificationStatus) {
+      case 'verified':
+        return '인증 완료';
+      case 'pending':
+        return '인증 대기중';
+      default:
+        return '미인증';
+    }
+  };
+
   const renderProfileSection = () => {
     if (!userProfile.isLoggedIn) {
       return (
@@ -42,6 +56,7 @@ const MyPage: React.FC = () => {
         </button>
       );
     }
+
     return (
       <button
         className={styles.menuItem}
@@ -52,8 +67,16 @@ const MyPage: React.FC = () => {
           <span className={styles.nickname}>{userProfile.nickname}</span>
           <div className={styles.schoolInfo}>
             <span className={styles.schoolName}>{userProfile.school}</span>
-            <span className={styles.verificationStatus}>
-              {userProfile.isVerified ? '인증완료' : '미인증'}
+            <span
+              className={`${styles.verificationStatus} ${
+                auth.verificationStatus === 'verified'
+                  ? styles.verified
+                  : auth.verificationStatus === 'pending'
+                  ? styles.pending
+                  : ''
+              }`}
+            >
+              {getVerificationStatus()}
             </span>
           </div>
         </div>
@@ -61,6 +84,7 @@ const MyPage: React.FC = () => {
       </button>
     );
   };
+
   return (
     <div className="content">
       <h1 className={styles.title}>나의 찐빵</h1>
@@ -87,7 +111,11 @@ const MyPage: React.FC = () => {
       <div className={styles.reviewContainer}>
         <h2>나의 찐빵</h2>
         <div className={styles.emptyState}>
-          <img src={emptyCharacterIcon} className="emptyIcon" alt="empty character" />
+          <img
+            src={emptyCharacterIcon}
+            className="emptyIcon"
+            alt="empty character"
+          />
           <p>앗! 아직 등록된 찐빵이 없어요!</p>
         </div>
       </div>
@@ -97,4 +125,5 @@ const MyPage: React.FC = () => {
     </div>
   );
 };
+
 export default MyPage;

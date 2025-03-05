@@ -102,3 +102,10 @@
   font-weight: 500;
   color: var(--black);
 }
+
+.verified {
+  color: var(--block-blue);
+  background-color: #eef3ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
