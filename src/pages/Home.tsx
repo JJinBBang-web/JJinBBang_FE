@@ -185,7 +185,7 @@ const Home: React.FC = () => {
 
         {api.data.reviews.length > 0 ? (
           api.data.reviews.map((review) => (
-            <div>
+            <>
               <div className={styles.line} />
 
               <PreviewReview
@@ -194,7 +194,7 @@ const Home: React.FC = () => {
                 basicInfo={(review as any).basicInfo}
                 reviewInfo={(review as any).reviewInfo}
               />
-            </div>
+            </>
           ))
         ) : (
           <div className={styles.noReviewContainer}>

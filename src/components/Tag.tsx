@@ -76,7 +76,7 @@ export const tagMessages: { [key: string]: string } = {
   PO_ST_04: "세련된 신축",
   PO_ST_05: "곰팡이 없음",
   PO_ST_06: "냉난방 좋음",
-  PO_ST_07: "배수, 수압 좋음",
+  PO_ST_07: "배수,수압 좋음",
 
   PO_MT_01: "주차 편리",
   PO_MT_02: "엘리베이터",
@@ -102,11 +102,11 @@ export const tagMessages: { [key: string]: string } = {
   NE_ST_04: "집이 낡음",
   NE_ST_05: "곰팡이 많음",
   NE_ST_06: "냉난방 나쁨",
-  NE_ST_07: "배수, 수압 약함",
+  NE_ST_07: "배수,수압 약함",
 
   NE_MT_01: "주차 불편",
-  NE_MT_02: "엘리베이터 없음",
-  NE_MT_03: "쓰레기 처리 불편",
+  NE_MT_02: "계단만 있음",
+  NE_MT_03: "쓰레기 불편",
   NE_MT_04: "관리비 비쌈",
   NE_MT_05: "인터넷 느림",
   NE_MT_06: "관리 부족",

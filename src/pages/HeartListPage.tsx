@@ -99,7 +99,7 @@ const Heart: React.FC = () => {
             </div>
           </div>
           {api.data.reviews.map((review) => (
-            <div>
+            <div style={{width:"320px"}}>
               <div className={styles.line} />
 
               <PreviewReview
