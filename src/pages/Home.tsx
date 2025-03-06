@@ -9,33 +9,34 @@ import PreviewReview from "../components/PreviewReview";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import adSense from "../assets/image/adSense.svg";
-
 const api = {
   code: 200,
   message: "조회 성공",
   data: {
     reviews: [
       {
-        basicInfo: {
-          id: 1, // 리뷰 ID
-          name: "다희빌",
-          type: "원룸",
-          contractType: "월세",
-          deposit: 500, // 보증금 (단위: 만원)
-          monthlyRent: 45, // 월세 (단위: 만원)
+        dormitoryBasicInfo: {
+          id: 1,
+          name: "지희관",
+          universityName: "경상국립대",
+          type: "기숙사",
           floor: 2, // 옥탑방은 0, 반지하는 -1
-          space: 26.44, // 면적 (단위: m²)
-          maintenanceCost: 10, // 관리비 (단위: 만원)
-          rating: 3, // 별점 (1~5)
-          liked: true, // 좋아요 여부
+          space: 26.44,
+          DormitoryFee: 10,
+          rating: 0,
+          liked: true, // false
         },
         reviewInfo: {
           content: "집이 너무 깔끔하고...",
-          keywords: ["PO_LO_01", "PO_MT_01", "PO_MT_04"], // 태그 키워드
-          likesCount: 100,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // ✅ Date 객체 사용
+          keywords: [
+            "PO_LO_01",
+            "PO_MT_01",
+            "PO_MT_04", // ... 필요한 키워드 추가
+          ],
+          likesCount: 120,
+          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
-        image: campus_img_1,
+        image: "http://localhost:8080/image/1.jpg",
       },
       {
         basicInfo: {
@@ -85,6 +86,45 @@ const api = {
   },
 };
 
+const campus_api = {
+  code: 200,
+  message: "조회 성공",
+  data: {
+    campusList: [
+      {
+        id: 1,
+        campusName: "가좌캠퍼스",
+        logoImageUrl: "http://localhost:8080/~~~",
+        campusAddress: "경상남도 진주시 ~~",
+        latitude: 37.5605,
+        longitude: 127.0103,
+      },
+      {
+        id: 2,
+        campusName: "칠암캠퍼스",
+        logoImageUrl: null, // 이미지가 없는 경우
+        campusAddress: "경상남도 진주시 ~~",
+        latitude: 37.5605,
+        longitude: 127.0103,
+      },
+      {
+        id: 3,
+        campusName: "통영캠퍼스",
+        logoImageUrl: "http://localhost:8080/~~~",
+        campusAddress: "경상남도 진주시 ~~",
+        latitude: 37.5605,
+        longitude: 127.0103,
+      },
+    ],
+  },
+};
+
+const campusList = campus_api.data.campusList.map((campus) => ({
+  img: campus.logoImageUrl || "default_image_url",
+  univ: "경상국립대학교",
+  campus: campus.campusName,
+}));
+
 const Home: React.FC = () => {
   return (
     <div className={styles.container}>
@@ -105,75 +145,7 @@ const Home: React.FC = () => {
             내 대학 근처의 찐 후기들만 모아 한눈에!
           </p>
         </div>
-        <CampusSlide
-          campusList={[
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "칠암캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "통영캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "통영캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "통영캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-          ]}
-        />
+        <CampusSlide campusList={campusList} />
       </div>
       <div className={styles.previewReviewContainer}>
         <div className={styles.previewHeader}>
@@ -184,18 +156,31 @@ const Home: React.FC = () => {
         </div>
 
         {api.data.reviews.length > 0 ? (
-          api.data.reviews.map((review) => (
-            <div>
-              <div className={styles.line} />
+          api.data.reviews.map((review) => {
+            const hasBasicInfo = "basicInfo" in review;
+            const hasDormitoryBasicInfo = "dormitoryBasicInfo" in review;
+            
+            return (
+              <div>
+                <div className={styles.line} />
 
-              <PreviewReview
-                key={(review as any).basicInfo.id} // `any`로 강제 타입 지정
-                image={(review as any).image}
-                basicInfo={(review as any).basicInfo}
-                reviewInfo={(review as any).reviewInfo}
-              />
-            </div>
-          ))
+                <PreviewReview
+                  key={
+                    (review as any)?.basicInfo?.id ||
+                    (review as any)?.dormitoryBasicInfo?.id
+                  } // `any`로 강제 타입 지정
+                  image={(review as any).image}
+                  {...(hasBasicInfo
+                    ? { basicInfo: (review as any).basicInfo }
+                    : {})}
+                  {...(hasDormitoryBasicInfo
+                    ? { dormitoryBasicInfo: (review as any).dormitoryBasicInfo }
+                    : {})}
+                  reviewInfo={(review as any).reviewInfo}
+                />
+              </div>
+            );
+          })
         ) : (
           <div className={styles.noReviewContainer}>
             <div className={styles.line} />
@@ -208,9 +193,7 @@ const Home: React.FC = () => {
           </div>
         )}
       </div>
-      <div className={styles.adver}>
-        <img src={adSense} alt="adSense" />
-      </div>
+      <div/>
     </div>
   );
 };

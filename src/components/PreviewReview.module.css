@@ -5,6 +5,7 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 }
 
 .buildingContainer {
@@ -83,6 +84,11 @@
   font-weight: 400;
   line-height: 21px; /* 21px */
   letter-spacing: -0.6px;
+}
+
+.buildingPrice.dormitory{
+  background: #FEF7F0;
+  color: var(--block-yellow);
 }
 
 .buildingContent3 {
