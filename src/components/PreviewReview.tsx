@@ -7,7 +7,7 @@ import starIconOff from "../assets/image/starIconOff.svg";
 import PreviewReviewContent from "../components/PreviewReviewContent";
 
 interface PreviewReviewProps {
-  basicInfo: {
+  basicInfo?: {
     id: number; // 리뷰 ID
     name: string;
     type: string;
@@ -17,6 +17,17 @@ interface PreviewReviewProps {
     floor: number; // 0: 옥탑, -1: 반지하, 1 이상: 층수
     space: number; // 면적 (㎡)
     maintenanceCost: number; // 관리비
+    rating: number; // 평점
+    liked: boolean; // 좋아요 여부
+  };
+  dormitoryBasicInfo?: {
+    id: number; // 리뷰 ID
+    name: string;
+    type: string;
+    universityName: string;
+    floor: number; // 0: 옥탑, -1: 반지하, 1 이상: 층수
+    space: number; // 면적 (㎡)
+    DormitoryFee: number; // 관리비
     rating: number; // 평점
     liked: boolean; // 좋아요 여부
   };
@@ -30,22 +41,18 @@ interface PreviewReviewProps {
 }
 
 const PreviewReview: React.FC<PreviewReviewProps> = ({
-  basicInfo: {
-    id,
-    name,
-    type,
-    contractType,
-    deposit,
-    monthlyRent,
-    floor,
-    space,
-    maintenanceCost,
-    rating,
-    liked,
-  },
+  basicInfo,
+  dormitoryBasicInfo,
   reviewInfo: { content, keywords, likesCount, updatedAt },
   image,
 }) => {
+  const liked = basicInfo?.liked ?? dormitoryBasicInfo?.liked;
+  const name = basicInfo?.name ?? dormitoryBasicInfo?.name;
+  const type = basicInfo?.type ?? dormitoryBasicInfo?.type;
+  const rating = basicInfo?.rating ?? dormitoryBasicInfo?.rating;
+  const floor = basicInfo?.floor ?? dormitoryBasicInfo?.floor;
+  const space = basicInfo?.space ?? dormitoryBasicInfo?.space;
+
   const [isLiked, setIsLiked] = useState(liked);
   const [likeCount, setLikeCount] = useState(likesCount);
 
@@ -83,18 +90,29 @@ const PreviewReview: React.FC<PreviewReviewProps> = ({
           </div>
           <div className={styles.buildingContent2}>
             <div className={styles.buildingPrice}>{type}</div>
-            <div className={styles.buildingPrice}>
-              {contractType} {deposit}/{monthlyRent}
-            </div>
+            {basicInfo && (
+              <div className={styles.buildingPrice}>
+                {basicInfo.contractType} {basicInfo.deposit}/
+                {basicInfo.monthlyRent}
+              </div>
+            )}
+            {dormitoryBasicInfo && (
+              <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
+                {dormitoryBasicInfo.universityName}
+              </div>
+            )}
           </div>
           <p className={styles.buildingContent3}>
-            {floor}층, {space}㎡, 관리비 {maintenanceCost}만
+            {floor}층, {space}㎡,{" "}
+            {basicInfo && `관리비 ${basicInfo.maintenanceCost}만`}{" "}
+            {dormitoryBasicInfo &&
+              `기숙사비 ${dormitoryBasicInfo.DormitoryFee}만`}
           </p>
           <div className={styles.buildingContent4}>
-            {[...Array(rating)].map((_, index) => (
+            {[...Array(rating ?? 0)].map((_, index) => (
               <img key={index} src={starIconOn} alt="rate"></img>
             ))}
-            {[...Array(5 - rating)].map((_, index) => (
+            {[...Array(5 - (rating ?? 0))].map((_, index) => (
               <img key={index} src={starIconOff} alt="rate"></img>
             ))}
           </div>

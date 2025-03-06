@@ -14,26 +14,28 @@ const api = {
   data: {
     reviews: [
       {
-        basicInfo: {
-          id: 1, // 리뷰 ID
-          name: "다희빌",
-          type: "원룸",
-          contractType: "월세",
-          deposit: 500, // 보증금 (단위: 만원)
-          monthlyRent: 45, // 월세 (단위: 만원)
+        dormitoryBasicInfo: {
+          id: 1,
+          name: "지희관",
+          universityName: "경상국립대",
+          type: "기숙사",
           floor: 2, // 옥탑방은 0, 반지하는 -1
-          space: 26.44, // 면적 (단위: m²)
-          maintenanceCost: 10, // 관리비 (단위: 만원)
-          rating: 3, // 별점 (1~5)
-          liked: true, // 좋아요 여부
+          space: 26.44,
+          DormitoryFee: 10,
+          rating: 0,
+          liked: true, // false
         },
         reviewInfo: {
           content: "집이 너무 깔끔하고...",
-          keywords: ["PO_LO_01", "PO_MT_01", "PO_MT_04"], // 태그 키워드
-          likesCount: 100,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // ✅ Date 객체 사용
+          keywords: [
+            "PO_LO_01",
+            "PO_MT_01",
+            "PO_MT_04", // ... 필요한 키워드 추가
+          ],
+          likesCount: 120,
+          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
-        image: campus_img_1,
+        image: "http://localhost:8080/image/1.jpg",
       },
       {
         basicInfo: {
@@ -84,7 +86,7 @@ const api = {
 };
 
 const Heart: React.FC = () => {
-    const [isOpen, setIsOpen] = useRecoilState(isFilterModalOpenState);
+  const [isOpen, setIsOpen] = useRecoilState(isFilterModalOpenState);
 
   return (
     <>
@@ -93,23 +95,38 @@ const Heart: React.FC = () => {
         <Banner />
         <div className={styles.bookmarkContainer}>
           <div className={styles.filterContainer}>
-            <div className={styles.filter} onClick={() => setIsOpen((prev) => !prev)}>
+            <div
+              className={styles.filter}
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
               <p className={styles.filterText}>필터</p>
               <img className={styles.filterImg} src={downIcon} alt="downIcon" />
             </div>
           </div>
-          {api.data.reviews.map((review) => (
-            <div style={{width:"320px"}}>
-              <div className={styles.line} />
+          {api.data.reviews.map((review) => {
+            const hasBasicInfo = "basicInfo" in review;
+            const hasDormitoryBasicInfo = "dormitoryBasicInfo" in review;
+            return (
+              <>
+                <div className={styles.line} />
 
-              <PreviewReview
-                key={(review as any).basicInfo.id} // `any`로 강제 타입 지정
-                image={(review as any).image}
-                basicInfo={(review as any).basicInfo}
-                reviewInfo={(review as any).reviewInfo}
-              />
-            </div>
-          ))}
+                <PreviewReview
+                  key={
+                    (review as any)?.basicInfo?.id ||
+                    (review as any)?.dormitoryBasicInfo?.id
+                  } // `any`로 강제 타입 지정
+                  image={(review as any).image}
+                  {...(hasBasicInfo
+                    ? { basicInfo: (review as any).basicInfo }
+                    : {})}
+                  {...(hasDormitoryBasicInfo
+                    ? { dormitoryBasicInfo: (review as any).dormitoryBasicInfo }
+                    : {})}
+                  reviewInfo={(review as any).reviewInfo}
+                />
+              </>
+            );
+          })}
         </div>
       </div>
       <FilterModal />
