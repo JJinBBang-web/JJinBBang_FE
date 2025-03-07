@@ -47,7 +47,7 @@ const MyPage: React.FC = () => {
     if (!userProfile.isLoggedIn) {
       return (
         <button
-          className={styles.menuItem}
+          className={`${styles.menuItem} ${styles.profileItem}`}
           onClick={() => setShowLoginModal(true)}
         >
           <img src={characterIcon} alt="character" />
@@ -57,14 +57,20 @@ const MyPage: React.FC = () => {
       );
     }
 
+    // 이메일 인증 완료 시 닉네임 대신 이메일 표시
+    const displayName =
+      auth.verificationStatus === 'verified' && auth.email
+        ? auth.email
+        : userProfile.nickname;
+
     return (
       <button
-        className={styles.menuItem}
+        className={`${styles.menuItem} ${styles.profileItem}`}
         onClick={() => navigate('/myaccount')}
       >
         <img src={profileIcon} alt="profile" className={styles.profileIcon} />
         <div className={styles.profileInfo}>
-          <span className={styles.nickname}>{userProfile.nickname}</span>
+          <span className={styles.nickname}>{displayName}</span>
           <div className={styles.schoolInfo}>
             <span className={styles.schoolName}>{userProfile.school}</span>
             <span
@@ -99,11 +105,11 @@ const MyPage: React.FC = () => {
         <div className={styles.menuList}>
           {renderProfileSection()}
           <button
-            className={styles.menuItem}
+            className={`${styles.menuItem} ${styles.writeItem}`}
             onClick={() => navigate('/review/type')}
           >
-            <img src={pencilIcon} alt="pencil" />
-            <div>
+            <img src={pencilIcon} alt="pencil" className={styles.pencilIcon} />
+            <div className={styles.menuReview}>
               <span className={styles.menuTitle}>찐빵 작성하기</span>
               <span className={styles.menuDescription}>
                 찐심이 담긴 실거주 후기를 공유해주세요!
