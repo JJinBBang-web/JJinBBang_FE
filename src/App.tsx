@@ -43,6 +43,7 @@ const AppContent: React.FC = () => {
     '/auth/signup',
     '/auth/login',
     '/myaccount',
+    '/auth/student/verify',
     '/auth/student/new',
     '/auth/student/current',
     '/auth/kakao',
