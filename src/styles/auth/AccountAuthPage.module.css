@@ -110,25 +110,22 @@
 .status {
   font-size: 0.65rem;
   color: var(--primary-color) !important;
+  font-weight: 400;
   padding: 0.1875rem 0.375rem;
   border-radius: 0.25rem;
   background-color: #fff7f4;
 }
 
 .verified {
-  font-size: 0.65rem;
-  color: var(--block-blue);
+  color: var(--block-blue) !important;
+  font-weight: 400;
   background-color: #eef3ff;
-  padding: 0.1875rem 0.375rem;
-  border-radius: 0.25rem;
 }
 
 .pending {
   color: var(--primary-color) !important;
-  font-size: 0.65rem;
-  padding: 0.1875rem 0.375rem;
-  border-radius: 0.25rem;
-  background: #fff7f4;
+  background-color: #fff7f4;
+  font-weight: 400;
 }
 
 .serviceButton span {
