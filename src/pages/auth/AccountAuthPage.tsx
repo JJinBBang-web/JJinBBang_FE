@@ -23,6 +23,18 @@ const AccountAuthPage: React.FC = () => {
     }
   };
 
+  // 인증 상태에 따른 클래스 이름 반환
+  const getStatusClassName = () => {
+    switch (auth.verificationStatus) {
+      case 'verified':
+        return `${styles.status} ${styles.verified}`;
+      case 'pending':
+        return `${styles.status} ${styles.pending}`;
+      default:
+        return styles.status;
+    }
+  };
+
   return (
     <div className="content">
       <header className={styles.header}>
@@ -48,14 +60,10 @@ const AccountAuthPage: React.FC = () => {
           onClick={() => navigate('/auth/student/verify')}
         >
           <div className={styles.profileInfo}>
-            <h2>내 계정</h2>
+            <p>내 계정</p>
             <div className={styles.profile}>
-              <span>익명의 찐빵이</span>
-              <span
-                className={`${styles.status} ${
-                  auth.verificationStatus === 'verified' ? styles.verified : ''
-                }`}
-              >
+              <p>익명의 찐빵이</p>
+              <span className={getStatusClassName()}>
                 {getVerificationStatus()}
               </span>
             </div>
