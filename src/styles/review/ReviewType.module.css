@@ -1,65 +1,76 @@
-/* src/styles/review/ReviewType.module.css */
+/* src/styles/review/.module.css */
 .container {
-  width: 100%;
-  height: 100%;
   background-color: var(--white);
+  padding: 0 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
+  display: flex;
+  flex-direction: column;
+  padding: 4.9vh 0 2vh;
   position: relative;
-  padding-top: 12px;
-}
-
-.header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--black);
-  margin: 32px 0 32px;
 }
 
 .backButton {
-  position: absolute;
-  top: 24px;
-  left: 0;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+  z-index: 1;
+  left: 0;
 }
 
 .progressBar {
   width: 100%;
-  height: 4px;
+  height: 0.2rem;
   background-color: var(--color-gray20);
   border-radius: 2px;
-  margin-top: 48px;
+  margin: 2.5rem 0 1rem;
 }
 
 .progressFill {
-  width: 20%;
-  height: 100%;
+  width: 16.6%;
+  height: 0.2rem;
   background-color: var(--primary-color);
   border-radius: 2px;
 }
 
+.header h1 {
+  font-size: 1.25rem;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+}
+
 .buttonGroup {
-  padding: 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 0.62rem;
+  width: 100%;
+  padding-bottom: 7rem;
 }
 
 .typeButton {
   width: 100%;
-  height: 52px;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
   background-color: var(--white);
   border: 1px solid var(--color-gray20);
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1.125rem;
   font-weight: 500;
-  color: var(--black);
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  text-align: left;
+  color: var(--color-gray60);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .typeButton.selected {
@@ -68,28 +79,23 @@
   color: var(--primary-color);
 }
 
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  max-width: 393px;
-  margin: 0 auto;
-  padding: 12px 16px 44px;
-  background-color: var(--white);
-}
-
 .nextButton {
-  flex: 1;
-  height: 52px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  background-color: var(--color-gray20);
-  border: none;
+  width: calc(100% - 2rem);
+  height: 3.375rem;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(393px - 2rem); /* 컨테이너 최대 너비 고려 */
+  background-color: var(--color-gray40);
   color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  bottom: 2.75rem;
 }
 
 .nextButton.enabled {

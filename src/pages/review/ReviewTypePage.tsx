@@ -74,15 +74,15 @@ const ReviewTypePage: React.FC = () => {
   };
 
   return (
-    <div className="content">
+    <div className="content" style={{ backgroundColor: 'var(--white)' }}>
       <div className={styles.container}>
         <header className={styles.header}>
-          <div className={styles.progressBar}>
-            <div className={styles.progressFill}></div>
-          </div>
           <button className={styles.backButton} onClick={handleBack}>
             <img src={backArrowIcon} alt="back" />
           </button>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill}></div>
+          </div>
           <h1>찐빵 유형을 선택해 볼까요?</h1>
         </header>
         <div className={styles.buttonGroup}>
@@ -105,8 +105,6 @@ const ReviewTypePage: React.FC = () => {
             </button>
           ))}
         </div>
-      </div>
-      <footer className={styles.footer}>
         <button
           className={`${styles.nextButton} ${
             selectedType ? styles.enabled : ''
@@ -116,7 +114,7 @@ const ReviewTypePage: React.FC = () => {
         >
           다음
         </button>
-      </footer>
+      </div>
     </div>
   );
 };
