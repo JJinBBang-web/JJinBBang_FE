@@ -35,6 +35,32 @@
   padding: 0 1rem;
 }
 
+.guide {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--white);
+  border-style: none;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  margin-bottom: 0.9375rem;
+}
+
+.guideIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.guide p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-gray80);
+  line-height: 1.3;
+  letter-spacing: -0.0375rem;
+  word-break: keep-all;
+  flex: 1;
+}
+
 .verificationSection,
 .serviceSection {
   display: flex;
