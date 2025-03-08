@@ -1,54 +1,56 @@
 /* src/styles/auth/StudentEmailVerification.module.css */
-.content {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  max-width: 393px;
-  margin: 0 auto;
-  background-color: var(--block-background);
-}
-
-.container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  position: relative;
-  overflow: hidden;
-}
-
 .header {
-  padding: 16px 0;
-  margin-bottom: 16px;
+  display: flex;
+  padding: 4.9vh 0 2vh;
+  position: relative;
+  margin-bottom: 1.25rem;
 }
 
 .backButton {
   background: none;
   border: none;
+  padding: 0.5rem;
   cursor: pointer;
-  padding: 0 16px;
+  position: absolute;
+  left: 1rem;
   transform: scaleX(-1);
+  z-index: 1;
+}
+
+.container {
+  display: flex;
+  padding: 0rem 1.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  align-self: stretch;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 700;
   color: var(--black);
-  margin-bottom: 16px;
-  margin-left: 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 0.25rem;
 }
 
 .description {
-  font-size: 14px;
-  line-height: 1.5;
+  text-align: left;
   color: var(--color-gray60);
-  margin-bottom: 32px;
-  margin-left: 4px;
+  font-size: 0.875rem;
+  font-style: normal;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1rem;
+}
+
+.description p {
+  color: var(--color-gray60);
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 0.75rem;
 }
 
 .form {
@@ -58,77 +60,82 @@
   width: 100%;
 }
 
-.inputContainer {
+.inputWrapper {
   position: relative;
-  width: 100%;
-  max-width: 330px;
-  margin-bottom: 24px;
-  right: 16px;
   input:focus {
     outline: none;
   }
 }
 
 .codeInput {
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
+  width: calc(100vw - 3.5rem);
+  display: flex;
+  height: 4.25rem;
+  padding: 1.25rem;
   background-color: var(--white);
   border: none;
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--black);
-  padding: 0.25rem 0.9375rem;
+  box-sizing: border-box;
 }
 
 .codeInput::placeholder {
   color: var(--color-gray40);
-  font-size: 15x;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   padding-left: 0.25rem;
 }
 
-.inputError {
-  box-shadow: 0px 0px 0px 1px var(--primary-color);
-  text-indent: 28px;
-  padding: 0 16px;
+.codeInput.inputError {
+  padding-left: 3.2rem;
 }
 
 .warningIcon {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  width: 20px;
-  height: 20px;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  z-index: 1;
 }
 
 .errorText {
   position: absolute;
-  left: 16px;
-  top: calc(100% + 4px);
-  font-size: 12px;
+  left: 1rem;
+  top: calc(100% + 0.25rem);
+  font-size: 0.8rem;
   color: var(--primary-color);
   margin: 0;
+}
+
+.character {
+  width: 14.37875rem;
+  height: 21.11169rem;
+  margin: 3.75vh 0;
 }
 
 .buttonContainer {
   position: fixed;
   display: flex;
   gap: 12px;
-  width: calc(100% - 32px);
+  width: calc(100vw - 3.5rem);
   bottom: 2.75rem;
-  left: 16px;
-  right: 16px;
-  max-width: 360px;
   margin: 0 auto;
 }
 
 .confirmButton,
 .resendButton {
   flex: 1;
-  height: 52px;
+  width: 22.5rem;
+  height: 3.375rem;
   border-radius: 13px;
-  font-size: 15px;
-  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0375rem;
 }
 
 .resendButton {
@@ -136,8 +143,6 @@
   background-color: var(--white);
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
-  font-size: 16px;
-  font-weight: 500;
   cursor: pointer;
 }
 
@@ -146,8 +151,6 @@
   background-color: var(--primary-color);
   border: none;
   color: var(--white);
-  font-size: 16px;
-  font-weight: 500;
   cursor: pointer;
 }
 

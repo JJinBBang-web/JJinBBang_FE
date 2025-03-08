@@ -53,7 +53,7 @@ const StudentEmailVerification: React.FC = () => {
   };
 
   return (
-    <div className={styles.content}>
+    <div className="content">
       <header className={styles.header}>
         <button onClick={() => navigate(-1)} className={styles.backButton}>
           <img src={arrowIcon} alt="back" />
@@ -61,14 +61,16 @@ const StudentEmailVerification: React.FC = () => {
       </header>
       <main className={styles.container}>
         <h1 className={styles.title}>인증코드를 입력해 주세요.</h1>
-        <p className={styles.description}>
-          메일이 오지 않나요? <br /> <br />
+        <span className={styles.description}>
+          <p>메일이 오지 않나요?</p>
           이메일 서비스 제공자 사정에 의해 수신까지 30분 정도가 소요될 수
           있어요. 메일 주소, 스팸함, 용량 등을 확인해보시고, [재발송]을 눌러
           다시 요청해 주세요
-        </p>
+          <br></br>
+          또는 수신 문제에 대해 학교 웹메일 담당자에게 문의해 주세요
+        </span>
         <form onSubmit={handleCodeSubmit} className={styles.form}>
-          <div className={styles.inputContainer}>
+          <div className={styles.inputWrapper}>
             {isError && (
               <img
                 src={warningIcon}

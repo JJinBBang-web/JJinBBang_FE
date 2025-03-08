@@ -1,24 +1,21 @@
 /* src/styles/auth/CurrentStudentVerification.module.css */
-.content {
-  height: 100vh;
-}
-
 .header {
   display: flex;
-  height: 3.625rem;
-  padding: 0.5rem 0.4375rem;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  align-self: stretch;
+  padding: 4.9vh 0 2vh;
+  background-color: var(--white);
+  position: relative;
+  background-color: var(--block-background);
+  margin-bottom: 1.25rem;
 }
 
 .backButton {
   background: none;
   border: none;
-  width: 2.375rem;
-  height: 2.375rem;
+  padding: 0.5rem;
   cursor: pointer;
+  position: absolute;
+  left: 1rem;
+  z-index: 1;
 }
 
 .flippedIcon {
@@ -36,21 +33,21 @@
 
 .title {
   color: var(--black);
-  text-align: left;
   font-size: 1.5rem;
-  font-style: normal;
   font-weight: 700;
-  line-height: 2.25rem;
+  line-height: 150%;
   letter-spacing: -0.0375rem;
+  margin-bottom: 0.5rem;
 }
 
 .description {
   text-align: left;
-  margin-bottom: 3.5vh;
   color: var(--color-gray60);
-  font-size: 0.95rem;
-  line-height: 1.5rem;
-  letter-spacing: -0.04rem;
+  font-size: 0.964rem;
+  font-weight: 300;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1rem;
 }
 
 .form {
@@ -62,82 +59,77 @@
 
 .inputWrapper {
   position: relative;
-  width: 100%;
-  max-width: 330px;
-  margin-bottom: 24px;
-  right: 16px;
   input:focus {
     outline: none;
   }
 }
 
-.warningIcon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-}
-
 .emailInput {
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
+  display: flex;
+  width: 22.5rem;
+  height: 4.25rem;
+  padding: 1.25rem;
   background-color: var(--white);
   border: none;
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--black);
-  padding: 0.25rem 0.9375rem;
-}
-
-.emailInput.inputError {
-  box-shadow: 0px 0px 0px 1px var(--primary-color);
-  text-indent: 28px;
-  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .emailInput::placeholder {
   color: var(--color-gray40);
-  font-size: 15x;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   padding-left: 0.25rem;
+}
+
+.emailInput.inputError {
+  padding-left: 3.2rem;
+}
+
+.warningIcon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  z-index: 1;
 }
 
 .errorText {
   position: absolute;
-  left: 16px;
-  top: calc(100% + 4px);
-  font-size: 12px;
+  left: 1rem;
+  top: calc(100% + 0.25rem);
+  font-size: 0.8rem;
   color: var(--primary-color);
   margin: 0;
 }
 
 .character {
-  width: 230px;
-  height: 337px;
+  width: 14.37875rem;
+  height: 21.11169rem;
   margin: 3.75vh 0;
 }
 
 .submitButton {
-  width: 100%;
-  height: 52px;
+  width: 22.5rem;
+  height: 3.375rem;
+  position: fixed;
   background-color: var(--primary-color);
   color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
   border: none;
-  border-radius: 16px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 13px;
+  align-self: center;
   cursor: pointer;
-  position: fixed;
-  bottom: 50px;
-  left: 16px;
-  right: 16px;
-  max-width: 360px;
-  margin: 0 auto;
-  padding: 0.1rem;
+  bottom: 2.75rem;
 }
 
 .submitButton.disabled {
@@ -149,48 +141,48 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 120px 16px;
+  padding: 7.5rem 1rem;
   text-align: center;
 }
 
 .checkIcon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 24px;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .completeContainer h2 {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--black);
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 }
 
 .completeContainer p {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: var(--color-gray60);
   margin: 0;
 }
 
 .completeContainer p:last-of-type {
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
 }
 
 .confirmButton {
   width: 100%;
-  max-width: 360px;
-  height: 52px;
+  max-width: 22.5rem;
+  height: 3.25rem;
   background-color: var(--primary-color);
   color: var(--white);
   border: none;
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   position: fixed;
-  bottom: 50px;
-  left: 16px;
-  right: 16px;
+  bottom: 3.125rem;
+  left: 1rem;
+  right: 1rem;
   margin: 0 auto;
 }
