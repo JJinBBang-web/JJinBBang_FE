@@ -1,24 +1,21 @@
 /* src/styles/auth/NewStudentVerification.module.css */
-.content {
-  height: 100vh;
-}
-
 .header {
   display: flex;
-  height: 3.625rem;
-  padding: 0.5rem 0.4375rem;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  align-self: stretch;
+  padding: 4.9vh 0 2vh;
+  background-color: var(--white);
+  position: relative;
+  background-color: var(--block-background);
+  margin-bottom: 1.25rem;
 }
 
 .backButton {
   background: none;
   border: none;
-  width: 2.375rem;
-  height: 2.375rem;
+  padding: 8px;
   cursor: pointer;
+  position: absolute;
+  left: 16px;
+  z-index: 1;
 }
 
 .flippedIcon {
@@ -35,25 +32,24 @@
 }
 
 .title {
-  font-size: 1.5rem;
   color: var(--black);
-  text-align: left;
   font-size: 1.5rem;
-  font-style: normal;
   font-weight: 700;
-  line-height: 2.25rem;
+  line-height: 150%;
   letter-spacing: -0.0375rem;
+  margin-bottom: 0.5rem;
 }
 
 .description {
   text-align: left;
-  margin-bottom: 4.38vh;
+  margin-bottom: 2.5rem;
 }
 
 .description p {
   color: var(--color-gray60);
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: 0.98rem;
+  font-weight: 300;
+  line-height: 150%;
   letter-spacing: -0.0375rem;
 }
 
@@ -64,24 +60,21 @@
 }
 
 .uploadButton {
-  width: 100%;
-  height: 52px;
+  width: 22.6rem;
+  height: 3.375rem;
+  position: fixed;
+  display: flexbox;
   background-color: var(--primary-color);
   color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
   border: none;
   border-radius: 16px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  align-self: center;
   cursor: pointer;
-  position: fixed;
-  bottom: 50px;
-  left: 16px;
-  right: 16px;
-  max-width: 360px;
-  margin: 0 auto;
-  padding: 0.1rem;
+  bottom: 2.75rem;
 }
 
 .statusContainer {
