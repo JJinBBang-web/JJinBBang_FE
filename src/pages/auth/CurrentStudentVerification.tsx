@@ -76,7 +76,7 @@ const CurrentStudentVerification: React.FC = () => {
           />
           <h2>재학생 인증 완료!</h2>
           <p>반가워요, 찐빵이와 함께</p>
-          <p>진 실거주 후기들을 알아가 봐요!</p>
+          <p>찐 실거주 후기들을 알아가 봐요!</p>
           <button onClick={handleConfirm} className={styles.confirmButton}>
             확인
           </button>
