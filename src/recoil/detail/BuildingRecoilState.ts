@@ -21,14 +21,14 @@ export interface Keywords {
     count : number;
 }
 
-export interface BuildingInfo{
+export interface Building{
     basicInfo : BasicInfo;
     buildingImages: BuildingImages;
     keywords : Keywords[];
 }
 
 // 빌딩 정보 상태관리
-export const BuildingInfoState = atom<BuildingInfo>({
+export const BuildingInfoState = atom<Building>({
     key : "BuildingInfoState",
     default : {
         basicInfo: {

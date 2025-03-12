@@ -5,9 +5,58 @@ import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
 import TopButton from "../components/util/TopButton";
 import BuildingReviewList from "../components/detail/BuildingReviewList";
+import { useRecoilState } from "recoil";
+import { BuildingInfoState } from "../recoil/detail/BuildingRecoilState";
+
+const mockData = {
+    basicInfo: {
+        liked: true,
+        id: 3,
+        type: ["아파트", "원룸"],
+        name: "진주가좌그린빌 주공아파트",
+        address: "경남 진주시 내동로348번길 10 [가좌동 573-10]",
+        rating: 3,
+        reviewCount: 25
+    },
+    buildingImages: {
+        count: 2,
+        imageUrl: [
+            "http://localhost:8080/image/x.jpg",
+            "http://localhost:8080/image/y.jpg"
+        ]
+    },
+    keywords: [ // 키워드 정보
+                {
+                    "key": "PO_LO_01",
+                    "count": 10
+                },
+                {
+                    "key": "PO_MT_02",
+                    "count": 6
+                },
+                {
+                    "key": "PO_MT_03",
+                    "count": 4
+                },
+                {
+                    "key": "PO_MT_04",
+                    "count": 3
+                },
+                {
+                    "key": "PO_MT_05",
+                    "count": 2
+                },
+            ],
+}
+
 
 const Building: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const [buildingInfo, setBuildingInfo] = useRecoilState(BuildingInfoState);
+    
+    useEffect(() => {
+        setBuildingInfo(mockData);
+    }, []);
     
     useEffect(() => {
         const handleResize = () => {
@@ -29,9 +78,9 @@ const Building: React.FC = () => {
                 {/* 헤더 */}
                 <Header/>
                 {/* 이미지슬라이더 */}
-                <ImageSlider/>
+                <ImageSlider building={buildingInfo} review={null}/>
                 {/* 건물 정보 및 키워드 */}
-                <BuildingInfo/>
+                <BuildingInfo building={buildingInfo}/>
                 <hr/>
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>
