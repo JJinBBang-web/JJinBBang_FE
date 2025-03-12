@@ -1,12 +1,14 @@
 .content {
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 393px;
     height: 58px;
     box-sizing: border-box;
     overflow: hidden;
-    position: relative;
+    position: fixed;
+    background-color: var(--white);
     padding: 0 7px;
     
     align-content: center;
+    z-index: 999;
 }
