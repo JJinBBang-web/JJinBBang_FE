@@ -212,8 +212,10 @@
     display: flex;
     flex-direction: row;
     gap:4px;
+    row-gap: 6px;
     width: 100%;
     flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 .tag {
@@ -224,15 +226,15 @@
     align-items: center;
     gap: 2px;
     border-radius: 4px;
-    background: #e5e5e5;
+    background: var(--block-unactive-btn);
 }
   
 .tagText {
-    color: #3f3f3f;
+    color: var(--color-gray80);
     font-family: "Spoqa Han Sans Neo";
-    font-size: 14px;
+    font-size: 14px !important;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 400 !important;
     line-height: 150%; /* 21px */
     letter-spacing: -0.6px;
     margin: 0;

@@ -34,7 +34,7 @@
     color: var(--color-gray80);
 }
 .infoContent {
-    width: fit-content;
+    width: 275px;
     padding:0 !important;
     font-family: "Spoqa Han Sans Neo";
     font-size: 16px;
