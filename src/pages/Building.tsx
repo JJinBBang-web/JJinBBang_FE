@@ -36,7 +36,6 @@ const Building: React.FC = () => {
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>
             </div>
-            {/* 탑버튼 */}
             <TopButton/>
         </div>
     )
