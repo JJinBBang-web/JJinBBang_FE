@@ -11,6 +11,9 @@ import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';
 import starEmptyIcon from '../../assets/image/starIconOff.svg';
 import checkIcon from '../../assets/image/checkIconActive.svg';
+// 추가된 부분: CancelModal 컴포넌트와 useCancelModal 훅 임포트
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 
 interface LocationState {
   address?: {
@@ -48,7 +51,13 @@ const ReviewConfirmPage: React.FC = () => {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   // 컴포넌트 마운트 시 저장된 상태 로드
   useEffect(() => {
@@ -110,10 +119,6 @@ const ReviewConfirmPage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleClose = () => {
-    setShowCancelModal(true);
-  };
-
   const handleRateReview = () => {
     setShowRatingModal(true);
   };
@@ -164,72 +169,63 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToDetailedAddress = () => {
+    localStorage.setItem('reviewState', JSON.stringify(review));
     navigate('/review/address/result', {
       state: {
-        ...locationState,
         address: {
           roadAddress: review.address || '',
           jibunAddress: review.addressDetail || '',
-          buildingName: '',
+          buildingName: review.detailedAddress || '',
         },
+        buildingName: review.detailedAddress || '',
+        floor: review.floorType || '',
         from: 'confirm',
       },
     });
   };
 
   const navigateToContractType = () => {
-    navigate('/review/payment-type', {
-      state: {
-        ...locationState,
-        address: locationState.address || {
-          roadAddress: review.address || '',
-          jibunAddress: review.addressDetail || '',
-          buildingName: '',
-        },
-        buildingName:
-          locationState.buildingName || review.detailedAddress || '',
-        from: 'confirm',
-      },
-    });
+    localStorage.setItem('reviewState', JSON.stringify(review));
+    window.location.href = '/review/payment-type?from=confirm';
   };
 
   const navigateToContractDetails = () => {
+    localStorage.setItem('reviewState', JSON.stringify(review));
     const nextPath =
       review.contractType === '전세' ? '/review/jeonse' : '/review/wolse';
+
     navigate(nextPath, {
       state: {
-        ...locationState,
-        address: locationState.address || {
+        address: {
           roadAddress: review.address || '',
           jibunAddress: review.addressDetail || '',
-          buildingName: '',
+          buildingName: review.detailedAddress || '',
         },
-        buildingName:
-          locationState.buildingName || review.detailedAddress || '',
-        paymentType: review.contractType || '월세',
+        buildingName: review.detailedAddress || '',
+        floor: review.floorType || '',
+        paymentType: review.contractType || '',
+        priceData: {
+          deposit: review.deposit || 0,
+          monthlyRent: review.monthlyRent || 0,
+          managementFee: review.managementFee || 0,
+        },
         from: 'confirm',
       },
     });
   };
 
   const navigateToPros = () => {
-    navigate('/review/advantages', {
-      state: {
-        ...locationState,
-        advantages: review.pros,
-        from: 'confirm',
-      },
-    });
+    localStorage.setItem('reviewState', JSON.stringify(review));
+
+    // 직접 URL로 이동
+    window.location.href = '/review/advantages?from=confirm';
   };
 
   const navigateToCons = () => {
-    navigate('/review/disadvantages', {
-      state: {
-        ...locationState,
-        disadvantages: review.cons,
-        from: 'confirm',
-      },
-    });
+    localStorage.setItem('reviewState', JSON.stringify(review));
+
+    // 직접 URL로 이동
+    window.location.href = '/review/disadvantages?from=confirm';
   };
 
   const navigateToContent = () => {
@@ -247,16 +243,20 @@ const ReviewConfirmPage: React.FC = () => {
 
   const renderTags = (tags: string[]) => {
     if (tags && tags.length > 0) {
-      return tags.map((tag, index) => (
-        <span key={index} className={styles.tag}>
-          <img
-            src={getIconFromLabel(tag)}
-            alt={tag}
-            className={styles.tagIcon}
-          />
-          {tag}
-        </span>
-      ));
+      return (
+        <div className={styles.tags}>
+          {tags.map((tag, index) => (
+            <span key={index} className={styles.tag}>
+              <img
+                src={getIconFromLabel(tag)}
+                alt={tag}
+                className={styles.tagIcon}
+              />
+              {tag}
+            </span>
+          ))}
+        </div>
+      );
     } else {
       return null;
     }
@@ -266,7 +266,10 @@ const ReviewConfirmPage: React.FC = () => {
     <div className="content">
       <div className={styles.container}>
         <div className={styles.header}>
-          <button className={styles.closeButton} onClick={handleClose}>
+          <button
+            className={styles.closeButton}
+            onClick={handleCloseButtonClick}
+          >
             <img src={closeIcon} alt="close" />
           </button>
         </div>
@@ -277,7 +280,6 @@ const ReviewConfirmPage: React.FC = () => {
             <br />
             입력한 정보를 확인해 주세요!
           </h1>
-
           <div className={styles.infoContainer}>
             <div
               className={styles.infoItem}
@@ -432,7 +434,8 @@ const ReviewConfirmPage: React.FC = () => {
             <div className={styles.ratingModal}>
               <h2 className={styles.ratingTitle}>찐빵을 업로드 할까요?</h2>
               <p className={styles.ratingSubtitle}>
-                작성해 주신 찐빵의 총점을 매겨 찐빵을 업로드해 보세요!
+                작성해 주신 찐빵의 총점을 매겨 <br />
+                찐빵을 업로드해 보세요!
               </p>
               <div className={styles.starsContainer}>
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -452,7 +455,9 @@ const ReviewConfirmPage: React.FC = () => {
                 ))}
               </div>
               <button
-                className={styles.uploadButton}
+                className={`${styles.uploadButton} ${
+                  rating > 0 ? styles.enabled : ''
+                }`}
                 onClick={handleSubmitRating}
                 disabled={rating === 0}
               >
@@ -464,43 +469,10 @@ const ReviewConfirmPage: React.FC = () => {
       )}
 
       {showCancelModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowCancelModal(false)}
-        >
-          <div
-            className={styles.modalContainer}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.modalHandle}></div>
-            <div className={styles.cancelModal}>
-              <h2 className={styles.modalTitle}>작성을 중단할까요?</h2>
-              <p className={styles.modalSubtitle}>
-                지금까지 작성해 주신 내용은
-                <br /> 저장되지 않아요!
-              </p>
-              <img
-                src={emptyCharacterIcon}
-                alt="비어있는 찐빵 캐릭터"
-                className={styles.emptyCharacterIcon}
-              />
-              <div className={styles.modalButtons}>
-                <button
-                  className={styles.cancelButton}
-                  onClick={() => setShowCancelModal(false)}
-                >
-                  이전
-                </button>
-                <button
-                  className={styles.confirmButton}
-                  onClick={() => navigate('/myPage')}
-                >
-                  중단
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
       )}
 
       {showConfirmModal && (
@@ -519,7 +491,7 @@ const ReviewConfirmPage: React.FC = () => {
                 alt="완료"
                 className={styles.checkIconImage}
               />
-              <h2 className={styles.modalTitle}>찐빵 업로드 완료</h2>
+              <h2 className={styles.completeModalTitle}>찐빵 업로드 완료</h2>
               <p className={styles.modalSubtitle}>
                 나의 찐빵에서 <br />
                 내가 작성한 찐빵을 확인하세요!

@@ -1,6 +1,8 @@
 // src/pages/review/PhotoUploadPage.tsx
 import React, { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/PhotoUpload.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import plusIcon from '../../assets/image/iconPlus.svg';
@@ -26,6 +28,13 @@ const PhotoUploadPage: React.FC = () => {
 
   const [photos, setPhotos] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   const handleAddPhoto = () => {
     fileInputRef.current?.click();
@@ -77,13 +86,12 @@ const PhotoUploadPage: React.FC = () => {
           </div>
           <button
             className={styles.closeButton}
-            onClick={() => navigate('/mypage')}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
+          <h1>직접 촬영한 찐거주 사진을 올려주세요!</h1>
         </header>
-
-        <h1 className={styles.title}>직접 촬영한 찐거주 사진을 올려주세요!</h1>
 
         <div className={styles.subtitle}>
           찐거주 사진 &nbsp;
@@ -141,6 +149,13 @@ const PhotoUploadPage: React.FC = () => {
           다음
         </button>
       </footer>
+
+      {showCancelModal && (
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 };

@@ -1,6 +1,8 @@
 // src/pages/review/PriceInputPage.tsx
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/PriceInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
@@ -23,6 +25,13 @@ const PriceInputPage: React.FC = () => {
   const [deposit, setDeposit] = useState<string>('');
   const [monthlyRent, setMonthlyRent] = useState<string>('');
   const [managementFee, setManagementFee] = useState<string>('');
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   const handleTabChange = (tab: '전세' | '월세') => {
     setActiveTab(tab);
@@ -70,7 +79,7 @@ const PriceInputPage: React.FC = () => {
           </div>
           <button
             className={styles.closeButton}
-            onClick={() => navigate('/mypage')}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
@@ -180,6 +189,13 @@ const PriceInputPage: React.FC = () => {
           다음
         </button>
       </footer>
+
+      {showCancelModal && (
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 };

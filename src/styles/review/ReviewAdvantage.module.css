@@ -1,82 +1,87 @@
 .content {
   flex: 1;
   overflow-y: auto;
-  position: relative;
-  padding-bottom: 60px;
+  padding-top: 1rem;
 }
 
 .container {
+  padding: 0 1rem;
+  height: calc(100vh - 7rem);
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 112px);
   background-color: var(--white);
   overflow: hidden;
 }
 
 .header {
-  position: relative;
-  padding: 24px 0 16px;
+  display: flex;
+  flex-direction: column;
+  padding: 8.75vh 0 1.5vh;
+  position: sticky;
+  top: 0;
   background-color: var(--white);
+  z-index: 10;
 }
 
 .closeButton {
-  position: absolute;
-  top: 24px;
-  left: 0;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+  margin-left: -0.5rem;
+  z-index: 1;
 }
 
 .progressBar {
   width: 100%;
-  height: 4px;
+  height: 0.2rem;
   background-color: var(--color-gray20);
   border-radius: 2px;
-  margin-top: 32px;
+  margin: 2.5rem 0 1.75rem;
+  position: relative;
+  z-index: 5;
 }
 
 .progressFill {
   width: 75%;
-  height: 100%;
+  height: 0.2rem;
   background-color: var(--primary-color);
   border-radius: 2px;
 }
 
-.title {
-  font-size: 22px;
+.header h1 {
   font-weight: 600;
-  letter-spacing: -1.5px;
-  margin: 24px 0 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  font-size: 1.25rem;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+  margin: 0;
 }
 
 .sub_title {
-  margin-bottom: 24px;
-  font-size: 16px;
-  font-weight: 300;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray40);
 }
 
 .jjin_filter_wrap {
-  margin-bottom: 24px;
+  margin-bottom: 1.88rem;
 }
 
 .filter_title {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 0.94rem;
   color: var(--color-gray60);
 }
 
 .jjin_filter {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.62rem;
 }
 
 .filter_btn {
@@ -161,9 +166,4 @@
   border: none;
   z-index: 100;
   transform: rotate(90deg);
-}
-
-.scrollTopButton img {
-  width: 24px;
-  height: 24px;
 }

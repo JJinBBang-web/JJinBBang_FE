@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/PaymentType.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
@@ -26,6 +28,13 @@ const PaymentTypePage: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(
     review.contractType || null
   );
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
@@ -56,6 +65,7 @@ const PaymentTypePage: React.FC = () => {
           state: {
             ...location.state,
             paymentType: selectedType,
+            from: from,
           },
         });
       } else {
@@ -63,6 +73,7 @@ const PaymentTypePage: React.FC = () => {
           state: {
             ...location.state,
             paymentType: selectedType,
+            from: from,
           },
         });
       }
@@ -86,12 +97,12 @@ const PaymentTypePage: React.FC = () => {
           </div>
           <button
             className={styles.closeButton}
-            onClick={() => navigate('/mypage')}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
+          <h1>좋아요! 계약 형태를 선택해 주세요</h1>
         </header>
-        <h1 className={styles.title}>좋아요! 계약 형태를 선택해 주세요</h1>
         <div className={styles.optionContainer}>
           <button
             className={`${styles.optionButton} ${
@@ -112,7 +123,11 @@ const PaymentTypePage: React.FC = () => {
         </div>
       </div>
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={handleBack}>
+        <button
+          className={styles.prevButton}
+          onClick={handleBack}
+          disabled={from === 'confirm'}
+        >
           이전
         </button>
         <button
@@ -125,6 +140,13 @@ const PaymentTypePage: React.FC = () => {
           다음
         </button>
       </footer>
+
+      {showCancelModal && (
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 };

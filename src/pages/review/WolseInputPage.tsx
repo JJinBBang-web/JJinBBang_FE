@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/PriceInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
@@ -33,6 +35,13 @@ const WolseInputPage: React.FC = () => {
   const [managementFee, setManagementFee] = useState<string>(
     review.managementFee ? review.managementFee.toString() : ''
   );
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
@@ -101,7 +110,8 @@ const WolseInputPage: React.FC = () => {
     }
   };
 
-  const isNextEnabled = deposit !== '' && monthlyRent !== '';
+  const isNextEnabled =
+    deposit !== '' && monthlyRent !== '' && managementFee !== '';
 
   return (
     <div className="content">
@@ -112,13 +122,12 @@ const WolseInputPage: React.FC = () => {
           </div>
           <button
             className={styles.closeButton}
-            onClick={() => navigate('/mypage')}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
+          <h1>월세 계약 조건은 어떻게 되나요?</h1>
         </header>
-
-        <h1 className={styles.title}>월세 계약 조건은 어떻게 되나요?</h1>
 
         <div className={styles.inputGroup}>
           <div className={styles.inputContainer}>
@@ -179,6 +188,13 @@ const WolseInputPage: React.FC = () => {
           다음
         </button>
       </footer>
+
+      {showCancelModal && (
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 };

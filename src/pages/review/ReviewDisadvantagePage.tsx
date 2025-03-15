@@ -7,6 +7,8 @@ import {
   FilterItem,
 } from '../../recoil/util/filterRecoilState';
 import { reviewState } from '../../recoil/review/reviewAtoms';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/ReviewAdvantage.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
@@ -31,6 +33,13 @@ const ReviewDisadvantagePage: React.FC = () => {
   );
   const maxSelections = 5;
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
@@ -96,13 +105,13 @@ const ReviewDisadvantagePage: React.FC = () => {
           </div>
           <button
             className={styles.closeButton}
-            onClick={() => navigate('/mypage')}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
+          <h1>이 찐빵의 단점은 무엇인가요?</h1>
+          <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         </header>
-        <h1 className={styles.title}>이 찐빵의 단점은 무엇인가요?</h1>
-        <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         <div className={styles.content} ref={contentRef}>
           {filters.map((category: FilterCategory) => (
             <div className={styles.jjin_filter_wrap} key={category.id}>
@@ -150,6 +159,13 @@ const ReviewDisadvantagePage: React.FC = () => {
           다음
         </button>
       </footer>
+
+      {showCancelModal && (
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 };

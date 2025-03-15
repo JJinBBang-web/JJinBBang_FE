@@ -1,43 +1,39 @@
 /* src/styles/review/AddressResult.module.css */
 .container {
+  background-color: var(--white);
+  padding: 0 1rem;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px);
-  background-color: var(--white);
 }
 
 .header {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8.75vh;
   position: relative;
-  padding-top: 12px;
-}
-
-.header {
-  position: relative;
-  padding: 24px 0 16px;
-  background-color: var(--white);
 }
 
 .closeButton {
-  position: absolute;
-  top: 24px;
-  left: 0;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+  margin-left: -0.5rem;
+  z-index: 1;
 }
 
 .progressBar {
   width: 100%;
-  height: 4px;
+  height: 0.2rem;
   background-color: var(--color-gray20);
   border-radius: 2px;
-  margin-top: 32px;
+  margin: 2.5rem 0 0;
 }
 
 .progressFill {
-  width: 33%;
-  height: 100%;
+  width: 40%;
+  height: 0.2rem;
   background-color: var(--primary-color);
   border-radius: 2px;
 }
@@ -45,65 +41,67 @@
 .titleBox {
   display: flex;
   width: 100%;
-  margin-bottom: 12px;
+  margin: 1.88rem 0 1.25rem;
 }
 
 .title {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -1.5px;
-  margin: 24px 0;
+  width: 100%;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
 }
 
 .searchButton {
-  width: 85px;
-  height: 30px;
+  padding: 0.3125rem 0.625rem;
   background-color: var(--white);
   border: 1px solid var(--color-gray20);
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray80);
   cursor: pointer;
-  margin-left: auto;
-  font-weight: normal;
 }
 
 .addressInfo {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 1.2rem;
+  margin-bottom: 1.75rem;
 }
 
 .addressSection {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .label {
-  font-size: 14px;
+  font-size: 1rem;
+  font-style: normal;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray40);
 }
 
 .address,
 .detailAddress,
 .floor {
-  font-size: 16px;
+  font-size: 1.125rem;
+  font-style: normal;
   font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray80);
-  margin: 0;
 }
 
 .map {
-  width: 100%;
-  height: 250px;
+  width: 22.5rem;
+  height: 14.75rem;
   border-radius: 13px;
-  margin: 8px 0 16px;
   overflow: hidden;
   background-color: var(--color-gray20);
 }
@@ -116,46 +114,40 @@
   justify-content: center;
   align-items: center;
   color: var(--color-gray60);
-  font-size: 14px;
-}
-
-.addressText {
-  margin-top: 8px;
-  color: var(--color-gray80);
-  font-weight: 500;
+  font-size: 1rem;
 }
 
 .footer {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
+  bottom: 2.75rem;
   display: flex;
-  gap: 12px;
+  gap: 0.38rem;
   max-width: 393px;
   margin: 0 auto;
-  padding: 12px 16px 44px;
+  padding: 0 1rem;
   background-color: var(--white);
 }
 
-.prevButton,
-.nextButton {
+.prevButton {
   flex: 1;
-  height: 56px;
+  height: 3.375rem;
+  background-color: var(--color-gray20);
+  border: none;
   border-radius: 16px;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 1rem;
+  color: var(--color-gray60);
   cursor: pointer;
 }
 
-.prevButton {
-  background-color: var(--color-gray20);
-  color: var(--color-gray60);
-  border: none;
-}
-
 .nextButton {
+  flex: 1;
+  height: 3.375rem;
   background-color: var(--primary-color);
-  color: var(--white);
   border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
 }

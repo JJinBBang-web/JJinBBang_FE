@@ -1,56 +1,56 @@
 /* src/styles/review/ReviewConfirm.module.css */
 .container {
+  background-color: var(--white);
+  padding: 0 1rem;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: var(--white);
-  overflow: hidden;
+  position: relative;
 }
 
 .header {
-  position: relative;
-  padding-top: 24px;
-  margin-bottom: 32px;
+  display: flex;
+  align-items: flex-end;
+  height: 6.5rem;
   background-color: var(--white);
+  width: 100%;
+  z-index: 5;
 }
 
 .closeButton {
-  position: absolute;
-  top: 24px;
-  left: 0;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  position: absolute;
+  margin-left: -0.5rem;
+  z-index: 1;
 }
 
 .pageContent {
-  display: flex;
-  flex-direction: column;
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 80px;
+  padding-bottom: 7.5rem;
 }
 
 .title {
-  font-size: 20px;
+  margin-bottom: 1.56rem;
   font-weight: 600;
-  margin-bottom: 20px;
-  line-height: 1.4;
+  font-size: 1.25rem;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
 }
 
 .infoContainer {
-  height: max-content;
   background-color: #f5f5f5;
   border-radius: 16px;
-  margin-bottom: 20px;
 }
 
 .infoItem {
   display: flex;
-  padding: 16px;
+  padding: 1.25rem 0;
+  margin: 0 1.25rem;
   border-bottom: 1.5px solid var(--color-gray20);
-  margin: 0 16px;
   cursor: pointer;
 }
 
@@ -59,34 +59,32 @@
 }
 
 .label {
-  font-size: 14px;
+  width: 4rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray80);
-  flex-shrink: 0;
-  text-align: left;
-  min-width: 80px;
-  margin-left: -16px;
-  margin-right: 8px;
+  margin-right: 1.25rem;
 }
 
 .value {
   display: flex;
-  align-content: center;
   flex: 1;
-  justify-content: space-between;
-  gap: 8px;
 }
 
 .valueText {
-  font-size: 14px;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
 }
 
 .subAddress {
-  display: block;
-  font-size: 14px;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
-  margin-top: 4px;
-  text-align: left;
 }
 
 .contractDetails {
@@ -98,38 +96,23 @@
 
 .tagsContainer {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 1;
-  width: 100%;
-  overflow: hidden;
-}
-
-.tags {
-  display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
 .tag {
   display: inline-flex;
   align-items: center;
   background-color: #e5e5e5;
-  color: var(--color-gray60);
-  padding: 0.225rem 0.3rem;
-  border-radius: 6px;
-  font-size: 12px;
+  color: var(--color-gray80);
+  padding: 0.13rem 0.25rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0.37rem;
   white-space: nowrap;
-}
-
-.tagIcon {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
+  gap: 0.12rem;
 }
 
 .reviewTextContainer {
@@ -137,14 +120,19 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-right: 0.62rem;
+  max-height: 80px;
 }
 
 .reviewText {
   text-align: left;
-  font-size: 14px;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
-  line-height: 1.5;
+  line-height: 1.125;
   width: 100%;
+  word-break: break-word;
 }
 
 .arrowIcon {
@@ -160,11 +148,12 @@
   left: 0;
   right: 0;
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   max-width: 393px;
   margin: 0 auto;
-  padding: 12px 16px 32px;
+  padding: 0.75rem 1rem 2.75rem;
   background-color: var(--white);
+  z-index: 10;
 }
 
 .prevButton,
@@ -208,9 +197,19 @@
   max-width: 393px;
   background-color: var(--white);
   border-radius: 24px 24px 0 0;
-  padding-bottom: 20px;
   position: relative;
   animation: slideUp 0.3s ease-out;
+}
+
+.modalHandle {
+  width: 3.125rem;
+  height: 0.3125rem;
+  background-color: #dadee8;
+  border-radius: 2px;
+  position: absolute;
+  top: 0.62rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 @keyframes slideUp {
@@ -222,150 +221,179 @@
   }
 }
 
-.modalHandle {
+.cancelModal {
+  display: flex;
   width: 100%;
-  width: 60px;
-  height: 4px;
-  background-color: #dadee8;
-  border-radius: 2px;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  justify-content: center;
+  height: 36.8rem;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .ratingModal,
 .confirmModal {
-  width: 100%;
-  padding: 24px 16px;
   display: flex;
+  width: 100%;
+  height: 28.8rem;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  position: relative;
-  margin-left: -16px;
+}
+
+/* 별점 모달 */
+.ratingTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  margin-top: 4.73rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
 }
 
 .starsContainer {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+  margin-bottom: 8.12rem;
 }
 
 .starIcon {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.15rem;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
-.starIcon:hover {
-  transform: scale(1.1);
-}
-
-.ratingTitle,
-.modalTitle {
-  font-size: 22px;
-  font-weight: 600;
-  margin-top: 20px;
-  margin-bottom: 8px;
-}
-
-.ratingSubtitle,
-.modalSubtitle {
-  font-size: 14px;
-  color: var(--color-gray60);
-  text-align: center;
-  margin-bottom: 24px;
-}
-
 .uploadButton {
-  width: 92%;
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 16px;
-  padding: 16px;
-  font-weight: 500;
+  width: calc(100% - 2rem);
+  height: 3.375rem;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(393px - 2rem);
+  background-color: var(--color-gray40);
   color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
+  border: none;
+  border-radius: 13px;
   cursor: pointer;
-  margin-top: 32px;
-  font-size: 14px;
+  bottom: 2.75rem;
+}
+
+.uploadButton.enabled {
+  background-color: var(--primary-color);
 }
 
 .uploadButton:disabled {
-  background-color: #dadee8;
   cursor: not-allowed;
 }
 
+/* 업로드 완료 모달 */
 .checkIconImage {
-  width: 70px;
-  height: 70px;
-  margin: 16px 0 8px;
+  width: 4.375rem;
+  height: 4.375rem;
+  margin-top: 4.73rem;
+}
+
+.completeModalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1rem;
+}
+
+.modalSubtitle {
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+}
+
+.confirmButton {
+  width: calc(100% - 2rem);
+  height: 3.375rem;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(393px - 2rem);
+  background-color: var(--primary-color);
+  color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  bottom: 2.75rem;
+}
+
+/* 작성 중단 모달 */
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  margin-top: 4.73rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.modalSubtitle,
+.ratingSubtitle {
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  text-align: center;
+  margin-bottom: 2.12rem;
+}
+
+.emptyCharacterIcon {
+  margin-bottom: 7.5rem;
 }
 
 .modalButtons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.75rem;
   display: flex;
-  width: 100%;
-  max-width: 320px;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 0.38rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background-color: var(--white);
 }
 
 .cancelButton {
   flex: 1;
+  height: 3.375rem;
   background-color: var(--color-gray20);
   border: none;
   border-radius: 16px;
-  padding: 16px;
-  font-weight: 500;
-  cursor: pointer;
+  font-size: 1rem;
   color: var(--color-gray60);
-}
-
-.confirmButton {
-  flex: 1;
-  width: 92%;
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 16px;
-  padding: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  color: var(--white);
-}
-
-/* 작성 중단 모달 */
-.cancelModal {
-  width: 100%;
-  height: 60vh;
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  margin-left: -16px;
-}
-
-.cancelModal h2 {
-  padding-top: 8vh;
-}
-
-.emptyCharacterIcon {
-  width: 180px;
-  height: 158px;
-  margin-bottom: 12vh;
-}
-
-.cancelModal button {
-  width: 100vw;
-  height: 56px;
-  border-radius: 16px;
-  font-size: 14px;
   cursor: pointer;
 }
 
 /* 스크롤바 스타일링 */
+.pageContent::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pageContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pageContent::-webkit-scrollbar-thumb {
+  background-color: #dadee8;
+  border-radius: 4px;
+}
+
 .reviewText::-webkit-scrollbar {
   width: 4px;
 }

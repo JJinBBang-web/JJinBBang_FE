@@ -1,9 +1,11 @@
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
 import styles from '../../styles/review/ReviewContent.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
 
 interface LocationState {
   photos?: string[];
@@ -55,13 +57,21 @@ const ReviewContentPage: React.FC = () => {
     (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
-  const [content, setContent] = useState(review.description || '');
-
-  useEffect(() => {
+  const [content, setContent] = useState(() => {
+    // 확인 페이지에서 돌아온 경우에만 이전 데이터 유지
     if (from === 'confirm') {
-      setContent(review.description || '');
+      return review.description || '';
     }
-  }, [from, review]);
+    // 그 외의 경우 빈 내용으로 시작
+    return '';
+  });
+
+  const {
+    showCancelModal,
+    handleCloseButtonClick,
+    handleCancelModalClose,
+    handleConfirmCancel,
+  } = useCancelModal();
 
   const maxLength = 1000;
 
@@ -121,15 +131,16 @@ const ReviewContentPage: React.FC = () => {
           </div>
           <button
             className={styles.closeButton}
-            onClick={() => navigate('/mypage')}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
+          <h1>
+            마지막으로 이 찐빵에 대해
+            <br></br>좀 더 자세하게 알려줄 수 있나요?
+          </h1>
         </header>
-        <h1 className={styles.title}>
-          마지막으로 이 찐빵에 대해
-          <br></br>좀 더 자세하게 알려줄 수 있나요?
-        </h1>
+
         <div className={styles.textareaContainer}>
           <AutoHeightTextarea
             value={content}
@@ -157,6 +168,13 @@ const ReviewContentPage: React.FC = () => {
           다음
         </button>
       </footer>
+
+      {showCancelModal && (
+        <CancelModal
+          onClose={handleCancelModalClose}
+          onConfirm={handleConfirmCancel}
+        />
+      )}
     </div>
   );
 };
