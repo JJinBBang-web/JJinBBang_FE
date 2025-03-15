@@ -3,10 +3,7 @@ import heartIconOn from "../../assets/image/heartIconOn.svg";
 import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
-import ExampelImg from "../../assets/image/emptyCharacterIcon.svg"
-import dlatl from "../../assets/image/PO_LO_01.svg"
 import { tagMessages, tagImages } from "../Tag";
-import { useRecoilState } from "recoil";
 import { Building } from "../../recoil/detail/BuildingRecoilState";
 import { useEffect, useState } from "react";
 

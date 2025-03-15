@@ -57,7 +57,7 @@ const JjinFilterModal = () => {
                         <p className={styles.title}>{category.category}</p>
                         <div className={styles.jjin_filter} 
                         ref={(el: HTMLDivElement | null) => {filterContentRefs.current[index] = el;}}>
-                            {category.filter.map((item, index) => (
+                            {category.positiveFilters.map((item, index) => (
                                 <button key={index} className={styles.filter_btn}>
                                     <img src={item.icon} alt={item.label} className={styles.filter_icon}/>
                                     <p className={styles.filter_text}>{item.label}</p>
