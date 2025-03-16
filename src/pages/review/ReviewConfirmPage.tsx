@@ -4,14 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
 import { JjinFilterState } from '../../recoil/util/filterRecoilState';
+import { tagMessages, tagLongMessages } from '../../components/Tag';
 import styles from '../../styles/review/ReviewConfirm.module.css';
-import emptyCharacterIcon from '../../assets/image/emptyCharacterIcon.svg';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';
 import starEmptyIcon from '../../assets/image/starIconOff.svg';
 import checkIcon from '../../assets/image/checkIconActive.svg';
-// 추가된 부분: CancelModal 컴포넌트와 useCancelModal 훅 임포트
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 
@@ -39,7 +38,6 @@ interface LocationState {
 
 const ReviewConfirmPage: React.FC = () => {
   const navigate = useNavigate();
-  const reviewData = useRecoilValue(reviewState);
   const location = useLocation();
   const locationState = (location.state as LocationState) || {};
 
@@ -65,7 +63,7 @@ const ReviewConfirmPage: React.FC = () => {
     if (savedState) {
       setReview((prev) => ({ ...prev, ...JSON.parse(savedState) }));
     }
-  }, []);
+  }, [setReview]);
 
   // 데이터 로딩 로직
   useEffect(() => {
@@ -95,17 +93,52 @@ const ReviewConfirmPage: React.FC = () => {
     }
   }, [locationState, setReview]);
 
+  // 라벨에 맞는 아이콘 찾기
   const getIconFromLabel = (label: string): string => {
+    // 먼저 filters에서 아이콘 찾기 시도
     let iconSrc = '';
-    filters.forEach((category) => {
-      [...category.positiveFilters, ...category.negativeFilters].forEach(
-        (item) => {
-          if (item.label === label) {
-            iconSrc = item.icon;
+    let tagKey = '';
+
+    // longMessage에서 key 찾기 (사용자가 선택한 태그 "교통이 편리해요"로부터 "PO_LO_01" 키 확인)
+    for (const [key, value] of Object.entries(tagLongMessages)) {
+      if (value === label) {
+        tagKey = key;
+        break;
+      }
+    }
+
+    // 찾은 키로 아이콘 가져오기
+    if (tagKey) {
+      iconSrc =
+        filters
+          .find(
+            (category) =>
+              category.positiveFilters.some((item) => item.key === tagKey) ||
+              category.negativeFilters.some((item) => item.key === tagKey)
+          )
+          ?.positiveFilters.find((item) => item.key === tagKey)?.icon ||
+        filters
+          .find(
+            (category) =>
+              category.positiveFilters.some((item) => item.key === tagKey) ||
+              category.negativeFilters.some((item) => item.key === tagKey)
+          )
+          ?.negativeFilters.find((item) => item.key === tagKey)?.icon ||
+        '';
+    }
+
+    // 아이콘을 찾지 못했으면 라벨로 직접 찾기
+    if (!iconSrc) {
+      filters.forEach((category) => {
+        [...category.positiveFilters, ...category.negativeFilters].forEach(
+          (item) => {
+            if (item.label === label) {
+              iconSrc = item.icon;
+            }
           }
-        }
-      );
-    });
+        );
+      });
+    }
 
     return iconSrc;
   };
@@ -148,12 +181,11 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToHousingType = () => {
-    // 현재 리뷰 상태를 로컬 스토리지에 저장
     localStorage.setItem('reviewState', JSON.stringify(review));
 
     navigate('/review/type', {
       state: {
-        ...review, // 전체 리뷰 상태를 전달
+        ...review,
         from: 'confirm',
       },
     });
@@ -216,15 +248,11 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToPros = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
-
-    // 직접 URL로 이동
     window.location.href = '/review/advantages?from=confirm';
   };
 
   const navigateToCons = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
-
-    // 직접 URL로 이동
     window.location.href = '/review/disadvantages?from=confirm';
   };
 
@@ -241,25 +269,38 @@ const ReviewConfirmPage: React.FC = () => {
     });
   };
 
+  // 태그 표시 함수 수정
   const renderTags = (tags: string[]) => {
-    if (tags && tags.length > 0) {
-      return (
-        <div className={styles.tags}>
-          {tags.map((tag, index) => (
+    if (!tags || tags.length === 0) return null;
+
+    return (
+      <div className={styles.tags}>
+        {tags.map((tagLabel, index) => {
+          // 긴 라벨("교통이 편리해요")에서 짧은 라벨("교통 편리")로 변환
+          let shortLabel = tagLabel;
+
+          // tagLongMessages에서 키 찾기
+          for (const [key, value] of Object.entries(tagLongMessages)) {
+            if (value === tagLabel) {
+              // 찾은 키로 tagMessages에서 짧은 라벨 가져오기
+              shortLabel = tagMessages[key] || tagLabel;
+              break;
+            }
+          }
+
+          return (
             <span key={index} className={styles.tag}>
               <img
-                src={getIconFromLabel(tag)}
-                alt={tag}
+                src={getIconFromLabel(tagLabel)}
+                alt={shortLabel}
                 className={styles.tagIcon}
               />
-              {tag}
+              {shortLabel}
             </span>
-          ))}
-        </div>
-      );
-    } else {
-      return null;
-    }
+          );
+        })}
+      </div>
+    );
   };
 
   return (
@@ -371,9 +412,7 @@ const ReviewConfirmPage: React.FC = () => {
               <span className={styles.label}>장점</span>
               <div className={styles.value}>
                 <div className={styles.tagsContainer}>
-                  <div className={styles.tags}>
-                    {renderTags(review.pros || [])}
-                  </div>
+                  {renderTags(review.pros || [])}
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -386,9 +425,7 @@ const ReviewConfirmPage: React.FC = () => {
               <span className={styles.label}>단점</span>
               <div className={styles.value}>
                 <div className={styles.tagsContainer}>
-                  <div className={styles.tags}>
-                    {renderTags(review.cons || [])}
-                  </div>
+                  {renderTags(review.cons || [])}
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
