@@ -1,7 +1,7 @@
 /* src/styles/MyPage.module.css */
 .container {
   background-color: var(--block-background);
-  padding-bottom: 13.75vh; /* Add padding at the bottom to account for the nav bar */
+  padding-bottom: 13.75vh;
 }
 
 .title {
@@ -15,7 +15,7 @@
   line-height: 2rem;
   color: var(--black);
   margin: 0;
-  padding: 3rem 0 1rem;
+  padding: 4.75rem 0 1.19rem;
 }
 
 .guide {
