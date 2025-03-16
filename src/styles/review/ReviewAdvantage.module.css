@@ -99,6 +99,10 @@
   background-color: rgba(244, 105, 64, 0.08);
 }
 
+.filter_btn.selected .filter_text {
+  color: var(--primary-color);
+}
+
 .filter_icon {
   width: 24px;
   height: 24px;
