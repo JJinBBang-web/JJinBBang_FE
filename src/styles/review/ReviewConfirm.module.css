@@ -380,6 +380,17 @@
   cursor: pointer;
 }
 
+.cm_confirmButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
+}
+
 /* 스크롤바 스타일링 */
 .pageContent::-webkit-scrollbar {
   width: 4px;

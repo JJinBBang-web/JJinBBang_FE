@@ -31,7 +31,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm }) => {
             <button className={styles.cancelButton} onClick={onClose}>
               이전
             </button>
-            <button className={styles.confirmButton} onClick={onConfirm}>
+            <button className={styles.cm_confirmButton} onClick={onConfirm}>
               중단
             </button>
           </div>
