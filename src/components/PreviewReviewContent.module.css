@@ -45,8 +45,13 @@
   background: #e5e5e5;
 }
 
+.tagImg {
+  width: 15px;
+  height: 15px;
+}
+
 .tagText {
-  color: #3f3f3f;
+  color: var(--color-gray80);
   font-family: "Spoqa Han Sans Neo";
   font-size: 14px;
   font-style: normal;
@@ -54,6 +59,7 @@
   line-height: 150%; /* 21px */
   letter-spacing: -0.6px;
   margin: 0;
+  padding: 0;
 }
 
 .dateLikeContainer {

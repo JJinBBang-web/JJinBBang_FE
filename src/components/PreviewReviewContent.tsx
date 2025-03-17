@@ -21,7 +21,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
       <div className={styles.tagContainer}>
         {keywords.map((keyword, index) => (
           <div key={index} className={styles.tag}>
-            <img src={tagImages[keyword]} alt={keyword} />
+            <img className={styles.tagImg} src={tagImages[keyword]} alt={keyword} />
             <p className={styles.tagText}>{tagMessages[keyword]}</p>
           </div>
         ))}
