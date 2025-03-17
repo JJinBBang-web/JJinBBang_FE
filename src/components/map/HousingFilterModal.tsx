@@ -34,6 +34,19 @@ const HousingFilterModal = () => {
     // 초기화 버튼 활성화 조건: "전체"가 아닐 때
     const isResetActive = selectedType !== "전체";
 
+    const handleConfirm = () => {
+        if (isConfirmActive) {
+            setHousingType(selectedType);
+            
+            // 먼저 isOpen만 false로 설정해서 닫히는 애니메이션 실행
+            setBottomSheet(prev => ({ ...prev, isOpen: false })); 
+            
+            // 300ms 후에 type을 null로 설정해서 완전히 제거
+            setTimeout(() => {
+                setBottomSheet({ isOpen: false, type: null });
+            }, 300);
+        }
+    };
 
     return (
         <div className={styles.content}>
@@ -51,10 +64,7 @@ const HousingFilterModal = () => {
                 onClick={() => setSelectedType("전체")}>초기화</button>
                 <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
                 onClick={() => {
-                        if (isConfirmActive) {
-                            setHousingType(selectedType);
-                            setBottomSheet({ isOpen: false, type: null }); 
-                        }
+                    handleConfirm();
                     }}>확인</button>
             </div>
         </div>
