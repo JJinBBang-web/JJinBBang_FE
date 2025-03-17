@@ -8,6 +8,8 @@ import ReveiwContractInfo from '../components/detail/ReviewContractInfo';
 import ReviewMapInfo from '../components/detail/ReviewMapInfo';
 import { useRecoilState } from 'recoil';
 import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
+import Footer from '../components/detail/Footer';
+import ReportButton from '../components/util/ReportButton';
 
 
 const mockData = {
@@ -82,7 +84,12 @@ const Review: React.FC = () => {
                 {/* 단지정보 */}
                 <ReviewMapInfo review={reviews}/>
             </div>
-            <TopButton/>
+            {/* 작성id === 로그인 id 같으면 Footer 보이게+reportBtn안보이게, 아니면 반대 */}
+            <div className={styles.fixedWrap}>
+                <ReportButton/>
+                <TopButton/>
+                <Footer/>
+            </div>
         </div>
     )
 }

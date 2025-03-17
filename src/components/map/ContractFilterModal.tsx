@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./ContractFilterModal.module.css"
 import { monthlyRentRangeState, depositRangeState, selectedTypeState, selectedContractState, filterState, maintenanceCostState } from "../../recoil/map/mapRecoilState";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Slider from "react-slider";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
 
@@ -21,6 +21,26 @@ const ContractFilterModal = () => {
 
     // 모달 상태관리
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
+
+    const handleConfirm = () => {
+        if (isConfirmActive) {
+            setFilters((prev) =>({
+                ...prev,
+                contractType : selectedContract,
+                inMaintenanceCost : maintenanceCost,
+                depositMin : depositRange[0],
+                depositMax : depositRange[1] === null ? null : depositRange[1],
+                monthlyRentMin : monthlyRentRange[0],
+                monthlyRentMax : monthlyRentRange[1] === null ? null : monthlyRentRange[1],
+            }));
+            setBottomSheet(prev => ({ ...prev, isOpen: false })); 
+
+            // 300ms 후에 type을 null로 설정해서 완전히 제거
+            setTimeout(() => {
+                setBottomSheet({ isOpen: false, type: null });
+            }, 300);
+        }
+    };
 
     // 보증금 값 조정
     const formatDepositValue = (value: number | null) =>
@@ -180,19 +200,7 @@ const ContractFilterModal = () => {
                 >초기화</button>
                 <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
                 onClick={() => {
-                        if (isConfirmActive) {
-                            setFilters((prev) =>({
-                                ...prev,
-                                contractType : selectedContract,
-                                inMaintenanceCost : maintenanceCost,
-                                depositMin : depositRange[0],
-                                depositMax : depositRange[1] === null ? null : depositRange[1],
-                                monthlyRentMin : monthlyRentRange[0],
-                                monthlyRentMax : monthlyRentRange[1] === null ? null : monthlyRentRange[1],
-                            }));
-                            setBottomSheet({ isOpen: false, type: null });
-                            console.log(selectedContract,maintenanceCost, formatDepositValue(depositRange[0]), formatDepositValue(depositRange[1]), formatMonthlyRentValue(monthlyRentRange[0]),formatMonthlyRentValue(monthlyRentRange[1]))
-                        }
+                    handleConfirm();
                     }}
                     >확인</button>
             </div>

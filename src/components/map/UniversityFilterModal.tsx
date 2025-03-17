@@ -22,6 +22,23 @@ const UniversityFilterModal = () => {
     // 모달 상태관리
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
 
+    const handleConfirm = () => {
+        if(isConfirmActive) {
+            setFilterState((prev) => ({
+                ...prev,
+                university : selectedTypeNum!,
+            }))
+            // 먼저 isOpen만 false로 설정해서 닫히는 애니메이션 실행
+            setBottomSheet(prev => ({ ...prev, isOpen: false })); 
+            
+            // 300ms 후에 type을 null로 설정해서 완전히 제거
+            setTimeout(() => {
+                setBottomSheet({ isOpen: false, type: null });
+            }, 300);
+        }
+    };
+
+
     // 초성활성화 조건
     const activeInitials = new Set(universities.map((uni) => uni.initial));
     // 대학교 필터링
@@ -114,15 +131,7 @@ const UniversityFilterModal = () => {
                 }}
                 >초기화</button>
                 <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
-                onClick={() => {
-                    if(isConfirmActive) {
-                        setFilterState((prev) => ({
-                            ...prev,
-                            university : selectedTypeNum!,
-                        }))
-                        setBottomSheet({ isOpen: false, type: null });
-                    }
-                    }}
+                onClick={() => {handleConfirm();}}
                     >확인</button>
             </div>
         </div>

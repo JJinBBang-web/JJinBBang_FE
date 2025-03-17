@@ -4,6 +4,7 @@ import HousingFilter from '../components/map/HousingFilter';
 import SearchBar from '../components/map/SearchBar';
 import styles from "./Map.module.css";
 import FilterBar from '../components/map/FilterBar';
+import ModalBottomSheet from '../components/util/ModalBottomSheet';
 
 const Map = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);

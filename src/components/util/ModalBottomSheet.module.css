@@ -4,7 +4,7 @@
 
     width: 100%;
     max-width: 393px;
-    max-height: 980vh;
+    max-height: 98vh;
     min-height: 20vh;
     padding: 0 24px;
     padding-bottom: 34px;
@@ -18,12 +18,11 @@
     left: 50%; /* 화면의 가로 중심으로 이동 */
     bottom: 0;
     transform: translate(-50%, 100%);
-    transition: transform 0.3s ease-in-out; /* 부드러운 애니메이션 */
+    transition: transform 0.3s ease-in-out;
 }
 
-.sheet.open {
-    transform: translate(-50%, 0);
-}
+.sheet.open { transform: translate(-50%, 0); }
+
 
 .sheet_header {
     display: block;
@@ -86,8 +85,11 @@
     background: rgba(23, 23, 23,0.5);
     z-index: 999;
     display: none;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
 }
 
 .overlay.open {
     display: block;
+    opacity: 1;
 }

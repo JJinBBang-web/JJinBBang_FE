@@ -85,7 +85,9 @@ const Building: React.FC = () => {
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>
             </div>
-            <TopButton/>
+            <div className={styles.fixedWrap}>
+                <TopButton/>
+            </div>
         </div>
     )
 }
