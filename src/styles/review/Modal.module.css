@@ -15,6 +15,7 @@
     background-color: #ffffff;
     width: 100%;
     max-width: 393px;
+    box-sizing: border-box;
     border-radius: 24px 24px 0 0;
     padding: 24px 16px;
     animation: slideUp 0.3s ease-out;
