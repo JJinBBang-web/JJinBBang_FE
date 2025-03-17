@@ -4,10 +4,10 @@
     width: 100%;
     box-sizing: border-box;
     overflow: hidden;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
-.topBtn {
+.reportBtn {
     border-radius: 50px;
     border: 1px solid var(--color-gray10);
     background-color: var(--white);
@@ -21,4 +21,10 @@
     align-items: center;
 
     cursor: pointer;
+}
+
+.reportImg {
+    width: 20px;
+    height: auto;
+    margin-bottom: 2px;
 }
