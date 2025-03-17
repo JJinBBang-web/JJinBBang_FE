@@ -159,24 +159,14 @@ const Home: React.FC = () => {
           api.data.reviews.map((review) => {
             const hasBasicInfo = "basicInfo" in review;
             const hasDormitoryBasicInfo = "dormitoryBasicInfo" in review;
-            
+
             return (
               <>
                 <div className={styles.line} />
 
                 <PreviewReview
-                  key={
-                    (review as any)?.basicInfo?.id ||
-                    (review as any)?.dormitoryBasicInfo?.id
-                  } // `any`로 강제 타입 지정
-                  image={(review as any).image}
-                  {...(hasBasicInfo
-                    ? { basicInfo: (review as any).basicInfo }
-                    : {})}
-                  {...(hasDormitoryBasicInfo
-                    ? { dormitoryBasicInfo: (review as any).dormitoryBasicInfo }
-                    : {})}
-                  reviewInfo={(review as any).reviewInfo}
+                  key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
+                  review={review}
                 />
               </>
             );
@@ -193,7 +183,7 @@ const Home: React.FC = () => {
           </div>
         )}
       </div>
-      <div/>
+      <div />
     </div>
   );
 };

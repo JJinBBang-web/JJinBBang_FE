@@ -4,26 +4,21 @@ import { atom } from "recoil";
 export interface BasicInfo {
   id: number;
   name: string;
-  type: string;
-  contractType: string;
-  deposit: number; // 보증금
-  monthlyRent: number; // 월세
-  floor: number; // 옥탑방은 0, 반지하는 -1
-  space: number; // area -> space 변경
-  maintenanceCost: number;
+  type: string[];
+  address: string;
   rating: number;
-  liked: boolean; // false
+  reviewCount: number;
+  liked: boolean;
 }
 
-export interface DormitoryBasicInfo {
+export interface DormitoryBuildInfo {
   id: number; // 리뷰 ID
   name: string;
   type: string;
   universityName: string;
-  floor: number; // 0: 옥탑, -1: 반지하, 1 이상: 층수
-  space: number; // 면적 (㎡)
-  DormitoryFee: number; // 관리비
+  address: string;
   rating: number; // 평점
+  reviewCount: number;
   liked: boolean; // 좋아요 여부
 }
 
@@ -34,15 +29,15 @@ export interface ReviewInfo {
   updatedAt: Date;
 }
 
-export interface ReviewPreview {
+export interface BuildingReviewPreview {
   basicInfo?: BasicInfo;
-  dormitoryBasicInfo?: DormitoryBasicInfo;
+  dormitoryBuildInfo?: DormitoryBuildInfo;
   reviewInfo: ReviewInfo;
-  image: string;
+  reviewImage: string;
 }
 
 // 리뷰 프리뷰 상태관리
-export const ReviewPreviewState = atom<ReviewPreview[]>({
+export const PreviewBuildingReviewState = atom<BuildingReviewPreview[]>({
   key: "ReviewPreviewState",
   default: [
     {
@@ -52,7 +47,7 @@ export const ReviewPreviewState = atom<ReviewPreview[]>({
         likesCount: 0,
         updatedAt: new Date(),
       },
-      image: "",
+      reviewImage: "",
     },
   ],
 });
