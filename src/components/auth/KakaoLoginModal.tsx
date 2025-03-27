@@ -22,9 +22,10 @@ const KakaoLoginModal = ({ onClose }: KakaoLoginModalProps) => {
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.container}>
+        <div className={styles.modalHandle}></div>
         <button className={styles.kakaoButton} onClick={handleKakaoLogin}>
           <img src={kakaoIcon} alt="kakao" />
-          <span>카카오로 시작하기</span>
+          <span>카카오로 로그인</span>
         </button>
       </div>
     </div>
