@@ -1,5 +1,5 @@
 // src/pages/MyPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState } from '../recoil/auth/atoms';
@@ -25,11 +25,27 @@ const MyPage: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [auth, setAuth] = useRecoilState(authState);
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    isLoggedIn: true,
+    isLoggedIn: false, // Changed to false by default
     nickname: '익명의 찐빵이',
     school: '찐빵대학교',
     isVerified: false,
   });
+
+  // Check login status on component mount
+  useEffect(() => {
+    // Check if user is logged in based on auth state
+    const checkLoginStatus = () => {
+      // Use isAuthenticated property from AuthState
+      if (auth.isAuthenticated) {
+        setUserProfile((prev) => ({
+          ...prev,
+          isLoggedIn: true,
+        }));
+      }
+    };
+
+    checkLoginStatus();
+  }, [auth]);
 
   // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {
