@@ -67,12 +67,6 @@
   display: flex;
   padding: 1rem;
   align-items: center;
-}
-
-.profileItem {
-  display: flex;
-  padding: 1rem;
-  align-items: center;
   justify-content: flex-start;
 }
 
@@ -119,16 +113,15 @@
 .menuTitle {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--color-gray80);
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
 }
 
 .menuDescription {
-  display: inline-flex;
-  font-size: 0.8rem;
   color: var(--color-gray60);
-  margin-top: 0.25rem;
-  letter-spacing: -0.0375rem;
+  font-size: 0.875rem;
   line-height: 150%;
+  letter-spacing: -0.0375rem;
 }
 
 /* Character icon styles */
@@ -148,6 +141,17 @@
   display: inline-block;
   vertical-align: middle;
   object-fit: contain;
+}
+
+.profileItem > span {
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+}
+
+.profileItem > img:last-child {
+  margin-left: auto;
 }
 
 /* Common arrow icon style */
