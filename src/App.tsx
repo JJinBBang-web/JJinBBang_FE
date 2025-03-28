@@ -7,7 +7,6 @@ import Home from './pages/Home';
 import Map from './pages/Map';
 import Heart from './pages/HeartListPage';
 import MyPage from './pages/MyPage';
-import EmailVerificationPage from './pages/auth/EmailVerificationPage';
 import Nav from './components/Nav';
 import KakaoCallback from './pages/auth/KakaoCallback';
 import KakaoAuthPage from './pages/auth/KakaoAuthPage';
@@ -74,7 +73,6 @@ const AppContent: React.FC = () => {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myaccount" element={<AccountAuthPage />} />
         <Route path="/auth">
-          <Route path="verify" element={<EmailVerificationPage />} />
           <Route path="kakao" element={<KakaoAuthPage />} />
           <Route path="kakao/callback" element={<KakaoCallback />} />
           <Route path="student">

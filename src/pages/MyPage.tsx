@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { authState } from '../recoil/auth/atoms';
+import { authState, AuthState } from '../recoil/auth/atoms';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
@@ -12,6 +12,8 @@ import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import verifiedCharacterIcon from '../assets/image/verifiedCharacterIcon.svg';
 import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
+import TermsAgreementModal from '../components/auth/TermsAgreementModal';
+import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
 interface UserProfile {
   isLoggedIn: boolean;
@@ -23,29 +25,59 @@ interface UserProfile {
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [auth, setAuth] = useRecoilState(authState);
+  const [showTermsModal, setShowTermsModal] = useState(false); // 초기값 false로 설정
+  const [showSignupCompleteModal, setShowSignupCompleteModal] = useState(false);
+  const [auth, setAuth] = useRecoilState<AuthState>(authState);
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    isLoggedIn: false, // Changed to false by default
+    isLoggedIn: false,
     nickname: '익명의 찐빵이',
     school: '찐빵대학교',
     isVerified: false,
   });
 
-  // Check login status on component mount
+  // 컴포넌트 마운트 시 로그인 상태 확인
   useEffect(() => {
-    // Check if user is logged in based on auth state
-    const checkLoginStatus = () => {
-      // Use isAuthenticated property from AuthState
-      if (auth.isAuthenticated) {
-        setUserProfile((prev) => ({
+    if (auth.isAuthenticated) {
+      setUserProfile((prev) => ({
+        ...prev,
+        isLoggedIn: true,
+      }));
+
+      // 첫 로그인인 경우 약관 동의 모달 표시
+      if (auth.isFirstLogin) {
+        setShowTermsModal(true);
+
+        // 첫 로그인 플래그 초기화 (필요한 경우)
+        setAuth((prev: AuthState) => ({
           ...prev,
-          isLoggedIn: true,
+          isFirstLogin: false,
         }));
       }
-    };
+    }
+  }, [auth, setAuth]);
 
-    checkLoginStatus();
-  }, [auth]);
+  // 약관 동의 모달 닫기 핸들러
+  const handleCloseTermsModal = () => {
+    setShowTermsModal(false);
+  };
+
+  // 약관 동의 완료 핸들러
+  const handleCompleteTerms = () => {
+    setShowTermsModal(false);
+    setShowSignupCompleteModal(true); // 약관 동의 완료 후 회원가입 완료 모달 표시
+  };
+
+  // 회원가입 확인 버튼 핸들러
+  const handleConfirmSignup = () => {
+    setShowSignupCompleteModal(false);
+  };
+
+  // 학교 인증 버튼 핸들러
+  const handleVerifySchool = () => {
+    setShowSignupCompleteModal(false);
+    // 학교 인증 페이지로 이동하거나 인증 모달 열기
+    // 예: navigate('/verify-school');
+  };
 
   // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {
@@ -146,8 +178,26 @@ const MyPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 로그인 모달 */}
       {showLoginModal && (
         <KakaoLoginModal onClose={() => setShowLoginModal(false)} />
+      )}
+
+      {/* 약관 동의 모달 */}
+      {showTermsModal && (
+        <TermsAgreementModal
+          onClose={handleCloseTermsModal}
+          onComplete={handleCompleteTerms}
+        />
+      )}
+
+      {/* 회원가입 완료 모달 */}
+      {showSignupCompleteModal && (
+        <SignupCompleteModal
+          onConfirm={handleConfirmSignup}
+          onVerify={handleVerifySchool}
+        />
       )}
     </div>
   );

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { authState } from '../../recoil/auth/atoms';
+import { authState, AuthState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/NewStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
@@ -16,7 +16,7 @@ const NewStudentVerification: React.FC = () => {
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>('initial');
   const [file, setFile] = useState<File | null>(null);
-  const [auth, setAuth] = useRecoilState(authState);
+  const [auth, setAuth] = useRecoilState<AuthState>(authState);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -39,7 +39,7 @@ const NewStudentVerification: React.FC = () => {
 
   const handleConfirm = () => {
     // 인증 상태를 pending으로 설정
-    setAuth((prev) => ({
+    setAuth((prev: AuthState) => ({
       ...prev,
       verificationStatus: 'pending',
     }));

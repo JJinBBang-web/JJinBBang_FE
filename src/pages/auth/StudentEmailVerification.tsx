@@ -1,15 +1,15 @@
-// StudentEmailVerification.tsx
+// src/pages/auth/StudentEmailVerification.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { authState } from '../../recoil/auth/atoms';
+import { authState, AuthState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/StudentEmailVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import warningIcon from '../../assets/image/warningIcon.svg';
 
 const StudentEmailVerification: React.FC = () => {
   const navigate = useNavigate();
-  const [auth, setAuth] = useRecoilState(authState);
+  const [auth, setAuth] = useRecoilState<AuthState>(authState);
   const [code, setCode] = useState('');
   const [isError, setIsError] = useState(false);
 
@@ -24,12 +24,10 @@ const StudentEmailVerification: React.FC = () => {
 
   const handleCodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (code.length !== 6) {
       setIsError(true);
       return;
     }
-
     // 테스트를 위해 인증 코드는 '112233'으로 고정
     if (code !== '112233') {
       setIsError(true);
@@ -37,13 +35,12 @@ const StudentEmailVerification: React.FC = () => {
     }
 
     // 인증 성공
-    setAuth((prev) => ({
+    setAuth((prev: AuthState) => ({
       ...prev,
       isAuthenticated: true,
       verificationStatus: 'verified',
       email: 'student@gnu.ac.kr',
     }));
-
     navigate('/auth/student/current', { state: { verified: true } });
   };
 

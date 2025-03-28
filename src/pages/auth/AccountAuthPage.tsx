@@ -2,14 +2,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { authState } from '../../recoil/auth/atoms';
+import { authState, AuthState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/AccountAuthPage.module.css';
 import questionIcon from '../../assets/image/questionIcon.svg';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 
 const AccountAuthPage: React.FC = () => {
   const navigate = useNavigate();
-  const [auth] = useRecoilState(authState);
+  const [auth] = useRecoilState<AuthState>(authState);
 
   // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {

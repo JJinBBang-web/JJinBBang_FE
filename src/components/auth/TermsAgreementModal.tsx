@@ -25,27 +25,43 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
     { id: 'all', title: '모두 동의', required: false, checked: false },
     {
       id: 'age',
-      title: '(필수) 만 14세 이상이에요',
+      title: '만 14세 이상이에요',
       required: true,
       checked: false,
     },
     {
       id: 'service',
-      title: '(필수) 찐빵 서비스 이용약관 동의',
+      title: '찐빵 서비스 이용약관 동의',
       required: true,
       checked: false,
     },
     {
       id: 'privacy',
-      title: '(필수) 개인정보 수집 및 이용 동의',
+      title: '개인정보 수집 및 이용 동의',
       required: true,
       checked: false,
     },
   ]);
-
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
+
+  // 필수 약관 체크 여부 확인
+  const isAllRequiredChecked = terms.every((term) =>
+    term.required ? term.checked : true
+  );
+
+  // 필수 약관 모두 체크되면 모두 동의도 체크
+  useEffect(() => {
+    if (isAllRequiredChecked && !terms[0].checked) {
+      setTerms((prevTerms) => {
+        const newTerms = [...prevTerms];
+        newTerms[0].checked = true;
+        return newTerms;
+      });
+      setIsAllChecked(true);
+    }
+  }, [isAllRequiredChecked]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -79,30 +95,47 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
         term.id === termId ? { ...term, checked: !term.checked } : term
       );
       setTerms(newTerms);
-      setIsAllChecked(newTerms.slice(1).every((term) => term.checked));
+
+      // 필수 약관이 모두 체크되었는지 확인
+      const allRequiredChecked = newTerms
+        .slice(1)
+        .every((term) => term.checked);
+      setIsAllChecked(allRequiredChecked);
     }
   };
-
-  const isAllRequiredChecked = terms.every((term) =>
-    term.required ? term.checked : true
-  );
 
   return (
     <div className={styles.overlay}>
       <div
-        className={styles.modal}
+        className={styles.container}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className={styles.slideBar} />
-        <h1>약관에 동의해주세요</h1>
+        <div className={styles.handleContainer}>
+          <div className={styles.modalHandle}></div>
+        </div>
+        <p className={styles.title}>약관에 동의해주세요</p>
         <p className={styles.description}>
-          찐빵이가 개인정보와 서비스 이용 권리 잘 지켜줄게요!
+          찐빵이가 개인정보와 서비스 이용 권리 <br /> 잘 지켜줄게요!
         </p>
-
         <div className={styles.termsList}>
-          {terms.map((term) => (
+          <button
+            key={terms[0].id}
+            className={styles.termItem}
+            onClick={() => handleTermCheck(terms[0].id)}
+          >
+            <img
+              src={terms[0].checked ? checkIconActive : checkIcon}
+              alt="check"
+              className={styles.checkIcon}
+            />
+            <span>{terms[0].title}</span>
+          </button>
+
+          <div className={styles.separator}></div>
+
+          {terms.slice(1).map((term) => (
             <button
               key={term.id}
               className={styles.termItem}
@@ -113,14 +146,17 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
                 alt="check"
                 className={styles.checkIcon}
               />
-              <span>{term.title}</span>
-              {term.id !== 'all' && (
-                <img src={arrowIcon} alt="arrow" className={styles.arrowIcon} />
-              )}
+              <span>
+                <span style={{ color: 'var(--color-gray80)' }}>(필수)</span>
+                <span
+                  style={{ display: 'inline-block', width: '0.5rem' }}
+                ></span>
+                {term.title}
+              </span>
+              <img src={arrowIcon} alt="arrow" className={styles.arrowIcon} />
             </button>
           ))}
         </div>
-
         <button
           className={`${styles.confirmButton} ${
             isAllRequiredChecked ? styles.active : ''
