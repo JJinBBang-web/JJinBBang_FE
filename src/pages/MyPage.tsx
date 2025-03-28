@@ -9,7 +9,6 @@ import arrowIcon from '../assets/image/arrowIcon.svg';
 import characterIcon from '../assets/image/characterIcon.svg';
 import pencilIcon from '../assets/image/pencilIcon.svg';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
-import verifiedCharacterIcon from '../assets/image/verifiedCharacterIcon.svg';
 import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
@@ -25,7 +24,7 @@ interface UserProfile {
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showTermsModal, setShowTermsModal] = useState(false); // 초기값 false로 설정
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const [showSignupCompleteModal, setShowSignupCompleteModal] = useState(false);
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -139,60 +138,72 @@ const MyPage: React.FC = () => {
     );
   };
 
+  // 모달 관련 스타일 - 배경이 보이도록 함
+  const pageStyle = {
+    position: 'relative' as const,
+    minHeight: '100vh',
+  };
+
   return (
-    <div className="content">
-      <h1 className={styles.title}>나의 찐빵</h1>
-      {/* 인증 완료 상태에서는 가이드 div를 표시하지 않음 */}
-      {auth.verificationStatus !== 'verified' && (
-        <div className={styles.guide}>
-          <img src={questionIcon} alt="question" className={styles.guideIcon} />
-          <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
-        </div>
-      )}
-      <div className={styles.container}>
-        <div className={styles.menuList}>
-          {renderProfileSection()}
-          <button
-            className={`${styles.menuItem} ${styles.writeItem}`}
-            onClick={() => navigate('/review/type')}
-          >
-            <img src={pencilIcon} alt="pencil" className={styles.pencilIcon} />
-            <div className={styles.menuReview}>
-              <span className={styles.menuTitle}>찐빵 작성하기</span>
-              <span className={styles.menuDescription}>
-                찐심이 담긴 실거주 후기를 공유해주세요!
-              </span>
-            </div>
-            <img src={arrowIcon} alt="arrow" />
-          </button>
-        </div>
-        <div className={styles.reviewContainer}>
-          <h2>나의 찐빵</h2>
-          <div className={styles.emptyState}>
+    <div style={pageStyle}>
+      <div className="content">
+        <h1 className={styles.title}>나의 찐빵</h1>
+        {/* 인증 완료 상태에서는 가이드 div를 표시하지 않음 */}
+        {auth.verificationStatus !== 'verified' && (
+          <div className={styles.guide}>
             <img
-              src={emptyCharacterIcon}
-              className="emptyIcon"
-              alt="empty character"
+              src={questionIcon}
+              alt="question"
+              className={styles.guideIcon}
             />
-            <p>앗! 아직 등록된 찐빵이 없어요!</p>
+            <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
+          </div>
+        )}
+        <div className={styles.container}>
+          <div className={styles.menuList}>
+            {renderProfileSection()}
+            <button
+              className={`${styles.menuItem} ${styles.writeItem}`}
+              onClick={() => navigate('/review/type')}
+            >
+              <img
+                src={pencilIcon}
+                alt="pencil"
+                className={styles.pencilIcon}
+              />
+              <div className={styles.menuReview}>
+                <span className={styles.menuTitle}>찐빵 작성하기</span>
+                <span className={styles.menuDescription}>
+                  찐심이 담긴 실거주 후기를 공유해주세요!
+                </span>
+              </div>
+              <img src={arrowIcon} alt="arrow" />
+            </button>
+          </div>
+          <div className={styles.reviewContainer}>
+            <h2>나의 찐빵</h2>
+            <div className={styles.emptyState}>
+              <img
+                src={emptyCharacterIcon}
+                className="emptyIcon"
+                alt="empty character"
+              />
+              <p>앗! 아직 등록된 찐빵이 없어요!</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 로그인 모달 */}
+      {/* 모달 컴포넌트들 - 배경이 보이도록*/}
       {showLoginModal && (
         <KakaoLoginModal onClose={() => setShowLoginModal(false)} />
       )}
-
-      {/* 약관 동의 모달 */}
       {showTermsModal && (
         <TermsAgreementModal
           onClose={handleCloseTermsModal}
           onComplete={handleCompleteTerms}
         />
       )}
-
-      {/* 회원가입 완료 모달 */}
       {showSignupCompleteModal && (
         <SignupCompleteModal
           onConfirm={handleConfirmSignup}

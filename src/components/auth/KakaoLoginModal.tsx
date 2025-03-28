@@ -13,6 +13,7 @@ interface KakaoLoginModalProps {
 const KakaoLoginModal = ({ onClose }: KakaoLoginModalProps) => {
   const [_, setAuth] = useRecoilState(authState);
 
+  // 오버레이 클릭 시 모달 닫기
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -23,7 +24,6 @@ const KakaoLoginModal = ({ onClose }: KakaoLoginModalProps) => {
     // 로그인 성공 후 리다이렉트 시 처리를 위해
     // 로컬 스토리지에 firstLogin 플래그 저장
     localStorage.setItem('isFirstLogin', 'true');
-
     // 카카오 로그인 페이지로 이동
     window.location.href = KAKAO_AUTH_URL;
   };

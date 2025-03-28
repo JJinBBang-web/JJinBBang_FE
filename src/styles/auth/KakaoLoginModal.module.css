@@ -14,8 +14,8 @@
 
 .container {
   display: flex;
-  flex-direction: column; /* 추가: 세로 방향 정렬 */
-  align-items: center; /* 추가: 가운데 정렬 */
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 10.9rem;
   background-color: white;

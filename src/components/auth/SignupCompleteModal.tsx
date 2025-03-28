@@ -1,5 +1,6 @@
 // src/components/auth/SignupCompleteModal.tsx
 import React from 'react';
+import ReactDOM from 'react-dom';
 import styles from '../../styles/auth/SignupCompleteModal.module.css';
 import checkIconActive from '../../assets/image/checkIconActive.svg';
 
@@ -12,8 +13,16 @@ const SignupCompleteModal: React.FC<SignupCompleteModalProps> = ({
   onConfirm,
   onVerify,
 }) => {
-  return (
-    <div className={styles.overlay}>
+  // 오버레이 클릭 시 모달 닫기
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onConfirm();
+    }
+  };
+
+  // 포털을 통해 body에 직접 렌더링
+  return ReactDOM.createPortal(
+    <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.modal}>
         <img src={checkIconActive} alt="complete" className={styles.icon} />
         <h2>회원 가입 완료</h2>
@@ -31,7 +40,8 @@ const SignupCompleteModal: React.FC<SignupCompleteModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

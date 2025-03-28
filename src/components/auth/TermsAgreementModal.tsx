@@ -104,8 +104,15 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
     }
   };
 
+  // 오버레이 클릭 시 모달 닫기
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className={styles.overlay}>
+    <div className={styles.overlay} onClick={handleOverlayClick}>
       <div
         className={styles.container}
         onTouchStart={handleTouchStart}
