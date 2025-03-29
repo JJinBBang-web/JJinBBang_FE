@@ -1,6 +1,9 @@
 // src/components/auth/SignupCompleteModal.tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { authState, AuthState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/SignupCompleteModal.module.css';
 import checkIconActive from '../../assets/image/checkIconActive.svg';
 
@@ -13,11 +16,43 @@ const SignupCompleteModal: React.FC<SignupCompleteModalProps> = ({
   onConfirm,
   onVerify,
 }) => {
+  const navigate = useNavigate();
+  const [auth, setAuth] = useRecoilState<AuthState>(authState);
+
   // 오버레이 클릭 시 모달 닫기
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onConfirm();
     }
+  };
+
+  // 확인 버튼 클릭 핸들러
+  const handleConfirmClick = () => {
+    // isLoggedIn 상태를 true로 설정
+    setAuth((prevAuth) => ({
+      ...prevAuth,
+      isAuthenticated: true,
+      verificationStatus: 'unverified',
+    }));
+
+    // MyPage로 돌아가기
+    onConfirm();
+  };
+
+  // 학교 인증하기 버튼 클릭 핸들러
+  const handleVerifyClick = () => {
+    // isLoggedIn 상태를 true로 설정
+    setAuth((prevAuth) => ({
+      ...prevAuth,
+      isAuthenticated: true,
+      verificationStatus: 'unverified',
+    }));
+
+    // 모달 닫기 처리
+    onVerify();
+
+    // MyAccountPage로 이동
+    navigate('/myaccount');
   };
 
   // 포털을 통해 body에 직접 렌더링
@@ -37,10 +72,10 @@ const SignupCompleteModal: React.FC<SignupCompleteModalProps> = ({
           </p>
         </div>
         <div className={styles.modalButtons}>
-          <button onClick={onConfirm} className={styles.confirmButton}>
+          <button onClick={handleConfirmClick} className={styles.confirmButton}>
             확인
           </button>
-          <button onClick={onVerify} className={styles.verifyButton}>
+          <button onClick={handleVerifyClick} className={styles.verifyButton}>
             학교 인증하기
           </button>
         </div>
