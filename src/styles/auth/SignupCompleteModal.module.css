@@ -8,70 +8,112 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   z-index: 1000;
 }
 
-.modal {
+.container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 360px;
+  height: 30.8rem;
   background-color: var(--white);
-  border-radius: 24px;
-  padding: 32px 16px;
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  padding: 0 1rem;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.handleContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0.62rem 0;
+}
+
+.modalHandle {
+  width: 3.125rem;
+  height: 0.3125rem;
+  background-color: #e5e8eb;
+  border-radius: 2px;
+}
+
+.content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  margin: 3.75rem auto 7.5rem;
 }
 
 .icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 24px;
+  width: 4.375rem;
+  height: 4.375rem;
+  margin-bottom: 2.12rem;
 }
 
-.modal h2 {
-  font-size: 24px;
+.title {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--black);
-  margin: 0 0 12px 0;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  text-align: center;
+  margin-bottom: 0.75rem;
 }
 
-.modal p {
-  font-size: 14px;
-  line-height: 20px;
+.description {
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
-  margin: 0 0 32px 0;
-  white-space: pre-line;
+  text-align: center;
 }
 
-.buttonGroup {
+.modalButtons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.75rem;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-
-.verifyButton {
-  width: 100%;
-  height: 52px;
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 16px;
-  color: var(--white);
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
+  gap: 0.38rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background-color: var(--white);
 }
 
 .confirmButton {
-  width: 100%;
-  height: 52px;
+  flex: 1;
+  height: 3.375rem;
   background-color: var(--white);
   border: 1px solid var(--primary-color);
-  border-radius: 16px;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0375rem;
+  border-radius: 13px;
+  font-size: 1rem;
   color: var(--primary-color);
-  font-size: 16px;
-  font-weight: 500;
+  cursor: pointer;
+}
+
+.verifyButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 13px;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0375rem;
+  color: var(--white);
   cursor: pointer;
 }
