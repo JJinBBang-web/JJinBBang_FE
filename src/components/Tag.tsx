@@ -1,3 +1,4 @@
+// src/components/Tag.tsx
 import PO_LO_01 from "../assets/image/PO_LO_01.svg";
 import PO_LO_02 from "../assets/image/PO_LO_02.svg";
 import PO_LO_03 from "../assets/image/PO_LO_03.svg";

@@ -59,6 +59,11 @@ body{
     --color-gray20 : #E8E8E8;
     --color-gray10 : #EEEEEE;
 
+  --color-gray80: #3f3f3f;
+  --color-gray60: #676767;
+  --color-gray40: #b5b5b5;
+  --color-gray20: #e8e8e8;
+  --color-gray10: #eeeeee;
 }
 
 html {
@@ -70,4 +75,3 @@ html {
     system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo',
     'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', sans-serif;
-}
