@@ -81,6 +81,7 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+
         {children}
       </div>
     </div>

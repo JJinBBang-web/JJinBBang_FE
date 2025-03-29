@@ -1,0 +1,110 @@
+.previewReviewContainer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.buildingContainer {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+
+.buildingImg {
+  width: 135px;
+  height: 120px;
+  border-radius: 8px;
+}
+
+.buildingContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.buildingContent1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.buildingName {
+  width: 153px;
+  flex-shrink: 0;
+  overflow: hidden;
+  color: var(--black);
+  text-overflow: ellipsis;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 27px; /* 27px */
+  letter-spacing: -0.6px;
+  margin: 0;
+}
+.likeContainer{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 22px;
+  height: 22px;
+}
+.likeButton {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.buildingContent2 {
+  display: flex;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.buildingPrice {
+  display: flex;
+  padding: 3px 6px;
+  justify-content: center;
+  align-items: center;
+  color: var(--block-blue);
+  border-radius: 4px;
+  background: #eef3ff;
+  /* body/Body 2 */
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px; /* 21px */
+  letter-spacing: -0.6px;
+}
+
+.buildingPrice.dormitory{
+  background: #FEF7F0;
+  color: var(--block-yellow);
+}
+
+.buildingContent3 {
+  color: var(#3f3f3f);
+
+  /* body/Body 2 */
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 21px; /* 21px */
+  letter-spacing: -0.6px;
+  margin: 0 0 8px 0;
+}
+
+.buildingContent4 {
+  display: flex;
+  align-items: center;
+}
