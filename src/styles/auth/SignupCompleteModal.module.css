@@ -80,7 +80,8 @@
 }
 
 .modalButtons {
-  position: fixed;
+  width: calc(100% - 2rem);
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 2.75rem;

@@ -114,7 +114,7 @@
 .confirmButton {
   width: calc(100% - 2rem);
   height: 3.375rem;
-  position: fixed;
+  position: absolute;
   background-color: var(--color-gray40);
   color: white;
   font-size: 1rem;
