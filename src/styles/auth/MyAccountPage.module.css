@@ -1,12 +1,9 @@
 /* src/styles/auth/MyAccountPage.module.css */
 .header {
   display: flex;
-  padding: 4vh 0 2vh;
-  background-color: var(--white);
-  position: relative;
-  background-color: var(--block-background);
   align-items: center;
-  justify-content: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-);
 }
 
 .header h1 {

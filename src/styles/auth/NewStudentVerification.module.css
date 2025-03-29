@@ -1,11 +1,8 @@
 /* src/styles/auth/NewStudentVerification.module.css */
 .header {
   display: flex;
-  padding: 4.9vh 0 2vh;
-  background-color: var(--white);
-  position: relative;
-  background-color: var(--block-background);
-  margin-bottom: 1.25rem;
+  align-items: center;
+  padding: 12px 16px;
 }
 
 .backButton {
