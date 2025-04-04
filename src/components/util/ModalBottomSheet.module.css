@@ -6,7 +6,7 @@
     max-width: 393px;
     max-height: 98vh;
     min-height: 20vh;
-    padding: 0 24px;
+    padding: 0 16px;
     padding-bottom: 34px;
 
     background-color: var(--white);
@@ -31,7 +31,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    margin: 16px 0;
+    margin: 10px 0;
 }
 .header_divider {
     width: 50px;
@@ -43,11 +43,10 @@
 
 .sheet_title_wrap {
     display: block;
-    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 16px 0;
+    margin: 24px 6px;
 }
 
 .sheet_info_wrap {
