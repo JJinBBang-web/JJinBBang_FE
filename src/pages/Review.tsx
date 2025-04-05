@@ -10,7 +10,8 @@ import { useRecoilState } from 'recoil';
 import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
 import Footer from '../components/detail/Footer';
 import ReportButton from '../components/util/ReportButton';
-
+import exampleImage1 from '../assets/image/example_image1.png';
+import exampleImage2 from '../assets/image/example_image2.png';
 
 const mockData = {
     basicInfo: {
@@ -29,7 +30,7 @@ const mockData = {
     },
     reviewImages: {
         count: 5,
-        imageUrl: []
+        imageUrl: [exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage2]
     },
     building : {
         buildingId : 1, // 건물 id

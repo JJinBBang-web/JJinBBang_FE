@@ -7,6 +7,8 @@ import TopButton from "../components/util/TopButton";
 import BuildingReviewList from "../components/detail/BuildingReviewList";
 import { useRecoilState } from "recoil";
 import { BuildingInfoState } from "../recoil/detail/BuildingRecoilState";
+import exampleImage1 from '../assets/image/example_image1.png';
+import exampleImage2 from '../assets/image/example_image2.png';
 
 const mockData = {
     basicInfo: {
@@ -21,8 +23,7 @@ const mockData = {
     buildingImages: {
         count: 2,
         imageUrl: [
-            "http://localhost:8080/image/x.jpg",
-            "http://localhost:8080/image/y.jpg"
+            exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,
         ]
     },
     keywords: [ // 키워드 정보
