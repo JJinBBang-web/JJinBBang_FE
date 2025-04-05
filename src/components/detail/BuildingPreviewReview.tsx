@@ -34,7 +34,7 @@ const BuildingPreviewReview:React.FC<Props> = ({review}) => {
     }, [liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
 
     return (
-        <div className={styles.content} onClick={()=> {navigate('/building/review/'); window.scrollTo(0, 0);}}>
+        <div className={styles.content} onClick={()=> {navigate('/building/rv'); window.scrollTo(0, 0);}}>
             <img src="" alt="" className={styles.buildingImg}/>
             <div className={styles.infoAndLike}>
                 <div className={styles.buildingInfo}>{floor}, {space}m2, 관리비{fee}만</div>
