@@ -77,7 +77,7 @@ const Review: React.FC = () => {
                 <ImageSlider review={reviews} building={null}/>
                 {/* 리뷰 정보 및 키워드 */}
                 <ReviewInfo review={reviews}/>
-                <hr className={styles.divider}/>
+                <hr className={styles.divider} style={{marginTop:"50px"}}/>
                 {/* 계약형태 */}
                 <ReveiwContractInfo review={reviews}/>
                 <hr className={styles.divider}/>

@@ -63,7 +63,8 @@ const AppContent: React.FC = () => {
     '/review/filter-disad',
     '/review/content',
     '/review/confirm',
-    '/building'
+    '/building',
+    '/building/review'
   ].includes(location.pathname);
 
   return (
@@ -104,6 +105,7 @@ const AppContent: React.FC = () => {
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
         <Route path='/building' element={<Building/>}/>
+        <Route path='/building/review' element={<Review/>}/>
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

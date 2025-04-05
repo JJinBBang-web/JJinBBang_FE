@@ -21,15 +21,6 @@
   animation: slideUp 0.3s ease-out;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
 .backdrop {
     position: fixed;
     top: 0;
@@ -43,49 +34,33 @@
     z-index: 1000;
   }
   
-  .container {
-    background-color: #ffffff;
-    width: 100%;
-    max-width: 393px;
-    box-sizing: border-box;
-    border-radius: 24px 24px 0 0;
-    padding: 24px 16px;
-    animation: slideUp 0.3s ease-out;
-    position: relative;
-  }
-  
-  .handle {
-    width: 32px;
-    height: 4px;
-    background-color: #dadee8;
-    border-radius: 2px;
-    position: absolute;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  @keyframes slideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-
 .container {
-  background-color: var(--white);
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 393px;
+  box-sizing: border-box;
   border-radius: 24px 24px 0 0;
+  padding: 24px 16px;
   animation: slideUp 0.3s ease-out;
   position: relative;
 }
 
 .handle {
+  width: 32px;
+  height: 4px;
   background-color: #dadee8;
   border-radius: 2px;
   position: absolute;
   top: 12px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
