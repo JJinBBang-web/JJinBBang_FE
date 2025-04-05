@@ -9,6 +9,7 @@ import PreviewReview from "../components/PreviewReview";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import adSense from "../assets/image/adSense.svg";
+
 const api = {
   code: 200,
   message: "조회 성공",
@@ -20,10 +21,10 @@ const api = {
           name: "지희관",
           universityName: "경상국립대",
           type: "기숙사",
-          floor: 2, // 옥탑방은 0, 반지하는 -1
+          floor: "고층", // 옥탑방은 0, 반지하는 -1
           space: 26.44,
-          DormitoryFee: 10,
-          rating: 0,
+          dormitoryFee: 10,
+          rating: 3,
           liked: true, // false
         },
         reviewInfo: {
@@ -40,13 +41,13 @@ const api = {
       },
       {
         basicInfo: {
-          id: 2,
+          reviewId: 2,
           name: "한솔원룸",
           type: "투룸",
           contractType: "전세",
           deposit: 2000,
           monthlyRent: 0,
-          floor: 1,
+          floor: "저층",
           space: 35.5,
           maintenanceCost: 5,
           rating: 4,
@@ -62,13 +63,13 @@ const api = {
       },
       {
         basicInfo: {
-          id: 3,
+          reviewId: 3,
           name: "강남하우스",
           type: "오피스텔",
           contractType: "월세",
           deposit: 1000,
           monthlyRent: 70,
-          floor: 5,
+          floor: "중층",
           space: 42.7,
           maintenanceCost: 15,
           rating: 5,
@@ -163,9 +164,8 @@ const Home: React.FC = () => {
             return (
               <>
                 <div className={styles.line} />
-
                 <PreviewReview
-                  key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
+                  key={review.basicInfo?.reviewId ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
                   review={review}
                 />
               </>
