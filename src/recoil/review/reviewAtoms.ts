@@ -1,4 +1,4 @@
-// src/recoil/atoms/reviewAtoms.ts
+// src/recoil/review/reviewAtoms.ts
 import { atom } from 'recoil';
 
 export interface ReviewState {
@@ -11,6 +11,8 @@ export interface ReviewState {
   deposit: number | null;
   monthlyRent: number | null;
   managementFee: number | null;
+  dormitoryFee: number | null;
+  roomCapacity: number | undefined; // Changed from null to undefined
   pros: string[];
   cons: string[];
   content: string;
@@ -31,6 +33,8 @@ export const reviewState = atom<ReviewState>({
     deposit: null,
     monthlyRent: null,
     managementFee: null,
+    dormitoryFee: null,
+    roomCapacity: undefined, // Using undefined instead of null
     pros: [],
     cons: [],
     content: '',
