@@ -33,6 +33,7 @@ import { RecoilRoot } from 'recoil';
 import ModalBottomSheet from './components/util/ModalBottomSheet';
 import Review from './pages/Review';
 import Building from './pages/Building';
+import ReportPage from './pages/ReportPage';
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,8 @@ const AppContent: React.FC = () => {
     '/building/rv',
     '/building/',
     '/building/rv/',
+    '/building/rv/report',
+    '/building/rv/report/'
   ].includes(location.pathname);
 
   return (
@@ -108,6 +111,7 @@ const AppContent: React.FC = () => {
         </Route>
         <Route path='/building' element={<Building/>}/>
         <Route path='/building/rv' element={<Review/>}/>
+        <Route path="/building/rv/report" element={<ReportPage/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
