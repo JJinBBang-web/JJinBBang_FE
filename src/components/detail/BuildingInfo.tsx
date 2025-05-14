@@ -3,7 +3,7 @@ import heartIconOn from "../../assets/image/heartIconOn.svg";
 import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
-import { tagMessages, tagImages } from "../Tag";
+import { tagMessages, tagImages, tagLongMessages } from "../Tag";
 import { Building } from "../../recoil/detail/BuildingRecoilState";
 import { useEffect, useState } from "react";
 
@@ -64,7 +64,7 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
                     <div className={styles.keywordBack}>
                         <div className={styles.keywordContent}>
                             <img className={styles.keywordImg} src={tagImages[keyword.key]}/>
-                            <p className={styles.keyword}>{tagMessages[keyword.key]}</p>
+                            <p className={styles.keyword}>{tagLongMessages[keyword.key]}</p>
                         </div>
                         <p className={styles.keywordCount}>{keyword.count}</p>
                     </div>
