@@ -106,6 +106,9 @@ const ReportPage: React.FC = () => {
                     {
                         isReported ? (
                             <>
+                                <div className={styles.sheet_header}>
+                                    <div className={styles.header_divider}></div>
+                                </div>
                                 <div className={styles.wrap}>
                                     <img src={verifyCompleteIcon} alt="reportImg"/>
                                     <div className={styles.textWrap} style={{gap:"12px"}}>
@@ -123,6 +126,9 @@ const ReportPage: React.FC = () => {
                             </>
                         ) : (
                             <>
+                                <div className={styles.sheet_header}>
+                                    <div className={styles.header_divider}></div>
+                                </div>
                                 <div className={styles.wrap}>
                                     <div className={styles.textWrap}>
                                         <p className={styles.title}>정말 신고하시겠어요?</p>

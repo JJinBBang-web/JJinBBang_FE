@@ -40,7 +40,7 @@
   max-width: 393px;
   box-sizing: border-box;
   border-radius: 24px 24px 0 0;
-  padding: 24px 16px;
+  padding: 10px 16px 16px 24px;
   animation: slideUp 0.3s ease-out;
   position: relative;
 }
