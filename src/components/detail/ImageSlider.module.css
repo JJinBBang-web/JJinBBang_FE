@@ -11,6 +11,28 @@
     margin-bottom: 20px;
 }
 
+.swipeWrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    touch-action: pan-y;
+}
+
+.slider {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.4s ease-in-out; /* 부드럽게 이동 */
+}
+
+.image {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .imgCount {
     width: fit-content;
     display: flex;
@@ -28,7 +50,7 @@
     bottom: 0;
     right: 0;
     margin-right: 16px;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .imgCount .count {
@@ -38,4 +60,39 @@
     letter-spacing: -0.6px;
     line-height: 22px;
     color: var(--white);
+}
+
+
+/* Dot 영역 */
+.dots {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.dotsContainer {
+    display: flex;
+    overflow: hidden;
+    width: auto; /* 너비를 자동으로 조정 */
+}
+
+.dotsInner {
+    display: flex;
+    transition: transform 0.3s ease;
+    width: fit-content; /* Dot 전체를 감싸도록 너비 설정 */
+}
+  
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0 3.5px;
+    transform-origin: center;
+}
+
+.active {
+    background-color: var(--white);
 }

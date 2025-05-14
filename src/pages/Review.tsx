@@ -8,7 +8,10 @@ import ReveiwContractInfo from '../components/detail/ReviewContractInfo';
 import ReviewMapInfo from '../components/detail/ReviewMapInfo';
 import { useRecoilState } from 'recoil';
 import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
-
+import Footer from '../components/detail/Footer';
+import ReportButton from '../components/util/ReportButton';
+import exampleImage1 from '../assets/image/example_image1.png';
+import exampleImage2 from '../assets/image/example_image2.png';
 
 const mockData = {
     basicInfo: {
@@ -27,7 +30,7 @@ const mockData = {
     },
     reviewImages: {
         count: 5,
-        imageUrl: []
+        imageUrl: [exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,exampleImage1,exampleImage2,exampleImage1,exampleImage2]
     },
     building : {
         buildingId : 1, // 건물 id
@@ -75,14 +78,19 @@ const Review: React.FC = () => {
                 <ImageSlider review={reviews} building={null}/>
                 {/* 리뷰 정보 및 키워드 */}
                 <ReviewInfo review={reviews}/>
-                <hr className={styles.divider}/>
+                <hr className={styles.divider} style={{marginTop:"50px"}}/>
                 {/* 계약형태 */}
                 <ReveiwContractInfo review={reviews}/>
                 <hr className={styles.divider}/>
                 {/* 단지정보 */}
                 <ReviewMapInfo review={reviews}/>
             </div>
-            <TopButton/>
+            {/* 작성id === 로그인 id 같으면 Footer 보이게+reportBtn안보이게, 아니면 반대 */}
+            <div className={styles.fixedWrap}>
+                <ReportButton/>
+                <TopButton/>
+                <Footer/>
+            </div>
         </div>
     )
 }

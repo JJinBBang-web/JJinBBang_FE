@@ -29,9 +29,7 @@ const ModalBottomSheet = () => {
     const depositMax = useRecoilValue(filterState).depositMax;
     const monthlyRentMin = useRecoilValue(filterState).monthlyRentMin;
     const monthlyRentMax = useRecoilValue(filterState).monthlyRentMax;
-    const inMaintenanceCost = useRecoilValue(filterState).inMaintenanceCost;
-
-    console.log("isOpen:", isOpen, "type:", type); // 상태 변경 확인
+    const inMaintenanceCost = useRecoilValue(filterState).inMaintenanceCost;    
 
     useEffect(() => {
         if (isOpen) {
@@ -41,26 +39,28 @@ const ModalBottomSheet = () => {
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
-    
 
-    const closeModal = () => {
-        setBottomSheet({ isOpen: false, type: null });
     
+    const closeModal = () => {
+        setBottomSheet(prev => ({ ...prev, isOpen: false })); // isOpen만 false로 변경
+
+        setTimeout(() => {
+            setBottomSheet({ isOpen: false, type: null }); // 300ms 후에 type을 null로 변경
+        }, 300); // 애니메이션 시간과 맞춤
+
         if (type === "housing") {
             setSelectedType(housingType);
         } 
-        if (type == "university") {
+        if (type === "university") {
             setSelectedTypeNum(university);
         }
-        if (type == "contract") {
+        if (type === "contract") {
             setSelectedContractState(contractType);
-            setDepositRangeState([depositMin,depositMax]);
-            setMonthlyRentRange([monthlyRentMin,monthlyRentMax]);
+            setDepositRangeState([depositMin, depositMax]);
+            setMonthlyRentRange([monthlyRentMin, monthlyRentMax]);
             setMaintenanceCostState(inMaintenanceCost);
         }
     };
-    
-    if (!isOpen) return null;
 
     // type에 따른 제목 설정
     const titleMap: Record<NonNullable<typeof type>, string> = {

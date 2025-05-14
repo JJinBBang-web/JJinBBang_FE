@@ -39,7 +39,7 @@ const PreviewReview: React.FC<Props> = ({
       <div className={styles.buildingContainer}>
         <img
           className={styles.buildingImg}
-          src={review.image}
+          src={review.reviewImage}
           alt={name}
         />
         <div className={styles.buildingContentContainer}>
@@ -78,7 +78,7 @@ const PreviewReview: React.FC<Props> = ({
             {floor}층, {space}㎡,{" "}
             {review.basicInfo && `관리비 ${review.basicInfo.maintenanceCost}만`}{" "}
             {review.dormitoryBasicInfo &&
-              `기숙사비 ${review.dormitoryBasicInfo.DormitoryFee}만`}
+              `기숙사비 ${review.dormitoryBasicInfo.dormitoryFee}만`}
           </p>
           <div className={styles.buildingContent4}>
             {[...Array(rating ?? 0)].map((_, index) => (

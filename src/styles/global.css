@@ -76,3 +76,29 @@ html {
     'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', sans-serif;
 }
+
+.slick-dots {
+  bottom: -32px !important;
+}
+
+.slick-dots li {
+  margin: 0px !important;
+  padding: 0px !important;
+}
+
+.slick-dots li button {
+  margin: 0px !important;
+  padding: 0px !important;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #B5B5B5 !important;
+  opacity: 1 !important;
+  font-size: 8px !important;
+}
+
+.slick-dots li button:before {
+  color: #E8E8E8 !important;
+  opacity: 1 !important;
+  font-size: 8px !important;
+}

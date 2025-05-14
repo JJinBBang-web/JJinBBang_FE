@@ -17,6 +17,9 @@
         "isolatedModules": false, // 나중에 수정
         "noEmit": true,
         "jsx": "react-jsx",
+        "types": [
+            "kakao.maps.d.ts",
+        ]
     },
     "include": [
         "src", "src/util/svg.d.ts"
