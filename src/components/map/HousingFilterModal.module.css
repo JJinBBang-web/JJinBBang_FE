@@ -16,6 +16,10 @@
     padding-bottom: 12px;
 }
 
+.grid_content > button:last-child {
+    grid-column: 2;
+}
+
 .type_btn {
     height: 104px;
     display: flex;

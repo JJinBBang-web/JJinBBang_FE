@@ -4,6 +4,7 @@ import villa from "../../assets/image/houseIconVilla.svg"
 import office from "../../assets/image/houseIconOffice.svg"
 import domitory from "../../assets/image/houseIconDomitory.svg"
 import gosiwon from "../../assets/image/houseIconGosiwon.svg"
+import agency from "../../assets/image/houseIconAgency.svg"
 import styles from "./HousingFilterModal.module.css"
 import { useRecoilState, useRecoilValue } from "recoil"
 import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilState"
@@ -15,7 +16,8 @@ const housingTypes = [
     { id : "villa", label : "주택/빌라", icon : villa},
     { id : "office", label : "오피스텔", icon : office},
     { id : "domitory", label : "기숙사", icon : domitory},
-    { id : "gosiwon", label : "하숙집/고시원", icon : gosiwon}
+    { id : "gosiwon", label : "하숙집/고시원", icon : gosiwon},
+    { id: "AGENCY", label: "공인중개사", icon: agency}
 ]
 
 const HousingFilterModal = () => {
