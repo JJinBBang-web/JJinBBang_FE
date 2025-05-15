@@ -41,23 +41,10 @@ const PhotoUploadPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  // 사진 추가 핸들러 - 갤러리 접근 권한 요청 포함
-  const handleAddPhoto = async () => {
-    try {
-      // 미디어 접근 권한 요청 (환경 카메라 모드 사용)
-      await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-        audio: false,
-      });
-
-      // 권한이 허용되면 파일 입력 트리거
-      fileInputRef.current?.click();
-    } catch (error) {
-      // 권한 거부 시 에러 처리
-      console.error('갤러리 접근 권한 요청 실패:', error);
-      // 사용자에게 추가 안내
-      alert('사진 업로드 권한이 필요합니다. 설정에서 권한을 허용해주세요.');
-    }
+  // 사진 추가 핸들러 - 파일 입력 요소 클릭
+  const handleAddPhoto = () => {
+    // 파일 입력 요소 클릭 트리거
+    fileInputRef.current?.click();
   };
 
   // 파일 변경 핸들러 - 이미지 미리보기 생성
@@ -76,7 +63,7 @@ const PhotoUploadPage: React.FC = () => {
       return combined.slice(0, 20);
     });
 
-    // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게
+    // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게 함
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
