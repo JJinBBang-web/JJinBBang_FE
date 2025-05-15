@@ -26,7 +26,7 @@ const DormitoryConditionsPage: React.FC = () => {
   const { from, dormitoryInfo } = (location.state as LocationState) || {};
   const [review, setReview] = useRecoilState(reviewState);
 
-  // Condition states
+  // 조건 상태들
   const [hasDistanceCriteria, setHasDistanceCriteria] = useState<boolean>(
     dormitoryInfo?.hasDistanceCriteria || false
   );
@@ -34,7 +34,7 @@ const DormitoryConditionsPage: React.FC = () => {
     dormitoryInfo?.hasGradeCriteria || false
   );
 
-  // Input values
+  // 입력 값들
   const [dormitoryFee, setDormitoryFee] = useState<string>(
     dormitoryInfo?.dormitoryFee ? dormitoryInfo.dormitoryFee.toString() : ''
   );
@@ -55,8 +55,8 @@ const DormitoryConditionsPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  // Initialize from existing state if in edit mode
   useEffect(() => {
+    // 확인 페이지에서 온 경우 기존 값 설정
     if (from === 'confirm' && review.dormitoryConditions) {
       const {
         hasDistanceCriteria,
@@ -76,34 +76,28 @@ const DormitoryConditionsPage: React.FC = () => {
     }
   }, [from, review]);
 
-  // Handle number input for dormitoryFee - only allow positive integers
   const handleDormitoryFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Only allow positive integers (including 0)
+    // 양의 정수만 허용 (0 포함)
     if (value === '' || /^[0-9]\d*$/.test(value)) {
       setDormitoryFee(value);
     }
   };
 
-  // Handle number input for semesterGrade - only allow values between 0 and 4.5
   const handleSemesterGradeChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
-    // Allow empty string or numbers
     if (value === '' || !isNaN(Number(value))) {
       const numValue = Number(value);
-      // Check if value is in valid range
       if (value === '' || (numValue >= 0 && numValue <= 4.5)) {
         setSemesterGrade(value);
       }
     }
   };
 
-  // Handle room capacity input - only allow positive integers
   const handleRoomCapacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Only allow positive integers (excluding 0)
     if (value === '' || /^[1-9]\d*$/.test(value)) {
       setRoomCapacity(value);
     }
@@ -116,37 +110,31 @@ const DormitoryConditionsPage: React.FC = () => {
     setter(e.target.value);
   };
 
-  // Toggle condition selection
+  // 조건 선택 토글
   const handleConditionToggle = (condition: 'distance' | 'grade') => {
     if (condition === 'distance') {
       setHasDistanceCriteria((prev) => !prev);
       if (!hasDistanceCriteria) {
-        // If we're enabling this condition, clear the related field
         setResidenceArea('');
       }
     } else if (condition === 'grade') {
       setHasGradeCriteria((prev) => !prev);
       if (!hasGradeCriteria) {
-        // If we're enabling this condition, clear the related field
         setSemesterGrade('');
       }
     }
   };
 
-  // Set 'none' condition
   const handleNoneCondition = () => {
     setHasDistanceCriteria(false);
     setHasGradeCriteria(false);
-    // Clear the conditionally required fields
     setResidenceArea('');
     setSemesterGrade('');
   };
 
   const isNextEnabled = () => {
-    // Base requirement: dormitoryFee must be filled
     let isValid = dormitoryFee.trim() !== '';
 
-    // Check conditional fields
     if (hasDistanceCriteria) {
       isValid = isValid && residenceArea.trim() !== '';
     }
@@ -178,21 +166,13 @@ const DormitoryConditionsPage: React.FC = () => {
     setReview(updatedReview);
     localStorage.setItem('reviewState', JSON.stringify(updatedReview));
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
-        state: {
-          ...location.state,
-          dormitoryConditions,
-        },
-      });
-    } else {
-      navigate('/review/room-info', {
-        state: {
-          ...location.state,
-          dormitoryConditions,
-        },
-      });
-    }
+    // 항상 DormitoryAmenitiesPage로 이동하도록 수정
+    navigate('/review/dormitory-amenities', {
+      state: {
+        ...location.state,
+        dormitoryConditions,
+      },
+    });
   };
 
   const handleBack = () => {
