@@ -11,14 +11,21 @@ export interface ReviewState {
   deposit: number | null;
   monthlyRent: number | null;
   managementFee: number | null;
-  dormitoryFee: number | null;
-  roomCapacity: number | undefined; // Changed from null to undefined
   pros: string[];
   cons: string[];
   content: string;
   rating: number;
   images: string[];
   description: string;
+
+  // 기숙사 필드
+  roomCapacity?: number;
+  university?: string;
+  dormitoryName?: string;
+  dormitoryCondition?: string;
+  dormitoryLocation?: string;
+  dormitoryGpa?: string;
+  dormitoryFee?: number;
 }
 
 export const reviewState = atom<ReviewState>({
@@ -33,8 +40,6 @@ export const reviewState = atom<ReviewState>({
     deposit: null,
     monthlyRent: null,
     managementFee: null,
-    dormitoryFee: null,
-    roomCapacity: undefined, // Using undefined instead of null
     pros: [],
     cons: [],
     content: '',

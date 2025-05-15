@@ -154,7 +154,6 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    // Create updated review object with all existing properties plus our additional ones
     const updatedReview = {
       ...review,
       roomCapacity: Number(roomCapacity),
@@ -162,7 +161,6 @@ const DormitoryInputPage: React.FC = () => {
       dormitoryFee: Number(dormitoryFee),
     };
 
-    // Add our extended properties
     const extendedUpdatedReview = {
       ...updatedReview,
       university: university,
@@ -188,7 +186,7 @@ const DormitoryInputPage: React.FC = () => {
         },
       });
     } else {
-      navigate('/review/room-info', {
+      navigate('/review/dormitory-conditions', {
         state: {
           ...location.state,
           dormitoryData,
