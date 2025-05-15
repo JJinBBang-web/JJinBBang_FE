@@ -17,15 +17,16 @@ export interface ReviewState {
   rating: number;
   images: string[];
   description: string;
-
-  // 기숙사 필드
   roomCapacity?: number;
-  university?: string;
-  dormitoryName?: string;
-  dormitoryCondition?: string;
-  dormitoryLocation?: string;
-  dormitoryGpa?: string;
   dormitoryFee?: number;
+  dormitoryConditions?: {
+    hasDistanceCriteria: boolean;
+    hasGradeCriteria: boolean;
+    dormitoryFee: number;
+    residenceArea?: string;
+    semesterGrade?: number;
+    roomCapacity?: number;
+  };
 }
 
 export const reviewState = atom<ReviewState>({

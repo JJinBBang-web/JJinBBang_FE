@@ -10,7 +10,7 @@
 .header {
   display: flex;
   flex-direction: column;
-  padding-top: 8.75vh;
+  padding: 8.75vh 0 1.5vh;
   position: relative;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .progressFill {
-  width: 50%;
+  width: 65%;
   height: 0.2rem;
   background-color: var(--primary-color);
   border-radius: 2px;
@@ -44,25 +44,27 @@
   line-height: 160%;
   letter-spacing: -0.0375rem;
   color: var(--black);
+  margin-bottom: 1.56rem;
+}
+
+.conditionsContainer {
   margin-bottom: 1.5rem;
 }
 
-.formSection {
-  margin-bottom: 1.25rem;
-}
-
-.sectionLabel {
-  display: block;
+.conditionsTitle {
   font-size: 1rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 0.25rem;
 }
 
 .conditionButtons {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
 }
 
 .conditionButton {
@@ -71,44 +73,70 @@
   border-radius: 12px;
   background-color: var(--white);
   font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
   cursor: pointer;
-  flex: 1;
-  min-width: 100px;
+  transition: all 0.2s ease;
 }
 
 .conditionButton.selected {
   border-color: var(--primary-color);
-  background-color: #fff7f4;
+  background-color: var(--block-salmon);
   color: var(--primary-color);
 }
 
-.inputField {
-  width: 100%;
-  height: 3.5rem;
-  padding: 0 1.25rem;
-  border: 1px solid var(--color-gray20);
-  border-radius: 12px;
-  font-size: 1rem;
-  color: var(--color-gray80);
-  box-sizing: border-box;
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.inputField::placeholder {
-  color: var(--color-gray40);
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  padding-left: 0.25rem;
 }
 
 .inputWrapper {
-  position: relative;
   display: flex;
   align-items: center;
+  border: 1px solid var(--color-gray20);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.input {
+  flex: 1;
+  padding: 1.125rem 1.25rem;
+  border: 1px solid var(--color-gray20);
+  border-radius: 16px;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
+  outline: none;
+}
+
+.inputWrapper .input {
+  border: none;
 }
 
 .unit {
-  position: absolute;
-  right: 1.25rem;
+  padding-right: 1.25rem;
   color: var(--color-gray40);
   font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
 }
 
 .footer {
@@ -117,33 +145,215 @@
   right: 0;
   bottom: 2.75rem;
   display: flex;
-  gap: 0.75rem;
+  gap: 0.38rem;
   max-width: 393px;
   margin: 0 auto;
   padding: 0 1rem;
   background-color: var(--white);
 }
 
-.prevButton,
-.nextButton {
+.prevButton {
   flex: 1;
   height: 3.375rem;
+  background-color: var(--color-gray20);
+  border: none;
   border-radius: 16px;
   font-size: 1rem;
-  font-weight: 500;
+  color: var(--color-gray60);
   cursor: pointer;
 }
 
-.prevButton {
+.nextButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--color-gray40);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.nextButton:disabled {
+  cursor: not-allowed;
+}
+
+.nextButton.enabled {
+  background-color: var(--primary-color);
+}/* src/styles/review/DormitoryConditions.module.css */
+.container {
+  background-color: var(--white);
+  padding: 0 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  padding: 8.75vh 0 1.5vh;
+  position: relative;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  margin-left: -0.5rem;
+  z-index: 1;
+}
+
+.progressBar {
+  width: 100%;
+  height: 0.2rem;
   background-color: var(--color-gray20);
+  border-radius: 2px;
+  margin: 2.5rem 0 1rem;
+}
+
+.progressFill {
+  width: 65%;
+  height: 0.2rem;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+.header h1 {
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+  margin-bottom: 1.56rem;
+}
+
+.conditionsContainer {
+  margin-bottom: 1.5rem;
+}
+
+.conditionsTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--color-gray60);
+  margin-bottom: 0.75rem;
+  padding-left: 0.25rem;
+}
+
+.conditionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.conditionButton {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-gray20);
+  border-radius: 12px;
+  background-color: var(--white);
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.conditionButton.selected {
+  border-color: var(--primary-color);
+  background-color: var(--block-salmon);
+  color: var(--primary-color);
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  padding-left: 0.25rem;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-gray20);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.input {
+  flex: 1;
+  padding: 1.125rem 1.25rem;
+  border: 1px solid var(--color-gray20);
+  border-radius: 16px;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
+  outline: none;
+}
+
+.inputWrapper .input {
   border: none;
 }
 
-.nextButton {
-  background-color: var(--color-gray40);
-  color: var(--white);
+.unit {
+  padding-right: 1.25rem;
+  color: var(--color-gray40);
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.75rem;
+  display: flex;
+  gap: 0.38rem;
+  max-width: 393px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background-color: var(--white);
+}
+
+.prevButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--color-gray20);
   border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--color-gray60);
+  cursor: pointer;
+}
+
+.nextButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--color-gray40);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
 }
 
 .nextButton:disabled {

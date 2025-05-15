@@ -1,41 +1,51 @@
-// src/pages/review/DormitoryConditionsPage.tsx - Fixed version with proper typing
+// src/pages/review/DormitoryConditionsPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { reviewState, ReviewState } from '../../recoil/review/reviewAtoms';
+import { reviewState } from '../../recoil/review/reviewAtoms';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryConditions.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
 interface LocationState {
-  dormitoryData?: {
-    university: string;
-    dormitoryName: string;
-    roomCapacity: number;
-    floorType: string;
-    dormitoryFee: number;
-  };
   from?: string;
+  dormitoryInfo?: {
+    dormitoryFee?: number;
+    residenceArea?: string;
+    semesterGrade?: number;
+    hasDistanceCriteria?: boolean;
+    hasGradeCriteria?: boolean;
+    roomCapacity?: number;
+  };
 }
 
 const DormitoryConditionsPage: React.FC = () => {
   const navigate = useNavigate();
-  const locationState = useLocation().state as LocationState | undefined;
-  const { dormitoryData, from } = locationState || {};
+  const location = useLocation();
+  const { from, dormitoryInfo } = (location.state as LocationState) || {};
+  const [review, setReview] = useRecoilState(reviewState);
 
-  const [review, setReview] = useRecoilState<ReviewState>(reviewState);
+  // Condition states
+  const [hasDistanceCriteria, setHasDistanceCriteria] = useState<boolean>(
+    dormitoryInfo?.hasDistanceCriteria || false
+  );
+  const [hasGradeCriteria, setHasGradeCriteria] = useState<boolean>(
+    dormitoryInfo?.hasGradeCriteria || false
+  );
 
-  // Form state
-  const [selectedCondition, setSelectedCondition] = useState<string>(
-    review.dormitoryCondition || '거리 기준 있음'
+  // Input values
+  const [dormitoryFee, setDormitoryFee] = useState<string>(
+    dormitoryInfo?.dormitoryFee ? dormitoryInfo.dormitoryFee.toString() : ''
   );
-  const [locationValue, setLocationValue] = useState<string>(
-    review.dormitoryLocation || ''
+  const [residenceArea, setResidenceArea] = useState<string>(
+    dormitoryInfo?.residenceArea || ''
   );
-  const [gpa, setGpa] = useState<string>(review.dormitoryGpa || '');
-  const [fee, setFee] = useState<string>(
-    review.dormitoryFee ? review.dormitoryFee.toString() : ''
+  const [semesterGrade, setSemesterGrade] = useState<string>(
+    dormitoryInfo?.semesterGrade ? dormitoryInfo.semesterGrade.toString() : ''
+  );
+  const [roomCapacity, setRoomCapacity] = useState<string>(
+    dormitoryInfo?.roomCapacity ? dormitoryInfo.roomCapacity.toString() : ''
   );
 
   const {
@@ -45,72 +55,124 @@ const DormitoryConditionsPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  // Initialize from existing state if in edit mode
   useEffect(() => {
-    if (from === 'confirm') {
-      setSelectedCondition(review.dormitoryCondition || '거리 기준 있음');
-      setLocationValue(review.dormitoryLocation || '');
-      setGpa(review.dormitoryGpa || '');
-      setFee(review.dormitoryFee ? review.dormitoryFee.toString() : '');
+    if (from === 'confirm' && review.dormitoryConditions) {
+      const {
+        hasDistanceCriteria,
+        hasGradeCriteria,
+        dormitoryFee,
+        residenceArea,
+        semesterGrade,
+        roomCapacity,
+      } = review.dormitoryConditions;
+
+      setHasDistanceCriteria(hasDistanceCriteria || false);
+      setHasGradeCriteria(hasGradeCriteria || false);
+      setDormitoryFee(dormitoryFee ? dormitoryFee.toString() : '');
+      setResidenceArea(residenceArea || '');
+      setSemesterGrade(semesterGrade ? semesterGrade.toString() : '');
+      setRoomCapacity(roomCapacity ? roomCapacity.toString() : '');
     }
   }, [from, review]);
 
-  const handleConditionSelect = (condition: string) => {
-    setSelectedCondition(condition);
-
-    // Clear related fields based on condition
-    if (condition === '조건 없음') {
-      setLocationValue('');
-      setGpa('');
-    } else if (condition === '거리 기준 있음') {
-      setGpa('');
-    } else if (condition === '성적 기준 있음') {
-      setLocationValue('');
+  // Handle number input for dormitoryFee - only allow positive integers
+  const handleDormitoryFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow positive integers (including 0)
+    if (value === '' || /^[0-9]\d*$/.test(value)) {
+      setDormitoryFee(value);
     }
   };
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocationValue(e.target.value);
-  };
-
-  const handleGpaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9.]/g, '');
-    const parts = value.split('.');
-
-    if (parts.length > 1) {
-      const formattedValue = `${parts[0]}.${parts[1].substring(0, 1)}`;
-      setGpa(formattedValue);
-    } else {
-      setGpa(value);
+  // Handle number input for semesterGrade - only allow values between 0 and 4.5
+  const handleSemesterGradeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    // Allow empty string or numbers
+    if (value === '' || !isNaN(Number(value))) {
+      const numValue = Number(value);
+      // Check if value is in valid range
+      if (value === '' || (numValue >= 0 && numValue <= 4.5)) {
+        setSemesterGrade(value);
+      }
     }
   };
 
-  const handleFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    setFee(value);
+  // Handle room capacity input - only allow positive integers
+  const handleRoomCapacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow positive integers (excluding 0)
+    if (value === '' || /^[1-9]\d*$/.test(value)) {
+      setRoomCapacity(value);
+    }
+  };
+
+  const handleTextInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    setter(e.target.value);
+  };
+
+  // Toggle condition selection
+  const handleConditionToggle = (condition: 'distance' | 'grade') => {
+    if (condition === 'distance') {
+      setHasDistanceCriteria((prev) => !prev);
+      if (!hasDistanceCriteria) {
+        // If we're enabling this condition, clear the related field
+        setResidenceArea('');
+      }
+    } else if (condition === 'grade') {
+      setHasGradeCriteria((prev) => !prev);
+      if (!hasGradeCriteria) {
+        // If we're enabling this condition, clear the related field
+        setSemesterGrade('');
+      }
+    }
+  };
+
+  // Set 'none' condition
+  const handleNoneCondition = () => {
+    setHasDistanceCriteria(false);
+    setHasGradeCriteria(false);
+    // Clear the conditionally required fields
+    setResidenceArea('');
+    setSemesterGrade('');
+  };
+
+  const isNextEnabled = () => {
+    // Base requirement: dormitoryFee must be filled
+    let isValid = dormitoryFee.trim() !== '';
+
+    // Check conditional fields
+    if (hasDistanceCriteria) {
+      isValid = isValid && residenceArea.trim() !== '';
+    }
+
+    if (hasGradeCriteria) {
+      isValid = isValid && semesterGrade.trim() !== '';
+    }
+
+    return isValid;
   };
 
   const handleNext = () => {
-    if (selectedCondition === '거리 기준 있음' && !locationValue) {
-      alert('거주 지역을 입력해주세요.');
-      return;
-    }
+    const dormitoryConditions = {
+      hasDistanceCriteria,
+      hasGradeCriteria,
+      dormitoryFee: parseFloat(dormitoryFee),
+      residenceArea: hasDistanceCriteria ? residenceArea : '',
+      semesterGrade: hasGradeCriteria ? parseFloat(semesterGrade) : undefined,
+      roomCapacity: roomCapacity ? parseInt(roomCapacity, 10) : undefined,
+    };
 
-    if (selectedCondition === '성적 기준 있음' && !gpa) {
-      alert('학기 성적을 입력해주세요.');
-      return;
-    }
-
-    if (!fee) {
-      alert('기숙사비를 입력해주세요.');
-      return;
-    }
-
-    const updatedReview: ReviewState = {
+    const updatedReview = {
       ...review,
-      dormitoryCondition: selectedCondition,
-      dormitoryLocation: locationValue,
-      dormitoryGpa: gpa,
-      dormitoryFee: parseInt(fee, 10),
+      roomCapacity: roomCapacity ? parseInt(roomCapacity, 10) : undefined,
+      dormitoryFee: parseFloat(dormitoryFee),
+      dormitoryConditions,
     };
 
     setReview(updatedReview);
@@ -119,25 +181,15 @@ const DormitoryConditionsPage: React.FC = () => {
     if (from === 'confirm') {
       navigate('/review/confirm', {
         state: {
-          ...locationState,
-          dormitoryConditions: {
-            condition: selectedCondition,
-            location: locationValue,
-            gpa: gpa,
-            fee: parseInt(fee, 10),
-          },
+          ...location.state,
+          dormitoryConditions,
         },
       });
     } else {
       navigate('/review/room-info', {
         state: {
-          ...locationState,
-          dormitoryConditions: {
-            condition: selectedCondition,
-            location: locationValue,
-            gpa: gpa,
-            fee: parseInt(fee, 10),
-          },
+          ...location.state,
+          dormitoryConditions,
         },
       });
     }
@@ -148,16 +200,6 @@ const DormitoryConditionsPage: React.FC = () => {
       navigate('/review/confirm');
     } else {
       navigate(-1);
-    }
-  };
-
-  const isNextEnabled = () => {
-    if (selectedCondition === '거리 기준 있음') {
-      return locationValue.trim() !== '' && fee.trim() !== '';
-    } else if (selectedCondition === '성적 기준 있음') {
-      return gpa.trim() !== '' && fee.trim() !== '';
-    } else {
-      return fee.trim() !== '';
     }
   };
 
@@ -177,73 +219,81 @@ const DormitoryConditionsPage: React.FC = () => {
           <h1>좋아요! 기숙사 입주 조건은 어떻게 되나요?</h1>
         </header>
 
-        <div className={styles.formSection}>
-          <label className={styles.sectionLabel}>조건 선택</label>
+        <div className={styles.conditionsContainer}>
+          <p className={styles.conditionsTitle}>조건 선택</p>
           <div className={styles.conditionButtons}>
             <button
               className={`${styles.conditionButton} ${
-                selectedCondition === '거리 기준 있음' ? styles.selected : ''
+                hasDistanceCriteria ? styles.selected : ''
               }`}
-              onClick={() => handleConditionSelect('거리 기준 있음')}
+              onClick={() => handleConditionToggle('distance')}
             >
               거리 기준 있음
             </button>
             <button
               className={`${styles.conditionButton} ${
-                selectedCondition === '성적 기준 있음' ? styles.selected : ''
+                hasGradeCriteria ? styles.selected : ''
               }`}
-              onClick={() => handleConditionSelect('성적 기준 있음')}
+              onClick={() => handleConditionToggle('grade')}
             >
               성적 기준 있음
             </button>
             <button
               className={`${styles.conditionButton} ${
-                selectedCondition === '조건 없음' ? styles.selected : ''
+                !hasDistanceCriteria && !hasGradeCriteria ? styles.selected : ''
               }`}
-              onClick={() => handleConditionSelect('조건 없음')}
+              onClick={handleNoneCondition}
             >
               조건 없음
             </button>
           </div>
         </div>
 
-        {selectedCondition === '거리 기준 있음' && (
-          <div className={styles.formSection}>
-            <label className={styles.sectionLabel}>거주 지역</label>
-            <input
-              type="text"
-              className={styles.inputField}
-              value={locationValue}
-              onChange={handleLocationChange}
-              placeholder="예) 찐빵광역시"
-            />
-          </div>
-        )}
+        <div className={styles.inputContainer}>
+          {hasDistanceCriteria && (
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>거주 지역</label>
+              <input
+                type="text"
+                className={styles.input}
+                value={residenceArea}
+                onChange={(e) => handleTextInputChange(e, setResidenceArea)}
+                placeholder="ex) 찐빵광역시"
+              />
+            </div>
+          )}
 
-        {selectedCondition === '성적 기준 있음' && (
-          <div className={styles.formSection}>
-            <label className={styles.sectionLabel}>학기 성적</label>
-            <input
-              type="text"
-              className={styles.inputField}
-              value={gpa}
-              onChange={handleGpaChange}
-              placeholder="예) 3.5"
-            />
-          </div>
-        )}
+          {hasGradeCriteria && (
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>학기 성적</label>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="number"
+                  className={styles.input}
+                  value={semesterGrade}
+                  onChange={handleSemesterGradeChange}
+                  placeholder="4.5"
+                  step="0.1"
+                  min="0"
+                  max="4.5"
+                />
+              </div>
+            </div>
+          )}
 
-        <div className={styles.formSection}>
-          <label className={styles.sectionLabel}>기숙사비</label>
-          <div className={styles.inputWrapper}>
-            <input
-              type="text"
-              className={styles.inputField}
-              value={fee}
-              onChange={handleFeeChange}
-              placeholder="0"
-            />
-            <span className={styles.unit}>만원</span>
+          <div className={styles.inputGroup}>
+            <label className={styles.inputLabel}>기숙사비</label>
+            <div className={styles.inputWrapper}>
+              <input
+                type="number"
+                className={styles.input}
+                value={dormitoryFee}
+                onChange={handleDormitoryFeeChange}
+                placeholder="0"
+                min="0"
+              />
+              <span className={styles.unit}>만원</span>
+            </div>
           </div>
         </div>
       </div>
