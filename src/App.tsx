@@ -19,6 +19,9 @@ import ReviewTypePage from './pages/review/ReviewTypePage';
 import AddressInputPage from './pages/review/AddressInputPage';
 import AddressSearchPage from './pages/review/AddressSearchPage';
 import AddressResultPage from './pages/review/AddressResultPage';
+import DormitoryInputPage from './pages/review/DormitoryInputPage';
+import DormitoryConditionsPage from './pages/review/DormitoryConditionsPage';
+import DormitoryAmenitiesPage from './pages/review/DormitoryAmenitiesPage';
 import FloorInputPage from './pages/review/FloorInputPage';
 import PaymentTypePage from './pages/review/PaymentTypePage';
 import JeonseInputPage from './pages/review/JeonseInputPage';
@@ -53,6 +56,9 @@ const AppContent: React.FC = () => {
     '/review/type',
     '/review/input-address',
     '/review/address',
+    '/review/dormitory',
+    '/review/dormitory-conditions',
+    '/review/dormitory-amenities',
     '/review/result',
     '/review/floor',
     '/review/price',
@@ -63,7 +69,7 @@ const AppContent: React.FC = () => {
     '/review/filter-disad',
     '/review/content',
     '/review/confirm',
-    '/building'
+    '/building',
   ].includes(location.pathname);
 
   return (
@@ -92,6 +98,16 @@ const AppContent: React.FC = () => {
           <Route path="type" element={<ReviewTypePage />} />
           <Route path="input-address" element={<AddressInputPage />} />
           <Route path="address" element={<AddressSearchPage />} />
+          <Route path="dormitory" element={<DormitoryInputPage />} />
+          <Route
+            path="dormitory-conditions"
+            element={<DormitoryConditionsPage />}
+          />
+          <Route
+            path="dormitory-amenities"
+            element={<DormitoryAmenitiesPage />}
+          />
+
           <Route path="result" element={<AddressResultPage />} />
           <Route path="floor" element={<FloorInputPage />} />
           <Route path="price" element={<PaymentTypePage />} />
@@ -103,7 +119,7 @@ const AppContent: React.FC = () => {
           <Route path="content" element={<ReviewContentPage />} />
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-        <Route path='/building' element={<Building/>}/>
+        <Route path="/building" element={<Building />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

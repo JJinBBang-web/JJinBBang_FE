@@ -1,4 +1,4 @@
-// src/recoil/atoms/reviewAtoms.ts
+// src/recoil/review/reviewAtoms.ts
 import { atom } from 'recoil';
 
 export interface ReviewState {
@@ -17,6 +17,16 @@ export interface ReviewState {
   rating: number;
   images: string[];
   description: string;
+  roomCapacity?: number;
+  dormitoryFee?: number;
+  dormitoryConditions?: {
+    hasDistanceCriteria: boolean;
+    hasGradeCriteria: boolean;
+    dormitoryFee: number;
+    residenceArea?: string;
+    semesterGrade?: number;
+    roomCapacity?: number;
+  };
 }
 
 export const reviewState = atom<ReviewState>({
