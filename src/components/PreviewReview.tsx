@@ -37,11 +37,7 @@ const PreviewReview: React.FC<Props> = ({
       }}
     >
       <div className={styles.buildingContainer}>
-        <img
-          className={styles.buildingImg}
-          src={review.image}
-          alt={name}
-        />
+        <img className={styles.buildingImg} src={review.image} alt={name} />
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
             <p className={styles.buildingName}>{name}</p>
