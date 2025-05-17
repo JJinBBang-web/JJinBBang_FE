@@ -4,6 +4,7 @@ import HousingFilter from '../components/map/HousingFilter';
 import SearchBar from '../components/map/SearchBar';
 import styles from "./Map.module.css";
 import FilterBar from '../components/map/FilterBar';
+import ReviewListHeader from '../components/map/ReviewListHeader';
 
 const Map = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -29,6 +30,7 @@ const Map = () => {
                 <SearchBar/>
             </div>
             <FilterBar/>
+            <ReviewListHeader/>
         </div>
     )
 }
