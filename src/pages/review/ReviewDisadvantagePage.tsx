@@ -23,6 +23,7 @@ interface LocationState {
 const ReviewDisadvantagePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { housingType } = location.state;
   const { photos, from, advantages, disadvantages } =
     (location.state as LocationState) || {};
   const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
@@ -109,7 +110,12 @@ const ReviewDisadvantagePage: React.FC = () => {
           >
             <img src={closeIcon} alt="close" />
           </button>
-          <h1>이 찐빵의 단점은 무엇인가요?</h1>
+          <h1>
+            {" "}
+            {housingType === "공인중개사"
+              ? "이 공인중개사의 단점은 무엇인가요?"
+              : "이 찐빵의 단점은 무엇인가요?"}
+          </h1>
           <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         </header>
         <div className={styles.content} ref={contentRef}>
@@ -124,7 +130,7 @@ const ReviewDisadvantagePage: React.FC = () => {
                       className={`${styles.filter_btn} ${
                         selectedFilters.includes(item.label)
                           ? styles.selected
-                          : ''
+                          : ""
                       }`}
                       onClick={() => handleFilterClick(item.label)}
                     >
@@ -151,7 +157,7 @@ const ReviewDisadvantagePage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            selectedFilters.length > 0 ? styles.enabled : ''
+            selectedFilters.length > 0 ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={selectedFilters.length === 0}

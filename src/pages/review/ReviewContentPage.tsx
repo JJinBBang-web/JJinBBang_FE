@@ -19,16 +19,19 @@ const AutoHeightTextarea: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder: string;
   maxLength: number;
-}> = ({ value, onChange, placeholder, maxLength }) => {
+  housingType: string;
+}> = ({ value, onChange, placeholder, maxLength, housingType }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const formattedPlaceholder =
-    '찐거주 후기를 위해 특징과 장단점을 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제';
+    housingType === "공인중개사"
+      ? "자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 방문 후기, 중개 수수료 문제"
+      : "찐거주 후기를 위해 특징과 장단점을 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제";
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-    textarea.style.height = 'inherit';
+    textarea.style.height = "inherit";
     const computedHeight = Math.max(150, textarea.scrollHeight);
     textarea.style.height = `${computedHeight}px`;
   };
@@ -53,6 +56,7 @@ const AutoHeightTextarea: React.FC<{
 const ReviewContentPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { housingType } = location.state;
   const { photos, advantages, disadvantages, from } =
     (location.state as LocationState) || {};
 
@@ -136,7 +140,9 @@ const ReviewContentPage: React.FC = () => {
             <img src={closeIcon} alt="close" />
           </button>
           <h1>
-            마지막으로 이 찐빵에 대해
+            {housingType === "공인중개사"
+              ? "마지막으로 이 공인중개사에 대해"
+              : "마지막으로 이 찐빵에 대해"}
             <br></br>좀 더 자세하게 알려줄 수 있나요?
           </h1>
         </header>
@@ -147,6 +153,7 @@ const ReviewContentPage: React.FC = () => {
             onChange={handleContentChange}
             placeholder=""
             maxLength={maxLength}
+            housingType={housingType}
           />
           <div className={styles.charCount}>
             <span>{content.length}</span>
@@ -160,7 +167,7 @@ const ReviewContentPage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            content.trim().length > 0 ? styles.enabled : ''
+            content.trim().length > 0 ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={content.trim().length === 0}
