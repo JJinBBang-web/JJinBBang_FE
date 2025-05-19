@@ -163,3 +163,204 @@
 .nextButton.enabled {
   background-color: var(--primary-color);
 }
+
+/* 기숙사 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
+}
+
+.modalBottomSheet {
+  width: 100%;
+  max-width: 393px;
+  background-color: white;
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  padding: 0 16px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modalHandle {
+  width: 50px;
+  height: 5px;
+  background-color: #e5e8eb;
+  border-radius: 100px;
+  margin: 10px auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.modalHeader h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-gray80);
+  margin: 0;
+}
+
+.closeModalButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-gray60);
+  cursor: pointer;
+}
+
+.initialNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  padding: 0 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.initial {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  background-color: var(--block-unactive-btn);
+  color: var(--color-gray60);
+  cursor: pointer;
+  margin: 0 2px;
+}
+
+.selectedInitial {
+  background-color: var(--block-selected);
+  color: var(--primary-color);
+}
+
+.universityList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.universityItem {
+  width: calc(50% - 6px);
+  height: 220px;
+  border: 1px solid var(--color-gray20);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.selectedUniversity {
+  border-color: var(--primary-color);
+  background-color: #fff7f4;
+}
+
+.universityLogo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.universityInfo {
+  text-align: center;
+}
+
+.universityName {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--black);
+  margin: 0;
+  margin-bottom: 4px;
+}
+
+.universityCampus {
+  font-size: 12px;
+  color: var(--color-gray60);
+  margin: 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0 44px;
+}
+
+.resetButton,
+.confirmButton {
+  width: 49%;
+  height: 54px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.resetButton {
+  border: 1px solid var(--color-gray40);
+  background-color: var(--white);
+  color: var(--color-gray40);
+}
+
+.resetButton:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.confirmButton {
+  border: none;
+  background-color: var(--color-gray40);
+  color: var(--white);
+}
+
+.confirmButton.enabled {
+  background-color: var(--primary-color);
+}
+
+.confirmButton:disabled {
+  cursor: not-allowed;
+}
+
+/* Updates to existing styles */
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.unit {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray40);
+}

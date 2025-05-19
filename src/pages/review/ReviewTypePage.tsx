@@ -52,13 +52,23 @@ const ReviewTypePage: React.FC = () => {
           },
         });
       } else {
-        // 일반 모드일 경우 다음 페이지로 이동
-        navigate('/review/input-address', {
-          state: {
-            ...locationState,
-            housingType: selectedType,
-          },
-        });
+        // 선택한 타입이 기숙사인 경우
+        if (selectedType === '기숙사') {
+          navigate('/review/dormitory', {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+          });
+        } else {
+          // 일반 모드일 경우 다음 페이지로 이동
+          navigate('/review/input-address', {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+          });
+        }
       }
     }
   };
@@ -68,8 +78,8 @@ const ReviewTypePage: React.FC = () => {
     if (locationState.from === 'confirm') {
       navigate('/review/confirm');
     } else {
-      // 일반 모드일 경우
-      navigate(-1);
+      // 일반 모드일 경우 MyPage로 이동
+      navigate('/mypage');
     }
   };
 
@@ -105,15 +115,31 @@ const ReviewTypePage: React.FC = () => {
             </button>
           ))}
         </div>
-        <button
-          className={`${styles.nextButton} ${
-            selectedType ? styles.enabled : ''
-          }`}
-          onClick={handleNext}
-          disabled={!selectedType}
-        >
-          다음
-        </button>
+
+        {/* 유형 선택 여부에 따라 버튼 레이아웃 변경 */}
+        {selectedType ? (
+          // 유형이 선택되면 [이전]과 [다음] 버튼을 함께 표시
+          <div className={styles.buttonContainer}>
+            <button className={styles.prevButton} onClick={handleBack}>
+              이전
+            </button>
+            <button
+              className={`${styles.nextButton} ${styles.enabled}`}
+              onClick={handleNext}
+            >
+              다음
+            </button>
+          </div>
+        ) : (
+          // 유형이 선택되지 않으면 [다음] 버튼만 표시 (비활성화 상태)
+          <button
+            className={styles.nextButton}
+            onClick={handleNext}
+            disabled={!selectedType}
+          >
+            다음
+          </button>
+        )}
       </div>
     </div>
   );

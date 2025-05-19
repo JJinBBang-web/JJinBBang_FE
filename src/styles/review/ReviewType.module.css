@@ -79,6 +79,54 @@
   color: var(--primary-color);
 }
 
+/* footer button style */
+/* 이전/다음 버튼을 함께 표시할 때 사용 */
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: calc(100% - 2rem);
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(393px - 2rem);
+  bottom: 2.75rem;
+  gap: 0.38rem;
+}
+
+.buttonContainer.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+/* 이전 버튼 스타일 */
+.prevButton {
+  width: calc(50% - 0.19rem);
+  height: 3.375rem;
+  background-color: var(--color-gray20);
+  color: var(--color-gray60);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  flex: none;
+}
+
+/* 버튼 컨테이너 내의 다음 버튼 스타일 */
+.buttonContainer .nextButton {
+  width: calc(50% - 0.19rem);
+  height: 3.375rem;
+  position: static;
+  transform: none;
+  flex: none;
+}
+
+/* 버튼 컨테이너가 없을 때 다음 버튼은 기존 스타일 유지 */
 .nextButton {
   width: calc(100% - 2rem);
   height: 3.375rem;
