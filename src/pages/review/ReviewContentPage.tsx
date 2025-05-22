@@ -109,6 +109,7 @@ const ReviewContentPage: React.FC = () => {
     } else {
       navigate('/review/confirm', {
         state: {
+          housingType,
           photos,
           advantages,
           disadvantages,

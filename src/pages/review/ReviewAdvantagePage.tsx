@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   JjinFilterState,
+  JjinAgencyFilterState,
   FilterCategory,
   FilterItem,
 } from "../../recoil/util/filterRecoilState";
@@ -24,7 +25,7 @@ const ReviewAdvantagePage: React.FC = () => {
   const location = useLocation();
   const { housingType } = location.state;
   const { photos, from, advantages } = (location.state as LocationState) || {};
-  const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
+  const filters = useRecoilValue<FilterCategory[]>(housingType ==="공인중개사" ? JjinAgencyFilterState : JjinFilterState);
   const [review, setReview] = useRecoilState(reviewState);
 
   const [selectedFilters, setSelectedFilters] = useState<string[]>(

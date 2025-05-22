@@ -3,7 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { reviewState } from "../../recoil/review/reviewAtoms";
-import { JjinFilterState } from "../../recoil/util/filterRecoilState";
+import {
+  JjinFilterState,
+  JjinAgencyFilterState,
+} from "../../recoil/util/filterRecoilState";
 import { tagMessages, tagLongMessages } from "../../components/Tag";
 import styles from "../../styles/review/ReviewConfirm.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
@@ -13,6 +16,7 @@ import starEmptyIcon from "../../assets/image/starIconOff.svg";
 import checkIcon from "../../assets/image/checkIconActive.svg";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { housingTypeState } from "../../recoil/map/mapRecoilState";
 
 interface LocationState {
   address?: {
@@ -43,6 +47,7 @@ const ReviewConfirmPage: React.FC = () => {
 
   const [review, setReview] = useRecoilState(reviewState);
   const filters = useRecoilValue(JjinFilterState);
+  const agencyFilters = useRecoilValue(JjinAgencyFilterState);
 
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [rating, setRating] = useState(0);
@@ -106,18 +111,18 @@ const ReviewConfirmPage: React.FC = () => {
         break;
       }
     }
-
     // 찾은 키로 아이콘 가져오기
     if (tagKey) {
+      const filter = locationState.housingType === "공인중개사" ? agencyFilters : filters
       iconSrc =
-        filters
+        filter
           .find(
             (category) =>
               category.positiveFilters.some((item) => item.key === tagKey) ||
               category.negativeFilters.some((item) => item.key === tagKey)
           )
           ?.positiveFilters.find((item) => item.key === tagKey)?.icon ||
-        filters
+        filter
           .find(
             (category) =>
               category.positiveFilters.some((item) => item.key === tagKey) ||
