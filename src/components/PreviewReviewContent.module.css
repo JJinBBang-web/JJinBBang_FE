@@ -36,7 +36,7 @@
 
 .tag {
   display: flex;
-  height: 24px;
+  height: 20px;
   padding: 2px 5px 2px 4px;
   justify-content: center;
   align-items: center;
@@ -52,16 +52,17 @@
 
 .tagText {
   color: var(--color-gray80);
+
+  /* body/Body 2 */
   font-family: Inter;
-  font-size: 13.545px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 150%; /* 20.318px */
-  letter-spacing: -0.581px;
+  line-height: 150%; /* 21px */
+  letter-spacing: -0.6px;
   margin: 0;
   padding: 0;
   white-space: nowrap;
-
 }
 
 .dateLikeContainer {
