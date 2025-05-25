@@ -1,17 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   JjinFilterState,
+  JjinAgencyFilterState,
   FilterCategory,
   FilterItem,
-} from '../../recoil/util/filterRecoilState';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/ReviewAdvantage.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import backArrowIcon from '../../assets/image/backArrowIcon.svg';
+} from "../../recoil/util/filterRecoilState";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/ReviewAdvantage.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
 interface LocationState {
   photos?: string[];
@@ -22,8 +23,11 @@ interface LocationState {
 const ReviewAdvantagePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { housingType } = location.state;
   const { photos, from, advantages } = (location.state as LocationState) || {};
-  const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
+  const filters = useRecoilValue<FilterCategory[]>(
+    housingType === "공인중개사" ? JjinAgencyFilterState : JjinFilterState
+  );
   const [review, setReview] = useRecoilState(reviewState);
 
   const [selectedFilters, setSelectedFilters] = useState<string[]>(
@@ -41,7 +45,7 @@ const ReviewAdvantagePage: React.FC = () => {
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
-    if (from === 'confirm') {
+    if (from === "confirm") {
       setSelectedFilters(review.pros || []);
     }
   }, [from, review]);
@@ -55,9 +59,8 @@ const ReviewAdvantagePage: React.FC = () => {
         : prev
     );
   };
-
   const scrollToTop = () => {
-    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleNext = () => {
@@ -67,17 +70,17 @@ const ReviewAdvantagePage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+    localStorage.setItem("reviewState", JSON.stringify(updatedReview));
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
+    if (from === "confirm") {
+      navigate("/review/confirm", {
         state: {
           ...location.state,
           advantages: selectedFilters,
         },
       });
     } else {
-      navigate('/review/filter-disad', {
+      navigate("/review/filter-disad", {
         state: {
           ...location.state,
           advantages: selectedFilters,
@@ -87,8 +90,8 @@ const ReviewAdvantagePage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
-      navigate('/review/confirm');
+    if (from === "confirm") {
+      navigate("/review/confirm");
     } else {
       navigate(-1);
     }
@@ -107,7 +110,11 @@ const ReviewAdvantagePage: React.FC = () => {
           >
             <img src={closeIcon} alt="close" />
           </button>
-          <h1>이 찐빵의 장점은 무엇인가요?</h1>
+          <h1>
+            {housingType === "공인중개사"
+              ? "이 공인중개사의 장점은 무엇인가요?"
+              : "이 찐빵의 장점은 무엇인가요?"}
+          </h1>
           <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         </header>
         <div className={styles.content} ref={contentRef}>
@@ -122,7 +129,7 @@ const ReviewAdvantagePage: React.FC = () => {
                       className={`${styles.filter_btn} ${
                         selectedFilters.includes(item.label)
                           ? styles.selected
-                          : ''
+                          : ""
                       }`}
                       onClick={() => handleFilterClick(item.label)}
                     >
@@ -149,7 +156,7 @@ const ReviewAdvantagePage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            selectedFilters.length > 0 ? styles.enabled : ''
+            selectedFilters.length > 0 ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={selectedFilters.length === 0}

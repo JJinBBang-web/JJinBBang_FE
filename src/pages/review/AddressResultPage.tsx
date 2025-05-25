@@ -1,10 +1,10 @@
 // src/pages/review/AddressResultPage.tsx
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/AddressResult.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/AddressResult.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
 
 interface LocationState {
   address: {
@@ -20,12 +20,13 @@ interface LocationState {
 const AddressResultPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { housingType } = location.state;
   const { address, buildingName, floor, squareFootage } =
     (location.state as LocationState) || {
-      address: { roadAddress: '', jibunAddress: '', buildingName: '' },
-      buildingName: '',
-      floor: '',
-      squareFootage: '',
+      address: { roadAddress: "", jibunAddress: "", buildingName: "" },
+      buildingName: "",
+      floor: "",
+      squareFootage: "",
     };
 
   const {
@@ -38,15 +39,23 @@ const AddressResultPage: React.FC = () => {
   // 지도 API는 아직 추가되지 않음
   React.useEffect(() => {
     // 지도 API가 추가되면 여기에 구현
-    console.log('지도 API 추가 필요:', address.roadAddress);
+    console.log("지도 API 추가 필요:", address.roadAddress);
   }, [address.roadAddress]);
 
   const handleNext = () => {
-    navigate('/review/price', {
-      state: {
-        ...location.state,
-      },
-    });
+    if (housingType === "공인중개사") {
+      navigate("/review/room-info", {
+        state: {
+          ...location.state,
+        },
+      });
+    } else {
+      navigate("/review/price", {
+        state: {
+          ...location.state,
+        },
+      });
+    }
   };
 
   return (
@@ -65,10 +74,12 @@ const AddressResultPage: React.FC = () => {
         </header>
         <div className={styles.titleBox}>
           <span className={styles.title}>
-            정확한 주소가 맞나요?
+            {housingType === "공인중개사"
+              ? "정확한 정보가 맞나요?"
+              : "정확한 주소가 맞나요?"}
             <button
               className={styles.searchButton}
-              onClick={() => navigate('/review/address')}
+              onClick={() => navigate("/review/address")}
             >
               주소 재검색
             </button>
@@ -80,19 +91,25 @@ const AddressResultPage: React.FC = () => {
             <p className={styles.address}>{address.roadAddress}</p>
           </div>
           <div className={styles.addressSection}>
-            <span className={styles.label}>상세 주소</span>
+            <span className={styles.label}>
+              {housingType === "공인중개사" ? "상호명" : "상세 주소"}
+            </span>
             <p className={styles.detailAddress}>{buildingName}</p>
           </div>
-          <div className={styles.addressSection}>
-            <span className={styles.label}>평수</span>
-            <p className={styles.floor}>
-              {squareFootage ? `${squareFootage}평` : ''}
-            </p>
-          </div>
-          <div className={styles.addressSection}>
-            <span className={styles.label}>층수</span>
-            <p className={styles.floor}>{floor}</p>
-          </div>
+          {housingType != "공인중개사" && (
+            <>
+              <div className={styles.addressSection}>
+                <span className={styles.label}>평수</span>
+                <p className={styles.floor}>
+                  {squareFootage ? `${squareFootage}평` : ""}
+                </p>
+              </div>
+              <div className={styles.addressSection}>
+                <span className={styles.label}>층수</span>
+                <p className={styles.floor}>{floor}</p>
+              </div>
+            </>
+          )}
         </div>
         <div id="map" className={styles.map}>
           <div className={styles.mapPlaceholder}>

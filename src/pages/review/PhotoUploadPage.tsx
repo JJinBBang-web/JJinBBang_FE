@@ -26,6 +26,7 @@ const PhotoUploadPage: React.FC = () => {
   // 네비게이션 및 라우팅 관련 훅
   const navigate = useNavigate();
   const location = useLocation();
+  const { housingType } = location.state;
   const locationState = location.state as LocationState;
 
   // 업로드된 사진들의 상태 관리
@@ -85,7 +86,8 @@ const PhotoUploadPage: React.FC = () => {
   };
 
   // 최소 2장의 사진이 있어야 다음 버튼 활성화
-  const isNextEnabled = photos.length >= 2;
+  const isNextEnabled = photos.length >= 2 || (housingType === '공인중개사');
+
 
   return (
     <div className="content">
@@ -100,12 +102,19 @@ const PhotoUploadPage: React.FC = () => {
           >
             <img src={closeIcon} alt="close" />
           </button>
-          <h1>직접 촬영한 찐거주 사진을 올려주세요!</h1>
+          <h1>
+            {housingType === "공인중개사"
+              ? "사진이 있다면 첨부해 주세요!"
+              : "직접 촬영한 찐거주 사진을 올려주세요!"}
+          </h1>
         </header>
 
         <div className={styles.subtitle}>
-          찐거주 사진 &nbsp;
-          <span>(2장 이상)</span>
+          {housingType === "공인중개사"
+            ? "현장 사진 등 어떤 정보든 좋아요!"
+            : "찐거주 사진"}
+          &nbsp;
+          <span>{housingType === "공인중개사" ? "(필수 항목 아님)" : "(2장 이상)"}</span>
         </div>
 
         <div className={styles.scrollContainer}>
@@ -141,7 +150,7 @@ const PhotoUploadPage: React.FC = () => {
               multiple
               ref={fileInputRef}
               onChange={handleFileChange}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
           </div>
           {/* 현재 업로드된 사진 수 표시 */}
@@ -157,7 +166,7 @@ const PhotoUploadPage: React.FC = () => {
         {/* 다음 페이지로 이동 버튼 (최소 2장 이상 선택 시 활성화) */}
         <button
           className={`${styles.nextButton} ${
-            isNextEnabled ? styles.enabled : ''
+            isNextEnabled ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={!isNextEnabled}

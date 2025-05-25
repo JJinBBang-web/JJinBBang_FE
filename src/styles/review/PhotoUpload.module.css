@@ -49,6 +49,7 @@
 .subtitle {
   font-size: 16px;
   color: var(--color-gray60);
+  letter-spacing: -0.6px;
   padding-left: 0.31rem;
   margin-bottom: 0.5rem;
 }
