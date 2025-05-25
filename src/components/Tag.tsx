@@ -302,7 +302,7 @@ export const tagLongMessages: { [key: string]: string } = {
   NE_AG_PD_03: "조건에 맞지 않은 매물만 추천했어요",
   NE_AG_PD_04: "수수료가 높았어요",
 
-  NE_AG_SO_01: "불친절했어요",
+  NE_AG_SO_01: "응대가 불친절했어요",
   NE_AG_SO_02: "설명이 부족했어요",
   NE_AG_SO_03: "정보를 숨겼어요",
   NE_AG_SO_04: "처리 속도가 느렸어요",

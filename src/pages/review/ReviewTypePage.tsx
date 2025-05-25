@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { reviewState } from "../../recoil/review/reviewAtoms";
+import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -56,9 +56,11 @@ const ReviewTypePage: React.FC = () => {
           housingType: selectedType,
         })
       );
+
       if (housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
         locationState.from = null;
-        navigate(location.pathname, { state: { ...locationState, from: null }, replace: true });
+        navigate(location.pathname, { state: null, replace: true });
+        setReview(defaultReviewState)
       }
 
       // 수정 모드인지 확인

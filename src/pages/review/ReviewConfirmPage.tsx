@@ -113,7 +113,8 @@ const ReviewConfirmPage: React.FC = () => {
     }
     // 찾은 키로 아이콘 가져오기
     if (tagKey) {
-      const filter = locationState.housingType === "공인중개사" ? agencyFilters : filters
+      const filter =
+        locationState.housingType === "공인중개사" ? agencyFilters : filters;
       iconSrc =
         filter
           .find(
@@ -252,13 +253,33 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToPros = () => {
-    localStorage.setItem("reviewState", JSON.stringify(review));
-    window.location.href = "/review/advantages?from=confirm";
+    navigate("/review/filter-ad", {
+      state: {
+        ...locationState,
+        photos: review.images,
+        advantages: review.pros,
+        disadvantages: review.cons,
+        content: review.content,
+        from: "confirm",
+      },
+    });
+    // localStorage.setItem("reviewState", JSON.stringify(review));
+    // window.location.href = "/review/filter-ad";
   };
 
   const navigateToCons = () => {
-    localStorage.setItem("reviewState", JSON.stringify(review));
-    window.location.href = "/review/disadvantages?from=confirm";
+    navigate("/review/filter-disad", {
+      state: {
+        ...locationState,
+        photos: review.images,
+        advantages: review.pros,
+        disadvantages: review.cons,
+        content: review.content,
+        from: "confirm",
+      },
+    });
+    // localStorage.setItem("reviewState", JSON.stringify(review));
+    // window.location.href = "/review/filter-disad";
   };
 
   const navigateToContent = () => {
@@ -277,6 +298,7 @@ const ReviewConfirmPage: React.FC = () => {
   // 태그 표시 함수 수정
   const renderTags = (tags: string[]) => {
     if (!tags || tags.length === 0) return null;
+    console.log(tags);
 
     return (
       <div className={styles.tags}>

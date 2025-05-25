@@ -277,7 +277,11 @@ export const JjinAgencyFilterState = atom<FilterCategory[]>({
         },
       ],
       negativeFilters: [
-        { label: "응대가 불친절했어요", icon: NE_AG_SO_01, key: "NE_AG_SO_01" },
+        {
+          label: "응대가 불친절했어요",
+          icon: NE_AG_SO_01,
+          key: "NE_AG_SO_01",
+        },
         { label: "설명이 부족했어요", icon: NE_AG_SO_02, key: "NE_AG_SO_02" },
         { label: "정보를 숨겼어요", icon: NE_AG_SO_03, key: "NE_AG_SO_03" },
         {

@@ -25,7 +25,9 @@ const ReviewAdvantagePage: React.FC = () => {
   const location = useLocation();
   const { housingType } = location.state;
   const { photos, from, advantages } = (location.state as LocationState) || {};
-  const filters = useRecoilValue<FilterCategory[]>(housingType ==="공인중개사" ? JjinAgencyFilterState : JjinFilterState);
+  const filters = useRecoilValue<FilterCategory[]>(
+    housingType === "공인중개사" ? JjinAgencyFilterState : JjinFilterState
+  );
   const [review, setReview] = useRecoilState(reviewState);
 
   const [selectedFilters, setSelectedFilters] = useState<string[]>(
@@ -57,7 +59,6 @@ const ReviewAdvantagePage: React.FC = () => {
         : prev
     );
   };
-
   const scrollToTop = () => {
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
