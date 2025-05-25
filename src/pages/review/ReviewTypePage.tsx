@@ -56,8 +56,9 @@ const ReviewTypePage: React.FC = () => {
           housingType: selectedType,
         })
       );
-      if (housingTypeNum(selectedType) != housingTypeNum(housingType)) {
+      if (housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
         locationState.from = null;
+        navigate(location.pathname, { state: { ...locationState, from: null }, replace: true });
       }
 
       // 수정 모드인지 확인
