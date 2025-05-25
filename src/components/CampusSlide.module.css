@@ -11,17 +11,17 @@
 .campus_inner_slide {
   position: relative;
   display: flex;
-  width: 320px;
+  width: 328px;
   height: 220px;
   border-radius: 16px;
-  gap: 10px;
+  gap: 18px;
   overflow-x: scroll;
   overflow-y: hidden;
   scroll-behavior: smooth;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  padding: 10px;
-  margin: -10px;
+  padding: 16px;
+  margin: -16px;
   -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 */
   transform: translateZ(0); /* GPU 가속 활성화 */
   will-change: scroll-position;

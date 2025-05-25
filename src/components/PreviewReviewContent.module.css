@@ -36,8 +36,8 @@
 
 .tag {
   display: flex;
-  height: 24px;
-  padding: 2px 4px;
+  height: 20px;
+  padding: 2px 5px 2px 4px;
   justify-content: center;
   align-items: center;
   gap: 2px;
@@ -52,7 +52,9 @@
 
 .tagText {
   color: var(--color-gray80);
-  font-family: "Spoqa Han Sans Neo";
+
+  /* body/Body 2 */
+  font-family: Inter;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -60,6 +62,7 @@
   letter-spacing: -0.6px;
   margin: 0;
   padding: 0;
+  white-space: nowrap;
 }
 
 .dateLikeContainer {

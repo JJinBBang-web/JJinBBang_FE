@@ -37,11 +37,7 @@ const PreviewReview: React.FC<Props> = ({
       }}
     >
       <div className={styles.buildingContainer}>
-        <img
-          className={styles.buildingImg}
-          src={review.image}
-          alt={name}
-        />
+        <img className={styles.buildingImg} src={review.image} alt={name} />
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
             <p className={styles.buildingName}>{name}</p>
@@ -91,7 +87,12 @@ const PreviewReview: React.FC<Props> = ({
         </div>
       </div>
       <PreviewReviewContent
-        reviewInfo={review.reviewInfo}
+        reviewInfo={{
+          content: review.reviewInfo.content,
+          keywords: review.reviewInfo.keywords,
+          likesCount: likeCount,
+          updatedAt: review.reviewInfo.updatedAt,
+        }}
       />
     </div>
   );
