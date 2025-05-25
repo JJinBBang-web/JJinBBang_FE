@@ -1,0 +1,49 @@
+.content {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    padding: 0 16px;
+}
+
+.filterWrap{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.filterWrap p {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray40);
+    padding: 0;
+    margin: 0;
+}
+.filterWrap span {
+    padding: 0;
+    margin: 0;
+}
+
+.selectedText {
+    color: var(--primary-color) !important;
+}
+
+.line {
+    width: 100%;
+    border: 1.5px solid #eee;
+
+    margin: 10px 0;
+} 
+
+.review {
+    margin: 20px 0;
+    height: 411px;
+    background-color: var(--color-gray80);
+}

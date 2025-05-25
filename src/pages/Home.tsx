@@ -8,7 +8,8 @@ import CampusSlide from "../components/CampusSlide";
 import PreviewReview from "../components/PreviewReview";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import adSense from "../assets/image/adSense.svg";
+import pencil from "../assets/image/pencil.svg";
+import iconRight from "../assets/image/iconRight.svg";
 
 const api = {
   code: 200,
@@ -16,26 +17,31 @@ const api = {
   data: {
     reviews: [
       {
-        basicInfo: {
-          id: 1, // 리뷰 ID
-          name: "다희빌",
-          type: "원룸",
-          contractType: "월세",
-          deposit: 500, // 보증금 (단위: 만원)
-          monthlyRent: 45, // 월세 (단위: 만원)
+        dormitoryBasicInfo: {
+          id: 1,
+          name: "지희관",
+          universityName: "경상국립대",
+          type: "기숙사",
           floor: 2, // 옥탑방은 0, 반지하는 -1
-          space: 26.44, // 면적 (단위: m²)
-          maintenanceCost: 10, // 관리비 (단위: 만원)
-          rating: 3, // 별점 (1~5)
-          liked: true, // 좋아요 여부
+          space: 26.44,
+          DormitoryFee: 10,
+          rating: 0,
+          liked: true, // false
         },
         reviewInfo: {
-          content: "집이 너무 깔끔하고...",
-          keywords: ["PO_LO_01", "PO_MT_01", "PO_MT_04"], // 태그 키워드
-          likesCount: 100,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // ✅ Date 객체 사용
+          content:
+            "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
+          keywords: [
+            "PO_LO_01",
+            "PO_MT_01",
+            "PO_MT_04",
+            "PO_MT_04", // ... 필요한 키워드 추가
+            "PO_MT_01",
+          ],
+          likesCount: 120,
+          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
-        image: campus_img_1,
+        image: "http://localhost:8080/image/1.jpg",
       },
       {
         basicInfo: {
@@ -53,7 +59,7 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
-          keywords: ["PO_LO_02", "PO_ST_03", "PO_MT_02"],
+          keywords: ["PO_LO_02", "PO_ST_03", "PO_MT_02", "PO_MT_01"],
           likesCount: 18,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
@@ -75,15 +81,54 @@ const api = {
         },
         reviewInfo: {
           content: "채광이 좋고 전망이 멋져요.",
-          keywords: ["PO_ST_01", "PO_MT_03", "NE_LO_07"],
+          keywords: ["PO_ST_01", "NE_LO_07", "PO_MT_01"],
           likesCount: 12,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
         image: campus_img_1,
       },
+    ] as any[],
+  },
+};
+
+const campus_api = {
+  code: 200,
+  message: "조회 성공",
+  data: {
+    campusList: [
+      {
+        id: 1,
+        campusName: "가좌캠퍼스",
+        logoImageUrl: "http://localhost:8080/~~~",
+        campusAddress: "경상남도 진주시 ~~",
+        latitude: 37.5605,
+        longitude: 127.0103,
+      },
+      {
+        id: 2,
+        campusName: "칠암캠퍼스",
+        logoImageUrl: null, // 이미지가 없는 경우
+        campusAddress: "경상남도 진주시 ~~",
+        latitude: 37.5605,
+        longitude: 127.0103,
+      },
+      {
+        id: 3,
+        campusName: "통영캠퍼스",
+        logoImageUrl: "http://localhost:8080/~~~",
+        campusAddress: "경상남도 진주시 ~~",
+        latitude: 37.5605,
+        longitude: 127.0103,
+      },
     ],
   },
 };
+
+const campusList = campus_api.data.campusList.map((campus) => ({
+  img: campus.logoImageUrl || "default_image_url",
+  univ: "경상국립대학교",
+  campus: campus.campusName,
+}));
 
 const Home: React.FC = () => {
   return (
@@ -105,75 +150,20 @@ const Home: React.FC = () => {
             내 대학 근처의 찐 후기들만 모아 한눈에!
           </p>
         </div>
-        <CampusSlide
-          campusList={[
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "칠암캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "통영캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "통영캠퍼스",
-            },
-            {
-              img: campus_img_1,
-              univ: "경상국립대학교",
-              campus: "통영캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-            {
-              img: campus_img_1, // 임시로 campus_icon 사용
-              univ: "경상국립대학교",
-              campus: "가좌캠퍼스",
-            },
-          ]}
-        />
+        <CampusSlide campusList={campusList} />
+      </div>
+
+      <div className={styles.safetyContainer}>
+        <img src={pencil} alt="pencil" />
+        <div>
+          <p className={styles.safetyText}>
+            부동산 직거래, 안전하게 할 수 있을까?
+          </p>
+          <p className={styles.safetySubText}>
+            찐빵이와 함께라면 어렵지 않아요!
+          </p>
+        </div>
+        <img src={iconRight} alt="iconRight" />
       </div>
       <div className={styles.previewReviewContainer}>
         <div className={styles.previewHeader}>
@@ -184,18 +174,19 @@ const Home: React.FC = () => {
         </div>
 
         {api.data.reviews.length > 0 ? (
-          api.data.reviews.map((review) => (
-            <div>
-              <div className={styles.line} />
+          api.data.reviews.map((review) => {
 
-              <PreviewReview
-                key={(review as any).basicInfo.id} // `any`로 강제 타입 지정
-                image={(review as any).image}
-                basicInfo={(review as any).basicInfo}
-                reviewInfo={(review as any).reviewInfo}
-              />
-            </div>
-          ))
+            return (
+              <>
+                <div className={styles.line} />
+
+                <PreviewReview
+                  key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
+                  review={review}
+                />
+              </>
+            );
+          })
         ) : (
           <div className={styles.noReviewContainer}>
             <div className={styles.line} />
@@ -208,9 +199,7 @@ const Home: React.FC = () => {
           </div>
         )}
       </div>
-      <div className={styles.adver}>
-        <img src={adSense} alt="adSense" />
-      </div>
+      <div />
     </div>
   );
 };

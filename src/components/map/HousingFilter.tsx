@@ -1,8 +1,7 @@
 import { useRecoilState } from "recoil";
-import { housingTypeState } from "../../recoil/map/mapRecoilState";
+import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilState";
 import housingIcon from "../../assets/image/iconHousing.svg"
 import styles from './HousingFilter.module.css'
-import '../../styles/global.css'
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
 
 
@@ -11,14 +10,16 @@ const HousingFilter = () => {
     const [housingType, setHousingType] = useRecoilState(housingTypeState);
     // 바텀시트 열닫 상태
     const [, setBottomSheet] = useRecoilState(isSheetOpenState);
+    const [, setSelectedType] = useRecoilState(selectedTypeState);
+
 
     // UI 디자인
     return (
-        <div className={styles.housing_btn} onClick={() => {
-            console.log("바텀시트 열기 클릭!"); 
+        <div className={`${styles.container} ${styles.housing_btn}`} onClick={() => {
+            setSelectedType(housingType);
             setBottomSheet({ isOpen: true, type: "housing" }); }}>
             <img src={housingIcon} alt="housing"/>
-            <p className={styles.housing_type}>전체</p>
+            <p className={styles.housing_type}>{housingType ? housingType : "전체"}</p>
         </div>
     )
 }

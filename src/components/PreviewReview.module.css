@@ -5,6 +5,7 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 }
 
 .buildingContainer {
@@ -38,15 +39,15 @@
   overflow: hidden;
   color: var(--black);
   text-overflow: ellipsis;
-  font-family: "Spoqa Han Sans Neo";
+  font-family: Pretendard;
   font-size: 18px;
   font-style: normal;
   font-weight: 500;
-  line-height: 27px; /* 27px */
+  line-height: 150%; /* 27px */
   letter-spacing: -0.6px;
   margin: 0;
 }
-.likeContainer{
+.likeContainer {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -85,11 +86,16 @@
   letter-spacing: -0.6px;
 }
 
+.buildingPrice.dormitory {
+  background: #fef7f0;
+  color: var(--block-yellow);
+}
+
 .buildingContent3 {
   color: var(#3f3f3f);
 
   /* body/Body 2 */
-  font-family: "Spoqa Han Sans Neo";
+  font-family: Inter;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

@@ -1,3 +1,11 @@
+.container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
 .housing_btn {
     position: relative;
     display: flex;
@@ -18,5 +26,5 @@
     font-size: 14px;
     letter-spacing: -0.6px;
     line-height: 18px;
-    color: var(--white);  
+    color: var(--white);
 }
