@@ -1,9 +1,13 @@
 // src/pages/review/DormitoryInputPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { reviewState, ReviewState } from '../../recoil/review/reviewAtoms';
+import { selectedTypeNumState } from '../../recoil/map/mapRecoilState';
+import { universitiesState } from '../../recoil/map/universityRecoilState';
+import { isSheetOpenState } from '../../recoil/util/utilRecoilState'; // ADD THIS IMPORT
 import CancelModal from '../../components/review/CancelModal';
+import UniversityCampusSelectModal from '../../components/review/UniversityCampusSelectModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/FloorInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
@@ -25,17 +29,16 @@ interface LocationState {
   from?: string;
 }
 
-interface University {
-  id: number;
-  name: string;
-  campus: string;
-}
-
 const DormitoryInputPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { from } = (location.state as LocationState) || {};
   const [review, setReview] = useRecoilState(reviewState);
+  const selectedTypeNum = useRecoilValue(selectedTypeNumState);
+  const universities = useRecoilValue(universitiesState);
+  const setBottomSheet = useSetRecoilState(isSheetOpenState); // ADD THIS
+  const bottomSheet = useRecoilValue(isSheetOpenState); // ADD THIS
+
   // Cast to ExtendedReviewState to work with our additional properties
   const extendedReview = review as unknown as ExtendedReviewState;
 
@@ -43,8 +46,7 @@ const DormitoryInputPage: React.FC = () => {
   const [university, setUniversity] = useState<string>(
     extendedReview.university || ''
   );
-  const [showUniversityModal, setShowUniversityModal] =
-    useState<boolean>(false);
+  // REMOVE showUniversityModal state - using Recoil instead
   const [dormitoryName, setDormitoryName] = useState<string>(
     extendedReview.dormitoryName || ''
   );
@@ -57,32 +59,6 @@ const DormitoryInputPage: React.FC = () => {
   const [dormitoryFee, setDormitoryFee] = useState<string>(
     review.dormitoryFee ? review.dormitoryFee.toString() : ''
   );
-
-  // Universities list for modal
-  const universities: University[] = [
-    { id: 1, name: '경상국립대학교', campus: '칠암캠퍼스' },
-    { id: 2, name: '경상국립대학교', campus: '가좌캠퍼스' },
-  ];
-
-  const koreanInitials = [
-    'ㄱ',
-    'ㄴ',
-    'ㄷ',
-    'ㄹ',
-    'ㅁ',
-    'ㅂ',
-    'ㅅ',
-    'ㅇ',
-    'ㅈ',
-    'ㅊ',
-    'ㅋ',
-    'ㅌ',
-    'ㅍ',
-    'ㅎ',
-  ];
-  const [selectedInitial, setSelectedInitial] = useState<string>('ㄱ');
-  const [selectedUniversity, setSelectedUniversity] =
-    useState<University | null>(null);
 
   const {
     showCancelModal,
@@ -106,6 +82,20 @@ const DormitoryInputPage: React.FC = () => {
     }
   }, [from, review, extendedReview]);
 
+  // Update university name when selectedTypeNum changes
+  useEffect(() => {
+    if (selectedTypeNum) {
+      const selectedUniversity = universities.find(
+        (uni) => uni.id === selectedTypeNum
+      );
+      if (selectedUniversity) {
+        setUniversity(
+          `${selectedUniversity.universityName} ${selectedUniversity.campus}`
+        );
+      }
+    }
+  }, [selectedTypeNum, universities]);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
@@ -125,29 +115,12 @@ const DormitoryInputPage: React.FC = () => {
     return Number(value).toLocaleString();
   };
 
+  // UPDATED: Use Recoil state instead of local state
   const handleUniversityClick = () => {
-    setShowUniversityModal(true);
+    setBottomSheet({ isOpen: true, type: 'university' });
   };
 
-  const handleInitialSelect = (initial: string) => {
-    setSelectedInitial(initial);
-  };
-
-  const handleUniversitySelect = (univ: University) => {
-    setSelectedUniversity(univ);
-  };
-
-  const handleModalConfirm = () => {
-    if (selectedUniversity) {
-      setUniversity(`${selectedUniversity.name} ${selectedUniversity.campus}`);
-    }
-    setShowUniversityModal(false);
-  };
-
-  const handleModalReset = () => {
-    setSelectedUniversity(null);
-    setSelectedInitial('ㄱ');
-  };
+  // REMOVE handleModalClose - not needed anymore
 
   const handleFloorSelect = (floor: string) => {
     setSelectedFloor(floor);
@@ -299,72 +272,9 @@ const DormitoryInputPage: React.FC = () => {
         </div>
       </div>
 
-      {showUniversityModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalBottomSheet}>
-            <div className={styles.modalHandle}></div>
-            <div className={styles.modalHeader}>
-              <h2>대학교</h2>
-              <button
-                className={styles.closeModalButton}
-                onClick={() => setShowUniversityModal(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={styles.initialNav}>
-              {koreanInitials.map((initial) => (
-                <div
-                  key={initial}
-                  className={`${styles.initial} ${
-                    selectedInitial === initial ? styles.selectedInitial : ''
-                  }`}
-                  onClick={() => handleInitialSelect(initial)}
-                >
-                  {initial}
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.universityList}>
-              {universities.map((univ) => (
-                <div
-                  key={univ.id}
-                  className={`${styles.universityItem} ${
-                    selectedUniversity?.id === univ.id
-                      ? styles.selectedUniversity
-                      : ''
-                  }`}
-                  onClick={() => handleUniversitySelect(univ)}
-                >
-                  <div className={styles.universityLogo}>
-                    {/* Placeholder for university logo */}
-                  </div>
-                  <div className={styles.universityInfo}>
-                    <p className={styles.universityName}>{univ.name}</p>
-                    <p className={styles.universityCampus}>{univ.campus}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.modalFooter}>
-              <button className={styles.resetButton} onClick={handleModalReset}>
-                초기화
-              </button>
-              <button
-                className={`${styles.confirmButton} ${
-                  selectedUniversity ? styles.enabled : ''
-                }`}
-                onClick={handleModalConfirm}
-                disabled={!selectedUniversity}
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* UPDATED: Conditional rendering based on Recoil state */}
+      {bottomSheet.isOpen && bottomSheet.type === 'university' && (
+        <UniversityCampusSelectModal />
       )}
 
       <footer className={styles.footer}>
