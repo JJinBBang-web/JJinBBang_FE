@@ -15,7 +15,6 @@ import {
   selectedTypeNumState,
 } from '../../recoil/map/mapRecoilState';
 import { isSheetOpenState } from '../../recoil/util/utilRecoilState';
-import { useEffect } from 'react';
 import iconClose from '../../assets/image/iconClose.svg';
 
 const INITIAL_LIST = [
@@ -65,7 +64,7 @@ const UniversityFilterModal = () => {
   // 초기화버튼 활성화 조건
   const isResetActive = selectedTypeNum !== null || selectedInitial !== 'ㄱ';
 
-  // 초기화 함수
+  // 초기화 함수 - selectedTypeNum을 null로 설정하여 확인 버튼 비활성화
   const handleReset = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setSelectedTypeNum(null);
@@ -124,20 +123,6 @@ const UniversityFilterModal = () => {
 
   return (
     <>
-      {/* 오버레이 배경 - 클릭 시 모달 닫힘 */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 1000,
-        }}
-        onClick={handleOverlayClick}
-      />
-
       {/* 모달 컨테이너 */}
       <div
         style={{
@@ -145,7 +130,6 @@ const UniversityFilterModal = () => {
           bottom: 0,
           left: 0,
           right: 0,
-          zIndex: 1001,
           backgroundColor: 'white',
           borderRadius: '24px 24px 0 0',
           padding: '0.62rem 1.5rem 2.75rem 1.5rem',
@@ -156,7 +140,6 @@ const UniversityFilterModal = () => {
       >
         <div className={styles.content}>
           <div className={styles.modalHeader}>
-            <div className={styles.handleBar}></div>
             <span
               className={styles.modalTitle}
               style={{ position: 'absolute', left: '0', marginTop: '1.5rem' }}

@@ -16,7 +16,7 @@
 .modalContainer {
   width: 100%;
   max-width: 393px;
-  background-color: white;
+  background-color: var(--white);
   border-radius: 24px 24px 0 0;
   position: relative;
   animation: slideUp 0.3s ease-out;
@@ -39,7 +39,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  margin: 1.5rem 0 1.13rem;
+  margin: 0.5rem 0 1.13rem;
 }
 
 /* 핸들바 */
@@ -49,7 +49,6 @@
   background-color: var(--block-popup);
   border-radius: 100px;
   position: absolute;
-  top: -1.5rem;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -61,7 +60,6 @@
   line-height: 160%;
   letter-spacing: -0.0375rem;
   color: var(--color-gray80);
-  margin-top: 1.5rem;
 }
 
 /* 닫기 버튼 */
@@ -87,7 +85,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1.12rem;
+  margin-top: 1rem;
 }
 
 .initial_btn {
@@ -154,8 +152,6 @@
 }
 
 .uni_title {
-  margin: 0;
-  padding: 0;
   font-size: 16px;
   letter-spacing: -0.6px;
   line-height: 150%;
@@ -211,7 +207,7 @@
   height: 54px;
   border: none;
   border-radius: 14px;
-  background-color: var(--primary-color);
+  background-color: var(--color-gray40);
   font-size: 16px;
   letter-spacing: -0.6px;
   line-height: 22px;
