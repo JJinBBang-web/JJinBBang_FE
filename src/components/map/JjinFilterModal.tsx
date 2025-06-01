@@ -1,21 +1,30 @@
-import { useRecoilState } from "recoil";
-import { JjinFilterState } from "../../recoil/util/filterRecoilState";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { JjinAgencyFilterState, JjinFilterState } from "../../recoil/util/filterRecoilState";
 import styles from "./JjinFilterModal.module.css";
 import iconDown from "../../assets/image/iconDown.svg"
 import iconUp from "../../assets/image/iconUp.svg"
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
-import { filterState, selectedJjinFilterState } from "../../recoil/map/mapRecoilState";
+import { filterState, housingTypeState, selectedJjinFilterState } from "../../recoil/map/mapRecoilState";
 import { isEqual } from "lodash";
 
 const JjinFilterModal = () => {
-    const [filters, setFilters] = useRecoilState(JjinFilterState);
+    // const [filters, setFilters] = useRecoilState(JjinFilterState);
     const [selectedJjinFilter, setSelectedJjinFilter] = useRecoilState(selectedJjinFilterState);
     const [filter, setFilter] = useRecoilState(filterState);
 
     // 모달 상태관리
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
-    
+
+    const housingType = useRecoilValue(housingTypeState);   
+
+    // 공인중개사면 JjinAgencyFilterState 사용, 아니면 JjinFilterState
+    const filters = useRecoilValue(
+        housingType === "공인중개사" ? JjinAgencyFilterState 
+            : housingType === "기숙사" ? JjinAgencyFilterState
+            : JjinFilterState
+    );
+
     // 스크롤 상태 관리
     const [scrolled, setScrolled] = useState<{[key:number]:Boolean}>({});
     const filterContentRefs = useRef<(HTMLDivElement | null)[]>([]);
