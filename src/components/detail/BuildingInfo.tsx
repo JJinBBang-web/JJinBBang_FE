@@ -4,7 +4,7 @@ import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import { tagMessages, tagImages, tagLongMessages } from "../Tag";
-import { Building } from "../../recoil/detail/BuildingRecoilState";
+import { agencyBuildingInfo, Building, dormBuildingInfo, generalBuildingInfo } from "../../recoil/detail/BuildingRecoilState";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -19,14 +19,52 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
         setIsLiked(building.basicInfo.liked);
     }, [building]);
 
+    const renderExtraInfo = () => {
+        if (building.basicInfo.type.includes("기숙사")) {
+            return <>
+                <div className={styles.buildingType}>{(building.basicInfo as dormBuildingInfo).type}</div>
+                <div className={styles.campusType}>{(building.basicInfo as dormBuildingInfo).campus}</div>
+            </>
+        }
+        if (building.basicInfo.type.includes("공인중개사")) {
+            return <div className={styles.agencyType}>{(building.basicInfo as agencyBuildingInfo).type}</div>
+        }
+        return (            
+                <>
+                {(building.basicInfo as generalBuildingInfo).type.map((t, index) => (
+                    <div key={index} className={styles.buildingType}>{t}</div>
+                ))}
+                </>
+            );
+      }
+    
+    // const renderTageInfo = () => {
+    //     if (building.basicInfo.type.includes("기숙사")) {
+    //         return (
+    //             <>
+    //             {(building.keywords as dormBuildingInfo).map((keyword)=> (
+    //                 <div className={styles.keywordBack}>
+    //                     <div className={styles.keywordContent}>
+    //                         <img className={styles.keywordImg} src={tagImages[keyword.key]}/>
+    //                         <p className={styles.keyword}>{tagLongMessages[keyword.key]}</p>
+    //                     </div>
+    //                     <p className={styles.keywordCount}>{keyword.count}</p>
+    //                 </div>
+    //             ))}
+    //             </>
+    //         );
+    //     }
+    //     if (building.basicInfo.type.includes("공인중개사")) {
+    //         return <div className={styles.agencyType}>{(building.basicInfo as agencyBuildingInfo).type}</div>
+    //     }
+    //     return <div className={styles.buildingType}>{(building.basicInfo as generalBuildingInfo).type}</div>;
+    // }
+
     return (
         <div className={styles.content}>
             <div className={styles.typeAndLike}>
                 <div className={styles.buildingTypeWrap}>
-                    {building.basicInfo.type.map((type) => (
-                        <div className={styles.buildingType}>{type}</div>
-                        
-                    ))}
+                    {renderExtraInfo()}
                 </div>
                 <div className={styles.likeContainer}>
                     <img
