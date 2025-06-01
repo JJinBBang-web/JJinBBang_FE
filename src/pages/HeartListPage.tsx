@@ -7,6 +7,8 @@ import downIcon from "../assets/image/downIcon.svg";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import FilterModal from "../components/hartListPage/FilterModal";
 import { isFilterModalOpenState } from "../recoil/hartListPage/isFilterModalOpenState";
+import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
+
 
 const api = {
   code: 200,
@@ -77,7 +79,7 @@ const api = {
         },
         image: campus_img_1,
       },
-    ],
+    ] as any[],
   },
 };
 
@@ -99,20 +101,24 @@ const Heart: React.FC = () => {
               <img className={styles.filterImg} src={downIcon} alt="downIcon" />
             </div>
           </div>
-          {api.data.reviews.map((review) => {
-            const hasBasicInfo = "basicInfo" in review;
-            const hasDormitoryBasicInfo = "dormitoryBasicInfo" in review;
-            return (
-              <>
+          {api.data.reviews.length > 0 ? (
+            api.data.reviews.map((review) => (
+              <div key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id}>
                 <div className={styles.line} />
-
-                <PreviewReview
-                  key={review.basicInfo?.reviewId ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
-                  review={review}
-                />
-              </>
-            );
-          })}
+                <PreviewReview review={review} />
+              </div>
+            ))
+          ) : (
+            <div className={styles.noReviewContainer}>
+              <div className={styles.line} />
+              <img src={emptyCharacterIcon} alt="빈 캐릭터 아이콘" />
+              <p className={styles.noReviewText}>
+                앗! 아직 최근 본 찐빵이 없어요!
+                <br />
+                지도에서 내 주변 찐빵을 둘러볼까요?
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <FilterModal />
