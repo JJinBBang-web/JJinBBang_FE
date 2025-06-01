@@ -15,12 +15,13 @@ interface Props {
 }
 
 const BuildingPreviewReview:React.FC<Props> = ({review}) => {
-    const liked = review.basicInfo?.liked ?? review.dormitoryBasicInfo?.liked;
-    const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type;
-    const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating ?? 0;
+    const liked = review.basicInfo?.liked ?? review.dormitoryBasicInfo?.liked ?? review.agencyReviewInfo?.liked;
+    const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type ?? review.agencyReviewInfo?.type;
+    const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
     const floor = review.basicInfo?.floor ?? review.dormitoryBasicInfo?.floor;
-    const space = review.basicInfo?.space ?? review.dormitoryBasicInfo?.space;
-    const fee = review.basicInfo?.maintenanceCost ?? review.dormitoryBasicInfo?.dormitoryFee;
+    const space = review.basicInfo?.space;
+    const fee = review.basicInfo?.maintenanceCost ?? review.dormitoryBasicInfo?.dormFee;
+    const capacity = review.dormitoryBasicInfo?.capacity;
 
     const [isLiked, setIsLiked] = useState(liked);
     const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
@@ -33,11 +34,34 @@ const BuildingPreviewReview:React.FC<Props> = ({review}) => {
         setLikeCount(review.reviewInfo.likesCount);
     }, [liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
 
+
+    
+    // 공인중개사 프리뷰
+
+    // 기숙사 프리뷰
+
+    // 일반 프리뷰
+
     return (
         <div className={styles.content} onClick={()=> {navigate('/building/rv'); window.scrollTo(0, 0);}}>
             <img src="" alt="" className={styles.buildingImg}/>
             <div className={styles.infoAndLike}>
-                <div className={styles.buildingInfo}>{floor}, {space}m2, 관리비{fee}만</div>
+                {review.basicInfo && (
+                    <div className={styles.buildingInfo}>{floor}, {space}m2, 관리비 {fee}만</div>
+                )}
+                {review.dormitoryBasicInfo && (
+                    <div className={styles.buildingInfo}>{floor}, {capacity}인실, 기숙사비 {fee}만</div>
+                )}
+                {review.agencyReviewInfo && (
+                    <div className={styles.buildingRating}>
+                        {[...Array(rating)].map((_, index) => (
+                        <img key={`on-${index}`} src={starIconOn} alt="rate" />
+                        ))}
+                        {[...Array(5 - rating)].map((_, index) => (
+                        <img key={`off-${index}`} src={starIconOff} alt="rate" />
+                        ))}
+                    </div>
+                )}
                 <div className={styles.likeContainer}>
                     <img
                         className={styles.likeButton}
@@ -54,34 +78,53 @@ const BuildingPreviewReview:React.FC<Props> = ({review}) => {
                     />
                 </div>
             </div>
-            <div className={styles.buildingContent}>
-                <div className={styles.buildingPrice}>{type}</div>
-                {review.basicInfo && (
-                review.basicInfo.contractType === "월세" ? (
-                    <div className={styles.buildingPrice}>
-                    {review.basicInfo.contractType} {review.basicInfo.deposit}/
-                    {review.basicInfo.monthlyRent}
-                    </div>
-                ) : (
-                    <div className={styles.buildingPrice}>
-                    {review.basicInfo.contractType} {review.basicInfo.deposit}
-                    </div>
-                )
-                )}
-                {review.dormitoryBasicInfo && (
-                <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
-                    {review.dormitoryBasicInfo.universityName}
+            {review.basicInfo && (
+                <>
+                <div className={styles.buildingContent}>
+                    <div className={styles.buildingPrice}>{type}</div>
+                    {review.basicInfo && (
+                    review.basicInfo.contractType === "월세" ? (
+                        <div className={styles.buildingPrice}>
+                        {review.basicInfo.contractType} {review.basicInfo.deposit}/
+                        {review.basicInfo.monthlyRent}
+                        </div>
+                    ) : (
+                        <div className={styles.buildingPrice}>
+                        {review.basicInfo.contractType} {review.basicInfo.deposit}
+                        </div>
+                    )
+                    )}
                 </div>
-                )}
-            </div>
-            <div className={styles.buildingRating}>
+                <div className={styles.buildingRating}>
                     {[...Array(rating)].map((_, index) => (
                     <img key={`on-${index}`} src={starIconOn} alt="rate" />
                     ))}
                     {[...Array(5 - rating)].map((_, index) => (
                     <img key={`off-${index}`} src={starIconOff} alt="rate" />
                     ))}
-            </div>
+                </div>
+                </>
+            )}
+            {review.dormitoryBasicInfo && (
+                <>
+                <div className={styles.buildingContent}>
+                    <div className={`${styles.buildingPrice}`}>
+                    {review.dormitoryBasicInfo.type}
+                    </div>
+                    <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
+                        {review.dormitoryBasicInfo.university}
+                    </div>
+                </div>
+                <div className={styles.buildingRating}>
+                    {[...Array(rating)].map((_, index) => (
+                    <img key={`on-${index}`} src={starIconOn} alt="rate" />
+                    ))}
+                    {[...Array(5 - rating)].map((_, index) => (
+                    <img key={`off-${index}`} src={starIconOff} alt="rate" />
+                    ))}
+                </div>
+                </>
+            )}
             <PreviewReviewContent
                 reviewInfo={{
                     content : review.reviewInfo.content,

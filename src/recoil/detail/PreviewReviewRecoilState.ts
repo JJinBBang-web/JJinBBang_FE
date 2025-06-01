@@ -19,12 +19,20 @@ export interface dormitoryBasicInfo {
   id: number; // 리뷰 ID
   name: string;
   type: string;
-  universityName: string;
+  university: string;
   floor: string;
-  space:number;
-  dormitoryFee : number;
+  capacity:number;
+  dormFee : number;
   rating: number; // 평점
   liked: boolean; // 좋아요 여부
+}
+
+export interface agencyReviewInfo {
+    id : number;
+    name : string;
+    type : string;
+    rating : number;
+    liked : boolean;
 }
 
 export interface ReviewInfo {
@@ -37,8 +45,9 @@ export interface ReviewInfo {
 export interface ReviewPreview {
     basicInfo?: BasicInfo;
     dormitoryBasicInfo?: dormitoryBasicInfo;
+    agencyReviewInfo?: agencyReviewInfo;
     reviewInfo: ReviewInfo;
-    reviewImage?: string;
+    image?: string;
 }
 
 // 리뷰 프리뷰 상태관리
@@ -62,12 +71,19 @@ export const ReviewPreviewState = atom<ReviewPreview[]>({
             id: 0,
             name: "",
             type: "",
-            universityName: "",
+            university: "",
             floor: "",
-            space: 0,
-            dormitoryFee: 0,
+            capacity:0,
+            dormFee: 0,
             rating: 0,
             liked: false
+        },
+        agencyReviewInfo : {
+            id: 0,
+            name:"",
+            type:"",
+            rating: 0,
+            liked : false
         },
         reviewInfo : {
                 content: "",
@@ -75,6 +91,6 @@ export const ReviewPreviewState = atom<ReviewPreview[]>({
                 likesCount: 0,
                 updatedAt: new Date(),
                 },
-        reviewImage: ""
+        image: ""
     },]
 })
