@@ -1,12 +1,16 @@
 // src/pages/auth/KakaoAuthPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { authState } from '../../recoil/auth/atoms';
+import MyPage from '../MyPage'; // 마이페이지 컴포넌트 임포트
 import styles from '../../styles/auth/KakaoAuthPage.module.css';
 import TermsAgreementModal from '../../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../../components/auth/SignupCompleteModal';
 
 const KakaoAuthPage: React.FC = () => {
   const navigate = useNavigate();
+  const [_, setAuth] = useRecoilState(authState);
   const [showTerms, setShowTerms] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
 
@@ -36,11 +40,13 @@ const KakaoAuthPage: React.FC = () => {
   };
 
   return (
-    <div className="content">
-      <div className={styles.loadingContainer}>
-        <p>로그인 진행 중입니다...</p>
+    <div className={styles.pageContainer}>
+      {/* 배경으로 마이페이지 컴포넌트 렌더링 */}
+      <div className={styles.backgroundPage}>
+        <MyPage />
       </div>
 
+      {/* 모달 표시 */}
       {showTerms && (
         <TermsAgreementModal
           onClose={handleTermsClose}

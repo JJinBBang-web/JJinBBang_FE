@@ -1,0 +1,226 @@
+/* src/components/review/UniversityCampusSelectModal.module.css */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modalContainer {
+  width: 100%;
+  max-width: 393px;
+  background-color: white;
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 12px 16px;
+}
+
+.handleBar {
+  width: 50px;
+  height: 5px;
+  background-color: var(--block-popup);
+  border-radius: 100px;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 16px;
+  top: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.content {
+  margin: 8px 0;
+  padding: 0 1.5rem;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.initial_wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.initial_btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--block-unactive-btn);
+  color: var(--color-gray20);
+}
+
+.selected_initial_btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--block-selected);
+  color: var(--primary-color);
+}
+
+.unselected_initial_btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--block-unactive-btn);
+  color: var(--color-gray60);
+}
+
+/* 대학교 css */
+.uni_slider {
+  position: relative;
+  margin-top: 20px;
+}
+
+.uni_wrap {
+  flex: 1;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.uni_btn {
+  width: 160px;
+  height: 220px;
+  padding: 16px;
+  background-color: var(--white);
+  border: 1px solid var(--color-gray20);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected_uni_btn {
+  background-color: var(--block-selected);
+  border: 1px solid var(--primary-color);
+}
+
+.uni_title {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  letter-spacing: -0.6px;
+  line-height: 150%;
+  color: var(--black);
+}
+
+.uni_campus {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  letter-spacing: -0.6px;
+  line-height: 150%;
+  color: var(--color-gray60);
+}
+
+.selected_text {
+  color: var(--primary-color);
+}
+
+/* 버튼 */
+.btn_content {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  margin-bottom: 30px;
+}
+
+.reset_btn {
+  width: 49%;
+  height: 54px;
+  border: 1px solid var(--color-gray40);
+  border-radius: 14px;
+  background-color: var(--white);
+  font-size: 16px;
+  letter-spacing: -0.6px;
+  line-height: 22px;
+  color: var(--color-gray40);
+}
+
+.reset_btn_active {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.confirm_btn {
+  width: 49%;
+  height: 54px;
+  border-radius: 14px;
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  font-size: 16px;
+  letter-spacing: -0.6px;
+  line-height: 22px;
+  color: var(--white);
+}
+
+/* Slick slider overrides */
+:global(.slick-dots) {
+  bottom: -25px;
+}
+
+:global(.slick-dots li button:before) {
+  font-size: 8px;
+  color: var(--color-gray40);
+}
+
+:global(.slick-dots li.slick-active button:before) {
+  color: var(--primary-color);
+}
+
+:global(.center .slick-slide) {
+  opacity: 0.6;
+}
+
+:global(.center .slick-center) {
+  opacity: 1;
+}
