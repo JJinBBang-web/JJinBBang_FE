@@ -137,6 +137,8 @@ const mockData = {
 const Review: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [reviews, setReviews] = useRecoilState(ReviewInfoState);
+
+    const ID = 3
     
         useEffect(() => {
             setReviews(mockData);
@@ -185,11 +187,17 @@ const Review: React.FC = () => {
                 <ReviewMapInfo review={reviews}/>
             </div>
             {/* 작성id === 로그인 id 같으면 Footer 보이게+reportBtn안보이게, 아니면 반대 */}
-            <div className={styles.fixedWrap}>
-                <ReportButton/>
-                <TopButton/>
-                <Footer/>
-            </div>
+            { ID == reviews.authorId ? 
+                <div className={styles.fixedWrap}>
+                    <TopButton/>
+                    <Footer/>
+                </div>
+                : 
+                <div className={styles.fixedWrap}>
+                    <ReportButton/>
+                    <TopButton/>
+                </div>
+            }
         </div>
     )
 }
