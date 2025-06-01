@@ -30,9 +30,9 @@ const api = {
         reviewInfo: {
           content: "집이 너무 깔끔하고...",
           keywords: [
-            "PO_LO_01",
-            "PO_MT_01",
-            "PO_MT_04", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
+            "PO_BD_MT_01",
+            "PO_BD_MT_04", // ... 필요한 키워드 추가
           ],
           likesCount: 120,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
@@ -55,7 +55,7 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
-          keywords: ["PO_LO_02", "PO_ST_03", "PO_MT_02"],
+          keywords: ["PO_BD_LO_02", "PO_BD_ST_03", "PO_BD_MT_02"],
           likesCount: 18,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
@@ -77,7 +77,7 @@ const api = {
         },
         reviewInfo: {
           content: "채광이 좋고 전망이 멋져요.",
-          keywords: ["PO_ST_01", "PO_MT_03", "NE_LO_07"],
+          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 12,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },

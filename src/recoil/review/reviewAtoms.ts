@@ -29,23 +29,25 @@ export interface ReviewState {
   };
 }
 
+export const defaultReviewState: ReviewState = {
+  housingType: '',
+  address: '',
+  addressDetail: '',
+  detailedAddress: '',
+  floorType: '',
+  contractType: '',
+  deposit: null,
+  monthlyRent: null,
+  managementFee: null,
+  pros: [],
+  cons: [],
+  content: '',
+  rating: 0,
+  images: [],
+  description: '',
+};
+
 export const reviewState = atom<ReviewState>({
   key: 'reviewState',
-  default: {
-    housingType: '',
-    address: '',
-    addressDetail: '',
-    detailedAddress: '',
-    floorType: '',
-    contractType: '',
-    deposit: null,
-    monthlyRent: null,
-    managementFee: null,
-    pros: [],
-    cons: [],
-    content: '',
-    rating: 0,
-    images: [],
-    description: '',
-  },
+  default: defaultReviewState, // 분리한 변수를 default 값으로 설정
 });
