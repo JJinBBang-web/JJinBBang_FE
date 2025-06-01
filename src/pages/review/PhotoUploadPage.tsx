@@ -8,6 +8,7 @@ import closeIcon from '../../assets/image/iconClose.svg';
 import plusIcon from '../../assets/image/iconPlus.svg';
 import closeImageIcon from '../../assets/image/closeImageIcon.svg';
 
+// 위치 상태 인터페이스 정의 (라우팅을 통해 전달되는 데이터 구조)
 interface LocationState {
   address: {
     roadAddress: string;
@@ -22,13 +23,18 @@ interface LocationState {
 }
 
 const PhotoUploadPage: React.FC = () => {
+  // 네비게이션 및 라우팅 관련 훅
   const navigate = useNavigate();
   const location = useLocation();
+  const { housingType } = location.state;
   const locationState = location.state as LocationState;
 
+  // 업로드된 사진들의 상태 관리
   const [photos, setPhotos] = useState<string[]>([]);
+  // 파일 입력 참조를 위한 ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 취소 모달 관련 커스텀 훅
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -36,10 +42,13 @@ const PhotoUploadPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  // 사진 추가 핸들러 - 파일 입력 요소 클릭
   const handleAddPhoto = () => {
+    // 파일 입력 요소 클릭 트리거
     fileInputRef.current?.click();
   };
 
+  // 파일 변경 핸들러 - 이미지 미리보기 생성
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -61,10 +70,12 @@ const PhotoUploadPage: React.FC = () => {
     }
   };
 
+  // 개별 사진 제거 핸들러
   const handleRemovePhoto = (index: number) => {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // 다음 페이지로 이동 핸들러 - 현재 선택된 사진들과 함께 상태 전달
   const handleNext = () => {
     navigate('/review/filter-ad', {
       state: {
@@ -75,7 +86,8 @@ const PhotoUploadPage: React.FC = () => {
   };
 
   // 최소 2장의 사진이 있어야 다음 버튼 활성화
-  const isNextEnabled = photos.length >= 2;
+  const isNextEnabled = photos.length >= 2 || (housingType === '공인중개사');
+
 
   return (
     <div className="content">
@@ -90,16 +102,24 @@ const PhotoUploadPage: React.FC = () => {
           >
             <img src={closeIcon} alt="close" />
           </button>
-          <h1>직접 촬영한 찐거주 사진을 올려주세요!</h1>
+          <h1>
+            {housingType === "공인중개사"
+              ? "사진이 있다면 첨부해 주세요!"
+              : "직접 촬영한 찐거주 사진을 올려주세요!"}
+          </h1>
         </header>
 
         <div className={styles.subtitle}>
-          찐거주 사진 &nbsp;
-          <span>(2장 이상)</span>
+          {housingType === "공인중개사"
+            ? "현장 사진 등 어떤 정보든 좋아요!"
+            : "찐거주 사진"}
+          &nbsp;
+          <span>{housingType === "공인중개사" ? "(필수 항목 아님)" : "(2장 이상)"}</span>
         </div>
 
         <div className={styles.scrollContainer}>
           <div className={styles.photoGrid}>
+            {/* 업로드된 사진들 렌더링 */}
             {photos.map((photo, index) => (
               <div key={index} className={styles.photoItem}>
                 <img
@@ -116,32 +136,37 @@ const PhotoUploadPage: React.FC = () => {
               </div>
             ))}
 
+            {/* 사진 추가 버튼 (최대 20장까지) */}
             {photos.length < 20 && (
               <div className={styles.addPhotoBox} onClick={handleAddPhoto}>
                 <img src={plusIcon} alt="add" className={styles.plusIcon} />
               </div>
             )}
 
+            {/* 숨겨진 파일 입력 */}
             <input
               type="file"
               accept="image/*"
               multiple
               ref={fileInputRef}
               onChange={handleFileChange}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
           </div>
+          {/* 현재 업로드된 사진 수 표시 */}
           <div className={styles.photoCount}>{photos.length}/20장</div>
         </div>
       </div>
 
       <footer className={styles.footer}>
+        {/* 이전 페이지로 돌아가기 버튼 */}
         <button className={styles.prevButton} onClick={() => navigate(-1)}>
           이전
         </button>
+        {/* 다음 페이지로 이동 버튼 (최소 2장 이상 선택 시 활성화) */}
         <button
           className={`${styles.nextButton} ${
-            isNextEnabled ? styles.enabled : ''
+            isNextEnabled ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={!isNextEnabled}
@@ -150,6 +175,7 @@ const PhotoUploadPage: React.FC = () => {
         </button>
       </footer>
 
+      {/* 취소 모달 */}
       {showCancelModal && (
         <CancelModal
           onClose={handleCancelModalClose}

@@ -1,4 +1,4 @@
-// src/recoil/atoms/reviewAtoms.ts
+// src/recoil/review/reviewAtoms.ts
 import { atom } from 'recoil';
 
 export interface ReviewState {
@@ -17,25 +17,37 @@ export interface ReviewState {
   rating: number;
   images: string[];
   description: string;
+  roomCapacity?: number;
+  dormitoryFee?: number;
+  dormitoryConditions?: {
+    hasDistanceCriteria: boolean;
+    hasGradeCriteria: boolean;
+    dormitoryFee: number;
+    residenceArea?: string;
+    semesterGrade?: number;
+    roomCapacity?: number;
+  };
 }
+
+export const defaultReviewState: ReviewState = {
+  housingType: '',
+  address: '',
+  addressDetail: '',
+  detailedAddress: '',
+  floorType: '',
+  contractType: '',
+  deposit: null,
+  monthlyRent: null,
+  managementFee: null,
+  pros: [],
+  cons: [],
+  content: '',
+  rating: 0,
+  images: [],
+  description: '',
+};
 
 export const reviewState = atom<ReviewState>({
   key: 'reviewState',
-  default: {
-    housingType: '',
-    address: '',
-    addressDetail: '',
-    detailedAddress: '',
-    floorType: '',
-    contractType: '',
-    deposit: null,
-    monthlyRent: null,
-    managementFee: null,
-    pros: [],
-    cons: [],
-    content: '',
-    rating: 0,
-    images: [],
-    description: '',
-  },
+  default: defaultReviewState, // 분리한 변수를 default 값으로 설정
 });
