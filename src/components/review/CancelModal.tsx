@@ -1,7 +1,12 @@
 // src/components/review/CancelModal.tsx
-import React from 'react';
-import styles from '../../styles/review/ReviewConfirm.module.css';
-import emptyCharacterIcon from '../../assets/image/emptyCharacterIcon.svg';
+import React from "react";
+import styles from "../../styles/review/ReviewConfirm.module.css";
+import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
+import { useRecoilState } from "recoil";
+import {
+  reviewState,
+  defaultReviewState,
+} from "../../recoil/review/reviewAtoms";
 
 interface CancelModalProps {
   onClose: () => void;
@@ -9,6 +14,8 @@ interface CancelModalProps {
 }
 
 const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm }) => {
+  const [review, setReview] = useRecoilState(reviewState);
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div
@@ -31,7 +38,13 @@ const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm }) => {
             <button className={styles.cancelButton} onClick={onClose}>
               이전
             </button>
-            <button className={styles.cm_confirmButton} onClick={onConfirm}>
+            <button
+              className={styles.cm_confirmButton}
+              onClick={() => {
+                setReview(defaultReviewState);
+                onConfirm(); 
+              }}
+            >
               중단
             </button>
           </div>
