@@ -58,6 +58,20 @@ const AddressSearchPage: React.FC = () => {
                       },
                     },
                   });
+                }
+                else if (locationState.housingType === "공인중개사") {
+                  // 공인중개사 모드일 경우
+                  navigate("/review/result", {
+                    state: {
+                      ...locationState,
+                      address: {
+                        roadAddress: data.roadAddress,
+                        jibunAddress: data.jibunAddress,
+                        buildingName: data.buildingName,
+                      },
+                      buildingName: data.buildingName,
+                    },
+                  });
                 } else {
                   // 기숙사 타입인 경우 DormitoryInputPage로 이동
                   if (locationState.housingType === '기숙사') {
