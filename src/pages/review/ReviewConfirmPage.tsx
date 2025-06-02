@@ -111,7 +111,6 @@ const ReviewConfirmPage: React.FC = () => {
         contractType:
           locationState.paymentType || mergedState.contractType || '',
         deposit: locationState.priceData?.deposit || mergedState.deposit || 0,
-
         monthlyRent:
           locationState.priceData?.monthlyRent !== undefined
             ? locationState.priceData.monthlyRent
@@ -141,10 +140,9 @@ const ReviewConfirmPage: React.FC = () => {
         break;
       }
     }
+
     // 찾은 키로 아이콘 가져오기
     if (tagKey) {
-      const filter =
-        locationState.housingType === "공인중개사" ? agencyFilters : filters;
       iconSrc =
         currentFilters
           .find(
@@ -160,7 +158,7 @@ const ReviewConfirmPage: React.FC = () => {
               category.negativeFilters.some((item) => item.key === tagKey)
           )
           ?.negativeFilters.find((item) => item.key === tagKey)?.icon ||
-        "";
+        '';
     }
 
     // 아이콘을 찾지 못했으면 라벨로 직접 찾기
@@ -180,7 +178,7 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const handleItemClick = (navigationFunction: () => void) => {
-    localStorage.setItem("reviewState", JSON.stringify(review));
+    localStorage.setItem('reviewState', JSON.stringify(review));
     navigationFunction();
   };
 
@@ -208,30 +206,30 @@ const ReviewConfirmPage: React.FC = () => {
       setTimeout(() => {
         setIsSubmitting(false);
         setShowConfirmModal(false);
-        navigate("/review/complete");
+        navigate('/review/complete');
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Failed to submit review:", error);
+      console.error('Failed to submit review:', error);
     }
   };
 
   const navigateToHousingType = () => {
-    localStorage.setItem("reviewState", JSON.stringify(review));
+    localStorage.setItem('reviewState', JSON.stringify(review));
 
-    navigate("/review/type", {
+    navigate('/review/type', {
       state: {
         ...review,
-        from: "confirm",
+        from: 'confirm',
       },
     });
   };
 
   const navigateToAddress = () => {
-    navigate("/review/address", {
+    navigate('/review/address', {
       state: {
         ...locationState,
-        from: "confirm",
+        from: 'confirm',
       },
     });
   };
@@ -241,13 +239,13 @@ const ReviewConfirmPage: React.FC = () => {
     navigate('/review/floor', {
       state: {
         address: {
-          roadAddress: review.address || "",
-          jibunAddress: review.addressDetail || "",
-          buildingName: review.detailedAddress || "",
+          roadAddress: review.address || '',
+          jibunAddress: review.addressDetail || '',
+          buildingName: review.detailedAddress || '',
         },
-        buildingName: review.detailedAddress || "",
-        floor: review.floorType || "",
-        from: "confirm",
+        buildingName: review.detailedAddress || '',
+        floor: review.floorType || '',
+        from: 'confirm',
       },
     });
   };
@@ -321,14 +319,14 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToContent = () => {
-    navigate("/review/content", {
+    navigate('/review/content', {
       state: {
         ...locationState,
         photos: review.images,
         advantages: review.pros,
         disadvantages: review.cons,
         content: review.content,
-        from: "confirm",
+        from: 'confirm',
       },
     });
   };
@@ -336,7 +334,6 @@ const ReviewConfirmPage: React.FC = () => {
   // 태그 표시 함수 수정
   const renderTags = (tags: string[]) => {
     if (!tags || tags.length === 0) return null;
-    console.log(tags);
 
     return (
       <div className={styles.tags}>
@@ -421,20 +418,14 @@ const ReviewConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              onClick={() => {
-                if (review.housingType === "공인중개사") {
-                  handleItemClick(navigateToAddress);
-                } else {
-                  handleItemClick(navigateToDetailedAddress);
-                }
-              }}
+              onClick={() => handleItemClick(navigateToDetailedAddress)}
             >
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
                   {review.detailedAddress || '상세 주소를 입력해주세요'}
                   <br />
-                  {review.floorType || ""}
+                  {review.floorType || ''}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -472,7 +463,7 @@ const ReviewConfirmPage: React.FC = () => {
                             기숙사비{' '}
                             {review.dormitoryConditions.dormitoryFee ||
                               review.dormitoryFee ||
-                              0}{' '}
+                              0}
                             만원
                           </span>
                         )}
@@ -510,9 +501,9 @@ const ReviewConfirmPage: React.FC = () => {
                               options as Record<string, boolean>
                             ).find(([_, selected]) => selected)?.[0];
                             return selectedOption ? (
-                              <div key={facility} className={styles.valueText}>
+                              <span key={facility} className={styles.valueText}>
                                 {facility} {selectedOption}
-                              </div>
+                              </span>
                             ) : null;
                           }
                         )}
@@ -545,40 +536,9 @@ const ReviewConfirmPage: React.FC = () => {
                     </>
                   )}
                 </div>
-
-                <div
-                  className={styles.infoItem}
-                  onClick={() => handleItemClick(navigateToContractDetails)}
-                >
-                  <span className={styles.label}>계약 조건</span>
-                  <div className={styles.value}>
-                    <div className={styles.contractDetails}>
-                      <span className={styles.valueText}>
-                        {review.deposit ? `보증금 ${review.deposit}만원` : ""}
-                      </span>
-                      {!review.contractType ||
-                      review.contractType === "월세" ? (
-                        <span className={styles.valueText}>
-                          {review.monthlyRent
-                            ? `월세 ${review.monthlyRent}만원`
-                            : ""}
-                        </span>
-                      ) : null}
-                      <span className={styles.valueText}>
-                        {review.managementFee
-                          ? `관리비 ${review.managementFee}만원`
-                          : ""}
-                      </span>
-                    </div>
-                    <img
-                      src={ArrowIcon}
-                      alt="arrow"
-                      className={styles.arrowIcon}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
 
             <div
               className={styles.infoItem}
@@ -660,7 +620,7 @@ const ReviewConfirmPage: React.FC = () => {
                         ? starFilledIcon
                         : starEmptyIcon
                     }
-                    alt={star <= rating ? "채워진 별" : "빈 별"}
+                    alt={star <= rating ? '채워진 별' : '빈 별'}
                     className={styles.starIcon}
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoveredRating(star)}
@@ -670,7 +630,7 @@ const ReviewConfirmPage: React.FC = () => {
               </div>
               <button
                 className={`${styles.uploadButton} ${
-                  rating > 0 ? styles.enabled : ""
+                  rating > 0 ? styles.enabled : ''
                 }`}
                 onClick={handleSubmitRating}
                 disabled={rating === 0}
