@@ -1,14 +1,20 @@
-// src/components/review/UniversityCampusSelectModal.tsx
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   selectedInitialState,
+  selectedUniversityState,
+  universitiesFilterState,
   universitiesState,
 } from '../../recoil/map/universityRecoilState';
-import { selectedTypeNumState } from '../../recoil/map/mapRecoilState';
 import styles from './UniversityCampusSelectModal.module.css';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import {
+  filterState,
+  selectedTypeNumState,
+} from '../../recoil/map/mapRecoilState';
+import { isSheetOpenState } from '../../recoil/util/utilRecoilState';
 import iconClose from '../../assets/image/iconClose.svg';
 
 const INITIAL_LIST = [
@@ -28,38 +34,68 @@ const INITIAL_LIST = [
   'ㅎ',
 ];
 
-// 독립형 모달 props 정의
-interface UniversityCampusSelectModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-// DormitoryInputPage에서 사용하는 모달
-const UniversityCampusSelectModal: React.FC<
-  UniversityCampusSelectModalProps
-> = ({ isOpen, onClose }) => {
+const UniversityFilterModal = () => {
   const [selectedInitial, setSelectedInitial] =
     useRecoilState(selectedInitialState);
   const universities = useRecoilValue(universitiesState);
   const [selectedTypeNum, setSelectedTypeNum] =
     useRecoilState(selectedTypeNumState);
+  const setFilterState = useSetRecoilState(filterState);
+  const [university, setUniversity] = useRecoilState(filterState);
+  const [, setBottomSheet] = useRecoilState(isSheetOpenState);
+
+  // 모달 닫기 함수
+  const closeModal = () => {
+    setBottomSheet({ isOpen: false, type: null });
+  };
 
   // 초성활성화 조건
   const activeInitials = new Set(universities.map((uni) => uni.initial));
+
   // 대학교 필터링
   const filteredUniversities = universities.filter(
     (uni) => uni.initial === selectedInitial
   );
 
-  const handleReset = () => {
+  // 확인버튼 활성화 조건
+  const isConfirmActive =
+    selectedTypeNum !== null && selectedTypeNum !== university.university;
+
+  // 초기화버튼 활성화 조건
+  const isResetActive = selectedTypeNum !== null || selectedInitial !== 'ㄱ';
+
+  // 초기화 함수 - selectedTypeNum을 null로 설정하여 확인 버튼 비활성화
+  const handleReset = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setSelectedTypeNum(null);
     setSelectedInitial('ㄱ');
   };
 
-  // 모달이 닫혀있을 때 아무것도 렌더링하지 않음
-  if (!isOpen) return null;
+  // 확인 함수
+  const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (selectedTypeNum !== null) {
+      setFilterState((prev) => ({
+        ...prev,
+        university: selectedTypeNum,
+      }));
+      closeModal();
+    }
+  };
 
-  // 슬라이더 설정
+  // 오버레이 클릭 핸들러
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
+    }
+  };
+
+  // 닫기 버튼 클릭 핸들러
+  const handleCloseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    closeModal();
+  };
+
   const settingsInitial = {
     className: 'center',
     centerMode: true,
@@ -71,7 +107,6 @@ const UniversityCampusSelectModal: React.FC<
     arrows: false,
     swipe: true,
     swipeToSlide: true,
-    initialSlide: INITIAL_LIST.indexOf(selectedInitial),
   };
 
   const settingsUniversity = {
@@ -84,24 +119,39 @@ const UniversityCampusSelectModal: React.FC<
     arrows: false,
     swipe: true,
     swipeToSlide: true,
-    infinite: false,
   };
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <>
+      {/* 모달 컨테이너 */}
       <div
-        className={styles.modalContainer}
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'white',
+          borderRadius: '24px 24px 0 0',
+          padding: '0.62rem 1.5rem 2.75rem 1.5rem',
+          maxWidth: '100vw',
+          animation: 'slideUp 0.3s ease-out',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles.modalHeader}>
-          <div className={styles.handleBar}></div>
-          <h2 className={styles.modalTitle}>대학교</h2>
-          <button className={styles.closeButton} onClick={onClose}>
-            <img src={iconClose} alt="닫기" />
-          </button>
-        </div>
-
         <div className={styles.content}>
+          <div className={styles.modalHeader}>
+            <span
+              className={styles.modalTitle}
+              style={{ position: 'absolute', left: '0', marginTop: '1.5rem' }}
+            >
+              대학교
+            </span>
+            {/* 닫기 버튼 - 클릭 시 모달 닫힘 */}
+            <button className={styles.closeButton} onClick={handleCloseClick}>
+              <img src={iconClose} alt="닫기" />
+            </button>
+          </div>
+
           {/* 초성필터슬라이더 */}
           <Slider {...settingsInitial}>
             {INITIAL_LIST.map((init) => {
@@ -119,7 +169,10 @@ const UniversityCampusSelectModal: React.FC<
                         : styles.initial_btn
                     }
                     onClick={() => {
-                      if (isActive) setSelectedInitial(init);
+                      if (isActive) {
+                        setSelectedInitial(init);
+                        setSelectedTypeNum(null);
+                      }
                     }}
                     disabled={!isActive}
                   >
@@ -133,16 +186,14 @@ const UniversityCampusSelectModal: React.FC<
           {/* 대학교 선택 슬라이더 */}
           <div className={styles.uni_slider}>
             <Slider {...settingsUniversity}>
-              {filteredUniversities.map((uni) => (
+              {filteredUniversities.map((uni, index) => (
                 <div className={styles.uni_wrap} key={uni.id}>
                   <button
+                    key={index}
                     className={`${styles.uni_btn} ${
                       selectedTypeNum === uni.id ? styles.selected_uni_btn : ''
                     }`}
-                    onClick={() => {
-                      setSelectedTypeNum(uni.id);
-                      onClose();
-                    }}
+                    onClick={() => setSelectedTypeNum(uni.id)}
                   >
                     <img src={uni.logoImageUrl} alt={uni.universityName} />
                     <p
@@ -166,22 +217,29 @@ const UniversityCampusSelectModal: React.FC<
           </div>
 
           <div className={styles.btn_content}>
+            {/* 초기화 버튼 - 클릭 시 'ㄱ'으로 돌아감 */}
             <button
               className={`${styles.reset_btn} ${
-                selectedTypeNum !== null ? styles.reset_btn_active : ''
+                isResetActive ? styles.reset_btn_active : ''
               }`}
               onClick={handleReset}
             >
               초기화
             </button>
-            <button className={styles.confirm_btn} onClick={onClose}>
+            {/* 확인 버튼 - 캠퍼스 선택 후 클릭 시 모달 닫힘 */}
+            <button
+              className={`${styles.confirm_btn} ${
+                isConfirmActive ? styles.confirm_btn_active : ''
+              }`}
+              onClick={handleConfirm}
+            >
               확인
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default UniversityCampusSelectModal;
+export default UniversityFilterModal;

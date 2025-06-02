@@ -73,17 +73,31 @@ const AddressSearchPage: React.FC = () => {
                     },
                   });
                 } else {
-                  // 일반 모드일 경우
-                  navigate("/review/floor", {
-                    state: {
-                      ...locationState,
-                      address: {
-                        roadAddress: data.roadAddress,
-                        jibunAddress: data.jibunAddress,
-                        buildingName: data.buildingName,
+                  // 기숙사 타입인 경우 DormitoryInputPage로 이동
+                  if (locationState.housingType === '기숙사') {
+                    navigate('/review/dormitory', {
+                      state: {
+                        ...locationState,
+                        address: {
+                          roadAddress: data.roadAddress,
+                          jibunAddress: data.jibunAddress,
+                          buildingName: data.buildingName,
+                        },
                       },
-                    },
-                  });
+                    });
+                  } else {
+                    // 일반 주거 타입인 경우 FloorInputPage로 이동
+                    navigate('/review/floor', {
+                      state: {
+                        ...locationState,
+                        address: {
+                          roadAddress: data.roadAddress,
+                          jibunAddress: data.jibunAddress,
+                          buildingName: data.buildingName,
+                        },
+                      },
+                    });
+                  }
                 }
               },
             }).embed(postcodeRef.current);
