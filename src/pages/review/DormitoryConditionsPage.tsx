@@ -96,13 +96,6 @@ const DormitoryConditionsPage: React.FC = () => {
     }
   };
 
-  const handleRoomCapacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '' || /^[1-9]\d*$/.test(value)) {
-      setRoomCapacity(value);
-    }
-  };
-
   const handleTextInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
@@ -248,12 +241,10 @@ const DormitoryConditionsPage: React.FC = () => {
               <label className={styles.inputLabel}>학기 성적</label>
               <div className={styles.inputWrapper}>
                 <input
-                  type="number"
                   className={styles.input}
                   value={semesterGrade}
                   onChange={handleSemesterGradeChange}
                   placeholder="4.5"
-                  step="0.1"
                   min="0"
                   max="4.5"
                 />
@@ -265,7 +256,6 @@ const DormitoryConditionsPage: React.FC = () => {
             <label className={styles.inputLabel}>기숙사비</label>
             <div className={styles.inputWrapper}>
               <input
-                type="number"
                 className={styles.input}
                 value={dormitoryFee}
                 onChange={handleDormitoryFeeChange}

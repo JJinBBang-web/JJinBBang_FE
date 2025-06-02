@@ -137,7 +137,7 @@
   width: 44px;
   height: 44px;
   border-radius: 25px;
-  background-color: white;
+  background-color: var(--white);
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;

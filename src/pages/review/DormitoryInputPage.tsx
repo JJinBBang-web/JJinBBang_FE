@@ -103,11 +103,6 @@ const DormitoryInputPage: React.FC = () => {
     setDormitoryName(e.target.value);
   };
 
-  const formatNumber = (value: string) => {
-    if (!value) return '';
-    return Number(value).toLocaleString();
-  };
-
   const handleUniversityClick = () => {
     setBottomSheet({ isOpen: true, type: 'university' });
   };
@@ -121,8 +116,7 @@ const DormitoryInputPage: React.FC = () => {
       ...review,
       roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
-      // dormitoryFee 제거 또는 기본값 설정
-      dormitoryFee: 0,
+      dormitoryFee: 0, // 기숙사비 제거, 기본값 설정
     };
 
     const extendedUpdatedReview = {
@@ -139,7 +133,6 @@ const DormitoryInputPage: React.FC = () => {
       dormitoryName: dormitoryName,
       roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
-      // dormitoryFee 제거
     };
 
     if (from === 'confirm') {
@@ -249,6 +242,7 @@ const DormitoryInputPage: React.FC = () => {
         </div>
       </div>
 
+      {/* 하나의 모달만 사용 - UniversityCampusSelectModal */}
       {bottomSheet.isOpen && bottomSheet.type === 'university' && (
         <UniversityCampusSelectModal />
       )}
