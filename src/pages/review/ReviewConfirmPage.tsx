@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
+import { dormitoryReviewState } from '../../recoil/review/dormitoryReviewAtoms';
 import { JjinFilterState } from '../../recoil/util/filterRecoilState';
 import { DormFilterState } from '../../recoil/util/dormFilterState'; // 기숙사 필터 추가
 import { tagMessages, tagLongMessages } from '../../components/Tag';
@@ -43,6 +44,8 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
+  const [dormitoryReview, setDormitoryReview] =
+    useRecoilState(dormitoryReviewState);
   const filters = useRecoilValue(JjinFilterState);
   const dormFilters = useRecoilValue(DormFilterState); // 기숙사 필터 추가
 
@@ -65,11 +68,18 @@ const ReviewConfirmPage: React.FC = () => {
   // 컴포넌트 마운트 시 저장된 상태 로드
   useEffect(() => {
     const savedState = localStorage.getItem('reviewState');
+    const savedDormState = localStorage.getItem('dormitoryReviewState');
+
     if (savedState) {
       const parsedState = JSON.parse(savedState);
       setReview((prev) => ({ ...prev, ...parsedState }));
     }
-  }, [setReview]);
+
+    if (savedDormState) {
+      const parsedDormState = JSON.parse(savedDormState);
+      setDormitoryReview((prev) => ({ ...prev, ...parsedDormState }));
+    }
+  }, [setReview, setDormitoryReview]);
 
   // 데이터 로딩 로직 - localStorage 우선, locationState 보조
   useEffect(() => {
@@ -453,7 +463,7 @@ const ReviewConfirmPage: React.FC = () => {
                             기숙사비{' '}
                             {review.dormitoryConditions.dormitoryFee ||
                               review.dormitoryFee ||
-                              0}
+                              0}{' '}
                             만원
                           </span>
                         )}
@@ -483,10 +493,21 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div className={styles.contractDetails}>
                   {review.housingType === '기숙사' ? (
-                    review.roomCapacity ? (
-                      <span className={styles.valueText}>
-                        {review.roomCapacity}인실
-                      </span>
+                    dormitoryReview.facilityConditions ? (
+                      <>
+                        {Object.entries(dormitoryReview.facilityConditions).map(
+                          ([facility, options]) => {
+                            const selectedOption = Object.entries(
+                              options as Record<string, boolean>
+                            ).find(([_, selected]) => selected)?.[0];
+                            return selectedOption ? (
+                              <div key={facility} className={styles.valueText}>
+                                {facility} {selectedOption}
+                              </div>
+                            ) : null;
+                          }
+                        )}
+                      </>
                     ) : (
                       <span className={styles.valueText}>
                         편의시설 정보를 입력해주세요
