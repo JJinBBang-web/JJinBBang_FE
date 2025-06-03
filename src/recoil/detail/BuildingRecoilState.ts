@@ -1,12 +1,12 @@
 import { atom } from "recoil";
 
 // 빌딩 정보 인터페이스
-export interface BasicInfo {
+export interface generalBuildingInfo {
     liked: boolean;
     id: number | null;
     type: string[];
     name: string;
-    address: String;
+    address: string;
     rating: number;
     reviewCount: number;
 }
@@ -21,8 +21,29 @@ export interface Keywords {
     count : number;
 }
 
+export interface agencyBuildingInfo{
+    liked: boolean;
+    id: number | null;
+    type: string[];
+    name: string;
+    address: string;
+    rating: number;
+    reviewCount: number;
+}
+
+export interface dormBuildingInfo{
+    liked: boolean;
+    id: number | null;
+    type: string[];
+    name: string;
+    campus: string;
+    address: String;
+    rating: number;
+    reviewCount: number;
+}
+
 export interface Building{
-    basicInfo : BasicInfo;
+    basicInfo : generalBuildingInfo | agencyBuildingInfo | dormBuildingInfo;
     buildingImages: BuildingImages;
     keywords : Keywords[];
 }
@@ -38,7 +59,8 @@ export const BuildingInfoState = atom<Building>({
             name: "",
             address: "",
             rating: 0,
-            reviewCount: 0
+            reviewCount: 0,
+            campus: "",
         },
         buildingImages: {
             count: 0,
