@@ -1,19 +1,30 @@
-import { useRecoilState } from "recoil";
-import { JjinFilterState } from "../../recoil/util/filterRecoilState";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { JjinAgencyFilterState, JjinFilterState } from "../../recoil/util/filterRecoilState";
 import styles from "./JjinFilterModal.module.css";
 import iconDown from "../../assets/image/iconDown.svg"
 import iconUp from "../../assets/image/iconUp.svg"
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
-import { selectedJjinFilterState } from "../../recoil/map/mapRecoilState";
+import { filterState, housingTypeState, selectedJjinFilterState } from "../../recoil/map/mapRecoilState";
+import { isEqual } from "lodash";
 
 const JjinFilterModal = () => {
-    const [filters, setFilters] = useRecoilState(JjinFilterState);
+    // const [filters, setFilters] = useRecoilState(JjinFilterState);
     const [selectedJjinFilter, setSelectedJjinFilter] = useRecoilState(selectedJjinFilterState);
+    const [filter, setFilter] = useRecoilState(filterState);
 
     // 모달 상태관리
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
-    
+
+    const housingType = useRecoilValue(housingTypeState);   
+
+    // 공인중개사면 JjinAgencyFilterState 사용, 아니면 JjinFilterState
+    const filters = useRecoilValue(
+        housingType === "공인중개사" ? JjinAgencyFilterState 
+            : housingType === "기숙사" ? JjinAgencyFilterState
+            : JjinFilterState
+    );
+
     // 스크롤 상태 관리
     const [scrolled, setScrolled] = useState<{[key:number]:Boolean}>({});
     const filterContentRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -44,10 +55,47 @@ const JjinFilterModal = () => {
         }
     };
 
+    
+
+
+    const handleFilterClick = (filterKey: string) => {
+        const isSelected = selectedJjinFilter.some(([key]) => key === filterKey);
+    
+        if (isSelected) {
+            // 이미 선택된 필터면 제거
+            setSelectedJjinFilter(prev => prev.filter(([key]) => key !== filterKey));
+        } else {
+            // 선택된 필터가 5개 미만일 때만 추가
+            if (selectedJjinFilter.length < 5) {
+                setSelectedJjinFilter(prev => [...prev, [filterKey, 'positive']]);
+            }
+        }
+    };
+
+    const handleConfirm = () => {
+        if(isConfirmActive) {
+            const selectedKeys = selectedJjinFilter.map(([key]) => key); 
+
+            setFilter((prev) => ({
+                ...prev,
+                reviewKeyword: selectedKeys
+            }));
+            // 먼저 isOpen만 false로 설정해서 닫히는 애니메이션 실행
+            setBottomSheet(prev => ({ ...prev, isOpen: false })); 
+            
+            // 300ms 후에 type을 null로 설정해서 완전히 제거
+            setTimeout(() => {
+                setBottomSheet({ isOpenModal: false, type: 'jjinFilter' });
+            }, 200);
+        }
+    };
+
+    const selectedKeywordKeys = selectedJjinFilter.map(f => f.keys);
+
     // 확인버튼 활성화 조건
-    // const isConfirmActive = selectedTypeNum !== university.university;
-    // // 초기화버튼 활성화 조건
-    // const isResetActive = selectedTypeNum !== null;
+    const isConfirmActive = !isEqual(filter.reviewKeyword, selectedKeywordKeys) || (selectedJjinFilter?.length ?? 0) > 0;
+    // 초기화버튼 활성화 조건
+    const isResetActive = selectedJjinFilter.length > 0;
 
     return (
         <div className={styles.content}>
@@ -58,9 +106,13 @@ const JjinFilterModal = () => {
                         <div className={styles.jjin_filter} 
                         ref={(el: HTMLDivElement | null) => {filterContentRefs.current[index] = el;}}>
                             {category.positiveFilters.map((item, index) => (
-                                <button key={index} className={styles.filter_btn}>
+                                <button 
+                                key={index} 
+                                className={`${styles.filter_btn} ${selectedJjinFilter?.some(([key]) => key === item.key) ? styles.selected : ''}`}
+                                onClick={()=> handleFilterClick(item.key)}
+                                >
                                     <img src={item.icon} alt={item.label} className={styles.filter_icon}/>
-                                    <p className={styles.filter_text}>{item.label}</p>
+                                    <p className={`${styles.filter_text} ${selectedJjinFilter?.some(([key]) => key === item.key) ? styles.selected_text : ''}`}>{item.label}</p>
                                 </button>
                             ))}
                         </div>
@@ -78,16 +130,13 @@ const JjinFilterModal = () => {
                 ))}
             </div>
             <div className={styles.btn_content}>
-                <button className={`${styles.reset_btn}`} 
-                // onClick={() => setSelectedType("전체")}
+                <button className={`${styles.reset_btn} ${isResetActive ? styles.reset_btn_active  : ""}`} 
+                onClick={() => setSelectedJjinFilter([])}
                 >초기화</button>
-                <button className={`${styles.confirm_btn}`} 
-                // onClick={() => {
-                //         if (isConfirmActive) {
-                //             setHousingType(selectedType);
-                //             setBottomSheet({ isOpen: false, type: null }); 
-                //         }
-                //     }}
+                <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
+                onClick={() => {
+                    handleConfirm()
+                    }}
                     >확인</button>
             </div>
         </div>

@@ -8,7 +8,6 @@ import ReviewListHeader from '../components/map/ReviewListHeader';
 import Modal from '../components/review/Modal';
 import iconClose from "../assets/image/iconClose.svg"
 
-
 const Map = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
