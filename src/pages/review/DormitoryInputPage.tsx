@@ -1,11 +1,15 @@
 // src/pages/review/DormitoryInputPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { reviewState, ReviewState } from '../../recoil/review/reviewAtoms';
+import { selectedTypeNumState } from '../../recoil/map/mapRecoilState';
+import { universitiesState } from '../../recoil/map/universityRecoilState';
+import { isSheetOpenState } from '../../recoil/util/utilRecoilState';
 import CancelModal from '../../components/review/CancelModal';
+import UniversityCampusSelectModal from '../../components/review/UniversityCampusSelectModal';
 import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/FloorInput.module.css';
+import styles from '../../styles/review/DormitoryInputPage.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
 // Extended ReviewState interface to include dormitory-specific fields
@@ -25,17 +29,16 @@ interface LocationState {
   from?: string;
 }
 
-interface University {
-  id: number;
-  name: string;
-  campus: string;
-}
-
 const DormitoryInputPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { from } = (location.state as LocationState) || {};
   const [review, setReview] = useRecoilState(reviewState);
+  const selectedTypeNum = useRecoilValue(selectedTypeNumState);
+  const universities = useRecoilValue(universitiesState);
+  const setBottomSheet = useSetRecoilState(isSheetOpenState);
+  const bottomSheet = useRecoilValue(isSheetOpenState);
+
   // Cast to ExtendedReviewState to work with our additional properties
   const extendedReview = review as unknown as ExtendedReviewState;
 
@@ -43,46 +46,15 @@ const DormitoryInputPage: React.FC = () => {
   const [university, setUniversity] = useState<string>(
     extendedReview.university || ''
   );
-  const [showUniversityModal, setShowUniversityModal] =
-    useState<boolean>(false);
   const [dormitoryName, setDormitoryName] = useState<string>(
     extendedReview.dormitoryName || ''
   );
   const [roomCapacity, setRoomCapacity] = useState<string>(
-    review.roomCapacity ? review.roomCapacity.toString() : '0'
+    review.roomCapacity ? review.roomCapacity.toString() : ''
   );
   const [selectedFloor, setSelectedFloor] = useState<string>(
     review.floorType || '저층'
   );
-  const [dormitoryFee, setDormitoryFee] = useState<string>(
-    review.dormitoryFee ? review.dormitoryFee.toString() : ''
-  );
-
-  // Universities list for modal
-  const universities: University[] = [
-    { id: 1, name: '경상국립대학교', campus: '칠암캠퍼스' },
-    { id: 2, name: '경상국립대학교', campus: '가좌캠퍼스' },
-  ];
-
-  const koreanInitials = [
-    'ㄱ',
-    'ㄴ',
-    'ㄷ',
-    'ㄹ',
-    'ㅁ',
-    'ㅂ',
-    'ㅅ',
-    'ㅇ',
-    'ㅈ',
-    'ㅊ',
-    'ㅋ',
-    'ㅌ',
-    'ㅍ',
-    'ㅎ',
-  ];
-  const [selectedInitial, setSelectedInitial] = useState<string>('ㄱ');
-  const [selectedUniversity, setSelectedUniversity] =
-    useState<University | null>(null);
 
   const {
     showCancelModal,
@@ -97,14 +69,25 @@ const DormitoryInputPage: React.FC = () => {
       setUniversity(extendedReview.university || '');
       setDormitoryName(extendedReview.dormitoryName || '');
       setRoomCapacity(
-        review.roomCapacity ? review.roomCapacity.toString() : '0'
+        review.roomCapacity ? review.roomCapacity.toString() : ''
       );
       setSelectedFloor(review.floorType || '저층');
-      setDormitoryFee(
-        review.dormitoryFee ? review.dormitoryFee.toString() : ''
-      );
     }
   }, [from, review, extendedReview]);
+
+  // Update university name when selectedTypeNum changes
+  useEffect(() => {
+    if (selectedTypeNum) {
+      const selectedUniversity = universities.find(
+        (uni) => uni.id === selectedTypeNum
+      );
+      if (selectedUniversity) {
+        setUniversity(
+          `${selectedUniversity.universityName} ${selectedUniversity.campus}`
+        );
+      }
+    }
+  }, [selectedTypeNum, universities]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -120,33 +103,8 @@ const DormitoryInputPage: React.FC = () => {
     setDormitoryName(e.target.value);
   };
 
-  const formatNumber = (value: string) => {
-    if (!value) return '';
-    return Number(value).toLocaleString();
-  };
-
   const handleUniversityClick = () => {
-    setShowUniversityModal(true);
-  };
-
-  const handleInitialSelect = (initial: string) => {
-    setSelectedInitial(initial);
-  };
-
-  const handleUniversitySelect = (univ: University) => {
-    setSelectedUniversity(univ);
-  };
-
-  const handleModalConfirm = () => {
-    if (selectedUniversity) {
-      setUniversity(`${selectedUniversity.name} ${selectedUniversity.campus}`);
-    }
-    setShowUniversityModal(false);
-  };
-
-  const handleModalReset = () => {
-    setSelectedUniversity(null);
-    setSelectedInitial('ㄱ');
+    setBottomSheet({ isOpen: true, type: 'university' });
   };
 
   const handleFloorSelect = (floor: string) => {
@@ -158,7 +116,7 @@ const DormitoryInputPage: React.FC = () => {
       ...review,
       roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
-      dormitoryFee: Number(dormitoryFee),
+      dormitoryFee: 0, // 기숙사비 제거, 기본값 설정
     };
 
     const extendedUpdatedReview = {
@@ -175,7 +133,6 @@ const DormitoryInputPage: React.FC = () => {
       dormitoryName: dormitoryName,
       roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
-      dormitoryFee: Number(dormitoryFee),
     };
 
     if (from === 'confirm') {
@@ -203,12 +160,12 @@ const DormitoryInputPage: React.FC = () => {
     }
   };
 
-  // Next button is enabled only when all required fields are filled
+  // 수정된 조건: 기숙사비 제거, 층수 선택 추가
   const isNextEnabled =
     university !== '' &&
     dormitoryName !== '' &&
-    roomCapacity !== '0' &&
-    dormitoryFee !== '';
+    roomCapacity !== '' &&
+    selectedFloor !== '';
 
   return (
     <div className="content">
@@ -238,7 +195,7 @@ const DormitoryInputPage: React.FC = () => {
             className={styles.buildingInput}
             value={dormitoryName}
             onChange={handleDormitoryNameChange}
-            placeholder="예) 기린관"
+            placeholder="예) 찐빵관"
           />
 
           <label className={styles.label}>방 인원</label>
@@ -283,88 +240,11 @@ const DormitoryInputPage: React.FC = () => {
             </button>
           </div>
         </div>
-
-        <div className={styles.inputSection}>
-          <label className={styles.label}>기숙사비</label>
-          <div className={styles.inputWrapper}>
-            <input
-              type="text"
-              className={styles.buildingInput}
-              value={formatNumber(dormitoryFee)}
-              onChange={(e) => handleInputChange(e, setDormitoryFee)}
-              placeholder="0"
-            />
-            <span className={styles.unit}>만원</span>
-          </div>
-        </div>
       </div>
 
-      {showUniversityModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalBottomSheet}>
-            <div className={styles.modalHandle}></div>
-            <div className={styles.modalHeader}>
-              <h2>대학교</h2>
-              <button
-                className={styles.closeModalButton}
-                onClick={() => setShowUniversityModal(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={styles.initialNav}>
-              {koreanInitials.map((initial) => (
-                <div
-                  key={initial}
-                  className={`${styles.initial} ${
-                    selectedInitial === initial ? styles.selectedInitial : ''
-                  }`}
-                  onClick={() => handleInitialSelect(initial)}
-                >
-                  {initial}
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.universityList}>
-              {universities.map((univ) => (
-                <div
-                  key={univ.id}
-                  className={`${styles.universityItem} ${
-                    selectedUniversity?.id === univ.id
-                      ? styles.selectedUniversity
-                      : ''
-                  }`}
-                  onClick={() => handleUniversitySelect(univ)}
-                >
-                  <div className={styles.universityLogo}>
-                    {/* Placeholder for university logo */}
-                  </div>
-                  <div className={styles.universityInfo}>
-                    <p className={styles.universityName}>{univ.name}</p>
-                    <p className={styles.universityCampus}>{univ.campus}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.modalFooter}>
-              <button className={styles.resetButton} onClick={handleModalReset}>
-                초기화
-              </button>
-              <button
-                className={`${styles.confirmButton} ${
-                  selectedUniversity ? styles.enabled : ''
-                }`}
-                onClick={handleModalConfirm}
-                disabled={!selectedUniversity}
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* 하나의 모달만 사용 - UniversityCampusSelectModal */}
+      {bottomSheet.isOpen && bottomSheet.type === 'university' && (
+        <UniversityCampusSelectModal />
       )}
 
       <footer className={styles.footer}>
