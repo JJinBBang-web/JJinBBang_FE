@@ -5,9 +5,25 @@ import SearchBar from '../components/map/SearchBar';
 import styles from "./Map.module.css";
 import FilterBar from '../components/map/FilterBar';
 import ReviewListHeader from '../components/map/ReviewListHeader';
+import Modal from '../components/review/Modal';
+import iconClose from "../assets/image/iconClose.svg"
+
 
 const Map = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSheetVisible, setIsSheetVisible] = useState(true);
+
+    const handleOpenModal = () => {
+        setIsSheetVisible(false);
+        setIsModalOpen(true);
+    };
+    
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setIsSheetVisible(true);
+    };
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -30,7 +46,21 @@ const Map = () => {
                 <SearchBar/>
             </div>
             <FilterBar/>
-            <ReviewListHeader/>
+            {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
+            {isModalOpen && <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                    <div className={styles.wrap}>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
+                        </div>
+                        <div className={styles.sheet_title_wrap}>
+                            <div className={styles.sheet_info_wrap}>
+                                <p className={styles.sheet_title}>내 주변 찐빵 (<span>25</span>)</p>
+                            </div>
+                            <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+                        </div>
+                    </div>
+                </Modal>
+            }
         </div>
     )
 }

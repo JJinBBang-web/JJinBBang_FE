@@ -36,3 +36,58 @@
     margin-top: 36px;
     margin-bottom: 6px;
 }
+
+
+/* 모달 */
+.wrap {
+    max-width: 393px;
+    padding: 0px 20px;
+    padding-bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+}
+
+.sheet_header {
+    display: block;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    margin: 10px 0;
+}
+.header_divider {
+    width: 50px;
+    height: 5px;
+    border-radius: 100px;
+    background-color: var(--block-popup);
+
+}
+
+.sheet_title_wrap {
+    display: block;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+}
+
+.sheet_info_wrap {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sheet_title {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray80);
+}
