@@ -45,7 +45,7 @@ const HousingFilterModal = () => {
             
             // 300ms 후에 type을 null로 설정해서 완전히 제거
             setTimeout(() => {
-                setBottomSheet({ isOpen: false, type: null });
+                setBottomSheet({ isOpenModal: false, type: null });
             }, 300);
         }
     };

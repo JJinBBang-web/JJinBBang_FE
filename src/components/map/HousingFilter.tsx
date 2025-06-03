@@ -19,7 +19,7 @@ const HousingFilter = () => {
     return (
         <div className={`${styles.container} ${styles.housing_btn}`} onClick={() => {
             setSelectedType(housingType);
-            setBottomSheet({ isOpen: true, type: "housing" }); }}>
+            setBottomSheet({ isOpenModal: true, type: "housing" }); }}>
             <img src={housingIcon} alt="housing"/>
             <p className={`${styles.housing_type} ${isOver ? styles.housing_type_2 : ""}`}>{housingType ? housingType : "전체"}</p>
         </div>

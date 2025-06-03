@@ -167,7 +167,7 @@ const UniversityCampusModal = () => {
                 ...prev,
                 university: selectedTypeNum!,
               }));
-              setBottomSheet({ isOpen: false, type: null });
+              setBottomSheet({ isOpenModal: false, type: null });
             }
           }}
         >
