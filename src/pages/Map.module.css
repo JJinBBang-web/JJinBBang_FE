@@ -41,7 +41,7 @@
 /* 모달 */
 .wrap {
     max-width: 393px;
-    padding: 0px 20px;
+    padding: 0px 4px;
     padding-bottom: 120px;
     display: flex;
     flex-direction: column;

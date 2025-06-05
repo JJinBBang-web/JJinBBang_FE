@@ -104,7 +104,7 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleUniversityClick = () => {
-    setBottomSheet({ isOpen: true, type: 'university' });
+    setBottomSheet({ isOpenModal: true, type: 'university' });
   };
 
   const handleFloorSelect = (floor: string) => {
@@ -243,7 +243,7 @@ const DormitoryInputPage: React.FC = () => {
       </div>
 
       {/* 하나의 모달만 사용 - UniversityCampusSelectModal */}
-      {bottomSheet.isOpen && bottomSheet.type === 'university' && (
+      {bottomSheet.isOpenModal && bottomSheet.type === 'university' && (
         <UniversityCampusSelectModal />
       )}
 
