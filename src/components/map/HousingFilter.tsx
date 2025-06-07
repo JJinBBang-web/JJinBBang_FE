@@ -13,13 +13,15 @@ const HousingFilter = () => {
     const [, setSelectedType] = useRecoilState(selectedTypeState);
 
 
+    const isOver = housingType!.length >= 7;
+
     // UI 디자인
     return (
         <div className={`${styles.container} ${styles.housing_btn}`} onClick={() => {
             setSelectedType(housingType);
-            setBottomSheet({ isOpen: true, type: "housing" }); }}>
+            setBottomSheet({ isOpenModal: true, type: "housing" }); }}>
             <img src={housingIcon} alt="housing"/>
-            <p className={styles.housing_type}>{housingType ? housingType : "전체"}</p>
+            <p className={`${styles.housing_type} ${isOver ? styles.housing_type_2 : ""}`}>{housingType ? housingType : "전체"}</p>
         </div>
     )
 }

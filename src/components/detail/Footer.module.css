@@ -1,0 +1,48 @@
+.content {
+    margin: 0;
+    padding: 0;
+    width: 393px;
+    height: 80px;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-color: var(--white);
+    padding: 0 16px;
+    
+    display: flex;
+    align-items: start;
+
+    z-index: 999;
+
+    border-top: 1px solid var(--color-gray20);
+}
+
+.writeBtn {
+    width: 100%;
+    height: 54px;
+    background-color: var(--block-selected);
+    border-radius: 13px;
+    margin: 10px 0;
+
+    border: none;
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.writeImg {
+    width: 30px;
+    height: 30px;
+}
+
+.textBtn {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--primary-color);
+    padding: 0;
+    margin: 0;
+}

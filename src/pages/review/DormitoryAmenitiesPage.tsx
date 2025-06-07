@@ -1,5 +1,5 @@
 // src/pages/review/DormitoryAmenitiesPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { dormitoryReviewState } from '../../recoil/review/dormitoryReviewAtoms';
@@ -7,6 +7,7 @@ import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryAmenities.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
+import backArrowIcon from '../../assets/image/backArrowIcon.svg';
 
 interface LocationState {
   facilities?: any[];
@@ -28,15 +29,16 @@ const DormitoryAmenitiesPage: React.FC = () => {
   const { facilities, from } = (location.state as LocationState) || {};
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(dormitoryReviewState);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // 각 편의시설에 대한 선택 상태 관리 - 타입 명시
   const [selections, setSelections] = useState<FacilitySelections>({
     화장실: { 개인: false, 공용: false },
     샤워실: { 개인: false, 공용: false },
     냉장고: { 없음: false, 개인: false, 공용: false },
-    전자레인지: { 개인: false, 공용: false },
-    세탁기: { 개인: false, 공용: false },
-    휴게시설: { 유: false, 무: false },
+    전자레인지: { 없음: false, 개인: false, 공용: false },
+    세탁기: { 없음: false, 개인: false, 공용: false },
+    휴게시설: { 있음: false, 없음: false },
   });
 
   const {
@@ -74,6 +76,10 @@ const DormitoryAmenitiesPage: React.FC = () => {
         [facility]: facilityOptions,
       };
     });
+  };
+
+  const scrollToTop = () => {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // 모든 시설에 대해 하나씩 선택되었는지 확인
@@ -134,7 +140,7 @@ const DormitoryAmenitiesPage: React.FC = () => {
           <h1>기숙사에 어떤 편의 시설이 제공되었나요?</h1>
         </header>
 
-        <div className={styles.facilitiesContainer}>
+        <div className={styles.facilitiesContainer} ref={contentRef}>
           {Object.entries(selections).map(([facility, options]) => (
             <div key={facility} className={styles.facilitySection}>
               <h2 className={styles.facilityTitle}>{facility}</h2>
@@ -155,6 +161,10 @@ const DormitoryAmenitiesPage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <button className={styles.scrollTopButton} onClick={scrollToTop}>
+        <img src={backArrowIcon} alt="위로 가기" />
+      </button>
 
       <footer className={styles.footer}>
         <button className={styles.prevButton} onClick={handleBack}>

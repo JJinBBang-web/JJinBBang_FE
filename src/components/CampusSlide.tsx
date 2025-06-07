@@ -4,7 +4,7 @@ import campus_arrow from "../assets/image/campusArrow.svg";
 import select_dot from "../assets/image/selectDot.svg";
 import not_select_dot from "../assets/image/notSelectDot.svg";
 
-const SLIDE_WIDTH = 165;
+const SLIDE_WIDTH = 173;
 
 interface CampusItem {
   img: string;
@@ -56,6 +56,9 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
   const [isSnapping, setIsSnapping] = useState(false); // 스냅 동작 중인지 확인하는 상태 추가
 
   const THRESHOLD = SLIDE_WIDTH / 16; // 임계값을 더 크게 설정
+    const listToMap =
+      campusList.length > 1 ? campusList.slice(0, -1) : campusList;
+
 
   const getClientX = (e: React.MouseEvent | React.TouchEvent): number => {
     if ("touches" in e) {
@@ -178,7 +181,7 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
         ))}
       </div>
       <div className={styles.dot_container}>
-        {campusList.slice(0, -1).map((item, index) => (
+        {listToMap.map((item, index) => (
           <img
             key={index}
             src={index === currentIndex ? select_dot : not_select_dot}
