@@ -22,7 +22,7 @@ const api = {
           type: "기숙사",
           floor: "저층", // 옥탑방은 0, 반지하는 -1
           space: 26.44,
-          dormitoryFee: 10,
+          dormFee: 10,
           rating: 3,
           liked: true, // false
         },
