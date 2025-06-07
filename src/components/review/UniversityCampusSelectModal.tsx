@@ -46,7 +46,7 @@ const UniversityFilterModal = () => {
 
   // 모달 닫기 함수
   const closeModal = () => {
-    setBottomSheet({ isOpen: false, type: null });
+    setBottomSheet({ isOpenModal: false, type: null });
   };
 
   // 초성활성화 조건

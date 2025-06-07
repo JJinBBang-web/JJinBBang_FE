@@ -52,6 +52,8 @@ body {
   --block-selected: #fff7f4;
   --black: #090a0a;
   --white: #ffffff;
+  --primary-color80: rgba(244, 105, 64, 0.8);
+
 
   --color-gray80: #3f3f3f;
   --color-gray60: #676767;

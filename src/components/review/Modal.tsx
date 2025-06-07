@@ -5,9 +5,10 @@ import styles from '../../styles/review/Modal.module.css';
 interface ModalProps {
   children: React.ReactNode;
   onClose: () => void;
+  style?: React.CSSProperties;
 }
 
-const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
+const Modal: React.FC<ModalProps> = ({ children, onClose, style }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,7 +74,7 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
   };
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalOverlay} style={style}>
       <div
         className={styles.container}
         ref={modalRef}
