@@ -1,4 +1,4 @@
-/* src/components/review/UniversityCampusSelectModal.module.css */
+/* 모달 오버레이 */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -12,13 +12,16 @@
   z-index: 1000;
 }
 
+/* 모달 컨테이너 */
 .modalContainer {
   width: 100%;
   max-width: 393px;
-  background-color: white;
+  background-color: var(--white);
   border-radius: 24px 24px 0 0;
   position: relative;
   animation: slideUp 0.3s ease-out;
+  padding: 0.62rem 1.5rem 2.75rem 1.5rem;
+  box-sizing: border-box;
 }
 
 @keyframes slideUp {
@@ -30,55 +33,59 @@
   }
 }
 
+/* 모달 헤더 */
 .modalHeader {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 12px 16px;
+  margin: 0.5rem 0 1.13rem;
 }
 
+/* 핸들바 */
 .handleBar {
   width: 50px;
   height: 5px;
   background-color: var(--block-popup);
   border-radius: 100px;
   position: absolute;
-  top: 10px;
   left: 50%;
   transform: translateX(-50%);
 }
 
+/* 모달 제목 */
 .modalTitle {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 500;
-  margin-top: 20px;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
 }
 
+/* 닫기 버튼 */
 .closeButton {
   position: absolute;
-  right: 16px;
-  top: 24px;
+  right: 0;
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0;
+  margin-top: 1.5rem;
 }
 
+/* 컨텐츠 영역 */
 .content {
-  margin: 8px 0;
-  padding: 0 1.5rem;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  width: 100%;
 }
 
+/* 초성 선택 영역 */
 .initial_wrap {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 1rem;
 }
 
 .initial_btn {
@@ -88,6 +95,7 @@
   border-radius: 6px;
   background-color: var(--block-unactive-btn);
   color: var(--color-gray20);
+  cursor: pointer;
 }
 
 .selected_initial_btn {
@@ -97,6 +105,7 @@
   border-radius: 6px;
   background-color: var(--block-selected);
   color: var(--primary-color);
+  cursor: pointer;
 }
 
 .unselected_initial_btn {
@@ -106,9 +115,10 @@
   border-radius: 6px;
   background-color: var(--block-unactive-btn);
   color: var(--color-gray60);
+  cursor: pointer;
 }
 
-/* 대학교 css */
+/* 대학교 슬라이더 영역 */
 .uni_slider {
   position: relative;
   margin-top: 20px;
@@ -132,6 +142,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .selected_uni_btn {
@@ -140,12 +152,11 @@
 }
 
 .uni_title {
-  margin: 0;
-  padding: 0;
   font-size: 16px;
   letter-spacing: -0.6px;
   line-height: 150%;
   color: var(--black);
+  text-align: center;
 }
 
 .uni_campus {
@@ -155,13 +166,14 @@
   letter-spacing: -0.6px;
   line-height: 150%;
   color: var(--color-gray60);
+  text-align: center;
 }
 
 .selected_text {
   color: var(--primary-color);
 }
 
-/* 버튼 */
+/* 하단 버튼 영역 */
 .btn_content {
   width: 100%;
   display: flex;
@@ -169,9 +181,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 36px;
-  padding: 0 1rem;
-  box-sizing: border-box;
-  margin-bottom: 30px;
+  gap: 6px;
 }
 
 .reset_btn {
@@ -184,6 +194,7 @@
   letter-spacing: -0.6px;
   line-height: 22px;
   color: var(--color-gray40);
+  cursor: pointer;
 }
 
 .reset_btn_active {
@@ -194,16 +205,22 @@
 .confirm_btn {
   width: 49%;
   height: 54px;
+  border: none;
   border-radius: 14px;
-  background-color: var(--primary-color);
-  border: 1px solid var(--primary-color);
+  background-color: var(--color-gray40);
   font-size: 16px;
   letter-spacing: -0.6px;
   line-height: 22px;
   color: var(--white);
+  cursor: pointer;
 }
 
-/* Slick slider overrides */
+.confirm_btn_active {
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+/* Slick slider 커스텀 스타일 */
 :global(.slick-dots) {
   bottom: -25px;
 }

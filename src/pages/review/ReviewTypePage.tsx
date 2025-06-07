@@ -73,23 +73,13 @@ const ReviewTypePage: React.FC = () => {
           },
         });
       } else {
-        // 선택한 타입이 기숙사인 경우
-        if (selectedType === "기숙사") {
-          navigate("/review/dormitory", {
-            state: {
-              ...locationState,
-              housingType: selectedType,
-            },
-          });
-        } else {
-          // 일반 모드일 경우 다음 페이지로 이동
-          navigate("/review/input-address", {
-            state: {
-              ...locationState,
-              housingType: selectedType,
-            },
-          });
-        }
+        // 모든 타입에 대해 주소 입력 페이지로 이동 (기숙사 포함)
+        navigate('/review/input-address', {
+          state: {
+            ...locationState,
+            housingType: selectedType,
+          },
+        });
       }
     }
   };

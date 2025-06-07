@@ -6,13 +6,15 @@ import {
   JjinAgencyFilterState,
   FilterCategory,
   FilterItem,
-} from "../../recoil/util/filterRecoilState";
-import { reviewState } from "../../recoil/review/reviewAtoms";
-import CancelModal from "../../components/review/CancelModal";
-import { useCancelModal } from "../../util/useCancelModal";
-import styles from "../../styles/review/ReviewAdvantage.module.css";
-import closeIcon from "../../assets/image/iconClose.svg";
-import backArrowIcon from "../../assets/image/backArrowIcon.svg";
+} from '../../recoil/util/filterRecoilState';
+// 기숙사 필터 import 추가
+import { DormFilterState } from '../../recoil/util/dormFilterState';
+import { reviewState } from '../../recoil/review/reviewAtoms';
+import CancelModal from '../../components/review/CancelModal';
+import { useCancelModal } from '../../util/useCancelModal';
+import styles from '../../styles/review/ReviewAdvantage.module.css';
+import closeIcon from '../../assets/image/iconClose.svg';
+import backArrowIcon from '../../assets/image/backArrowIcon.svg';
 
 interface LocationState {
   photos?: string[];
@@ -30,7 +32,15 @@ const ReviewDisadvantagePage: React.FC = () => {
   const filters = useRecoilValue<FilterCategory[]>(
     housingType === "공인중개사" ? JjinAgencyFilterState : JjinFilterState
   );
+  const dormFilters = useRecoilValue<FilterCategory[]>(DormFilterState);
+
   const [review, setReview] = useRecoilState(reviewState);
+
+  // 기숙사 유형인지 체크
+  const isDormitory = review.housingType === '기숙사';
+
+  // 건물 유형에 따라 필터 선택
+  const currentFilters = isDormitory ? dormFilters : filters;
 
   const [selectedFilters, setSelectedFilters] = useState<string[]>(
     disadvantages || review.cons || []
@@ -126,7 +136,7 @@ const ReviewDisadvantagePage: React.FC = () => {
           <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         </header>
         <div className={styles.content} ref={contentRef}>
-          {filters.map((category: FilterCategory) => (
+          {currentFilters.map((category: FilterCategory) => (
             <div className={styles.jjin_filter_wrap} key={category.id}>
               <p className={styles.filter_title}>{category.category}</p>
               <div className={styles.jjin_filter}>

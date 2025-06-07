@@ -2,57 +2,95 @@ import { atom } from "recoil";
 
 // 리뷰 프리뷰 인터페이스
 export interface BasicInfo {
-  id: number;
-  name: string;
-  type: string;
-  contractType: string;
-  deposit: number; // 보증금
-  monthlyRent: number; // 월세
-  floor: number; // 옥탑방은 0, 반지하는 -1
-  space: number; // area -> space 변경
-  maintenanceCost: number;
-  rating: number;
-  liked: boolean; // false
+    reviewId: number,
+    name : string,
+    type : string,
+    contractType: string,
+    deposit: number, // 보증금
+    monthlyRent: number, // 월세
+    floor: string,
+    space: number, // area -> space 변경
+    maintenanceCost: number,
+    rating: number,
+    liked: boolean // false
 }
 
-export interface DormitoryBasicInfo {
+export interface dormitoryBasicInfo {
   id: number; // 리뷰 ID
   name: string;
   type: string;
-  universityName: string;
-  floor: number; // 0: 옥탑, -1: 반지하, 1 이상: 층수
-  space: number; // 면적 (㎡)
-  DormitoryFee: number; // 관리비
+  university: string;
+  floor: string;
+  capacity:number;
+  dormFee : number;
   rating: number; // 평점
   liked: boolean; // 좋아요 여부
 }
 
+export interface agencyReviewInfo {
+    id : number;
+    name : string;
+    type : string;
+    rating : number;
+    liked : boolean;
+}
+
 export interface ReviewInfo {
-  content: string;
-  keywords: string[];
-  likesCount: number;
-  updatedAt: Date;
+    content: string;
+    keywords: string[];
+    likesCount: number;
+    updatedAt: Date;
 }
 
 export interface ReviewPreview {
-  basicInfo?: BasicInfo;
-  dormitoryBasicInfo?: DormitoryBasicInfo;
-  reviewInfo: ReviewInfo;
-  image: string;
+    basicInfo?: BasicInfo;
+    dormitoryBasicInfo?: dormitoryBasicInfo;
+    agencyReviewInfo?: agencyReviewInfo;
+    reviewInfo: ReviewInfo;
+    image?: string;
 }
 
 // 리뷰 프리뷰 상태관리
 export const ReviewPreviewState = atom<ReviewPreview[]>({
-  key: "ReviewPreviewState",
-  default: [
-    {
-      reviewInfo: {
-        content: "",
-        keywords: [],
-        likesCount: 0,
-        updatedAt: new Date(),
-      },
-      image: "",
-    },
-  ],
-});
+    key : "ReviewPreviewState",
+    default : [{
+        basicInfo : {
+                reviewId: 0,
+                name : "",
+                type : "",
+                contractType: "",
+                deposit: 0, // 보증금
+                monthlyRent: 0, // 월세
+                floor: "", 
+                space: 0.0, // area -> space 변경
+                maintenanceCost: 0,
+                rating: 0,
+                liked: false // false
+        },
+        dormitoryBasicInfo : {
+            id: 0,
+            name: "",
+            type: "",
+            university: "",
+            floor: "",
+            capacity:0,
+            dormFee: 0,
+            rating: 0,
+            liked: false
+        },
+        agencyReviewInfo : {
+            id: 0,
+            name:"",
+            type:"",
+            rating: 0,
+            liked : false
+        },
+        reviewInfo : {
+                content: "",
+                keywords: [],
+                likesCount: 0,
+                updatedAt: new Date(),
+                },
+        image: ""
+    },]
+})

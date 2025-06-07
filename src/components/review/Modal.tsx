@@ -75,7 +75,7 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
   return (
     <div className={styles.modalOverlay}>
       <div
-        className={styles.modalContent}
+        className={styles.container}
         ref={modalRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
