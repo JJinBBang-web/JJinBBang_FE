@@ -42,7 +42,15 @@
 .wrap {
     max-width: 393px;
     padding: 0px 4px;
-    padding-bottom: 120px;
+    padding-bottom: 4.7rem;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+}
+.wrap2 {
+    max-width: 393px;
+    padding: 0px 4px;
     display: flex;
     flex-direction: column;
     justify-items: center;
@@ -56,7 +64,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    margin: 10px 0;
+    margin-bottom: 10px;
 }
 .header_divider {
     width: 50px;
@@ -90,4 +98,95 @@
     letter-spacing: -0.6px;
     line-height: 150%;
     color: var(--color-gray80);
+}
+
+.filterWrap{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.filterWrap p {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray40);
+    padding: 0;
+    margin: 0;
+}
+.filterWrap span {
+    padding: 0;
+    margin: 0;
+}
+
+.selectedText {
+    color: var(--primary-color) !important;
+}
+
+.line {
+  width: 100%;
+  height: 20px;
+  border-top: 1.5px solid #eee;
+  margin-top: 20px;
+}
+
+.line:nth-child(1){
+    margin-top: 10px;
+}
+
+.contentWrap {
+    width: 100%;
+    height: 56vh;
+    overflow: scroll;
+}
+
+.sheetWrap {
+    width: 100%;
+    padding-top: 3rem;
+    padding-bottom: 7rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    gap:34px;
+}
+
+.sheetText {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 160%;
+    color: var(--black);
+    text-align: center;
+}
+
+.btnWrap {
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.confirmBtn {
+    width: 100%;
+    height: 54px;
+
+    border: none;
+    border-radius: 14px;
+    background-color: var(--primary-color);
+
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--white);
 }
