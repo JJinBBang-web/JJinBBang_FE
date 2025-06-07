@@ -1,6 +1,8 @@
 // src/pages/auth/KakaoCallback.tsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { authState } from '../../recoil/auth/atoms';
 import { fetchApi } from '../../util/api';
 
 interface KakaoAuthResponse {
@@ -15,10 +17,14 @@ interface KakaoAuthResponse {
 
 const KakaoCallback: React.FC = () => {
   const navigate = useNavigate();
+  const [_, setAuth] = useRecoilState(authState);
 
   useEffect(() => {
     const handleKakaoCallback = async () => {
       const code = new URL(window.location.href).searchParams.get('code');
+
+      // 로컬 스토리지에서 첫 로그인 플래그 확인
+      const isFirstLogin = localStorage.getItem('isFirstLogin') === 'true';
 
       if (code) {
         try {
@@ -31,6 +37,19 @@ const KakaoCallback: React.FC = () => {
             // 토큰을 로컬 스토리지에 저장
             localStorage.setItem('accessToken', response.data.accessToken);
             localStorage.setItem('refreshToken', response.data.refreshToken);
+
+            // Recoil 상태 업데이트
+            setAuth({
+              isAuthenticated: true,
+              email: response.data.user.email,
+              verificationStatus: response.data.user.isVerified
+                ? 'verified'
+                : 'unverified',
+              isFirstLogin: isFirstLogin, // 첫 로그인 여부 설정
+            });
+
+            // 첫 로그인 플래그 초기화
+            localStorage.removeItem('isFirstLogin');
 
             // 이메일 인증 상태에 따라 리다이렉트
             if (response.data.user.isVerified) {
@@ -57,7 +76,7 @@ const KakaoCallback: React.FC = () => {
     };
 
     handleKakaoCallback();
-  }, [navigate]);
+  }, [navigate, setAuth]);
 
   return (
     <div className="content">
