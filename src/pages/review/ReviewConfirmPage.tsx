@@ -1,20 +1,26 @@
 // src/pages/review/ReviewConfirmPage.tsx
-import { useNavigate, useLocation } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import { dormitoryReviewState } from '../../recoil/review/dormitoryReviewAtoms';
-import { JjinFilterState } from '../../recoil/util/filterRecoilState';
-import { DormFilterState } from '../../recoil/util/dormFilterState'; // 기숙사 필터 추가
-import { tagMessages, tagLongMessages } from '../../components/Tag';
-import styles from '../../styles/review/ReviewConfirm.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import ArrowIcon from '../../assets/image/arrowIcon.svg';
-import starFilledIcon from '../../assets/image/starIconOnRed.svg';
-import starEmptyIcon from '../../assets/image/starIconOff.svg';
-import checkIcon from '../../assets/image/checkIconActive.svg';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
+import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  reviewState,
+  defaultReviewState,
+} from "../../recoil/review/reviewAtoms";
+import {
+  JjinFilterState,
+  JjinAgencyFilterState,
+} from "../../recoil/util/filterRecoilState";
+import { tagMessages, tagLongMessages } from "../../components/Tag";
+import styles from "../../styles/review/ReviewConfirm.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import ArrowIcon from "../../assets/image/arrowIcon.svg";
+import starFilledIcon from "../../assets/image/starIconOnRed.svg";
+import starEmptyIcon from "../../assets/image/starIconOff.svg";
+import checkIcon from "../../assets/image/checkIconActive.svg";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import { housingTypeState } from "../../recoil/map/mapRecoilState";
+
 
 interface LocationState {
   address?: {
@@ -44,6 +50,7 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
+
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(dormitoryReviewState);
   const filters = useRecoilValue(JjinFilterState);
@@ -106,11 +113,11 @@ const ReviewConfirmPage: React.FC = () => {
           mergedState.addressDetail ||
           '',
         detailedAddress: locationState.buildingName
-          ? `${locationState.buildingName} ${locationState.floor || '저층'}`
-          : mergedState.detailedAddress || '',
-        contractType:
-          locationState.paymentType || mergedState.contractType || '',
-        deposit: locationState.priceData?.deposit || mergedState.deposit || 0,
+          ? `${locationState.buildingName}`
+          : prev.detailedAddress || "",
+        contractType: locationState.paymentType || prev.contractType || "",
+        deposit: locationState.priceData?.deposit || prev.deposit || 0,
+
         monthlyRent:
           locationState.priceData?.monthlyRent !== undefined
             ? locationState.priceData.monthlyRent
@@ -125,7 +132,6 @@ const ReviewConfirmPage: React.FC = () => {
     setReview(mergedState);
   }, [locationState, setReview]);
 
-  // 라벨에 맞는 아이콘 찾기 - 기숙사 필터 지원
   const getIconFromLabel = (label: string): string => {
     // 기숙사 유형에 따라 적절한 필터 선택
     const currentFilters = isDormitory ? dormFilters : filters;
@@ -206,7 +212,9 @@ const ReviewConfirmPage: React.FC = () => {
       setTimeout(() => {
         setIsSubmitting(false);
         setShowConfirmModal(false);
-        navigate('/review/complete');
+        navigate("/review/complete");
+        setReview(defaultReviewState);
+
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
@@ -235,19 +243,29 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToDetailedAddress = () => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-    navigate('/review/floor', {
-      state: {
-        address: {
-          roadAddress: review.address || '',
-          jibunAddress: review.addressDetail || '',
-          buildingName: review.detailedAddress || '',
+    // localStorage.setItem("reviewState", JSON.stringify(review));
+    if (review.housingType === "공인중개사") {
+      navigate("/review/agency", {
+        state: {
+          ...locationState,
+          from: "confirm",
         },
-        buildingName: review.detailedAddress || '',
-        floor: review.floorType || '',
-        from: 'confirm',
-      },
-    });
+      });
+    } else {
+      navigate("/review/address/result", {
+        state: {
+          address: {
+            roadAddress: review.address || "",
+            jibunAddress: review.addressDetail || "",
+            buildingName: review.detailedAddress || "",
+          },
+          buildingName: review.detailedAddress || "",
+          floor: review.floorType || "",
+          from: "confirm",
+        },
+      });
+    }
+
   };
 
   const navigateToContractType = () => {
@@ -418,7 +436,10 @@ const ReviewConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              onClick={() => handleItemClick(navigateToDetailedAddress)}
+              onClick={() => {
+                handleItemClick(navigateToDetailedAddress);
+              }}
+
             >
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
