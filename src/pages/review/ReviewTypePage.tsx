@@ -97,7 +97,11 @@ const ReviewTypePage: React.FC = () => {
   const handleBack = () => {
     // 수정 모드일 경우
     if (locationState.from === "confirm") {
-      navigate("/review/confirm");
+      navigate("/review/confirm", {
+        state: {
+          ...location.state,
+        },
+      });
     } else {
       // 일반 모드일 경우 MyPage로 이동
       navigate("/mypage");

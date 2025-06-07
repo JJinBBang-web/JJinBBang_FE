@@ -49,7 +49,7 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
-  console.log(review);
+  console.log(2323, locationState);
   const filters = useRecoilValue(JjinFilterState);
   const agencyFilters = useRecoilValue(JjinAgencyFilterState);
 
@@ -101,8 +101,6 @@ const ReviewConfirmPage: React.FC = () => {
       }));
     }
   }, [locationState, setReview]);
-  console.log(1, locationState.buildingName);
-  console.log(review);
   // 라벨에 맞는 아이콘 찾기
   const getIconFromLabel = (label: string): string => {
     // 먼저 filters에서 아이콘 찾기 시도
@@ -118,8 +116,7 @@ const ReviewConfirmPage: React.FC = () => {
     }
     // 찾은 키로 아이콘 가져오기
     if (tagKey) {
-      const filter =
-        locationState.housingType === "공인중개사" ? agencyFilters : filters;
+      const filter = review.housingType === "공인중개사" ? agencyFilters : filters;
       iconSrc =
         filter
           .find(

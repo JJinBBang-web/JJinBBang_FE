@@ -26,7 +26,6 @@ const AgencyInputPage: React.FC = () => {
     review.detailedAddress || address?.buildingName || ""
   );
 
-
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -38,7 +37,6 @@ const AgencyInputPage: React.FC = () => {
     // 수정 모드일 경우 기존 상태 복원
     if (from === "confirm") {
       setBuildingName(review.detailedAddress || "");
-      
     }
   }, [from, review]);
 
@@ -72,14 +70,17 @@ const AgencyInputPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === "confirm") {
-      navigate("/review/confirm");
+      navigate("/review/confirm", {
+        state: {
+          ...location.state,
+        },
+      });
     } else {
       navigate(-1);
     }
   };
 
-  const isNextEnabled =
-    buildingName.trim() !== "";
+  const isNextEnabled = buildingName.trim() !== "";
 
   return (
     <div className="content">
@@ -102,7 +103,7 @@ const AgencyInputPage: React.FC = () => {
             type="text"
             className={styles.buildingInput}
             value={buildingName}
-            onChange={(e) => setBuildingName(e.target.value.replace(/\s/g, ''))}
+            onChange={(e) => setBuildingName(e.target.value.replace(/\s/g, ""))}
             placeholder="예) 찐빵중개사"
           />
         </div>

@@ -1,18 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   JjinFilterState,
   JjinAgencyFilterState,
   FilterCategory,
   FilterItem,
 } from "../../recoil/util/filterRecoilState";
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/ReviewAdvantage.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import backArrowIcon from '../../assets/image/backArrowIcon.svg';
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/ReviewAdvantage.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
 interface LocationState {
   photos?: string[];
@@ -27,7 +27,9 @@ const ReviewDisadvantagePage: React.FC = () => {
   const { housingType } = location.state;
   const { photos, from, advantages, disadvantages } =
     (location.state as LocationState) || {};
-  const filters = useRecoilValue<FilterCategory[]>(housingType ==="공인중개사" ? JjinAgencyFilterState : JjinFilterState);
+  const filters = useRecoilValue<FilterCategory[]>(
+    housingType === "공인중개사" ? JjinAgencyFilterState : JjinFilterState
+  );
   const [review, setReview] = useRecoilState(reviewState);
 
   const [selectedFilters, setSelectedFilters] = useState<string[]>(
@@ -45,7 +47,7 @@ const ReviewDisadvantagePage: React.FC = () => {
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
-    if (from === 'confirm') {
+    if (from === "confirm") {
       setSelectedFilters(review.cons || []);
     }
   }, [from, review]);
@@ -61,7 +63,7 @@ const ReviewDisadvantagePage: React.FC = () => {
   };
 
   const scrollToTop = () => {
-    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleNext = () => {
@@ -71,17 +73,17 @@ const ReviewDisadvantagePage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+    localStorage.setItem("reviewState", JSON.stringify(updatedReview));
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
+    if (from === "confirm") {
+      navigate("/review/confirm", {
         state: {
           ...location.state,
           disadvantages: selectedFilters,
         },
       });
     } else {
-      navigate('/review/content', {
+      navigate("/review/content", {
         state: {
           ...location.state,
           disadvantages: selectedFilters,
@@ -91,8 +93,12 @@ const ReviewDisadvantagePage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
-      navigate('/review/confirm');
+    if (from === "confirm") {
+      navigate("/review/confirm", {
+        state: {
+          ...location.state,
+        },
+      });
     } else {
       navigate(-1);
     }

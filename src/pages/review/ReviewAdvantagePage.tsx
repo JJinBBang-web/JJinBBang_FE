@@ -91,7 +91,11 @@ const ReviewAdvantagePage: React.FC = () => {
 
   const handleBack = () => {
     if (from === "confirm") {
-      navigate("/review/confirm");
+      navigate("/review/confirm", {
+        state: {
+          ...location.state,
+        },
+      });
     } else {
       navigate(-1);
     }
