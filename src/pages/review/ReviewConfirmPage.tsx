@@ -50,6 +50,7 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
+  console.log("ReviewConfirmPage review:", review);
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(dormitoryReviewState);
   const filters = useRecoilValue(JjinFilterState);
@@ -71,6 +72,7 @@ const ReviewConfirmPage: React.FC = () => {
 
   // 기숙사 유형인지 체크
   const isDormitory = review.housingType === '기숙사';
+  const isAgency = review.housingType === '공인중개사';
 
   // 컴포넌트 마운트 시 저장된 상태 로드
   useEffect(() => {
@@ -135,7 +137,13 @@ const ReviewConfirmPage: React.FC = () => {
   // 라벨에 맞는 아이콘 찾기 - 기숙사 필터 지원
   const getIconFromLabel = (label: string): string => {
     // 기숙사 유형에 따라 적절한 필터 선택
-    const currentFilters = isDormitory ? dormFilters : filters;
+    const currentFilters = isDormitory
+      ? dormFilters
+      : isAgency
+      ? agencyFilters
+      : filters;
+
+    console.log("s:", currentFilters);
 
     let iconSrc = '';
     let tagKey = '';
@@ -368,6 +376,7 @@ const ReviewConfirmPage: React.FC = () => {
         {tags.map((tagLabel, index) => {
           // 긴 라벨("교통이 편리해요")에서 짧은 라벨("교통 편리")로 변환
           let shortLabel = tagLabel;
+          
 
           // tagLongMessages에서 키 찾기
           for (const [key, value] of Object.entries(tagLongMessages)) {
