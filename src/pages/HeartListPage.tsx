@@ -21,7 +21,8 @@ const api = {
           name: "지희관",
           universityName: "경상국립대",
           type: "기숙사",
-          floor: "저층", // 옥탑방은 0, 반지하는 -1
+
+          floor: 1, // 옥탑방은 0, 반지하는 -1
           space: 26.44,
           dormitoryFee: 10,
           rating: 3,
@@ -37,13 +38,13 @@ const api = {
       },
       {
         basicInfo: {
-          reviewId: 2,
+          id: 2,
           name: "한솔원룸",
           type: "투룸",
           contractType: "전세",
           deposit: 2000,
           monthlyRent: 0,
-          floor: "고층",
+          floor: 1,
           space: 35.5,
           maintenanceCost: 5,
           rating: 4,
@@ -51,6 +52,7 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
+
           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 18,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
@@ -59,13 +61,14 @@ const api = {
       },
       {
         basicInfo: {
-          reviewId: 3,
+          id: 3,
+
           name: "강남하우스",
           type: "오피스텔",
           contractType: "월세",
           deposit: 1000,
           monthlyRent: 70,
-          floor: "중층",
+          floor: 5,
           space: 42.7,
           maintenanceCost: 15,
           rating: 5,
@@ -73,6 +76,7 @@ const api = {
         },
         reviewInfo: {
           content: "채광이 좋고 전망이 멋져요.",
+
           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 12,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
@@ -113,7 +117,7 @@ const Heart: React.FC = () => {
               <div className={styles.line} />
               <img src={emptyCharacterIcon} alt="빈 캐릭터 아이콘" />
               <p className={styles.noReviewText}>
-                앗! 아직 최근 본 찐빵이 없어요!
+                앗! 아직 관심목록이 없어요!
                 <br />
                 지도에서 내 주변 찐빵을 둘러볼까요?
               </p>

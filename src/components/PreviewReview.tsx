@@ -87,6 +87,7 @@ const PreviewReview: React.FC<Props> = ({
         </div>
       </div>
       <PreviewReviewContent
+
         reviewInfo={{
           content: review.reviewInfo.content,
           keywords: review.reviewInfo.keywords,
