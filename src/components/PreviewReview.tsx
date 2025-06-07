@@ -71,7 +71,7 @@ const PreviewReview: React.FC<Props> = ({
             )}
           </div>
           <p className={styles.buildingContent3}>
-            {floor}층, {space}㎡,{" "}
+            {floor}, {space}㎡,{" "}
             {review.basicInfo && `관리비 ${review.basicInfo.maintenanceCost}만`}{" "}
             {review.dormitoryBasicInfo &&
               `기숙사비 ${review.dormitoryBasicInfo.dormFee}만`}

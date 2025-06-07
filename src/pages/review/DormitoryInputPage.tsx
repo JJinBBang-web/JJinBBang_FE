@@ -104,7 +104,7 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleUniversityClick = () => {
-    setBottomSheet({ isOpen: true, type: 'university' });
+    setBottomSheet({ isOpenModal: true, type: "university" });
   };
 
   const handleFloorSelect = (floor: string) => {
@@ -186,7 +186,7 @@ const DormitoryInputPage: React.FC = () => {
         <div className={styles.inputSection}>
           <label className={styles.label}>대학교</label>
           <div className={styles.buildingInput} onClick={handleUniversityClick}>
-            {university || '예) 찐빵대학교'}
+            {university || "예) 찐빵대학교"}
           </div>
 
           <label className={styles.label}>기숙사명</label>
@@ -216,25 +216,25 @@ const DormitoryInputPage: React.FC = () => {
           <div className={styles.floorOptions}>
             <button
               className={`${styles.floorButton} ${
-                selectedFloor === '저층' ? styles.selected : ''
+                selectedFloor === "저층" ? styles.selected : ""
               }`}
-              onClick={() => handleFloorSelect('저층')}
+              onClick={() => handleFloorSelect("저층")}
             >
               저층
             </button>
             <button
               className={`${styles.floorButton} ${
-                selectedFloor === '중층' ? styles.selected : ''
+                selectedFloor === "중층" ? styles.selected : ""
               }`}
-              onClick={() => handleFloorSelect('중층')}
+              onClick={() => handleFloorSelect("중층")}
             >
               중층
             </button>
             <button
               className={`${styles.floorButton} ${
-                selectedFloor === '고층' ? styles.selected : ''
+                selectedFloor === "고층" ? styles.selected : ""
               }`}
-              onClick={() => handleFloorSelect('고층')}
+              onClick={() => handleFloorSelect("고층")}
             >
               고층
             </button>
@@ -243,7 +243,7 @@ const DormitoryInputPage: React.FC = () => {
       </div>
 
       {/* 하나의 모달만 사용 - UniversityCampusSelectModal */}
-      {bottomSheet.isOpen && bottomSheet.type === 'university' && (
+      {bottomSheet.isOpenModal && bottomSheet.type === "university" && (
         <UniversityCampusSelectModal />
       )}
 
@@ -253,7 +253,7 @@ const DormitoryInputPage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            isNextEnabled ? styles.enabled : ''
+            isNextEnabled ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={!isNextEnabled}

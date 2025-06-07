@@ -22,9 +22,9 @@ const api = {
           universityName: "경상국립대",
           type: "기숙사",
 
-          floor: 1, // 옥탑방은 0, 반지하는 -1
+          floor: "저층", // 옥탑방은 0, 반지하는 -1
           space: 26.44,
-          dormitoryFee: 10,
+          dormFee: 10,
           rating: 3,
           liked: true, // false
         },
@@ -44,7 +44,7 @@ const api = {
           contractType: "전세",
           deposit: 2000,
           monthlyRent: 0,
-          floor: 1,
+          floor: "저층",
           space: 35.5,
           maintenanceCost: 5,
           rating: 4,
@@ -68,7 +68,7 @@ const api = {
           contractType: "월세",
           deposit: 1000,
           monthlyRent: 70,
-          floor: 5,
+          floor: "고층",
           space: 42.7,
           maintenanceCost: 15,
           rating: 5,
