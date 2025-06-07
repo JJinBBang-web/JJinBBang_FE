@@ -3,44 +3,45 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  background-color: var(--color-gray10);
 }
 
 .backButton {
   background: none;
   border: none;
-  padding: 8px;
+  padding: 0.5rem;
   cursor: pointer;
-}
-
-.backButton img {
-  width: 24px;
-  height: 24px;
-}
-
-.flippedIcon {
+  position: absolute;
+  left: 1rem;
   transform: scaleX(-1);
+  z-index: 1;
 }
 
 .container {
   display: flex;
+  padding: 0rem 1.5rem;
   flex-direction: column;
-  padding: 24px 16px;
+  align-items: flex-start;
+  gap: 1.5rem;
+  align-self: stretch;
 }
 
-.container h1 {
-  font-size: 24px;
-  font-weight: 700;
+.title {
   color: var(--black);
-  margin-bottom: 16px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 0.5rem;
 }
 
 .description {
-  font-size: 14px;
-  line-height: 20px;
+  text-align: left;
   color: var(--color-gray60);
-  margin-bottom: 32px;
-  white-space: pre-line;
+  font-size: 0.964rem;
+  font-weight: 300;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1rem;
 }
 
 .form {
@@ -52,77 +53,77 @@
 
 .inputWrapper {
   position: relative;
-  width: 100%;
-  max-width: 330px;
-  margin-bottom: 24px;
-  right: 16px;
   input:focus {
     outline: none;
   }
 }
 
-.warningIcon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-}
-
 .emailInput {
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
+  display: flex;
+  width: calc(100vw - 3.5rem);
+  height: 4.25rem;
+  padding: 1.25rem;
   background-color: var(--white);
   border: none;
   border-radius: 16px;
-  font-size: 16px;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--black);
-}
-
-.emailInput.inputError {
-  box-shadow: 0px 0px 0px 1px var(--primary-color);
-  text-indent: 28px; /* 텍스트만 오른쪽으로 이동 */
-  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .emailInput::placeholder {
   color: var(--color-gray40);
-  font-size: 14px;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  padding-left: 0.25rem;
+}
+
+.emailInput.inputError {
+  padding-left: 3.2rem;
+}
+
+.warningIcon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  z-index: 1;
 }
 
 .errorText {
   position: absolute;
-  left: 16px;
-  top: calc(100% + 4px);
-  font-size: 12px;
+  left: 1rem;
+  top: calc(100% + 0.25rem);
+  font-size: 0.8rem;
   color: var(--primary-color);
   margin: 0;
 }
 
 .character {
-  width: 180px;
-  height: 158px;
-  margin: 24px 0;
+  width: 14.37875rem;
+  height: 21.11169rem;
+  margin: 3.75vh 0;
 }
 
 .submitButton {
-  width: 100%;
-  max-width: 360px;
-  height: 52px;
+  width: calc(100vw - 3.5rem);
+  height: 3.375rem;
+  position: fixed;
   background-color: var(--primary-color);
   color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
   border: none;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 500;
+  border-radius: 13px;
+  align-self: center;
   cursor: pointer;
-  position: fixed;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  margin: 0 auto;
+  bottom: 2.75rem;
 }
 
 .submitButton.disabled {
@@ -134,48 +135,46 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 120px 16px;
+  padding: 7.5rem 1rem;
   text-align: center;
 }
 
 .checkIcon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 24px;
+  display: flex;
+  width: 4.375rem;
+  height: 4.375rem;
+  padding: 0.625rem;
+  margin-bottom: 1.2rem;
 }
 
 .completeContainer h2 {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
   color: var(--black);
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 }
 
 .completeContainer p {
-  font-size: 14px;
-  line-height: 20px;
   color: var(--color-gray60);
-  margin: 0;
-}
-
-.completeContainer p:last-of-type {
-  margin-bottom: 32px;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
 }
 
 .confirmButton {
-  width: 100%;
-  max-width: 360px;
-  height: 52px;
+  width: calc(100vw - 3.5rem);
+  height: 3.375rem;
+  position: fixed;
   background-color: var(--primary-color);
   color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
   border: none;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 500;
+  border-radius: 13px;
+  align-self: center;
   cursor: pointer;
-  position: fixed;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  margin: 0 auto;
+  bottom: 2.75rem;
 }

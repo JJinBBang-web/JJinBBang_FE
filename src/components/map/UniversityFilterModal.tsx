@@ -6,7 +6,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { filterState, selectedTypeNumState } from "../../recoil/map/mapRecoilState";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
-import { useEffect } from "react";
+import '../../styles/global.css'
+import styled from "styled-components";
 
 const INITIAL_LIST = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ",];
 
@@ -21,6 +22,23 @@ const UniversityFilterModal = () => {
 
     // 모달 상태관리
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
+
+    const handleConfirm = () => {
+        if(isConfirmActive) {
+            setFilterState((prev) => ({
+                ...prev,
+                university : selectedTypeNum!,
+            }))
+            // 먼저 isOpen만 false로 설정해서 닫히는 애니메이션 실행
+            setBottomSheet(prev => ({ ...prev, isOpen: false })); 
+            
+            // 300ms 후에 type을 null로 설정해서 완전히 제거
+            setTimeout(() => {
+                setBottomSheet({ isOpenModal: false, type: 'university' });
+            }, 200);
+        }
+    };
+
 
     // 초성활성화 조건
     const activeInitials = new Set(universities.map((uni) => uni.initial));
@@ -57,13 +75,26 @@ const UniversityFilterModal = () => {
         swipeToSlide : true,
     }
 
-    // useEffect(() => {
-    //     console.log("selectedTypeNum 초기화 후:", selectedTypeNum);
-    // }, [selectedTypeNum]);
+//     const Container = styled.div`
+//     padding: 0px 6px;
+  
+//     && .slick-dots {
+//       bottom: -50px !important;
+//     }
+  
+//     && .slick-dots li.slick-active button:before {
+//       color: #B5B5B5 !important;
+//     }
+  
+//     && .slick-dots li button:before {
+//       color: #E8E8E8 !important;
+//     }
+//   `;
 
     return (
         <div className={styles.content}>
             {/* 초성필터슬라이더 */}
+            {/* <Container> */}
             <Slider {...settingsInitial}>
                 {INITIAL_LIST.map((init) => {
                     const isActive = activeInitials.has(init);
@@ -91,6 +122,7 @@ const UniversityFilterModal = () => {
                     );
                 })}
             </Slider>
+            {/* </Container> */}
             {/* 대학교 선택 슬라이더 */}
             <div className={styles.uni_slider}>
             <Slider {...settingsUniversity}>
@@ -114,15 +146,7 @@ const UniversityFilterModal = () => {
                 }}
                 >초기화</button>
                 <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
-                onClick={() => {
-                    if(isConfirmActive) {
-                        setFilterState((prev) => ({
-                            ...prev,
-                            university : selectedTypeNum!,
-                        }))
-                        setBottomSheet({ isOpen: false, type: null });
-                    }
-                    }}
+                onClick={() => {handleConfirm();}}
                     >확인</button>
             </div>
         </div>

@@ -1,0 +1,160 @@
+/* src/styles/auth/StudentEmailVerification.module.css */
+.header {
+  display: flex;
+  padding: 4.9vh 0 2vh;
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  position: absolute;
+  left: 1rem;
+  transform: scaleX(-1);
+  z-index: 1;
+}
+
+.container {
+  display: flex;
+  padding: 0rem 1.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  align-self: stretch;
+}
+
+.title {
+  color: var(--black);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 0.25rem;
+}
+
+.description {
+  text-align: left;
+  color: var(--color-gray60);
+  font-size: 0.875rem;
+  font-style: normal;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1rem;
+}
+
+.description p {
+  color: var(--color-gray60);
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 0.75rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  input:focus {
+    outline: none;
+  }
+}
+
+.codeInput {
+  width: calc(100vw - 3.5rem);
+  display: flex;
+  height: 4.25rem;
+  padding: 1.25rem;
+  background-color: var(--white);
+  border: none;
+  border-radius: 16px;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+  box-sizing: border-box;
+}
+
+.codeInput::placeholder {
+  color: var(--color-gray40);
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  padding-left: 0.25rem;
+}
+
+.codeInput.inputError {
+  padding-left: 3.2rem;
+}
+
+.warningIcon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  z-index: 1;
+}
+
+.errorText {
+  position: absolute;
+  left: 1rem;
+  top: calc(100% + 0.25rem);
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.character {
+  width: 14.37875rem;
+  height: 21.11169rem;
+  margin: 3.75vh 0;
+}
+
+.buttonContainer {
+  position: fixed;
+  display: flex;
+  gap: 12px;
+  width: calc(100vw - 3.5rem);
+  bottom: 2.75rem;
+  margin: 0 auto;
+}
+
+.confirmButton,
+.resendButton {
+  flex: 1;
+  width: 22.5rem;
+  height: 3.375rem;
+  border-radius: 13px;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0375rem;
+}
+
+.resendButton {
+  flex: 1;
+  background-color: var(--white);
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.confirmButton {
+  flex: 1;
+  background-color: var(--primary-color);
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.disabledButton {
+  background-color: var(--color-gray40);
+  cursor: not-allowed;
+}

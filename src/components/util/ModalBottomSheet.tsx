@@ -14,7 +14,7 @@ import { selectedUniversityState } from "../../recoil/map/universityRecoilState"
 
 
 const ModalBottomSheet = () => {
-    const [{ isOpen, type }, setBottomSheet] = useRecoilState(isSheetOpenState);
+    const [{ isOpenModal, type }, setBottomSheet] = useRecoilState(isSheetOpenState);
     const [isRendered, setIsRendered] = useState(false);
     const [,setSelectedType] = useRecoilState(selectedTypeState);
     const [, setSelectedTypeNum] = useRecoilState(selectedTypeNumState);
@@ -29,38 +29,38 @@ const ModalBottomSheet = () => {
     const depositMax = useRecoilValue(filterState).depositMax;
     const monthlyRentMin = useRecoilValue(filterState).monthlyRentMin;
     const monthlyRentMax = useRecoilValue(filterState).monthlyRentMax;
-    const inMaintenanceCost = useRecoilValue(filterState).inMaintenanceCost;
-
-    console.log("isOpen:", isOpen, "type:", type); // 상태 변경 확인
+    const inMaintenanceCost = useRecoilValue(filterState).inMaintenanceCost;    
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpenModal) {
             setIsRendered(true);
         } else {
             const timer = setTimeout(() => setIsRendered(false), 300); // transition 시간과 일치
             return () => clearTimeout(timer);
         }
-    }, [isOpen]);
-    
+    }, [isOpenModal]);
 
-    const closeModal = () => {
-        setBottomSheet({ isOpen: false, type: null });
     
+    const closeModal = () => {
+        setBottomSheet(prev => ({ ...prev, isOpenModal: false })); // isOpen만 false로 변경
+
+        setTimeout(() => {
+            setBottomSheet({ isOpenModal: false, type: null }); // 300ms 후에 type을 null로 변경
+        }, 300); // 애니메이션 시간과 맞춤
+
         if (type === "housing") {
             setSelectedType(housingType);
         } 
-        if (type == "university") {
+        if (type === "university") {
             setSelectedTypeNum(university);
         }
-        if (type == "contract") {
+        if (type === "contract") {
             setSelectedContractState(contractType);
-            setDepositRangeState([depositMin,depositMax]);
-            setMonthlyRentRange([monthlyRentMin,monthlyRentMax]);
+            setDepositRangeState([depositMin, depositMax]);
+            setMonthlyRentRange([monthlyRentMin, monthlyRentMax]);
             setMaintenanceCostState(inMaintenanceCost);
         }
     };
-    
-    if (!isOpen) return null;
 
     // type에 따른 제목 설정
     const titleMap: Record<NonNullable<typeof type>, string> = {
@@ -73,9 +73,9 @@ const ModalBottomSheet = () => {
 
     return (
         <>
-        <div className={`${styles.overlay} ${isOpen ? styles.open : ""}`} 
+        <div className={`${styles.overlay} ${isOpenModal ? styles.open : ""}`} 
                  onClick={closeModal} />
-        <div className={`${styles.sheet} ${isOpen ? styles.open : ""}`}>
+        <div className={`${styles.sheet} ${isOpenModal ? styles.open : ""}`}>
             <div className={styles.sheet_header}>
                 <div className={styles.header_divider}></div>
             </div>

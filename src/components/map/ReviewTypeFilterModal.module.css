@@ -1,5 +1,5 @@
 .content {
-    margin: 8px 0;
+    margin: 10px 0;
     padding: 0;
     width: 100%;
     height: 100%;
@@ -15,6 +15,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
 }
 
 .unselect_btn {
@@ -29,7 +30,6 @@
     letter-spacing: -0.6px;
     line-height: 22px;
     color: var(--white);
-    margin: 8px 0;
 }
 
 .select_btn {
@@ -44,5 +44,4 @@
     letter-spacing: -0.6px;
     line-height: 22px;
     color: var(--white);
-    margin: 8px 0;
 }

@@ -1,0 +1,149 @@
+/* src/styles/dormitory/DormitoryAmenities.module.css */
+.container {
+  background-color: var(--white);
+  padding: 0 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  padding: 8.75vh 0 1.5vh;
+  position: relative;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  margin-left: -0.5rem;
+  z-index: 1;
+}
+
+.progressBar {
+  width: 100%;
+  height: 0.2rem;
+  background-color: var(--color-gray20);
+  border-radius: 2px;
+  margin: 2.5rem 0 1rem;
+}
+
+.progressFill {
+  width: 50%;
+  height: 0.2rem;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+.header h1 {
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+}
+
+.facilitiesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.facilitySection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.facilityTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  margin: 0 0 0 0.25rem;
+}
+
+.optionsContainer {
+  display: flex;
+  gap: 0.38rem;
+}
+
+.optionButton {
+  padding: 0.75rem 0.81rem;
+  border: 1px solid var(--color-gray20);
+  border-radius: 12px;
+  background-color: var(--white);
+  font-size: 1rem;
+  color: var(--color-gray40);
+  cursor: pointer;
+}
+
+.optionButton.selected {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: #fff7f4;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.75rem;
+  display: flex;
+  gap: 0.38rem;
+  max-width: 393px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background-color: var(--white);
+}
+
+.prevButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--color-gray20);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--color-gray60);
+  cursor: pointer;
+}
+
+.nextButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--color-gray40);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.nextButton:disabled {
+  cursor: not-allowed;
+}
+
+.nextButton.enabled {
+  background-color: var(--primary-color);
+}
+
+.scrollTopButton {
+  position: absolute;
+  bottom: 120px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 25px;
+  background-color: var(--white);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  z-index: 100;
+  transform: rotate(90deg);
+}

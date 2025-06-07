@@ -1,0 +1,243 @@
+/* 모달 오버레이 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+/* 모달 컨테이너 */
+.modalContainer {
+  width: 100%;
+  max-width: 393px;
+  background-color: var(--white);
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  padding: 0.62rem 1.5rem 2.75rem 1.5rem;
+  box-sizing: border-box;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 모달 헤더 */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 0.5rem 0 1.13rem;
+}
+
+/* 핸들바 */
+.handleBar {
+  width: 50px;
+  height: 5px;
+  background-color: var(--block-popup);
+  border-radius: 100px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 모달 제목 */
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
+}
+
+/* 닫기 버튼 */
+.closeButton {
+  position: absolute;
+  right: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+/* 컨텐츠 영역 */
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* 초성 선택 영역 */
+.initial_wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.initial_btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--block-unactive-btn);
+  color: var(--color-gray20);
+  cursor: pointer;
+}
+
+.selected_initial_btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--block-selected);
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.unselected_initial_btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--block-unactive-btn);
+  color: var(--color-gray60);
+  cursor: pointer;
+}
+
+/* 대학교 슬라이더 영역 */
+.uni_slider {
+  position: relative;
+  margin-top: 20px;
+}
+
+.uni_wrap {
+  flex: 1;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.uni_btn {
+  width: 160px;
+  height: 220px;
+  padding: 16px;
+  background-color: var(--white);
+  border: 1px solid var(--color-gray20);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.selected_uni_btn {
+  background-color: var(--block-selected);
+  border: 1px solid var(--primary-color);
+}
+
+.uni_title {
+  font-size: 16px;
+  letter-spacing: -0.6px;
+  line-height: 150%;
+  color: var(--black);
+  text-align: center;
+}
+
+.uni_campus {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  letter-spacing: -0.6px;
+  line-height: 150%;
+  color: var(--color-gray60);
+  text-align: center;
+}
+
+.selected_text {
+  color: var(--primary-color);
+}
+
+/* 하단 버튼 영역 */
+.btn_content {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  gap: 6px;
+}
+
+.reset_btn {
+  width: 49%;
+  height: 54px;
+  border: 1px solid var(--color-gray40);
+  border-radius: 14px;
+  background-color: var(--white);
+  font-size: 16px;
+  letter-spacing: -0.6px;
+  line-height: 22px;
+  color: var(--color-gray40);
+  cursor: pointer;
+}
+
+.reset_btn_active {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.confirm_btn {
+  width: 49%;
+  height: 54px;
+  border: none;
+  border-radius: 14px;
+  background-color: var(--color-gray40);
+  font-size: 16px;
+  letter-spacing: -0.6px;
+  line-height: 22px;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.confirm_btn_active {
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+/* Slick slider 커스텀 스타일 */
+:global(.slick-dots) {
+  bottom: -25px;
+}
+
+:global(.slick-dots li button:before) {
+  font-size: 8px;
+  color: var(--color-gray40);
+}
+
+:global(.slick-dots li.slick-active button:before) {
+  color: var(--primary-color);
+}
+
+:global(.center .slick-slide) {
+  opacity: 0.6;
+}
+
+:global(.center .slick-center) {
+  opacity: 1;
+}

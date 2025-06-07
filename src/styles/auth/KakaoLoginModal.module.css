@@ -13,33 +13,63 @@
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   max-width: 360px;
-  background-color: var(--white);
+  height: 10.9rem;
+  background-color: white;
   border-radius: 24px 24px 0 0;
-  padding: 20px 16px;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  padding: 0 1rem;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modalHandle {
+  width: 3.125rem;
+  height: 0.3125rem;
+  background-color: #dadee8;
+  border-radius: 2px;
+  position: absolute;
+  top: 0.62rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .kakaoButton {
+  display: flex;
   width: 100%;
-  height: 52px;
+  height: 3.5rem;
+  padding: 1rem;
+  justify-content: center;
+  align-items: center;
   background-color: #fee500;
   border: none;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  border-radius: 13px;
+  gap: 0.62rem;
   cursor: pointer;
+  margin-top: 2.5rem;
 }
 
 .kakaoButton img {
-  width: 24px;
-  height: 24px;
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 .kakaoButton span {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
-  color: #000000;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--gray-dark-hover);
 }

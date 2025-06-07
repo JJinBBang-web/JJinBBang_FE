@@ -12,88 +12,122 @@
   z-index: 1000;
 }
 
-.modal {
+.container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 393px;
+  max-width: 360px;
+  height: 30.8rem;
   background-color: var(--white);
   border-radius: 24px 24px 0 0;
-  padding: 32px 16px;
   position: relative;
+  animation: slideUp 0.3s ease-out;
+  padding: 0 1rem;
 }
 
-.slideBar {
-  width: 36px;
-  height: 4px;
-  background-color: var(--color-gray20);
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.handleContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0.62rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.modalHandle {
+  width: 3.125rem;
+  height: 0.3125rem;
+  background-color: #e5e8eb;
   border-radius: 2px;
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
-.modal h1 {
-  font-size: 24px;
+.title {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--black);
-  margin: 0 0 8px 0;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  margin: 0 0 0.2rem 0.5rem;
 }
 
 .description {
-  font-size: 14px;
-  line-height: 20px;
   color: var(--color-gray60);
-  margin: 0 0 32px 0;
-  white-space: pre-line;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin: 0 0 1.5rem 0.5rem;
 }
 
 .termsList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 32px;
 }
 
 .termItem {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 16px;
   background: none;
   border: none;
-  border-radius: 16px;
   cursor: pointer;
 }
 
-.checkIcon {
-  width: 24px;
-  height: 24px;
-  margin-right: 12px;
+.termItem:first-child span {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+}
+
+.termItem:not(:first-child) {
+  margin-bottom: 1.5rem;
 }
 
 .termItem span {
   flex: 1;
   text-align: left;
-  font-size: 16px;
-  color: var(--black);
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
 }
 
-.arrowIcon {
-  width: 24px;
-  height: 24px;
+.separator {
+  width: calc(100% - 1rem);
+  height: 1.5px;
+  background-color: var(--color-gray10);
+  margin: 1rem auto;
+}
+
+.checkIcon {
+  margin-right: 0.75rem;
 }
 
 .confirmButton {
-  width: 100%;
-  height: 52px;
-  border: none;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
+  width: calc(100% - 2rem);
+  height: 3.375rem;
+  position: absolute;
   background-color: var(--color-gray40);
-  color: var(--white);
-  transition: background-color 0.2s ease;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
+  border: none;
+  border-radius: 13px;
+  align-self: center;
+  cursor: pointer;
+  bottom: 2.75rem;
+  left: 1rem;
 }
 
 .confirmButton.active {

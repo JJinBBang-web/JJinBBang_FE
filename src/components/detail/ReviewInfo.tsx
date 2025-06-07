@@ -14,30 +14,49 @@ interface Props {
 }
 
 const ReviewInfo: React.FC<Props> = ({review}) => {
-    const [isLiked, setIsLiked] = useState(review.basicInfo.liked);
-    const [likeCount, setLikeCount] = useState(review.basicInfo.likesCount);
+    const liked = review.generalReviewInfo?.liked ?? review.domitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
+    const name = review.generalReviewInfo?.name ?? review.domitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
+    const type = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const rating = review.generalReviewInfo?.rating ?? review.domitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
+    const floor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+
+    const [isLiked, setIsLiked] = useState(liked);
+    const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
     
     useEffect(() => {
-        setIsLiked(review.basicInfo.liked);
-        setLikeCount(review.basicInfo.likesCount);
-    },[review.basicInfo.liked, review.basicInfo.likesCount, setIsLiked, setLikeCount]);
+        setIsLiked(liked);
+        setLikeCount(review.reviewInfo.likesCount);
+    },[liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
 
     return (
         <div className={styles.content}>
             <div className={styles.typeAndLike}>
                 <div className={styles.buildingContent}>
-                    <div className={styles.buildingType}>{review.building.type}</div>
-                    {
-                        review.basicInfo.contractType == "전세" ?
-                        <div className={styles.buildingType}>
-                            {`${review.basicInfo.contractType} ${review.basicInfo.deposit}`}
-                        </div>
+                    {review.generalReviewInfo && (
+                        review.generalReviewInfo.contractType == "전세" ?
+                            <>
+                                <div className={styles.buildingType}>{type}</div>
+                                <div className={styles.buildingType}>
+                                    {`${review.generalReviewInfo.contractType} ${review.generalReviewInfo.deposit}`}
+                                </div>
+                            </>
                         :
-                        <div className={styles.buildingType}>
-                                {`${review.basicInfo.contractType} ${review.basicInfo.deposit}/${review.basicInfo.monthlyRent}`}
-
-                        </div>
-                    }
+                            <>
+                                <div className={styles.buildingType}>{type}</div>
+                                <div className={styles.buildingType}>
+                                        {`${review.generalReviewInfo.contractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.monthlyRent}`}
+                                </div>
+                            </>
+                    )}
+                    {review.domitoryReviewInfo && (
+                        <>
+                            <div className={styles.buildingType}>{type}</div>
+                            <div className={styles.campusType}>{review.domitoryReviewInfo.university}</div>
+                        </>
+                    )}
+                    {review.agencyReviewInfo && (
+                        <div className={styles.agencyType}>{type}</div>
+                    )}
                 </div>
                 <div className={styles.likeContainer}>
                     <img
@@ -57,24 +76,30 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
             </div>
             <div className={styles.textWrap}>
                 <div className={styles.nameAndBtn}>
-                    <p className={styles.buildingName}>{review.building.name}</p>
+                    <p className={styles.buildingName}>{name}</p>
                     <div className={styles.detailBtn}>건물 상세</div>
                 </div>
-                <p className={styles.buildingSize}>{review.basicInfo.floor}, {review.basicInfo.space}m2, 관리비 {review.basicInfo.maintenanceCost}만</p>
+                {review.generalReviewInfo && (
+                    <p className={styles.buildingSize}>{floor}, {review.generalReviewInfo.space}m2, 관리비 {review.generalReviewInfo.maintenanceCost}만</p>
+                )}
+                {review.domitoryReviewInfo && (
+                    <p className={styles.buildingSize}>{floor}, {review.domitoryReviewInfo.capacity}인실, 기숙사비 {review.domitoryReviewInfo.dormFee}만</p>
+
+                )}
             </div>
             <div className={styles.buildingRating}>
-                {[...Array(review.basicInfo.rating)].map((_, index) => (
-                <img src={starIconOn} alt="rate"></img>
-                ))} 
-                {[...Array(5 - Math.round(review.basicInfo.rating))].map((_, index) => (
-                <img src={starIconOff} alt="rate" />
-                ))} 
+                {[...Array(rating)].map((_, index) => (
+                    <img src={starIconOn} alt="rate"></img>
+                    ))} 
+                    {[...Array(5 - Math.round(rating))].map((_, index) => (
+                    <img src={starIconOff} alt="rate" />
+                ))}
             </div>
             <div className={styles.reviewText}>
-                {review.basicInfo.content}
+                {review.reviewInfo.content}
             </div>
             <div className={styles.dateLikeContainer}>
-                <p className={styles.date}>{review.basicInfo.updatedAt.toLocaleDateString("ko-KR")}</p>
+                <p className={styles.date}>{review.reviewInfo.updatedAt.toLocaleDateString("ko-KR")}</p>
                 <div className={styles.likeContainer}>
                     <img className={styles.likeImg} src={heartIcon} alt="heart" />
                     <p className={styles.likeNum}>

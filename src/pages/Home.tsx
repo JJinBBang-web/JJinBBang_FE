@@ -8,81 +8,83 @@ import CampusSlide from "../components/CampusSlide";
 import PreviewReview from "../components/PreviewReview";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import adSense from "../assets/image/adSense.svg";
+import pencil from "../assets/image/pencil.svg";
+import iconRight from "../assets/image/iconRight.svg";
+
 const api = {
   code: 200,
   message: "조회 성공",
   data: {
     reviews: [
-      // {
-      //   dormitoryBasicInfo: {
-      //     id: 1,
-      //     name: "지희관",
-      //     universityName: "경상국립대",
-      //     type: "기숙사",
-      //     floor: 2, // 옥탑방은 0, 반지하는 -1
-      //     space: 26.44,
-      //     DormitoryFee: 10,
-      //     rating: 0,
-      //     liked: true, // false
-      //   },
-      //   reviewInfo: {
-      //     content:
-      //       "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
-      //     keywords: [
-      //       "PO_LO_01",
-      //       "PO_MT_01",
-      //       "PO_MT_04", // ... 필요한 키워드 추가
-      //     ],
-      //     likesCount: 120,
-      //     updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-      //   },
-      //   image: "http://localhost:8080/image/1.jpg",
-      // },
-      // {
-      //   basicInfo: {
-      //     id: 2,
-      //     name: "한솔원룸",
-      //     type: "투룸",
-      //     contractType: "전세",
-      //     deposit: 2000,
-      //     monthlyRent: 0,
-      //     floor: 1,
-      //     space: 35.5,
-      //     maintenanceCost: 5,
-      //     rating: 4,
-      //     liked: false,
-      //   },
-      //   reviewInfo: {
-      //     content: "주변이 조용하고 살기 좋아요.",
-      //     keywords: ["PO_LO_02", "PO_ST_03", "PO_MT_02"],
-      //     likesCount: 18,
-      //     updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-      //   },
-      //   image: campus_img_1,
-      // },
-      // {
-      //   basicInfo: {
-      //     id: 3,
-      //     name: "강남하우스",
-      //     type: "오피스텔",
-      //     contractType: "월세",
-      //     deposit: 1000,
-      //     monthlyRent: 70,
-      //     floor: 5,
-      //     space: 42.7,
-      //     maintenanceCost: 15,
-      //     rating: 5,
-      //     liked: true,
-      //   },
-      //   reviewInfo: {
-      //     content: "채광이 좋고 전망이 멋져요.",
-      //     keywords: ["PO_ST_01", "PO_MT_03", "NE_LO_07"],
-      //     likesCount: 12,
-      //     updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-      //   },
-      //   image: campus_img_1,
-      // },
+      {
+        dormitoryBasicInfo: {
+          id: 1,
+          name: "지희관",
+          universityName: "경상국립대",
+          type: "기숙사",
+          floor: "고층", // 옥탑방은 0, 반지하는 -1
+          space: 26.44,
+          dormitoryFee: 10,
+          rating: 3,
+          liked: true, // false
+        },
+        reviewInfo: {
+          content:
+            "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
+          keywords: [
+            "PO_BD_LO_01",
+            "PO_BD_MT_01",
+            "PO_BD_MT_04", // ... 필요한 키워드 추가
+          ],
+          likesCount: 120,
+          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
+        },
+        image: "http://localhost:8080/image/1.jpg",
+      },
+      {
+        basicInfo: {
+          reviewId: 2,
+          name: "한솔원룸",
+          type: "투룸",
+          contractType: "전세",
+          deposit: 2000,
+          monthlyRent: 0,
+          floor: "저층",
+          space: 35.5,
+          maintenanceCost: 5,
+          rating: 4,
+          liked: false,
+        },
+        reviewInfo: {
+          content: "주변이 조용하고 살기 좋아요.",
+          keywords: ["PO_BD_LO_02", "PO_BD_ST_03", "PO_BD_MT_02"],
+          likesCount: 18,
+          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
+        },
+        image: campus_img_1,
+      },
+      {
+        basicInfo: {
+          reviewId: 3,
+          name: "강남하우스",
+          type: "오피스텔",
+          contractType: "월세",
+          deposit: 1000,
+          monthlyRent: 70,
+          floor: "중층",
+          space: 42.7,
+          maintenanceCost: 15,
+          rating: 5,
+          liked: true,
+        },
+        reviewInfo: {
+          content: "채광이 좋고 전망이 멋져요.",
+          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
+          likesCount: 12,
+          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
+        },
+        image: campus_img_1,
+      },
     ] as any[],
   },
 };
@@ -148,6 +150,19 @@ const Home: React.FC = () => {
         </div>
         <CampusSlide campusList={campusList} />
       </div>
+
+      <div className={styles.safetyContainer}>
+        <img src={pencil} alt="pencil" />
+        <div>
+          <p className={styles.safetyText}>
+            부동산 직거래, 안전하게 할 수 있을까?
+          </p>
+          <p className={styles.safetySubText}>
+            찐빵이와 함께라면 어렵지 않아요!
+          </p>
+        </div>
+        <img src={iconRight} alt="iconRight" />
+      </div>
       <div className={styles.previewReviewContainer}>
         <div className={styles.previewHeader}>
           <p className={styles.previewTitle}>최근 본 찐빵 후기들</p>
@@ -162,9 +177,8 @@ const Home: React.FC = () => {
             return (
               <>
                 <div className={styles.line} />
-
                 <PreviewReview
-                  key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
+                  key={review.basicInfo?.reviewId ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
                   review={review}
                 />
               </>
