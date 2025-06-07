@@ -3,7 +3,7 @@ import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
 
 export const useAuth = () => {
-  const [auth, setAuth] = useRecoilState(authState);
+  const [auth, setAuth] = useRecoilState<AuthState>(authState);
 
   const updateVerificationStatus = (
     status: AuthState['verificationStatus']
@@ -23,7 +23,10 @@ export const useAuth = () => {
 
   return {
     auth,
+    setAuth,
     updateVerificationStatus,
     setEmail,
   };
 };
+
+export default useAuth;

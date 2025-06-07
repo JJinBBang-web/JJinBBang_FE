@@ -29,11 +29,7 @@ const api = {
         },
         reviewInfo: {
           content: "집이 너무 깔끔하고...",
-          keywords: [
-            "PO_LO_01",
-            "PO_MT_01",
-            "PO_MT_04", // ... 필요한 키워드 추가
-          ],
+          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 120,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
@@ -55,7 +51,7 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
-          keywords: ["PO_LO_02", "PO_ST_03", "PO_MT_02"],
+          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 18,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
@@ -77,7 +73,7 @@ const api = {
         },
         reviewInfo: {
           content: "채광이 좋고 전망이 멋져요.",
-          keywords: ["NE_ST_07", "NE_MT_03", "NE_MT_02"],
+          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 12,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
@@ -117,7 +113,7 @@ const Heart: React.FC = () => {
               <div className={styles.line} />
               <img src={emptyCharacterIcon} alt="빈 캐릭터 아이콘" />
               <p className={styles.noReviewText}>
-                앗! 아직 최근 본 찐빵이 없어요!
+                앗! 아직 관심목록이 없어요!
                 <br />
                 지도에서 내 주변 찐빵을 둘러볼까요?
               </p>

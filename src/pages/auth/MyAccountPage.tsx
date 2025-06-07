@@ -1,11 +1,15 @@
 // src/pages/auth/MyAccountPage.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { authState, AuthState } from '../../recoil/auth/atoms';
 import styles from '../../styles/auth/MyAccountPage.module.css';
+import questionIcon from '../../assets/image/questionIcon.svg';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 
 const MyAccountPage: React.FC = () => {
   const navigate = useNavigate();
+  const [auth] = useRecoilState<AuthState>(authState);
 
   return (
     <div className="content">
@@ -15,8 +19,18 @@ const MyAccountPage: React.FC = () => {
         </button>
         <h1>내 계정</h1>
       </header>
-
       <div className={styles.container}>
+        {/* 인증 완료 상태에서는 가이드 div를 표시하지 않음 */}
+        {auth.verificationStatus !== 'verified' && (
+          <div className={styles.guide}>
+            <img
+              src={questionIcon}
+              alt="question"
+              className={styles.guideIcon}
+            />
+            <p>학교 인증을 통해 모든 기능을 무료로 즐겨보세요!</p>
+          </div>
+        )}
         <section
           className={styles.verificationSection}
           onClick={() => navigate('/auth/student/new')}
