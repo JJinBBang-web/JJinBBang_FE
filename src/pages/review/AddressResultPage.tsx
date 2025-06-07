@@ -20,6 +20,7 @@ interface LocationState {
 const AddressResultPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = location.state || {};
   const { housingType } = location.state;
   const { address, buildingName, floor, squareFootage } =
     (location.state as LocationState) || {
@@ -79,7 +80,13 @@ const AddressResultPage: React.FC = () => {
               : "정확한 주소가 맞나요?"}
             <button
               className={styles.searchButton}
-              onClick={() => navigate("/review/address")}
+              onClick={() =>
+                navigate("/review/address", {
+                  state: {
+                    ...locationState,
+                  },
+                })
+              }
             >
               주소 재검색
             </button>
