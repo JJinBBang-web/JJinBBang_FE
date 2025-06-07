@@ -13,7 +13,7 @@
     "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-kakao-maps-sdk": "^1.1.27",
+    "react-kakao-maps-sdk": "^1.2.0",
     "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.3",
@@ -50,8 +50,8 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.15.29",
     "@types/lodash": "^4.17.16",
+    "@types/node": "^22.15.29",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.3",
     "@types/react-slick": "^0.23.13",

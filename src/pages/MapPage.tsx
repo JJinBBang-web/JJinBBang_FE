@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import '../styles/global.css'
 import HousingFilter from '../components/map/HousingFilter';
 import SearchBar from '../components/map/SearchBar';
-import styles from "./Map.module.css";
+import styles from "./MapPage.module.css";
 import FilterBar from '../components/map/FilterBar';
 import ReviewListHeader from '../components/map/ReviewListHeader';
 import Modal from '../components/review/Modal';
@@ -10,6 +10,15 @@ import iconClose from "../assets/image/iconClose.svg"
 import campus_img_1 from "../assets/image/example_image1.png";
 import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
+import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import JBMarker from "../assets/image/JBMarker.svg";
+
+
+interface MarkerData {
+  id: number;
+  latitude: number;
+  longitude: number;
+}
 
 
 const mockup = {
@@ -85,10 +94,33 @@ const mockup = {
     ] as any[],
 }
 
-const Map = () => {
+const MapPage = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSheetVisible, setIsSheetVisible] = useState(true);
+
+    const [markerData, setMarkerData] = useState<MarkerData[]>([
+        {
+            id: 1,
+            latitude: 35.149245,
+            longitude:128.101412,
+        },
+        {
+            id: 2,
+            latitude: 35.148898,
+            longitude: 128.101436,
+        },
+        {
+            id: 3,
+            latitude: 35.150038,
+            longitude: 128.103103,
+        },
+        {
+            id: 4,
+            latitude: 35.147435,
+            longitude: 128.101605,
+        },
+    ]);
 
     const handleOpenModal = () => {
         setIsSheetVisible(false);
@@ -117,6 +149,53 @@ const Map = () => {
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
+            <div className={styles.map}>
+                <Map
+                center={{ lat: 35.148898, lng: 128.101436 }}
+                style={{ width: '100%', height: '100%' }}
+                level={4}
+                draggable
+                zoomable
+                >
+                    <MarkerClusterer
+                        averageCenter={true}
+                        minLevel={4}
+                        styles={[
+                            {
+                            width: "44px",
+                            height: "44px",
+                            borderRadius:"50%",
+                            border:".95px solid var(--white)",
+                            background: "var(--primary-color80)",
+                            color: "var(--white)",
+                            textAlign: "center",
+                            letterSpacing:"-0.6px",
+                            lineHeight:"150%",
+                            fontFamily: "Spoqa Han Sans Neo",
+                            fontSize: "16px",
+                            fontWeight: "500",
+                            display:"flex",
+                            justifyContent:"center",
+                            alignItems:"center",
+                            },
+                        ]}
+                    >
+                        {markerData.map((marker) => (
+                            <MapMarker
+                            key={marker.id}
+                            position={{ lat: marker.latitude, lng: marker.longitude }}
+                            image={{
+                                src: JBMarker, // 마커 이미지 경로
+                                size: {
+                                width: 40,
+                                height: 40,
+                                },
+                            }}
+                            />
+                        ))}
+                    </MarkerClusterer>
+                </Map>
+            </div>
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
                 <SearchBar/>
@@ -190,4 +269,4 @@ const Map = () => {
     )
 }
 
-export default Map;
+export default MapPage;
