@@ -32,11 +32,11 @@ const api = {
           content:
             "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
           keywords: [
-            "PO_LO_01",
-            "PO_MT_01",
-            "PO_MT_04",
-            "PO_MT_04", // ... 필요한 키워드 추가
-            "PO_MT_01",
+            "PO_BD_LO_02",
+            "PO_BD_LO_01",
+            "PO_BD_LO_04",
+            "PO_BD_LO_01", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
           ],
           likesCount: 120,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
@@ -59,7 +59,13 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
-          keywords: ["PO_LO_02", "PO_ST_03", "PO_MT_02", "PO_MT_01"],
+          keywords: [
+            "PO_BD_LO_02",
+            "PO_BD_LO_01",
+            "PO_BD_LO_04",
+            "PO_BD_LO_01", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
+          ],
           likesCount: 18,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
@@ -81,7 +87,13 @@ const api = {
         },
         reviewInfo: {
           content: "채광이 좋고 전망이 멋져요.",
-          keywords: ["PO_ST_01", "NE_LO_07", "PO_MT_01"],
+          keywords: [
+            "PO_BD_LO_02",
+            "PO_BD_LO_01",
+            "PO_BD_LO_04",
+            "PO_BD_LO_01", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
+          ],
           likesCount: 12,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
         },
@@ -175,7 +187,6 @@ const Home: React.FC = () => {
 
         {api.data.reviews.length > 0 ? (
           api.data.reviews.map((review) => {
-
             return (
               <>
                 <div className={styles.line} />

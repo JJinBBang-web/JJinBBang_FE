@@ -9,7 +9,6 @@ import FilterModal from "../components/hartListPage/FilterModal";
 import { isFilterModalOpenState } from "../recoil/hartListPage/isFilterModalOpenState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 
-
 const api = {
   code: 200,
   message: "조회 성공",
@@ -29,7 +28,13 @@ const api = {
         },
         reviewInfo: {
           content: "집이 너무 깔끔하고...",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
+          keywords: [
+            "PO_BD_LO_02",
+            "PO_BD_LO_01",
+            "PO_BD_LO_04",
+            "PO_BD_LO_01", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
+          ],
           likesCount: 120,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
