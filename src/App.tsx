@@ -23,6 +23,7 @@ import DormitoryInputPage from './pages/review/DormitoryInputPage';
 import DormitoryConditionsPage from './pages/review/DormitoryConditionsPage';
 import DormitoryAmenitiesPage from './pages/review/DormitoryAmenitiesPage';
 import FloorInputPage from './pages/review/FloorInputPage';
+import AgencyInputPage from './pages/review/AgencyInputPage';
 import PaymentTypePage from './pages/review/PaymentTypePage';
 import JeonseInputPage from './pages/review/JeonseInputPage';
 import WolseInputPage from './pages/review/WolseInputPage';
@@ -61,6 +62,7 @@ const AppContent: React.FC = () => {
     '/review/dormitory-amenities',
     '/review/result',
     '/review/floor',
+    '/review/agency',
     '/review/price',
     '/review/jeonse',
     '/review/wolse',
@@ -110,6 +112,7 @@ const AppContent: React.FC = () => {
 
           <Route path="result" element={<AddressResultPage />} />
           <Route path="floor" element={<FloorInputPage />} />
+          <Route path="agency" element={<AgencyInputPage />} />
           <Route path="price" element={<PaymentTypePage />} />
           <Route path="jeonse" element={<JeonseInputPage />} />
           <Route path="wolse" element={<WolseInputPage />} />

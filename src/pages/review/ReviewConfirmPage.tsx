@@ -2,7 +2,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { reviewState } from "../../recoil/review/reviewAtoms";
+import {
+  reviewState,
+  defaultReviewState,
+} from "../../recoil/review/reviewAtoms";
 import {
   JjinFilterState,
   JjinAgencyFilterState,
@@ -46,6 +49,7 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
+  console.log(review);
   const filters = useRecoilValue(JjinFilterState);
   const agencyFilters = useRecoilValue(JjinAgencyFilterState);
 
@@ -84,7 +88,7 @@ const ReviewConfirmPage: React.FC = () => {
         addressDetail:
           locationState.address?.jibunAddress || prev.addressDetail || "",
         detailedAddress: locationState.buildingName
-          ? `${locationState.buildingName} ${locationState.floor || "저층"}`
+          ? `${locationState.buildingName}`
           : prev.detailedAddress || "",
         contractType: locationState.paymentType || prev.contractType || "",
         deposit: locationState.priceData?.deposit || prev.deposit || 0,
@@ -97,7 +101,8 @@ const ReviewConfirmPage: React.FC = () => {
       }));
     }
   }, [locationState, setReview]);
-
+  console.log(1, locationState.buildingName);
+  console.log(review);
   // 라벨에 맞는 아이콘 찾기
   const getIconFromLabel = (label: string): string => {
     // 먼저 filters에서 아이콘 찾기 시도
@@ -179,6 +184,7 @@ const ReviewConfirmPage: React.FC = () => {
         setIsSubmitting(false);
         setShowConfirmModal(false);
         navigate("/review/complete");
+        setReview(defaultReviewState);
       }, 1000);
     } catch (error) {
       setIsSubmitting(false);
@@ -207,19 +213,28 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToDetailedAddress = () => {
-    localStorage.setItem("reviewState", JSON.stringify(review));
-    navigate("/review/address/result", {
-      state: {
-        address: {
-          roadAddress: review.address || "",
-          jibunAddress: review.addressDetail || "",
-          buildingName: review.detailedAddress || "",
+    // localStorage.setItem("reviewState", JSON.stringify(review));
+    if (review.housingType === "공인중개사") {
+      navigate("/review/agency", {
+        state: {
+          ...locationState,
+          from: "confirm",
         },
-        buildingName: review.detailedAddress || "",
-        floor: review.floorType || "",
-        from: "confirm",
-      },
-    });
+      });
+    } else {
+      navigate("/review/address/result", {
+        state: {
+          address: {
+            roadAddress: review.address || "",
+            jibunAddress: review.addressDetail || "",
+            buildingName: review.detailedAddress || "",
+          },
+          buildingName: review.detailedAddress || "",
+          floor: review.floorType || "",
+          from: "confirm",
+        },
+      });
+    }
   };
 
   const navigateToContractType = () => {
@@ -380,11 +395,7 @@ const ReviewConfirmPage: React.FC = () => {
             <div
               className={styles.infoItem}
               onClick={() => {
-                if (review.housingType === "공인중개사") {
-                  handleItemClick(navigateToAddress);
-                } else {
-                  handleItemClick(navigateToDetailedAddress);
-                }
+                handleItemClick(navigateToDetailedAddress);
               }}
             >
               <span className={styles.label}>상세 주소</span>
