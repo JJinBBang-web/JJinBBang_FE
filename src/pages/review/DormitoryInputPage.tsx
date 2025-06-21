@@ -104,7 +104,7 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleUniversityClick = () => {
-    setBottomSheet({ isOpenModal: true, type: 'university' });
+    setBottomSheet({ isOpenModal: true, type: "university" });
   };
 
   const handleFloorSelect = (floor: string) => {

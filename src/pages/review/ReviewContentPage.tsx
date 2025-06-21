@@ -56,6 +56,7 @@ const AutoHeightTextarea: React.FC<{
 const ReviewContentPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = (location.state as LocationState) || {};
   const { housingType } = location.state;
   const { photos, advantages, disadvantages, from } =
     (location.state as LocationState) || {};
@@ -121,7 +122,11 @@ const ReviewContentPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === 'confirm') {
-      navigate('/review/confirm');
+      navigate("/review/confirm", {
+        state: {
+          ...location.state,
+        },
+      });
     } else {
       navigate(-1);
     }
