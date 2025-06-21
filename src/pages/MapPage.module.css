@@ -1,0 +1,202 @@
+.content {
+    position: relative;
+    max-width: 393px;
+    width: 100%;
+    height: 100dvh;
+    background-color: var(--block-background);
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+.container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    /* height: 89.5vh; */
+    height: calc(100% - 89px); /* 헤더와 필터바의 높이를 뺀 나머지 */
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    -ms-overflow-style: none; /* IE, Edge 스크롤바 숨기기 */
+    scrollbar-width: none; /* Firefox 스크롤바 숨기기 */
+}
+
+.container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera 스크롤바 숨기기 */
+}
+
+.header_bar {
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 16px;
+    margin-top: 36px;
+    margin-bottom: 6px;
+}
+
+
+/* 모달 */
+.wrap {
+    max-width: 393px;
+    padding: 0px 4px;
+    padding-bottom: 4.7rem;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+}
+.wrap2 {
+    max-width: 393px;
+    padding: 0px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+}
+
+.sheet_header {
+    display: block;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    margin-bottom: 10px;
+}
+.header_divider {
+    width: 50px;
+    height: 5px;
+    border-radius: 100px;
+    background-color: var(--block-popup);
+
+}
+
+.sheet_title_wrap {
+    display: block;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+}
+
+.sheet_info_wrap {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sheet_title {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray80);
+}
+
+.filterWrap{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.filterWrap p {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray40);
+    padding: 0;
+    margin: 0;
+}
+.filterWrap span {
+    padding: 0;
+    margin: 0;
+}
+
+.selectedText {
+    color: var(--primary-color) !important;
+}
+
+.line {
+  width: 100%;
+  height: 20px;
+  border-top: 1.5px solid #eee;
+  margin-top: 20px;
+}
+
+.line:nth-child(1){
+    margin-top: 10px;
+}
+
+.contentWrap {
+    width: 100%;
+    height: 56vh;
+    overflow: scroll;
+}
+
+.sheetWrap {
+    width: 100%;
+    padding-top: 3rem;
+    padding-bottom: 7rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    gap:34px;
+}
+
+.sheetText {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 160%;
+    color: var(--black);
+    text-align: center;
+}
+
+.btnWrap {
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.confirmBtn {
+    width: 100%;
+    height: 54px;
+
+    border: none;
+    border-radius: 14px;
+    background-color: var(--primary-color);
+
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--white);
+}
+
+/*카카오맵*/
+.map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh; /* 모바일 대응 */
+  z-index: 0;
+}

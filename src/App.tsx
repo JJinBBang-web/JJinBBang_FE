@@ -4,7 +4,7 @@ import logo from './logo.svg';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
-import Map from './pages/Map';
+import MapPage from './pages/MapPage';
 import Heart from './pages/HeartListPage';
 import MyPage from './pages/MyPage';
 import Nav from './components/Nav';
@@ -85,7 +85,7 @@ const AppContent: React.FC = () => {
       {showHeaderAndNav}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/map" element={<Map />} />
+        <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myaccount" element={<AccountAuthPage />} />
