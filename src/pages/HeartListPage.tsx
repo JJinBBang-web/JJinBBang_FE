@@ -9,7 +9,6 @@ import FilterModal from "../components/hartListPage/FilterModal";
 import { isFilterModalOpenState } from "../recoil/hartListPage/isFilterModalOpenState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 
-
 const api = {
   code: 200,
   message: "조회 성공",
@@ -21,7 +20,6 @@ const api = {
           name: "지희관",
           universityName: "경상국립대",
           type: "기숙사",
-
           floor: "저층", // 옥탑방은 0, 반지하는 -1
           space: 26.44,
           dormFee: 10,
@@ -30,7 +28,13 @@ const api = {
         },
         reviewInfo: {
           content: "집이 너무 깔끔하고...",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
+          keywords: [
+            "PO_BD_LO_02",
+            "PO_BD_LO_01",
+            "PO_BD_LO_04",
+            "PO_BD_LO_01", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
+          ],
           likesCount: 120,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
@@ -38,13 +42,13 @@ const api = {
       },
       {
         basicInfo: {
-          id: 2,
+          reviewId: 2,
           name: "한솔원룸",
           type: "투룸",
           contractType: "전세",
           deposit: 2000,
           monthlyRent: 0,
-          floor: "저층",
+          floor: "고층",
           space: 35.5,
           maintenanceCost: 5,
           rating: 4,
@@ -52,7 +56,6 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
-
           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 18,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
@@ -61,14 +64,13 @@ const api = {
       },
       {
         basicInfo: {
-          id: 3,
-
+          reviewId: 3,
           name: "강남하우스",
           type: "오피스텔",
           contractType: "월세",
           deposit: 1000,
           monthlyRent: 70,
-          floor: "고층",
+          floor: "중층",
           space: 42.7,
           maintenanceCost: 15,
           rating: 5,
@@ -76,7 +78,6 @@ const api = {
         },
         reviewInfo: {
           content: "채광이 좋고 전망이 멋져요.",
-
           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
           likesCount: 12,
           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),

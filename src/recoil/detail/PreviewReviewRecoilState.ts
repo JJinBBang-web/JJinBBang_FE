@@ -21,8 +21,9 @@ export interface dormitoryBasicInfo {
   type: string;
   university: string;
   floor: string;
-  capacity:number;
-  dormFee : number;
+  space: number; // area -> space 변경
+  capacity: number;
+  dormFee: number;
   rating: number; // 평점
   liked: boolean; // 좋아요 여부
 }
@@ -52,45 +53,48 @@ export interface ReviewPreview {
 
 // 리뷰 프리뷰 상태관리
 export const ReviewPreviewState = atom<ReviewPreview[]>({
-    key : "ReviewPreviewState",
-    default : [{
-        basicInfo : {
-                reviewId: 0,
-                name : "",
-                type : "",
-                contractType: "",
-                deposit: 0, // 보증금
-                monthlyRent: 0, // 월세
-                floor: "", 
-                space: 0.0, // area -> space 변경
-                maintenanceCost: 0,
-                rating: 0,
-                liked: false // false
-        },
-        dormitoryBasicInfo : {
-            id: 0,
-            name: "",
-            type: "",
-            university: "",
-            floor: "",
-            capacity:0,
-            dormFee: 0,
-            rating: 0,
-            liked: false
-        },
-        agencyReviewInfo : {
-            id: 0,
-            name:"",
-            type:"",
-            rating: 0,
-            liked : false
-        },
-        reviewInfo : {
-                content: "",
-                keywords: [],
-                likesCount: 0,
-                updatedAt: new Date(),
-                },
-        image: ""
-    },]
-})
+  key: "ReviewPreviewState",
+  default: [
+    {
+      basicInfo: {
+        reviewId: 0,
+        name: "",
+        type: "",
+        contractType: "",
+        deposit: 0, // 보증금
+        monthlyRent: 0, // 월세
+        floor: "",
+        space: 0.0, // area -> space 변경
+        maintenanceCost: 0,
+        rating: 0,
+        liked: false, // false
+      },
+      dormitoryBasicInfo: {
+        id: 0,
+        name: "",
+        type: "",
+        university: "",
+        floor: "",
+        space: 0.0,
+        capacity: 0,
+        dormFee: 0,
+        rating: 0,
+        liked: false,
+      },
+      agencyReviewInfo: {
+        id: 0,
+        name: "",
+        type: "",
+        rating: 0,
+        liked: false,
+      },
+      reviewInfo: {
+        content: "",
+        keywords: [],
+        likesCount: 0,
+        updatedAt: new Date(),
+      },
+      image: "",
+    },
+  ],
+});

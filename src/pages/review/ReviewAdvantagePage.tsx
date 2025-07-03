@@ -29,7 +29,9 @@ const ReviewAdvantagePage: React.FC = () => {
   const { photos, from, advantages, housingType } = locationState || {};
 
   // 두 가지 필터 모두 가져오기
-  const filters = useRecoilValue<FilterCategory[]>(JjinFilterState);
+  const filters = useRecoilValue<FilterCategory[]>(
+    housingType === "공인중개사" ? JjinAgencyFilterState : JjinFilterState
+  );
   const dormFilters = useRecoilValue<FilterCategory[]>(DormFilterState);
   const [review, setReview] = useRecoilState(reviewState);
 
@@ -112,8 +114,12 @@ const ReviewAdvantagePage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
-      navigate('/review/confirm');
+    if (from === "confirm") {
+      navigate("/review/confirm", {
+        state: {
+          ...location.state,
+        },
+      });
     } else {
       navigate(-1);
     }

@@ -243,7 +243,7 @@ const DormitoryInputPage: React.FC = () => {
       </div>
 
       {/* 하나의 모달만 사용 - UniversityCampusSelectModal */}
-      {bottomSheet.isOpenModal && bottomSheet.type === "university" && (
+      {bottomSheet.isOpenModal && bottomSheet.type === 'university' && (
         <UniversityCampusSelectModal />
       )}
 

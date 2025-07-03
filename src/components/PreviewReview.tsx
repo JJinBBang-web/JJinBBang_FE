@@ -19,7 +19,7 @@ const PreviewReview: React.FC<Props> = ({
   const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type;
   const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating;
   const floor = review.basicInfo?.floor ?? review.dormitoryBasicInfo?.floor;
-  const space = review.basicInfo?.space;
+  const space = review.basicInfo?.space ?? review.dormitoryBasicInfo?.space;
 
   const [isLiked, setIsLiked] = useState(liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
@@ -87,13 +87,17 @@ const PreviewReview: React.FC<Props> = ({
         </div>
       </div>
       <PreviewReviewContent
-
-        reviewInfo={{
+                reviewInfo={{
           content: review.reviewInfo.content,
           keywords: review.reviewInfo.keywords,
           likesCount: likeCount,
-          updatedAt: review.reviewInfo.updatedAt,
-        }}
+          updatedAt: {
+                  content: review.reviewInfo.content,
+                  keywords: review.reviewInfo.keywords,
+                  likesCount: likeCount,
+                  updatedAt: review.reviewInfo.updatedAt,
+        }.updatedAt,
+                }}
       />
     </div>
   );

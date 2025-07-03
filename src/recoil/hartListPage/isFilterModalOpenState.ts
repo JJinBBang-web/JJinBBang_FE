@@ -4,4 +4,3 @@ export const isFilterModalOpenState = atom<boolean>({
   key: "isFilterModalOpenState",
   default: false,
 });
-
