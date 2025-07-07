@@ -224,7 +224,7 @@ const MapPage = () => {
                                             <span>•</span>최신순
                                         </p>
                                         <p>
-                                            <span>•</span>좋아요순
+                                            <span>•</span>좋아요
                                         </p>
                                         <p>
                                             <span>•</span>별점순
