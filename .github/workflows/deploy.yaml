@@ -20,6 +20,9 @@ jobs:
       
       - name: Run Lint
         run: npm run lint
+
+      - name: Build
+        run: CI=false npm run build
       
       - name: Run build
         run: npm ci && npm run build
