@@ -1,0 +1,31 @@
+name: Deploy Ci Cd
+
+on:
+  push:
+    branches: ["deploy"]
+  pull_request:
+    branches: [ "deploy" ]
+
+jobs:
+  build:
+    name: react build & deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: checkout Github Action
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run Lint
+        run: npm run lint
+      
+      - name: Run build
+        run: npm ci && npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with: 
+          personal_token: ${{ secrets.ACCESS_TOKEN }}
+          publish_dir: build
