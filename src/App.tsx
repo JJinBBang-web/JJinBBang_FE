@@ -38,6 +38,7 @@ import ModalBottomSheet from './components/util/ModalBottomSheet';
 import Review from './pages/Review';
 import Building from './pages/Building';
 import ReportPage from './pages/ReportPage';
+import KakaoCallback1 from './pages/KakaoCallBack';
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const AppContent: React.FC = () => {
     <>
       {showHeaderAndNav}
       <Routes>
+        <Route path="/login/kakao" element={<KakaoCallback1 />} />
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
@@ -128,9 +130,9 @@ const AppContent: React.FC = () => {
           <Route path="content" element={<ReviewContentPage />} />
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-        <Route path='/building' element={<Building/>}/>
-        <Route path='/building/rv' element={<Review/>}/>
-        <Route path="/building/rv/report" element={<ReportPage/>} />
+        <Route path="/building" element={<Building />} />
+        <Route path="/building/rv" element={<Review />} />
+        <Route path="/building/rv/report" element={<ReportPage />} />
         <Route path="/building" element={<Building />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
@@ -142,7 +144,7 @@ const App: React.FC = () => {
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <BrowserRouter >
           <AppContent />
           <ModalBottomSheet />
         </BrowserRouter>
