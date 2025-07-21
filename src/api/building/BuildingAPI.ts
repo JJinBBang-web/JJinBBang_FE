@@ -1,4 +1,5 @@
 import {BuildingResponse} from "../../types/entity/building/BuilidngInterface"
+import {BuidlingReviewListResponse} from "../../types/entity/building/BuildingReviewLIstInterface"
 import { api } from "../api";
 
 
@@ -22,6 +23,41 @@ export class BuildingAPI {
       return response.data.data;
     } catch (error) {
       console.error("BuildingAPI.getBuildingDetail error:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * 리뷰 목록 리스트 조회 API
+   * @param {string} buildingId - 건물 ID
+   * @param options - 쿼리 파라미터
+   */
+  static async getReviewList(
+    buildingId: string,
+    options?: {
+      num?: number;
+      page?: number;
+      sortBy?: 'LATEST' | 'LIKES' | 'STARS';
+      isAgency?: boolean;
+    }
+  ): Promise<BuidlingReviewListResponse> {
+    try {
+      const response = await api.get(`/api/v1/building/${buildingId}/review`, {
+        params: {
+          num: options?.num ?? 10,
+          page: options?.page ?? 1,
+          sortBy: options?.sortBy ?? 'LATEST',
+          isAgency: options?.isAgency ?? false,
+        },
+      });
+
+      if (!response.data || response.data.code !== 200) {
+        throw new Error("리뷰 목록 조회 실패");
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("BuildingAPI.getReviewList error:", error);
       throw error;
     }
   }
