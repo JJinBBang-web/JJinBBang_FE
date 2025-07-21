@@ -39,7 +39,7 @@ export interface agencyReviewInfo {
 export interface ReviewInfo {
     content: string;
     keywords: string[];
-    likesCount: number;
+    likeCount: number;
     updatedAt: Date;
 }
 
@@ -91,7 +91,7 @@ export const ReviewPreviewState = atom<ReviewPreview[]>({
       reviewInfo: {
         content: "",
         keywords: [],
-        likesCount: 0,
+        likeCount: 0,
         updatedAt: new Date(),
       },
       image: "",
