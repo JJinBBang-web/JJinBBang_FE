@@ -52,12 +52,12 @@ const ReveiwContractInfo:React.FC<Props> = ({review}) => {
                 <hr/>
                 <div className={styles.infoWrap2}>
                     <p className={styles.subTitle}>거주 지역</p>
-                    <p className={styles.infoContent}>{review.conditions?.currnet_region}</p>
+                    <p className={styles.infoContent}>{review.conditions?.currentRegion}</p>
                 </div>
                 <hr/>
                 <div className={styles.infoWrap2}>
                     <p className={styles.subTitle}>학기 성적</p>
-                    <p className={styles.infoContent}>{review.conditions?.currnet_grade}</p>
+                    <p className={styles.infoContent}>{review.conditions?.currentGrade}</p>
                 </div>
                 </>
             )}

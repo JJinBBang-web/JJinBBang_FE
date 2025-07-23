@@ -2,7 +2,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, matchPath, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import MapPage from './pages/MapPage';
 import Heart from './pages/HeartListPage';
@@ -45,38 +45,51 @@ const queryClient = new QueryClient();
 const AppContent: React.FC = () => {
   const location = useLocation();
 
-  const showHeaderAndNav = ![
-    '/auth/verify',
-    '/auth/signup',
-    '/auth/login',
+  // const showHeaderAndNav = ![
+  //   '/auth/verify',
+  //   '/auth/signup',
+  //   '/auth/login',
+  //   '/myaccount',
+  //   '/auth/student/verify',
+  //   '/auth/student/new',
+  //   '/auth/student/current',
+  //   '/auth/kakao',
+  //   '/auth/kakao/callback',
+  //   '/auth/student/email-verification',
+  //   '/review/type',
+  //   '/review/input-address',
+  //   '/review/address',
+  //   '/review/dormitory',
+  //   '/review/dormitory-conditions',
+  //   '/review/dormitory-amenities',
+  //   '/review/result',
+  //   '/review/floor',
+  //   '/review/agency',
+  //   '/review/price',
+  //   '/review/jeonse',
+  //   '/review/wolse',
+  //   '/review/room-info',
+  //   '/review/filter-ad',
+  //   '/review/filter-disad',
+  //   '/review/content',
+  //   '/review/confirm',
+  //   '/building/:buildingId',
+  //   '/building/:buildingId/rv',
+  //   '/building/:buildingId/rv/report',
+  // ].includes(location.pathname);
+
+  const hiddenNavPaths = [
+    '/auth/*',
     '/myaccount',
-    '/auth/student/verify',
-    '/auth/student/new',
-    '/auth/student/current',
-    '/auth/kakao',
-    '/auth/kakao/callback',
-    '/auth/student/email-verification',
-    '/review/type',
-    '/review/input-address',
-    '/review/address',
-    '/review/dormitory',
-    '/review/dormitory-conditions',
-    '/review/dormitory-amenities',
-    '/review/result',
-    '/review/floor',
-    '/review/agency',
-    '/review/price',
-    '/review/jeonse',
-    '/review/wolse',
-    '/review/room-info',
-    '/review/filter-ad',
-    '/review/filter-disad',
-    '/review/content',
-    '/review/confirm',
+    '/review/*',
     '/building/:buildingId',
-    '/building/:buildingId/rv',
-    '/building/:buildingId/rv/report',
-  ].includes(location.pathname);
+    '/building/review/:reviewId',
+    '/building/review/:reviewId/report',
+  ];
+
+  const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
+    matchPath({ path: pattern, end: false }, location.pathname)
+  );
 
   return (
     <>
@@ -128,8 +141,8 @@ const AppContent: React.FC = () => {
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
        <Route path="/building/:buildingId" element={<Building />} />
-      <Route path="/building/:buildingId/rv" element={<Review />} />
-      <Route path="/building/:buildingId/rv/report" element={<ReportPage />} />
+      <Route path="/building/review/:reviewId" element={<Review />} />
+      <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

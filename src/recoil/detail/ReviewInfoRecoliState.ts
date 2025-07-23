@@ -37,9 +37,9 @@ export interface AgencyInfo {
 
 export interface reviewInfo {
     content: string,
-    keywords: null,
-    likesCount: number,
-    updatedAt: Date
+    keywords: string[] | null,
+    likeCount: number,
+    updateAt: string
 }
 
 export interface ReviewImages {
@@ -72,8 +72,8 @@ export interface Keywords {
 }
 
 export interface Conditions {
-    currnet_region : string,
-    currnet_grade : string,
+    currentRegion : string,
+    currentGrade : string,
 }
 
 export interface Facilities {
@@ -133,8 +133,8 @@ export const ReviewInfoState = atom<Review>({
         reviewInfo : {
             content: "",
             keywords: null,
-            likesCount: 0,
-            updatedAt: new Date()
+            likeCount: 0,
+            updateAt: ""
         },
         reviewImages: {
             count: 0,
@@ -154,8 +154,8 @@ export const ReviewInfoState = atom<Review>({
             negative : []
         },
         conditions: {
-            currnet_region: "",
-            currnet_grade: ""
+            currentRegion: "",
+            currentGrade: ""
         },
         facilities:{
             private: [],
