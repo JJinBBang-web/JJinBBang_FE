@@ -14,11 +14,15 @@ export class BuildingAPI {
     try {
       const response = await api.get(`/api/v1/building/${buildingId}`, {
         params: { isAgency },
+        useAuth: true,
       });
 
       if (!response.data || response.data.code !== 200) {
         throw new Error("건물 상세 조회 실패");
       }
+
+      console.log("✅ Axios Response:", response.data);
+
 
       return response.data.data;
     } catch (error) {
@@ -49,6 +53,7 @@ export class BuildingAPI {
           sortBy: options?.sortBy ?? 'LATEST',
           isAgency: options?.isAgency ?? false,
         },
+        useAuth: true,
       });
 
       if (!response.data || response.data.code !== 200) {

@@ -73,12 +73,9 @@ const AppContent: React.FC = () => {
     '/review/filter-disad',
     '/review/content',
     '/review/confirm',
-    '/building',
-    '/building/rv',
-    '/building/',
-    '/building/rv/',
-    '/building/rv/report',
-    '/building/rv/report/'
+    '/building/:buildingId',
+    '/building/:buildingId/rv',
+    '/building/:buildingId/rv/report',
   ].includes(location.pathname);
 
   return (
@@ -130,10 +127,9 @@ const AppContent: React.FC = () => {
           <Route path="content" element={<ReviewContentPage />} />
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-        <Route path="/building" element={<Building />} />
-        <Route path="/building/rv" element={<Review />} />
-        <Route path="/building/rv/report" element={<ReportPage />} />
-        <Route path="/building" element={<Building />} />
+       <Route path="/building/:buildingId" element={<Building />} />
+      <Route path="/building/:buildingId/rv" element={<Review />} />
+      <Route path="/building/:buildingId/rv/report" element={<ReportPage />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
