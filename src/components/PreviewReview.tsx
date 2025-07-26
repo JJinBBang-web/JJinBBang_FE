@@ -22,12 +22,12 @@ const PreviewReview: React.FC<Props> = ({
   const space = review.basicInfo?.space ?? review.dormitoryBasicInfo?.space;
 
   const [isLiked, setIsLiked] = useState(liked);
-  const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
+  const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
   useEffect(() => {
     setIsLiked(liked);
-    setLikeCount(review.reviewInfo.likesCount);
-  }, [liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
+    setLikeCount(review.reviewInfo.likeCount);
+  }, [liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
   return (
     <div
@@ -89,11 +89,11 @@ const PreviewReview: React.FC<Props> = ({
       <PreviewReviewContent
                 reviewInfo={{
           content: review.reviewInfo.content,
-          keywords: review.reviewInfo.keywords,
+          keywords: review.reviewInfo.keyword,
           likesCount: likeCount,
           updatedAt: {
                   content: review.reviewInfo.content,
-                  keywords: review.reviewInfo.keywords,
+                  keywords: review.reviewInfo.keyword,
                   likesCount: likeCount,
                   updatedAt: review.reviewInfo.updatedAt,
         }.updatedAt,
