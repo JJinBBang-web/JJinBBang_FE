@@ -117,8 +117,8 @@ const MapPage = () => {
         filter.depositMax 
         ? filter.depositMax === 50 ? null : formatDepositValue(filter.depositMax) 
         : null;
-    const depositMin = filter.depositMin ? formatDepositValue(filter.depositMin) : 0;
-    const monthlyRentMin = filter.monthlyRentMin ? formatMonthlyRentValue(filter.monthlyRentMin)! : 0;
+    const depositMin = filter.depositMin ? formatDepositValue(filter.depositMin) : null;
+    const monthlyRentMin = filter.monthlyRentMin ? formatMonthlyRentValue(filter.monthlyRentMin)! : null;
     const monthlyRentMax = 
         filter.monthlyRentMax 
         ? filter.monthlyRentMax === 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 

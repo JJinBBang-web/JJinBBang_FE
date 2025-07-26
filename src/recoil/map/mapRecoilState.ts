@@ -60,9 +60,9 @@ export const filterState = atom<FilterStateType>({
         reviewType: "후기별",
         university: null,
         contractType: "ALL",
-        depositMin : 0,
+        depositMin : null,
         depositMax : null,
-        monthlyRentMin : 0,
+        monthlyRentMin : null,
         monthlyRentMax : null,
         inMaintenanceCost : false,
         reviewKeyword : [],
@@ -72,12 +72,12 @@ export const filterState = atom<FilterStateType>({
 // 계약/가격 조건 필터 상태
 export const depositRangeState = atom<[number|null, number|null]>({
     key : "depositRangeState",
-    default : [0, null],
+    default : [null, null],
 })
 
 export const monthlyRentRangeState = atom<[number|null, number|null]>({
     key : "monthlyRentRangeState",
-    default : [0, null],
+    default : [null, null],
 })
 
 
