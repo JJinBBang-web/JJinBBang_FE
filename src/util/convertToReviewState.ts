@@ -21,7 +21,7 @@ export function convertToReviewState(data: BuildingReviewResponse): ReviewState 
       : data.generalReviewInfo?.floor ?? '',
     contractType: data.generalReviewInfo?.contractType ?? '',
     deposit: data.generalReviewInfo?.deposit ?? 0,
-    monthlyRent: data.generalReviewInfo?.monthlyRent ?? 0,
+    monthlyRent: data.generalReviewInfo?.price ?? 0,
     managementFee: data.generalReviewInfo?.maintenanceCost ?? 0,
     rating:
       data.generalReviewInfo?.rating ??

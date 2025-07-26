@@ -14,6 +14,6 @@ export const contractTypeToKorean: Record<string, string> = {
 
 export const floorToKorean: Record<string, string> = {
   HIGH: '고층',
-  MIDDLE: '중층',
+  MID: '중층',
   LOW: '저층',
 };

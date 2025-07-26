@@ -51,7 +51,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
-                                        {`${constractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.monthlyRent}`}
+                                        {`${constractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.price}`}
                                 </div>
                             </>
                     )}

@@ -10,8 +10,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
 import Footer from '../components/detail/Footer';
 import ReportButton from '../components/util/ReportButton';
-import exampleImage1 from '../assets/image/example_image1.png';
-import exampleImage2 from '../assets/image/example_image2.png';
 import ReviewFacilitiesInfo from '../components/detail/ReviewFacilitiesInfo';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useReviewDetail } from '../hooks/useReviewDetail';
