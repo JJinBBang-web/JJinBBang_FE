@@ -76,6 +76,60 @@ import NE_AG_SO_05 from "../assets/image/NE_AG_SO_05.svg";
 import NE_AG_SO_06 from "../assets/image/NE_AG_SO_06.svg";
 import NE_AG_SO_07 from "../assets/image/NE_AG_SO_07.svg";
 
+import PO_DO_LO_01 from "../assets/image/dorm/PO_DO_LO_01.svg";
+import PO_DO_LO_02 from "../assets/image/dorm/PO_DO_LO_02.svg";
+import PO_DO_LO_03 from "../assets/image/dorm/PO_DO_LO_03.svg";
+import PO_DO_LO_04 from "../assets/image/dorm/PO_DO_LO_04.svg";
+import PO_DO_LO_05 from "../assets/image/dorm/PO_DO_LO_05.svg";
+import PO_DO_LO_06 from "../assets/image/dorm/PO_DO_LO_06.svg";
+
+import PO_DO_ST_01 from "../assets/image/dorm/PO_DO_ST_01.svg";
+import PO_DO_ST_02 from "../assets/image/dorm/PO_DO_ST_02.svg";
+import PO_DO_ST_03 from "../assets/image/dorm/PO_DO_ST_03.svg";
+import PO_DO_ST_04 from "../assets/image/dorm/PO_DO_ST_04.svg";
+import PO_DO_ST_05 from "../assets/image/dorm/PO_DO_ST_05.svg";
+import PO_DO_ST_06 from "../assets/image/dorm/PO_DO_ST_06.svg";
+import PO_DO_ST_07 from "../assets/image/dorm/PO_DO_ST_07.svg";
+
+import PO_DO_MT_01 from "../assets/image/dorm/PO_DO_MT_01.svg";
+import PO_DO_MT_02 from "../assets/image/dorm/PO_DO_MT_02.svg";
+import PO_DO_MT_03 from "../assets/image/dorm/PO_DO_MT_03.svg";
+import PO_DO_MT_04 from "../assets/image/dorm/PO_DO_MT_04.svg";
+import PO_DO_MT_05 from "../assets/image/dorm/PO_DO_MT_05.svg";
+import PO_DO_MT_06 from "../assets/image/dorm/PO_DO_MT_06.svg";
+import PO_DO_MT_07 from "../assets/image/dorm/PO_DO_MT_07.svg";
+import PO_DO_MT_08 from "../assets/image/dorm/PO_DO_MT_08.svg";
+import PO_DO_MT_09 from "../assets/image/dorm/PO_DO_MT_09.svg";
+import PO_DO_MT_10 from "../assets/image/dorm/PO_DO_MT_10.svg";
+import PO_DO_MT_11 from "../assets/image/dorm/PO_DO_MT_11.svg";
+
+import NE_DO_LO_01 from "../assets/image/dorm/NE_DO_LO_01.svg";
+import NE_DO_LO_02 from "../assets/image/dorm/NE_DO_LO_02.svg";
+import NE_DO_LO_03 from "../assets/image/dorm/NE_DO_LO_03.svg";
+import NE_DO_LO_04 from "../assets/image/dorm/NE_DO_LO_04.svg";
+import NE_DO_LO_05 from "../assets/image/dorm/NE_DO_LO_05.svg";
+import NE_DO_LO_06 from "../assets/image/dorm/NE_DO_LO_06.svg";
+
+import NE_DO_ST_01 from "../assets/image/dorm/NE_DO_ST_01.svg";
+import NE_DO_ST_02 from "../assets/image/dorm/NE_DO_ST_02.svg";
+import NE_DO_ST_03 from "../assets/image/dorm/NE_DO_ST_03.svg";
+import NE_DO_ST_04 from "../assets/image/dorm/NE_DO_ST_04.svg";
+import NE_DO_ST_05 from "../assets/image/dorm/NE_DO_ST_05.svg";
+import NE_DO_ST_06 from "../assets/image/dorm/NE_DO_ST_06.svg";
+import NE_DO_ST_07 from "../assets/image/dorm/NE_DO_ST_07.svg";
+
+import NE_DO_MT_01 from "../assets/image/dorm/NE_DO_MT_01.svg";
+import NE_DO_MT_02 from "../assets/image/dorm/NE_DO_MT_02.svg";
+import NE_DO_MT_03 from "../assets/image/dorm/NE_DO_MT_03.svg";
+import NE_DO_MT_04 from "../assets/image/dorm/NE_DO_MT_04.svg";
+import NE_DO_MT_05 from "../assets/image/dorm/NE_DO_MT_05.svg";
+import NE_DO_MT_06 from "../assets/image/dorm/NE_DO_MT_06.svg";
+import NE_DO_MT_07 from "../assets/image/dorm/NE_DO_MT_07.svg";
+import NE_DO_MT_08 from "../assets/image/dorm/NE_DO_MT_08.svg";
+import NE_DO_MT_09 from "../assets/image/dorm/NE_DO_MT_09.svg";
+import NE_DO_MT_10 from "../assets/image/dorm/NE_DO_MT_10.svg";
+import NE_DO_MT_11 from "../assets/image/dorm/NE_DO_MT_11.svg";
+
 export const tagImages: { [key: string]: string } = {
   PO_BD_LO_01,
   PO_BD_LO_02,
@@ -147,6 +201,56 @@ export const tagImages: { [key: string]: string } = {
   NE_AG_SO_05,
   NE_AG_SO_06,
   NE_AG_SO_07,
+
+  PO_DO_LO_01,
+  PO_DO_LO_02,
+  PO_DO_LO_03,
+  PO_DO_LO_04,
+  PO_DO_LO_05,
+  PO_DO_LO_06,
+  PO_DO_ST_01,
+  PO_DO_ST_02,
+  PO_DO_ST_03,
+  PO_DO_ST_04,
+  PO_DO_ST_05,
+  PO_DO_ST_06,
+  PO_DO_ST_07,
+  PO_DO_MT_01,
+  PO_DO_MT_02,
+  PO_DO_MT_03,
+  PO_DO_MT_04,
+  PO_DO_MT_05,
+  PO_DO_MT_06,
+  PO_DO_MT_07,
+  PO_DO_MT_08,
+  PO_DO_MT_09,
+  PO_DO_MT_10,
+  PO_DO_MT_11,
+
+  NE_DO_LO_01,
+  NE_DO_LO_02,
+  NE_DO_LO_03,
+  NE_DO_LO_04,
+  NE_DO_LO_05,
+  NE_DO_LO_06,
+  NE_DO_ST_01,
+  NE_DO_ST_02,
+  NE_DO_ST_03,
+  NE_DO_ST_04,
+  NE_DO_ST_05,
+  NE_DO_ST_06,
+  NE_DO_ST_07,
+  NE_DO_MT_01,
+  NE_DO_MT_02,
+  NE_DO_MT_03,
+  NE_DO_MT_04,
+  NE_DO_MT_05,
+  NE_DO_MT_06,
+  NE_DO_MT_07,
+  NE_DO_MT_08,
+  NE_DO_MT_09,
+  NE_DO_MT_10,
+  NE_DO_MT_11,  
 };
 
 export const tagMessages: { [key: string]: string } = {
@@ -190,6 +294,33 @@ export const tagMessages: { [key: string]: string } = {
   PO_AG_SO_06: "투명한 계약",
   PO_AG_SO_07: "보장된 사후",
 
+  PO_DO_LO_01: "교통 편리",
+  PO_DO_LO_02: "깨끗한 환경",
+  PO_DO_LO_03: "조용한 주변",
+  PO_DO_LO_04: "편의 가까움",
+  PO_DO_LO_05: "학교 가까움",
+  PO_DO_LO_06: "안전한 주변",
+
+  PO_DO_ST_01: "좋은 채광",
+  PO_DO_ST_02: "좋은 통풍",
+  PO_DO_ST_03: "좋은 방음",
+  PO_DO_ST_04: "세련된 신축",
+  PO_DO_ST_05: "곰팡이 없음",
+  PO_DO_ST_06: "냉난방 좋음",
+  PO_DO_ST_07: "배수,수압 좋음",
+  
+  PO_DO_MT_01: "주차 편리",
+  PO_DO_MT_02: "엘리베이터",
+  PO_DO_MT_03: "쓰레기 용이",
+  PO_DO_MT_04: "입주비 합리",
+  PO_DO_MT_05: "인터넷 용이",
+  PO_DO_MT_06: "정기적 관리",
+  PO_DO_MT_07: "편리한 이사",
+  PO_DO_MT_08: "공용시설 쾌적",
+  PO_DO_MT_09: "통금 없음",
+  PO_DO_MT_10: "휴게시설 충분",
+  PO_DO_MT_11: "규칙 유연",
+
   // ✅ 부정 키워드
   NE_BD_LO_01: "교통 불편",
   NE_BD_LO_02: "환경 나쁨",
@@ -228,6 +359,33 @@ export const tagMessages: { [key: string]: string } = {
   NE_AG_SO_05: "계약 강요",
   NE_AG_SO_06: "부실한 계약",
   NE_AG_SO_07: "미흡한 사후",
+
+  NE_DO_LO_01: "교통 불편",
+  NE_DO_LO_02: "환경 나쁨",
+  NE_DO_LO_03: "시끄러움",
+  NE_DO_LO_04: "생활권 불편",
+  NE_DO_LO_05: "학교 멃",
+  NE_DO_LO_06: "불안한 동네",
+
+  NE_DO_ST_01: "채광 부족",
+  NE_DO_ST_02: "통풍 안됨",
+  NE_DO_ST_03: "방음 안됨",
+  NE_DO_ST_04: "건물 낡음",
+  NE_DO_ST_05: "곰팡이 많음",
+  NE_DO_ST_06: "냉난방 나쁨",
+  NE_DO_ST_07: "배수,수압 약함",
+  
+  NE_DO_MT_01: "주차 불편",
+  NE_DO_MT_02: "계단만 있음",
+  NE_DO_MT_03: "쓰레기 불편",
+  NE_DO_MT_04: "입주비 비쌈",
+  NE_DO_MT_05: "인터넷 느림",
+  NE_DO_MT_06: "관리 부족",
+  NE_DO_MT_07: "불편한 이사",
+  NE_DO_MT_08: "공용시설 불편",
+  NE_DO_MT_09: "통금 있음",
+  NE_DO_MT_10: "휴게시설 부족",
+  NE_DO_MT_11: "규칙 엄격",
 };
 
 export const tagLongMessages: { [key: string]: string } = {
@@ -271,6 +429,33 @@ export const tagLongMessages: { [key: string]: string } = {
   PO_AG_SO_06: "계약 과정이 투명했어요",
   PO_AG_SO_07: "사후 대응이 잘 되었어요",
 
+  PO_DO_LO_01: "교통이 편리해요",
+  PO_DO_LO_02: "주변 환경이 깨끗해요",
+  PO_DO_LO_03: "주변이 조용해요",
+  PO_DO_LO_04: "생활권이 편리해요",
+  PO_DO_LO_05: "학교와 가까워요",
+  PO_DO_LO_06: "주변이 안전해요",
+
+  PO_DO_ST_01: "채광이 좋아요",
+  PO_DO_ST_02: "통풍이 잘 돼요",
+  PO_DO_ST_03: "방음이 잘 돼요",
+  PO_DO_ST_04: "신축이라 세련됐어요",
+  PO_DO_ST_05: "곰팡이가 없어요",
+  PO_DO_ST_06: "냉난방이 잘 돼요",
+  PO_DO_ST_07: "배수와 수압이 좋아요",
+  
+  PO_DO_MT_01: "주차가 편리해요",
+  PO_DO_MT_02: "엘리베이터가 있어요",
+  PO_DO_MT_03: "쓰레기 처리가 편해요",
+  PO_DO_MT_04: "입주비가 합리적이에요",
+  PO_DO_MT_05: "인터넷이 잘 돼요",
+  PO_DO_MT_06: "관리가 정기적이에요",
+  PO_DO_MT_07: "입주가 편했어요",
+  PO_DO_MT_08: "공용시설이 쾌적해요",
+  PO_DO_MT_09: "통금이 없어요",
+  PO_DO_MT_10: "휴게시설이 충분해요",
+  PO_DO_MT_11: "규칙이 유연해요",
+
   // ✅ 부정 키워드
   NE_BD_LO_01: "교통이 불편해요",
   NE_BD_LO_02: "환경이 지저분해요",
@@ -309,4 +494,31 @@ export const tagLongMessages: { [key: string]: string } = {
   NE_AG_SO_05: "계약을 강요했어요",
   NE_AG_SO_06: "계약 내용 안내가 불충분했어요",
   NE_AG_SO_07: "사후 대응이 잘 안되었어요",
+
+  NE_DO_LO_01: "교통이 불편해요",
+  NE_DO_LO_02: "환경이 지저분해요",
+  NE_DO_LO_03: "주변이 시끄러워요",
+  NE_DO_LO_04: "생활권이 불편해요",
+  NE_DO_LO_05: "학교와 멀어요",
+  NE_DO_LO_06: "동네가 안전하지 않아요",
+
+  NE_DO_ST_01: "채광이 부족해요",
+  NE_DO_ST_02: "통풍이 안돼요",
+  NE_DO_ST_03: "방음이 안돼요",
+  NE_DO_ST_04: "건물이 낡았어요",
+  NE_DO_ST_05: "곰팡이가 많아요",
+  NE_DO_ST_06: "냉난방이 안돼요",
+  NE_DO_ST_07: "배수와 수압이 약해요",
+  
+  NE_DO_MT_01: "주차가 어려워요",
+  NE_DO_MT_02: "엘리베이터가 없어요",
+  NE_DO_MT_03: "쓰레기 처리가 불편해요",
+  NE_DO_MT_04: "입주비가 비싸요",
+  NE_DO_MT_05: "인터넷이 느려요",
+  NE_DO_MT_06: "관리가 부족해요",
+  NE_DO_MT_07: "입주가 힘들었어요",
+  NE_DO_MT_08: "공용시설이 불편해요 ",
+  NE_DO_MT_09: "통금이 있어요",
+  NE_DO_MT_10: "휴게시설이 불충분해요",
+  NE_DO_MT_11: "규칙이 엄격해요",
 };
