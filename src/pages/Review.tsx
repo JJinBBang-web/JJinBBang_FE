@@ -94,7 +94,7 @@ const Review: React.FC = () => {
                 </div>
                 : 
                 <div className={styles.fixedWrap}>
-                    <ReportButton/>
+                    <ReportButton reviewId = {reviewId}/>
                     <TopButton/>
                 </div>
             }
