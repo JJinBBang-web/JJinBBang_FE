@@ -49,6 +49,8 @@ const AppContent: React.FC = () => {
     '/auth/verify',
     '/auth/signup',
     '/auth/login',
+    '/auth/terms/service',
+    '/auth/terms/privacy',
     '/myaccount',
     '/auth/student/verify',
     '/auth/student/new',
@@ -144,7 +146,7 @@ const App: React.FC = () => {
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
           <AppContent />
           <ModalBottomSheet />
         </BrowserRouter>
