@@ -8,7 +8,7 @@ import MapPage from './pages/MapPage';
 import Heart from './pages/HeartListPage';
 import MyPage from './pages/MyPage';
 import Nav from './components/Nav';
-import KakaoCallback from './pages/auth/KakaoCallback';
+import KakaoCallback from './pages/KakaoCallBack';
 import KakaoAuthPage from './pages/auth/KakaoAuthPage';
 import MyAccountPage from './pages/auth/MyAccountPage';
 import AccountAuthPage from './pages/auth/AccountAuthPage';
