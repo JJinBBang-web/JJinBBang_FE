@@ -15,7 +15,8 @@ import JBMarker from "../assets/image/JBMarker.svg";
 import { MarkerFilter, MarkerRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilValue } from 'recoil';
-import { housingTypeState } from '../recoil/map/mapRecoilState';
+import { filterState, housingTypeState } from '../recoil/map/mapRecoilState';
+import { reviewState } from '../recoil/review/reviewAtoms';
 
 
 const mockup = {
@@ -99,19 +100,40 @@ const MapPage = () => {
 
     const isInitialized = useRef(false);
 
+    const formatDepositValue = (value: number) => value * 100;  // 단순히 ×100
+
+    const formatMonthlyRentValue = (value: number) => {
+        // 예시: 15 → 75만, 53 → 330만
+        if (value == 50) return null;  // 제한 없음 처리
+        if (value <= 40) return value * 5;
+        return 200 + (value - 40) * 10;
+    };
+
     // filter Recoil
     const buildType = useRecoilValue(housingTypeState);
+    const filter = useRecoilValue(filterState);
+    const viewType = filter.reviewType == "후기별" ? "REVIEW" : "BUILDING";
+    const depositMax = 
+        filter.depositMax 
+        ? filter.depositMax == 50 ? null : formatDepositValue(filter.depositMax) 
+        : null;
+    const depositMin = filter.depositMin ? formatDepositValue(filter.depositMin) : 0;
+    const monthlyRentMin = filter.monthlyRentMin ? formatMonthlyRentValue(filter.monthlyRentMin)! : 0;
+    const monthlyRentMax = 
+        filter.monthlyRentMax 
+        ? filter.monthlyRentMax == 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 
+        : null;
 
     const markerFilters: MarkerFilter = {
-        viewType: "REVIEW",
+        viewType: viewType, 
         buildType: buildType.length === 0 ? ["ALL"] : [buildType],
         contractType: null,
         campus: ["경상국립대_가좌캠퍼스"],
-        depositMin: 0,
-        depositMax: null,
-        monthlyRentMin: 0,
-        monthlyRentMax: null,
-        inMaintenanceCost: false,
+        depositMin: depositMin,
+        depositMax: depositMax,
+        monthlyRentMin: monthlyRentMin,
+        monthlyRentMax: monthlyRentMax,
+        inMaintenanceCost: filter.inMaintenanceCost,
         reviewKeyword: [],
     };
 

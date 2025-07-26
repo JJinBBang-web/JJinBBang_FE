@@ -46,7 +46,7 @@ const ContractFilterModal = () => {
     const formatDepositValue = (value: number | null) =>
         value == null ? null : value === 5000 ? value : value * 100;
       
-      const formatMonthlyRentValue = (value: number | null) =>
+    const formatMonthlyRentValue = (value: number | null) =>
         value == null ? null : value === 500 ? value : value <= 40 ? value * 5 : 200 + (value - 40) * 10;
       
 
