@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import '../styles/global.css'
 import HousingFilter from '../components/map/HousingFilter';
 import SearchBar from '../components/map/SearchBar';
@@ -12,12 +12,17 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
-import { MarkerFilter, MarkerRequest, NearByRequest } from '../types/entity/map/MapInterface';
+import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
-import { useRecoilValue } from 'recoil';
-import { filterState, housingTypeState } from '../recoil/map/mapRecoilState';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { filterState, housingTypeState, searchKeywordState } from '../recoil/map/mapRecoilState';
 import { universityLabelState } from '../recoil/map/universityRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
+import { ReviewPreview } from '../recoil/detail/PreviewReviewRecoilState';
+import { useSearch } from '../hooks/useSearch';
+import BuildingPreviewReview from '../components/detail/BuildingPreviewReview';
+import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
+import { useNavigate } from 'react-router-dom';
 
 
 // const mockup = {
@@ -115,7 +120,7 @@ const MapPage = () => {
     const buildType = useRecoilValue(housingTypeState);
     const filter = useRecoilValue(filterState);
     const viewType = filter.reviewType === "후기별" ? "REVIEW" : "BUILDING";
-const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | null;
+    const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | null;
     const depositMax = 
         filter.depositMax 
         ? filter.depositMax === 50 ? null : formatDepositValue(filter.depositMax) 
@@ -129,8 +134,8 @@ const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | nu
 
     const universityLabel = useRecoilValue(universityLabelState);
 
-    const markerFilters: MarkerFilter = {
-        viewType: viewType, 
+    const markerFilters = useMemo<MarkerFilter>(() => ({
+        viewType: viewType,
         buildType: buildType.length === 0 ? ["ALL"] : [buildType],
         contractType: contractType,
         campus: universityLabel ? [universityLabel] : null,
@@ -140,22 +145,96 @@ const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | nu
         monthlyRentMax: monthlyRentMax,
         inMaintenanceCost: filter.inMaintenanceCost,
         reviewKeyword: filter.reviewKeyword,
-    };
+        }), [
+        viewType,
+        buildType,
+        contractType,
+        universityLabel,
+        depositMin,
+        depositMax,
+        monthlyRentMin,
+        monthlyRentMax,
+        filter.inMaintenanceCost,
+        filter.reviewKeyword
+        ]);
 
-    console.log(contractType);
+
+    // 검색 관련
+    const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
+    const [searchParams, setSearchParams] = useState<SearchRequest>();
+    const [mapCenter, setMapCenter] = useState({ lat: 35.153237, lng: 128.101090 });
+
+    const {
+        data: searchData,
+        isLoading: isSearchLoading,
+        isError: isSearchError
+    } = useSearch(searchParams);
+
+    const handleSearch = () => {
+        if (!searchKeyword) return;
+
+        setSearchParams({
+            keyword : searchKeyword,
+            num: 10,
+            page: 1,
+            filters: {
+                ...markerFilters,
+                viewType: "BUILDING",
+            }, 
+        });
+    };
 
     const {
         data: markerData = [],
         isLoading,
         isError,
     } = useMapMarkers(
-    mapBounds
-        ? {
-            bounds: mapBounds,
-            filters: markerFilters,
-        }
-        : undefined
+        mapBounds
+            ? {
+                bounds: mapBounds,
+                filters: markerFilters,
+            }
+            : undefined
     );
+
+    // 검색 모달
+    useEffect(() => {
+        if (searchKeyword && searchData?.items && searchData.items.length > 0) {
+            setIsModalOpen(true);
+            setIsSheetVisible(false);
+        }
+    }, [searchData]);
+
+    useEffect(() => {
+        if (searchData?.items?.length) {
+            // 각 리뷰에 있는 위도/경도를 모두 모은다
+            const latLngs = searchData.items
+            .map((item) => {
+                const lat = item.boundInfo?.latitude;
+                const lng = item.boundInfo?.longitude;
+                return (lat && lng) ? { lat, lng } : null;
+            })
+            .filter((coord): coord is { lat: number, lng: number } => coord !== null);
+
+            if (latLngs.length > 0) {
+                const lats = latLngs.map(p => p.lat);
+                const lngs = latLngs.map(p => p.lng);
+
+                const neLat = Math.max(...lats);
+                const neLng = Math.max(...lngs);
+                const swLat = Math.min(...lats);
+                const swLng = Math.min(...lngs);
+
+                setMapBounds({ neLat, neLng, swLat, swLng });
+
+                const centerLat = (Math.max(...lats) + Math.min(...lats)) / 2;
+                const centerLng = (Math.max(...lngs) + Math.min(...lngs)) / 2;
+
+                setMapCenter({ lat: centerLat, lng: centerLng });
+            }
+        }
+    }, [searchData]);
+
 
     const nearByParams: NearByRequest | undefined = mapBounds
     ? {
@@ -211,7 +290,7 @@ const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | nu
             {isLoading ? <div>로딩중..</div> :
             <div className={styles.map}>
                 <Map
-                center={{ lat: 35.153237, lng: 128.101090 }}
+                center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
                 level={5}
                 draggable
@@ -291,7 +370,7 @@ const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | nu
             }
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
-                <SearchBar/>
+                <SearchBar onSearch={handleSearch}/>
             </div>
             <FilterBar/>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
@@ -339,7 +418,47 @@ const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | nu
                         </div>
                     </Modal>)
                     : isModalOpen && (
-                        <Modal onClose={handleCloseModal}>...</Modal>
+                        <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                        <div className={styles.wrap}>
+                            <div className={styles.sheet_header}>
+                                <div className={styles.header_divider}></div>
+                            </div>
+                            <div className={styles.sheet_title_wrap}>
+                                <div className={styles.sheet_info_wrap}>
+                                    <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum}</span>)</p>
+                                </div>
+                                <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+                            </div>
+                            <div className={styles.contentWrap}>
+                                <div className={styles.filterWrap}>
+                                    {[
+                                        { label: "추천순", value: "RCMND" },
+                                        { label: "최신순", value: "LATEST" },
+                                        { label: "좋아요순", value: "LIKES" },
+                                        { label: "별점순", value: "STARS" },
+                                    ].map((sortOption) => (
+                                        <p
+                                        key={sortOption.value}
+                                        className={
+                                            selectedSort === sortOption.value
+                                            ? styles.selectedText
+                                            : undefined
+                                        }
+                                        onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
+                                        >
+                                        <span>•</span>{sortOption.label}
+                                        </p>
+                                    ))}
+                                </div>
+                                {(searchData?.items ?? []).map((review) => (
+                                    <div key={review.generalBuildingInfo?.id}>
+                                        <div className={styles.line} />
+                                        <PreviewBuildingReview review={review} />
+                                    </div>
+                                    ))}
+                            </div>               
+                        </div>
+                    </Modal>
                     )
                 }
             { !isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >

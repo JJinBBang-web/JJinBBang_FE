@@ -1,4 +1,5 @@
-import { PreviewBuildingReview } from "../../../recoil/detail/PreviewBuildingReviewRecoilState";
+import { PreviewBuildingReviewInfo } from "../../../recoil/detail/PreviewBuildingReviewRecoilState";
+import { ReviewPreview } from "../../../recoil/detail/PreviewReviewRecoilState";
 
 export interface MapBounds {
   neLat: number;
@@ -44,5 +45,24 @@ export interface NearByResponse {
   num : number,
   page : number,
   itemNum : number,
-  items : PreviewBuildingReview[],
+  items : PreviewBuildingReviewInfo[],
+}
+
+export interface SearchRequest {
+  keyword: string,
+  num : number,
+  page : number,
+  filters: MarkerFilter;
+}
+
+export interface Boundary {
+  latitude : number,
+  longitude : number,
+}
+
+export interface SearchResponse {
+  num : number,
+  page : number,
+  itemNum : number,
+  items : PreviewBuildingReviewInfo[];
 }

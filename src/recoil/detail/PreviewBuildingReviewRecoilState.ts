@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { Boundary } from "../../types/entity/map/MapInterface";
 
 // 리뷰 프리뷰 인터페이스
 export interface GeneralBuildingInfo {
@@ -15,7 +16,7 @@ export interface DormitoryBuildingInfo {
   id: number; // 리뷰 ID
   name: string;
   type: string;
-  universityName: string;
+  universityName?: string;
   address: string;
   rating: number; // 평점
   reviewCount: number;
@@ -39,16 +40,17 @@ export interface ReviewInfo {
   updateAt: string;
 }
 
-export interface PreviewBuildingReview {
+export interface PreviewBuildingReviewInfo {
   generalBuildingInfo?: GeneralBuildingInfo;
   dormitoryBuildInfo?: DormitoryBuildingInfo;
   agencyBuildingInfo?: AgencyBuildingInfo;
   reviewInfo: ReviewInfo;
   image: string;
+  boundInfo?:Boundary;
 }
 
 // 리뷰 프리뷰 상태관리
-export const PreviewBuildingReviewState = atom<PreviewBuildingReview[]>({
+export const PreviewBuildingReviewState = atom<PreviewBuildingReviewInfo[]>({
   key: "ReviewPreviewState",
   default: [
     {

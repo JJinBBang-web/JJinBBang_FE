@@ -4,7 +4,7 @@ import { MapAPI } from "../api/map/MapAPI";
 
 export const useMapMarkers = (params?: MarkerRequest) => {
   return useQuery<MarkerResponse[]>({
-    queryKey: ['mapMarkers', params],
+    queryKey: ['mapMarkers', params?.bounds, params?.filters],
     queryFn: () => {
       if (!params) throw new Error('params is undefined');
       return MapAPI.fetchMarkers(params);
