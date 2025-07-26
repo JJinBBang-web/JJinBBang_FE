@@ -7,6 +7,12 @@ export const typeToKorean: Record<string, string> = {
   BOARDING_HOUSE: '하숙집/고시원',
 };
 
+export const koreanToType: Record<string, string> = Object.entries(typeToKorean)
+  .reduce((acc, [eng, kor]) => {
+    acc[kor] = eng;
+    return acc;
+  }, {} as Record<string, string>);
+
 export const contractTypeToKorean: Record<string, string> = {
   MONTHLY_RENT: '월세',
   DEPOSIT_RENT: '전세',

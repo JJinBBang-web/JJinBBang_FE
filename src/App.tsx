@@ -40,6 +40,7 @@ import Building from './pages/Building';
 import ReportPage from './pages/ReportPage';
 import KakaoCallback1 from './pages/KakaoCallBack';
 import UpdateConfirmPage from './pages/update/UpdateConfirmPage';
+import UpdateBuildTypePage from './pages/update/UpdateBuildTypePage';
 
 const queryClient = new QueryClient();
 
@@ -145,6 +146,7 @@ const AppContent: React.FC = () => {
       <Route path="/building/review/:reviewId" element={<Review />} />
       <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
       <Route path="/review/:reviewId/update" element={<UpdateConfirmPage/>}/>
+      <Route path="/review/:reviewId/update/type" element={<UpdateBuildTypePage/>}/>
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

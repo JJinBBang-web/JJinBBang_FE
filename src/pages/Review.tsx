@@ -49,6 +49,7 @@ const Review: React.FC = () => {
         const converted = convertToReviewState(data);
         console.log(converted);
         setUpdateReview(converted);
+        localStorage.setItem('updateReviewState', JSON.stringify(converted));
         }
     }, [data]);
         

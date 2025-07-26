@@ -1,5 +1,5 @@
 import styles from "./UpdateConfirmPage.module.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { tagMessages, tagLongMessages, tagImages } from '../../components/Tag';
@@ -17,6 +17,8 @@ const UpdateConfirmPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const { reviewId } = useParams();
+
     const review = useRecoilValue(updateReviewState);
     const filters = useRecoilValue(JjinFilterState);
     const dormFilters = useRecoilValue(DormFilterState); // 기숙사 필터 추가
@@ -31,8 +33,24 @@ const UpdateConfirmPage: React.FC = () => {
     const isAgency = review?.housingType === 'AGENCY';
 
     const handleBack = () => {
-      navigate(-1);
+      navigate(`/building/review/${reviewId}`);
     };
+
+    const handleItemClick = (navigationFunction: () => void) => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      navigationFunction();
+    };
+
+    const navigateToHousingType = () => {
+    localStorage.setItem('updateReviewState', JSON.stringify(review));
+
+    navigate(`/review/${reviewId}/update/type`, {
+      state: {
+        ...review,
+        from: 'update',
+      },
+    });
+  };
 
     const getIconFromLabel = (label: string): string => {
         // 기숙사 유형에 따라 적절한 필터 선택
@@ -133,7 +151,12 @@ const UpdateConfirmPage: React.FC = () => {
           <div className={styles.infoContainer}>
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToHousingType)}
+              onClick={() => 
+                review?.housingType != "AGENCY" 
+                ? review?.housingType != "DORMITORY" ?
+                handleItemClick(navigateToHousingType)
+                : undefined : undefined
+              }
             >
               <span className={styles.label}>찐빵 유형</span>
               <div className={styles.value}>
