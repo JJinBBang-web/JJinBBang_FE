@@ -11,12 +11,12 @@ import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilS
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState"
 
 const housingTypes = [
-    { id : "room", label : "원/투룸", icon : room},
-    { id : "apt", label : "아파트", icon : apt},
-    { id : "villa", label : "주택/빌라", icon : villa},
-    { id : "office", label : "오피스텔", icon : office},
-    { id : "domitory", label : "기숙사", icon : domitory},
-    { id : "gosiwon", label : "하숙집/고시원", icon : gosiwon},
+    { id : "ROOM", label : "원/투룸", icon : room},
+    { id : "APARTMENT", label : "아파트", icon : apt},
+    { id : "HOUSE", label : "주택/빌라", icon : villa},
+    { id : "OFFICETEL", label : "오피스텔", icon : office},
+    { id : "DORMITORY", label : "기숙사", icon : domitory},
+    { id : "BOARDING_HOUSE", label : "하숙집/고시원", icon : gosiwon},
     { id: "AGENCY", label: "공인중개사", icon: agency}
 ]
 
@@ -34,11 +34,11 @@ const HousingFilterModal = () => {
     const isConfirmActive = selectedType !== housingType;
     
     // 초기화 버튼 활성화 조건: "전체"가 아닐 때
-    const isResetActive = selectedType !== "전체";
+    const isResetActive = selectedType !== "ALL";
 
     const handleConfirm = () => {
         if (isConfirmActive) {
-            setHousingType(selectedType);
+            setHousingType(selectedType!);
             
             // 먼저 isOpen만 false로 설정해서 닫히는 애니메이션 실행
             setBottomSheet(prev => ({ ...prev, isOpen: false })); 
@@ -54,8 +54,8 @@ const HousingFilterModal = () => {
         <div className={styles.content}>
             <div className={styles.grid_content}>
                 {housingTypes.map((option) => (
-                    <button key={option.id} className={`${styles.type_btn} ${selectedType === option.label ? styles.selected : ""}`} 
-                    onClick={() => setSelectedType(option.label)}>
+                    <button key={option.id} className={`${styles.type_btn} ${selectedType === option.id ? styles.selected : ""}`} 
+                    onClick={() => setSelectedType(option.id)}>
                         <img src={option.icon} alt={option.id} width="44px" />
                         <p className={`${styles.type_text} ${selectedType === option.id ? styles.selected_text : ""}`}>{option.label}</p>
                     </button>
@@ -63,7 +63,7 @@ const HousingFilterModal = () => {
             </div>
             <div className={styles.btn_content}>
                 <button className={`${styles.reset_btn} ${isResetActive ? styles.reset_btn_active : ""}`} 
-                onClick={() => setSelectedType("전체")}>초기화</button>
+                onClick={() => setSelectedType("ALL")}>초기화</button>
                 <button className={`${styles.confirm_btn} ${isConfirmActive ? styles.confirm_btn_active : ""}`} 
                 onClick={() => {
                     handleConfirm();

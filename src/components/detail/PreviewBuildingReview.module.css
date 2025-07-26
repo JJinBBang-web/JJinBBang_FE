@@ -65,6 +65,12 @@
   color: var(--block-yellow);
 }
 
+.buildingPrice.agency {
+  background: #FFF7F4;
+  color: var(--block-orange);
+}
+
+
 .buildingRating {
   width: 100%;
   display: flex;

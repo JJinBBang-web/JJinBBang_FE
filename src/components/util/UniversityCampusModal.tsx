@@ -165,7 +165,7 @@ const UniversityCampusModal = () => {
             if (isConfirmActive) {
               setFilterState((prev) => ({
                 ...prev,
-                university: selectedTypeNum!,
+                // university: selectedTypeNum!,
               }));
               setBottomSheet({ isOpenModal: false, type: null });
             }

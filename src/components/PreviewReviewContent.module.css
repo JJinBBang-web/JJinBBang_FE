@@ -87,7 +87,7 @@
 .likeContainer {
   width: 35px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
   gap: 2px;
 }

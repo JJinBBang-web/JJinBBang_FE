@@ -42,15 +42,15 @@ const FilterBar = () => {
                     <p className={`${styles.filter_text} ${filters.university ? styles.filter_text_select : ""}`}>대학교</p>
                     <img src={iconDown} alt="down" className={filters.university ? styles.filter_icon_select : ""}/>
                 </button>
-                <button className={`${styles.filter_btn} ${filters.contractType!=="ALL" || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_btn_select : ""}`} 
+                <button className={`${styles.filter_btn} ${filters.contractType!==null || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_btn_select : ""}`} 
                 onClick={() => {
                 setSelectedContractState(filters.contractType);
                 setMaintenanceCostState(filters.inMaintenanceCost);
                 setDepositRangeState([filters.depositMin, filters.depositMax]);
                 setMonthlyRentRange([filters.monthlyRentMin, filters.monthlyRentMax]);
                 setBottomSheet({ isOpenModal: true, type: "contract" }); }}>
-                    <p className={`${styles.filter_text} ${filters.contractType!=="ALL" || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_text_select : ""}`}>계약 형태/조건</p>
-                    <img src={iconDown} alt="down" className={filters.contractType!=="ALL" || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_icon_select : ""}/>
+                    <p className={`${styles.filter_text} ${filters.contractType!==null || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_text_select : ""}`}>계약 형태/조건</p>
+                    <img src={iconDown} alt="down" className={filters.contractType!==null || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_icon_select : ""}/>
                 </button>
             </div>
         </div>

@@ -19,6 +19,7 @@
         "jsx": "react-jsx",
         "types": [
             "kakao.maps.d.ts",
+            "node", "react", "react-dom",
         ]
     },
     "include": [

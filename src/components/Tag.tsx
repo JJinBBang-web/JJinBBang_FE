@@ -250,7 +250,7 @@ export const tagImages: { [key: string]: string } = {
   NE_DO_MT_08,
   NE_DO_MT_09,
   NE_DO_MT_10,
-  NE_DO_MT_11,
+  NE_DO_MT_11,  
 };
 
 export const tagMessages: { [key: string]: string } = {
@@ -308,7 +308,7 @@ export const tagMessages: { [key: string]: string } = {
   PO_DO_ST_05: "곰팡이 없음",
   PO_DO_ST_06: "냉난방 좋음",
   PO_DO_ST_07: "배수,수압 좋음",
-
+  
   PO_DO_MT_01: "주차 편리",
   PO_DO_MT_02: "엘리베이터",
   PO_DO_MT_03: "쓰레기 용이",
@@ -374,7 +374,7 @@ export const tagMessages: { [key: string]: string } = {
   NE_DO_ST_05: "곰팡이 많음",
   NE_DO_ST_06: "냉난방 나쁨",
   NE_DO_ST_07: "배수,수압 약함",
-
+  
   NE_DO_MT_01: "주차 불편",
   NE_DO_MT_02: "계단만 있음",
   NE_DO_MT_03: "쓰레기 불편",
@@ -443,7 +443,7 @@ export const tagLongMessages: { [key: string]: string } = {
   PO_DO_ST_05: "곰팡이가 없어요",
   PO_DO_ST_06: "냉난방이 잘 돼요",
   PO_DO_ST_07: "배수와 수압이 좋아요",
-
+  
   PO_DO_MT_01: "주차가 편리해요",
   PO_DO_MT_02: "엘리베이터가 있어요",
   PO_DO_MT_03: "쓰레기 처리가 편해요",
@@ -509,7 +509,7 @@ export const tagLongMessages: { [key: string]: string } = {
   NE_DO_ST_05: "곰팡이가 많아요",
   NE_DO_ST_06: "냉난방이 안돼요",
   NE_DO_ST_07: "배수와 수압이 약해요",
-
+  
   NE_DO_MT_01: "주차가 어려워요",
   NE_DO_MT_02: "엘리베이터가 없어요",
   NE_DO_MT_03: "쓰레기 처리가 불편해요",
