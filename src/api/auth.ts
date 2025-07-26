@@ -135,7 +135,7 @@ export const authApi = {
   ): Promise<CertificateVerifyResponse> => {
     try {
       const formData = new FormData();
-      formData.append('certificate', file);
+      formData.append('file', file);
 
       const response = await api.post<CertificateVerifyResponse>(
         '/api/v1/certificates/enrollment/verify',
@@ -161,7 +161,7 @@ export const authApi = {
   ): Promise<CertificateVerifyResponse> => {
     try {
       const formData = new FormData();
-      formData.append('certificate', file);
+      formData.append('file', file);
 
       const response = await api.post<CertificateVerifyResponse>(
         '/api/v1/certificates/admission/verify',
