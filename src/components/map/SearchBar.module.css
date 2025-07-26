@@ -35,3 +35,7 @@
     line-height: 150%;
     color: var(--color-gray40);
 }
+
+.searchIcon {
+    cursor: pointer;
+}

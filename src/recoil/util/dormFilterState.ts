@@ -5,9 +5,9 @@ import { atom } from 'recoil';
 import PO_DO_LO_01 from '../../assets/image/dorm/PO_DO_LO_01.svg';
 import PO_DO_LO_02 from '../../assets/image/dorm/PO_DO_LO_02.svg';
 import PO_DO_LO_03 from '../../assets/image/dorm/PO_DO_LO_03.svg';
+import PO_DO_LO_04 from "../../assets/image/dorm/PO_DO_LO_04.svg";
 import PO_DO_LO_05 from '../../assets/image/dorm/PO_DO_LO_05.svg';
 import PO_DO_LO_06 from '../../assets/image/dorm/PO_DO_LO_06.svg';
-import PO_DO_LO_07 from '../../assets/image/dorm/PO_DO_LO_07.svg';
 
 import PO_DO_ST_01 from '../../assets/image/dorm/PO_DO_ST_01.svg';
 import PO_DO_ST_02 from '../../assets/image/dorm/PO_DO_ST_02.svg';
@@ -33,9 +33,9 @@ import PO_DO_MT_11 from '../../assets/image/dorm/PO_DO_MT_11.svg'; // 규칙이 
 import NE_DO_LO_01 from '../../assets/image/dorm/NE_DO_LO_01.svg';
 import NE_DO_LO_02 from '../../assets/image/dorm/NE_DO_LO_02.svg';
 import NE_DO_LO_03 from '../../assets/image/dorm/NE_DO_LO_03.svg';
+import NE_DO_LO_04 from '../../assets/image/dorm/NE_DO_LO_04.svg';
 import NE_DO_LO_05 from '../../assets/image/dorm/NE_DO_LO_05.svg';
 import NE_DO_LO_06 from '../../assets/image/dorm/NE_DO_LO_06.svg';
-import NE_DO_LO_07 from '../../assets/image/dorm/NE_DO_LO_07.svg';
 
 import NE_DO_ST_01 from '../../assets/image/dorm/NE_DO_ST_01.svg';
 import NE_DO_ST_02 from '../../assets/image/dorm/NE_DO_ST_02.svg';
@@ -79,27 +79,19 @@ export const DormFilterState = atom<FilterCategory[]>({
       id: 'location',
       positiveFilters: [
         { label: '교통이 편리해요', icon: PO_DO_LO_01, key: 'PO_DO_LO_01' },
-        {
-          label: '주변 환경이 깨끗해요',
-          icon: PO_DO_LO_02,
-          key: 'PO_DO_LO_02',
-        },
+        { label: '주변 환경이 깨끗해요', icon: PO_DO_LO_02, key: 'PO_DO_LO_02' },
         { label: '주변이 조용해요', icon: PO_DO_LO_03, key: 'PO_DO_LO_03' },
-        { label: '생활권이 편리해요', icon: PO_DO_LO_05, key: 'PO_DO_LO_05' },
-        { label: '학교와 가까워요', icon: PO_DO_LO_06, key: 'PO_DO_LO_06' },
-        { label: '주변이 안전해요', icon: PO_DO_LO_07, key: 'PO_DO_LO_07' },
+        { label: '생활권이 편리해요', icon: PO_DO_LO_04, key: 'PO_DO_LO_04' },
+        { label: '학교와 가까워요', icon: PO_DO_LO_05, key: 'PO_DO_LO_05' },
+        { label: '주변이 안전해요', icon: PO_DO_LO_06, key: 'PO_DO_LO_06' },
       ],
       negativeFilters: [
         { label: '교통이 불편해요', icon: NE_DO_LO_01, key: 'NE_DO_LO_01' },
         { label: '환경이 지저분해요', icon: NE_DO_LO_02, key: 'NE_DO_LO_02' },
         { label: '주변이 시끄러워요', icon: NE_DO_LO_03, key: 'NE_DO_LO_03' },
-        { label: '생활권이 불편해요', icon: NE_DO_LO_05, key: 'NE_DO_LO_05' },
-        { label: '학교와 멀어요', icon: NE_DO_LO_06, key: 'NE_DO_LO_06' },
-        {
-          label: '동네가 안전하지 않아요',
-          icon: NE_DO_LO_07,
-          key: 'NE_DO_LO_07',
-        },
+        { label: '생활권이 불편해요', icon: NE_DO_LO_04, key: 'NE_DO_LO_04' },
+        { label: '학교와 멀어요', icon: NE_DO_LO_05, key: 'NE_DO_LO_05' },
+        { label: '동네가 안전하지 않아요', icon: NE_DO_LO_06, key: 'NE_DO_LO_06' },
       ],
     },
     {

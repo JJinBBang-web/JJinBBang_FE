@@ -1,5 +1,5 @@
 export const typeToKorean: Record<string, string> = {
-  ROOM: '원룸 및 투룸 이하',
+  ROOM: '원/투룸',
   HOUSE: '주택/빌라',
   OFFICETEL: '오피스텔',
   APARTMENT: '아파트',

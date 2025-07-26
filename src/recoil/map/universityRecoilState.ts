@@ -94,6 +94,11 @@ export const selectedUniversityState = atom<number | null>({
     default: null,
 })
 
+export const universityLabelState = atom<string | null>({
+  key: 'universityLabelState',
+  default: null,
+});
+
 // 대학교 필터링
 export const universitiesFilterState = selector({
     key : "universitiesFilterState",

@@ -1,9 +1,9 @@
 import { atom } from "recoil";
 
 // 매물 유형 상태
-export const housingTypeState = atom<string | null> ({
+export const housingTypeState = atom<string> ({
     key: "housingTypeState",
-    default: "전체",
+    default: "ALL",
 })
 
 // 임시 변경 상태 (하우징)
@@ -13,9 +13,9 @@ export const selectedTypeState = atom<string | null> ({
 })
 
 // 임시 변경 상태 (계약)
-export const selectedContractState = atom<string> ({
+export const selectedContractState = atom<string | null> ({
     key: "selectedContractState",
-    default: "ALL",
+    default: null,
 })
 // 임시 변경 상태 (관리비)
 export const maintenanceCostState = atom<boolean | undefined>({
@@ -44,7 +44,7 @@ export const searchKeywordState = atom<string>({
 interface FilterStateType {
     reviewType: string;
     university: number | null;
-    contractType: string;
+    contractType: string | null;
     depositMin : number | null;
     depositMax : number | null;
     monthlyRentMin : number | null;
@@ -59,10 +59,10 @@ export const filterState = atom<FilterStateType>({
     default :  {
         reviewType: "후기별",
         university: null,
-        contractType: "ALL",
-        depositMin : 0,
+        contractType: null,
+        depositMin : null,
         depositMax : null,
-        monthlyRentMin : 0,
+        monthlyRentMin : null,
         monthlyRentMax : null,
         inMaintenanceCost : false,
         reviewKeyword : [],
@@ -72,12 +72,12 @@ export const filterState = atom<FilterStateType>({
 // 계약/가격 조건 필터 상태
 export const depositRangeState = atom<[number|null, number|null]>({
     key : "depositRangeState",
-    default : [0, null],
+    default : [null, null],
 })
 
 export const monthlyRentRangeState = atom<[number|null, number|null]>({
     key : "monthlyRentRangeState",
-    default : [0, null],
+    default : [null, null],
 })
 
 
