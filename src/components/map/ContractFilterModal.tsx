@@ -6,7 +6,7 @@ import Slider from "react-slider";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
 
 const contractType = [
-    {text : "전체", type : "ALL"},
+    {text : "전체", type : null},
     {text : "월세", type : "MONTHLY_RENT"},
     {text : "전세", type : "DEPOSIT_RENT"},
 ]
@@ -41,6 +41,8 @@ const ContractFilterModal = () => {
             }, 200);
         }
     };
+
+    console.log(selectedContract);
 
     // 보증금 값 조정
     const formatDepositValue = (value: number | null) =>
@@ -88,7 +90,7 @@ const ContractFilterModal = () => {
     
     // 확인 & 초기화 버튼 활성화
     const isConfirmActive = selectedContract !== contract || maintenanceCost !== inMaintenanceCost || JSON.stringify(depositRange) !== JSON.stringify([depositMin, depositMax]) || JSON.stringify(monthlyRentRange) !== JSON.stringify([monthlyRentMin, monthlyRentMax]);
-    const isResetActive = selectedContract !== "ALL" || maintenanceCost !== false || JSON.stringify(depositRange) !== JSON.stringify([null, null]) || JSON.stringify(monthlyRentRange) !== JSON.stringify([null, null]);
+    const isResetActive = selectedContract !== null || maintenanceCost !== false || JSON.stringify(depositRange) !== JSON.stringify([null, null]) || JSON.stringify(monthlyRentRange) !== JSON.stringify([null, null]);
 
     return (
         <div className={styles.content}>
@@ -203,7 +205,7 @@ const ContractFilterModal = () => {
             <div className={styles.btn_content}>
                 <button className={`${styles.reset_btn} ${isResetActive ? styles.reset_btn_active : ""}`} 
                 onClick={() => {
-                    setSelectedContract("ALL");
+                    setSelectedContract(null);
                     setMaintenanceCost(false);
                     setDepositRange([null, null]);
                     setMonthlyRentRange([null, null]);

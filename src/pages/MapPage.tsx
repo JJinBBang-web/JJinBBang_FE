@@ -115,6 +115,7 @@ const MapPage = () => {
     const buildType = useRecoilValue(housingTypeState);
     const filter = useRecoilValue(filterState);
     const viewType = filter.reviewType === "후기별" ? "REVIEW" : "BUILDING";
+const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | null;
     const depositMax = 
         filter.depositMax 
         ? filter.depositMax === 50 ? null : formatDepositValue(filter.depositMax) 
@@ -131,7 +132,7 @@ const MapPage = () => {
     const markerFilters: MarkerFilter = {
         viewType: viewType, 
         buildType: buildType.length === 0 ? ["ALL"] : [buildType],
-        contractType: null,
+        contractType: contractType,
         campus: universityLabel ? [universityLabel] : null,
         depositMin: depositMin,
         depositMax: depositMax,
@@ -141,7 +142,7 @@ const MapPage = () => {
         reviewKeyword: filter.reviewKeyword,
     };
 
-    console.log(mapBounds);
+    console.log(contractType);
 
     const {
         data: markerData = [],

@@ -13,9 +13,9 @@ export const selectedTypeState = atom<string | null> ({
 })
 
 // 임시 변경 상태 (계약)
-export const selectedContractState = atom<string> ({
+export const selectedContractState = atom<string | null> ({
     key: "selectedContractState",
-    default: "ALL",
+    default: null,
 })
 // 임시 변경 상태 (관리비)
 export const maintenanceCostState = atom<boolean | undefined>({
@@ -44,7 +44,7 @@ export const searchKeywordState = atom<string>({
 interface FilterStateType {
     reviewType: string;
     university: number | null;
-    contractType: string;
+    contractType: string | null;
     depositMin : number | null;
     depositMax : number | null;
     monthlyRentMin : number | null;
@@ -59,7 +59,7 @@ export const filterState = atom<FilterStateType>({
     default :  {
         reviewType: "후기별",
         university: null,
-        contractType: "ALL",
+        contractType: null,
         depositMin : null,
         depositMax : null,
         monthlyRentMin : null,

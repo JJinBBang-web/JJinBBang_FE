@@ -1,16 +1,14 @@
-export interface UnivInterface {
-    id : number,
-    universityName : string,
-    universityLogo : string,
-}
-export interface CampusInterface {
-    id : number,
-    campusName : string,
-    logoImageUrl : string,
+export interface UnivCampusInterface {
     campusAddress : string,
+    campusName : string,
+    id : number,
+    logoImageUrl : string,
     latitude : number,
     longitude : number
 }
 export interface CampusResponse {
-    campusList : CampusInterface[]
+    id: number,
+    universityName: string,
+    universityLogo: string,
+    campuses : UnivCampusInterface[]
 }
