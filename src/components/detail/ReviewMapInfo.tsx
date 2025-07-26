@@ -2,6 +2,7 @@ import styles from "./ReviewMapInfo.module.css"
 import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
 import RVMarker from "../../assets/image/ReviewMarker.svg";
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
+import { floorToKorean, typeToKorean } from "../../util/mapping";
 
 declare global {
     interface Window {
@@ -14,7 +15,11 @@ interface Props {
 }
 
 const ReviewMapInfo:React.FC<Props> = ({review}) => {
-    const floor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const rawType = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const type = rawType && typeToKorean[rawType] ? typeToKorean[rawType] : rawType ?? "";
+    const rawFloor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
+    
     return (
         <div className={styles.content}>
             {review.generalReviewInfo && (
@@ -22,7 +27,7 @@ const ReviewMapInfo:React.FC<Props> = ({review}) => {
                     <p className={styles.title}>단지 정보</p>
                     <div className={styles.infoWrap}>
                         <p className={styles.subTitle}>유형</p>
-                        <p className={styles.infoContent}>{review.building.type}</p>
+                        <p className={styles.infoContent}>{type}</p>
                     </div>
                     <hr/>
                 </>
@@ -32,7 +37,7 @@ const ReviewMapInfo:React.FC<Props> = ({review}) => {
                     <p className={styles.title}>단지 정보</p>
                     <div className={styles.infoWrap}>
                         <p className={styles.subTitle}>유형</p>
-                        <p className={styles.infoContent}>{review.building.type}</p>
+                        <p className={styles.infoContent}>{type}</p>
                     </div>
                     <hr/>
                 </>

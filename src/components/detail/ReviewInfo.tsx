@@ -7,6 +7,7 @@ import heartIcon from "../../assets/image/heartIcon.svg";
 import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
 import { tagImages, tagMessages } from "../Tag";
 import { useEffect, useState } from "react";
+import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 
 
 interface Props {
@@ -16,9 +17,13 @@ interface Props {
 const ReviewInfo: React.FC<Props> = ({review}) => {
     const liked = review.generalReviewInfo?.liked ?? review.domitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
     const name = review.generalReviewInfo?.name ?? review.domitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
-    const type = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const rawType = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const type = rawType && typeToKorean[rawType] ? typeToKorean[rawType] : rawType ?? "";
     const rating = review.generalReviewInfo?.rating ?? review.domitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
-    const floor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const rawFloor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
+    const rawConstractType = review.generalReviewInfo?.contractType;
+    const constractType = rawConstractType && contractTypeToKorean[rawConstractType] ? contractTypeToKorean[rawConstractType] : rawConstractType ?? "" ;
 
     const [isLiked, setIsLiked] = useState(liked);
     const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
@@ -28,12 +33,14 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
         setLikeCount(review.reviewInfo.likeCount);
     },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
+    console.log(constractType);
+
     return (
         <div className={styles.content}>
             <div className={styles.typeAndLike}>
                 <div className={styles.buildingContent}>
                     {review.generalReviewInfo && (
-                        review.generalReviewInfo.contractType == "전세" ?
+                        constractType === "전세" ?
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
@@ -44,7 +51,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
-                                        {`${review.generalReviewInfo.contractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.monthlyRent}`}
+                                        {`${constractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.monthlyRent}`}
                                 </div>
                             </>
                     )}
