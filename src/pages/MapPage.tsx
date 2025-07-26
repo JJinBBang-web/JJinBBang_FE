@@ -16,7 +16,7 @@ import { MarkerFilter, MarkerRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilValue } from 'recoil';
 import { filterState, housingTypeState } from '../recoil/map/mapRecoilState';
-import { reviewState } from '../recoil/review/reviewAtoms';
+import { universityLabelState } from '../recoil/map/universityRecoilState';
 
 
 const mockup = {
@@ -104,7 +104,7 @@ const MapPage = () => {
 
     const formatMonthlyRentValue = (value: number) => {
         // 예시: 15 → 75만, 53 → 330만
-        if (value == 50) return null;  // 제한 없음 처리
+        if (value === 50) return null;  // 제한 없음 처리
         if (value <= 40) return value * 5;
         return 200 + (value - 40) * 10;
     };
@@ -112,23 +112,25 @@ const MapPage = () => {
     // filter Recoil
     const buildType = useRecoilValue(housingTypeState);
     const filter = useRecoilValue(filterState);
-    const viewType = filter.reviewType == "후기별" ? "REVIEW" : "BUILDING";
+    const viewType = filter.reviewType === "후기별" ? "REVIEW" : "BUILDING";
     const depositMax = 
         filter.depositMax 
-        ? filter.depositMax == 50 ? null : formatDepositValue(filter.depositMax) 
+        ? filter.depositMax === 50 ? null : formatDepositValue(filter.depositMax) 
         : null;
     const depositMin = filter.depositMin ? formatDepositValue(filter.depositMin) : 0;
     const monthlyRentMin = filter.monthlyRentMin ? formatMonthlyRentValue(filter.monthlyRentMin)! : 0;
     const monthlyRentMax = 
         filter.monthlyRentMax 
-        ? filter.monthlyRentMax == 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 
+        ? filter.monthlyRentMax === 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 
         : null;
+
+    const universityLabel = useRecoilValue(universityLabelState);
 
     const markerFilters: MarkerFilter = {
         viewType: viewType, 
         buildType: buildType.length === 0 ? ["ALL"] : [buildType],
         contractType: null,
-        campus: ["경상국립대_가좌캠퍼스"],
+        campus: [universityLabel],
         depositMin: depositMin,
         depositMax: depositMax,
         monthlyRentMin: monthlyRentMin,
@@ -184,7 +186,7 @@ const MapPage = () => {
                 <Map
                 center={{ lat: 35.153237, lng: 128.101090 }}
                 style={{ width: '100%', height: '100%' }}
-                level={4}
+                level={5}
                 draggable
                 zoomable
                 onCreate={(map) => {
