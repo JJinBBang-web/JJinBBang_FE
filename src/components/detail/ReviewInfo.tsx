@@ -7,6 +7,7 @@ import heartIcon from "../../assets/image/heartIcon.svg";
 import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
 import { tagImages, tagMessages } from "../Tag";
 import { useEffect, useState } from "react";
+import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 
 
 interface Props {
@@ -16,24 +17,30 @@ interface Props {
 const ReviewInfo: React.FC<Props> = ({review}) => {
     const liked = review.generalReviewInfo?.liked ?? review.domitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
     const name = review.generalReviewInfo?.name ?? review.domitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
-    const type = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const rawType = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const type = rawType && typeToKorean[rawType] ? typeToKorean[rawType] : rawType ?? "";
     const rating = review.generalReviewInfo?.rating ?? review.domitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
-    const floor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const rawFloor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
+    const rawConstractType = review.generalReviewInfo?.contractType;
+    const constractType = rawConstractType && contractTypeToKorean[rawConstractType] ? contractTypeToKorean[rawConstractType] : rawConstractType ?? "" ;
 
     const [isLiked, setIsLiked] = useState(liked);
-    const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
+    const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
     
     useEffect(() => {
         setIsLiked(liked);
-        setLikeCount(review.reviewInfo.likesCount);
-    },[liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
+        setLikeCount(review.reviewInfo.likeCount);
+    },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
+
+    console.log(constractType);
 
     return (
         <div className={styles.content}>
             <div className={styles.typeAndLike}>
                 <div className={styles.buildingContent}>
                     {review.generalReviewInfo && (
-                        review.generalReviewInfo.contractType == "전세" ?
+                        constractType === "전세" ?
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
@@ -44,7 +51,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
-                                        {`${review.generalReviewInfo.contractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.monthlyRent}`}
+                                        {`${constractType} ${review.generalReviewInfo.deposit}/${review.generalReviewInfo.monthlyRent}`}
                                 </div>
                             </>
                     )}
@@ -99,7 +106,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                 {review.reviewInfo.content}
             </div>
             <div className={styles.dateLikeContainer}>
-                <p className={styles.date}>{review.reviewInfo.updatedAt.toLocaleDateString("ko-KR")}</p>
+                <p className={styles.date}>{new Date(review.reviewInfo.updateAt).toLocaleDateString("ko-KR")}</p>
                 <div className={styles.likeContainer}>
                     <img className={styles.likeImg} src={heartIcon} alt="heart" />
                     <p className={styles.likeNum}>
@@ -111,27 +118,35 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                 <div className={styles.tagWrap}>
                     <p>장점</p>
                     <div className={styles.tagContainer}>
-                    {
-                        review.keywords.positive.map((keyword, index) => (
+                        {
+                        review.keywords?.positive?.length ? (
+                            review.keywords.positive.map((keyword, index) => (
                             <div key={index} className={styles.tag}>
                                 <img src={tagImages[keyword]} alt={keyword} />
                                 <p className={styles.tagText}>{tagMessages[keyword]}</p>
                             </div>
-                        ))
-                    }
+                            ))
+                        ) : (
+                            <p className={styles.noTag}>표시할 장점 태그가 없습니다.</p>
+                        )
+                        }
                     </div>
                 </div>
                 <div className={styles.tagWrap}>
                     <p>단점</p>
                     <div className={styles.tagContainer}>
-                    {
-                        review.keywords.negative.map((keyword, index) => (
+                        {
+                        review.keywords?.negative?.length ? (
+                            review.keywords.negative.map((keyword, index) => (
                             <div key={index} className={styles.tag}>
                                 <img src={tagImages[keyword]} alt={keyword} />
                                 <p className={styles.tagText}>{tagMessages[keyword]}</p>
                             </div>
-                        ))
-                    }
+                            ))
+                        ) : (
+                            <p className={styles.noTag}>표시할 단점 태그가 없습니다.</p>
+                        )
+                        }
                     </div>
                 </div>
             </div>
