@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styles from "./ReportPage.module.css"
 import closeIcon from '../assets/image/iconClose.svg';
 import { useLayoutEffect, useRef, useState } from "react";
@@ -51,16 +51,18 @@ const ReportPage: React.FC = () => {
     const [content, setContent] = useState('');
 
     const maxLength = 1000;
-      
+
+    const { reviewId } = useParams();
+          
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (e.target.value.length <= maxLength) {
           setContent(e.target.value);
         }
       };
       
-      const handleButtonClick = () => {
-        navigate('/building/rv', { state: location.state });
-      };
+    const handleButtonClick = () => {
+        navigate(`/building/review/${reviewId}`, { state: location.state });
+    };
 
     return (
         <div className="content">
