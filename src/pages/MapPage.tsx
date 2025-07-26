@@ -207,6 +207,20 @@ const MapPage = () => {
                     setMapBounds(extractedBounds);
                     isInitialized.current = true;
                 }}
+                onBoundsChanged={(map) => {
+                    const bounds = map.getBounds();
+                    const ne = bounds.getNorthEast();
+                    const sw = bounds.getSouthWest();
+
+                    const extractedBounds = {
+                        neLat: ne.getLat(),
+                        neLng: ne.getLng(),
+                        swLat: sw.getLat(),
+                        swLng: sw.getLng(),
+                    };
+
+                    console.log("🧭 실시간 bounds:", extractedBounds);
+                }}
                 >
                     <MarkerClusterer
                         averageCenter={true}
