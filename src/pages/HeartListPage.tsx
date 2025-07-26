@@ -8,6 +8,7 @@ import campus_img_1 from "../assets/image/campusImg1.svg";
 import FilterModal from "../components/hartListPage/FilterModal";
 import { isFilterModalOpenState } from "../recoil/hartListPage/isFilterModalOpenState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
+import BuildingPreviewReview from "../components/detail/BuildingPreviewReview";
 
 const api = {
   code: 200,
@@ -15,40 +16,41 @@ const api = {
   data: {
     reviews: [
       {
-        dormitoryBasicInfo: {
+        dormitoryReviewInfo: {
           id: 1,
           name: "지희관",
-          universityName: "경상국립대",
-          type: "기숙사",
-          floor: "저층", // 옥탑방은 0, 반지하는 -1
-          space: 26.44,
+          universityName: "경상국립대학교",
+          type: "DORMITORY",
+          floor: "HIGH", // 옥탑방은 0, 반지하는 -1
+          capacity: 2,
           dormFee: 10,
           rating: 3,
           liked: true, // false
         },
         reviewInfo: {
-          content: "집이 너무 깔끔하고...",
-          keywords: [
+          content:
+            "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
+          keyword: [
             "PO_BD_LO_02",
             "PO_BD_LO_01",
             "PO_BD_LO_04",
             "PO_BD_LO_01", // ... 필요한 키워드 추가
             "PO_BD_LO_01",
           ],
-          likesCount: 120,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
+          likeCount: 120,
+          updateAt: "2025-02-23T04:06:00.000+09:00", // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
         },
         image: "http://localhost:8080/image/1.jpg",
       },
       {
-        basicInfo: {
-          reviewId: 2,
+        generalReviewInfo: {
+          id: 2,
           name: "한솔원룸",
-          type: "투룸",
-          contractType: "전세",
+          type: "ROOM",
+          contractType: "MONTHLY_RENT",
           deposit: 2000,
           monthlyRent: 0,
-          floor: "고층",
+          floor: "LOW",
           space: 35.5,
           maintenanceCost: 5,
           rating: 4,
@@ -56,34 +58,34 @@ const api = {
         },
         reviewInfo: {
           content: "주변이 조용하고 살기 좋아요.",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-          likesCount: 18,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
+          keyword: [
+            "PO_BD_LO_02",
+            "PO_BD_LO_01",
+            "PO_BD_LO_04",
+            "PO_BD_LO_01", // ... 필요한 키워드 추가
+            "PO_BD_LO_01",
+          ],
+          likeCount: 18,
+          updateAt: "2025-02-23T04:06:00.000+09:00",
         },
         image: campus_img_1,
       },
-      {
-        basicInfo: {
-          reviewId: 3,
-          name: "강남하우스",
-          type: "오피스텔",
-          contractType: "월세",
-          deposit: 1000,
-          monthlyRent: 70,
-          floor: "중층",
-          space: 42.7,
-          maintenanceCost: 15,
-          rating: 5,
-          liked: true,
-        },
-        reviewInfo: {
-          content: "채광이 좋고 전망이 멋져요.",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-          likesCount: 12,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-        },
-        image: campus_img_1,
-      },
+      // {
+      //   agencyReviewInfo: {
+      //     id: 1,
+      //     name: "1",
+      //     type: "AGENCY",
+      //     rating: 1,
+      //     liked: false,
+      //   },
+      //   reviewInfo: {
+      //     content: "1",
+      //     keyword: ["PO_BD_LO_01"],
+      //     likeCount: 1,
+      //     updateAt: "2025-02-23T04:06:00.000+09:00",
+      //   },
+      //   image: "http://localhost:8080/image/1.jpg",
+      // },
     ] as any[],
   },
 };
@@ -110,7 +112,7 @@ const Heart: React.FC = () => {
             api.data.reviews.map((review) => (
               <div key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id}>
                 <div className={styles.line} />
-                <PreviewReview review={review} />
+                <BuildingPreviewReview review={review} />
               </div>
             ))
           ) : (

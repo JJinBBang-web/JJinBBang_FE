@@ -1,12 +1,11 @@
 import { useRecoilState } from "recoil";
 import styles from "./BuildingReviewList.module.css";
-import PreviewBuildingReview from "./PreviewBuildingReview";
-import { PreviewBuildingReviewState } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
 import { useEffect } from "react";
 import BuildingPreviewReview from "./BuildingPreviewReview";
 import { ReviewPreviewState } from "../../recoil/detail/PreviewReviewRecoilState";
 import { useParams } from "react-router-dom";
 import { useBuildingReviewList } from "../../hooks/useBuildingReviewList";
+
 
 // const mockData = [
 //   {
@@ -94,7 +93,6 @@ const BuildingReviewList: React.FC = () => {
       ...item,
       reviewInfo: {
         ...item.reviewInfo,
-        updatedAt: new Date(item.reviewInfo.updateAt),
       },
     }));
 
@@ -133,13 +131,13 @@ const BuildingReviewList: React.FC = () => {
       {reviews.map((review) => (
         <div
           key={
-            review.basicInfo?.reviewId ??
-            review.dormitoryBasicInfo?.id ??
+            review.generalReviewInfo?.id ??
+            review.dormitoryReviewInfo?.id ??
             review.agencyReviewInfo?.id
           }
         >
           <div className={styles.line} />
-          <BuildingPreviewReview review={review} />
+          {/* <BuildingPreviewReview review={review} /> */}
         </div>
       ))}
     </div>
