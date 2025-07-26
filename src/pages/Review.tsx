@@ -6,7 +6,7 @@ import TopButton from '../components/util/TopButton';
 import ReviewInfo from '../components/detail/ReviewInfo';
 import ReveiwContractInfo from '../components/detail/ReviewContractInfo';
 import ReviewMapInfo from '../components/detail/ReviewMapInfo';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
 import Footer from '../components/detail/Footer';
 import ReportButton from '../components/util/ReportButton';
@@ -15,11 +15,14 @@ import exampleImage2 from '../assets/image/example_image2.png';
 import ReviewFacilitiesInfo from '../components/detail/ReviewFacilitiesInfo';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useReviewDetail } from '../hooks/useReviewDetail';
+import { updateReviewState } from '../recoil/review/updateReviewAtoms';
+import { convertToReviewState } from '../util/convertToReviewState';
 
 
 const Review: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [reviews, setReviews] = useRecoilState(ReviewInfoState);
+    const setUpdateReview = useSetRecoilState(updateReviewState);
     
     const { reviewId } = useParams(); // /building/rv/:reviewId 형식이라면 필요
     const [searchParams] = useSearchParams();
@@ -27,7 +30,7 @@ const Review: React.FC = () => {
 
     const { data, isLoading, isError } = useReviewDetail(reviewId ?? "", reviewType);
 
-    const loginUserId = 1;
+    const loginUserId = 2;
 
     useEffect(() => {
         const handleResize = () => {
@@ -45,6 +48,9 @@ const Review: React.FC = () => {
     useEffect(() => {
         if (data) {
         setReviews(data);
+        const converted = convertToReviewState(data);
+        console.log(converted);
+        setUpdateReview(converted);
         }
     }, [data]);
         
@@ -85,7 +91,7 @@ const Review: React.FC = () => {
             { loginUserId == reviews.authorId ? 
                 <div className={styles.fixedWrap}>
                     <TopButton/>
-                    <Footer/>
+                    <Footer reviewId={reviewId ?? ""} />
                 </div>
                 : 
                 <div className={styles.fixedWrap}>

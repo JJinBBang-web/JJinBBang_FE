@@ -70,7 +70,7 @@ export interface AgencyReviewInfo {
 // 기숙사 추가 조건
 export interface DormitoryConditions {
   currentRegion: string;
-  currentGrade: string;
+  currentGrade: number;
 }
 
 // 기숙사 편의시설
