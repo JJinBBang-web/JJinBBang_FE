@@ -134,7 +134,7 @@ const MapPage = () => {
         monthlyRentMin: monthlyRentMin,
         monthlyRentMax: monthlyRentMax,
         inMaintenanceCost: filter.inMaintenanceCost,
-        reviewKeyword: [],
+        reviewKeyword: filter.reviewKeyword,
     };
 
     console.log(mapBounds);
