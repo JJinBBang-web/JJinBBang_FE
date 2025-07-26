@@ -3,6 +3,7 @@ import styles from "./CampusSlide.module.css";
 import campus_arrow from "../assets/image/campusArrow.svg";
 import select_dot from "../assets/image/selectDot.svg";
 import not_select_dot from "../assets/image/notSelectDot.svg";
+import preparingService from "../assets/image/preparingService.svg";
 
 const SLIDE_WIDTH = 173;
 
@@ -13,16 +14,12 @@ interface CampusItem {
   scrollLeft?: number; // ✅ 선택적(optional) 속성으로 변경
 }
 
-
-const Campus: React.FC<CampusItem> = ({ img, univ, campus,scrollLeft }) => {
-
+const Campus: React.FC<CampusItem> = ({ img, univ, campus, scrollLeft }) => {
   return (
     <div
       className={styles.campus}
       onClick={() => {
-        
         if (typeof scrollLeft === "number" && scrollLeft % SLIDE_WIDTH === 0) {
-          
           window.location.href = "https://www.naver.com"; // 현재 창에서 이동
         }
       }}
@@ -36,7 +33,9 @@ const Campus: React.FC<CampusItem> = ({ img, univ, campus,scrollLeft }) => {
       <p className={styles.univ_name}>{univ}</p>
       <div className={styles.campus_name_container}>
         <p className={styles.campus_name}>{campus}</p>
-        <img src={campus_arrow} alt="campus_arrow" />
+        {univ !== "서비스 준비중!" && (
+          <img src={campus_arrow} alt="campus_arrow" />
+        )}
       </div>
     </div>
   );
@@ -56,9 +55,17 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
   const [isSnapping, setIsSnapping] = useState(false); // 스냅 동작 중인지 확인하는 상태 추가
 
   const THRESHOLD = SLIDE_WIDTH / 16; // 임계값을 더 크게 설정
-    const listToMap =
-      campusList.length > 1 ? campusList.slice(0, -1) : campusList;
 
+  if (campusList.length === 1) {
+    campusList.push({
+      img: preparingService,
+      univ: "서비스 준비중!",
+      campus: "조금만 기다려 주세요",
+    });
+  }
+
+  const listToMap =
+    campusList.length > 1 ? campusList.slice(0, -1) : campusList;
 
   const getClientX = (e: React.MouseEvent | React.TouchEvent): number => {
     if ("touches" in e) {
