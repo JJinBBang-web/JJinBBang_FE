@@ -128,7 +128,7 @@ const BuildingPreviewReview:React.FC<Props> = ({review}) => {
             <PreviewReviewContent
                 reviewInfo={{
                     content : review.reviewInfo.content,
-                    keywords : review.reviewInfo.keywords,
+                    keywords : review.reviewInfo.keyword,
                     likesCount : likeCount,
                     updatedAt : review.reviewInfo.updatedAt
                 }}

@@ -6,7 +6,7 @@ export type ContractType = 'MONTHLY_RENT' | 'DEPOSIT_RENT'; // 실제 서버와 
 // 공통 ReviewInfo
 export interface ReviewInfo {
   content: string;
-  keywords: string[];
+  keyword: string[];
   likeCount: number;
   updateAt: string; // ISO 8601 날짜 문자열
 }

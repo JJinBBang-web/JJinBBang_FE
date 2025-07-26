@@ -89,11 +89,11 @@ const PreviewReview: React.FC<Props> = ({
       <PreviewReviewContent
                 reviewInfo={{
           content: review.reviewInfo.content,
-          keywords: review.reviewInfo.keywords,
+          keywords: review.reviewInfo.keyword,
           likesCount: likeCount,
           updatedAt: {
                   content: review.reviewInfo.content,
-                  keywords: review.reviewInfo.keywords,
+                  keywords: review.reviewInfo.keyword,
                   likesCount: likeCount,
                   updatedAt: review.reviewInfo.updatedAt,
         }.updatedAt,

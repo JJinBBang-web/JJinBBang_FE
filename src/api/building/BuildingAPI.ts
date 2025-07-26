@@ -35,6 +35,7 @@ export class BuildingAPI {
    * 리뷰 목록 리스트 조회 API
    * @param {string} buildingId - 건물 ID
    * @param options - 쿼리 파라미터
+   * @returns {Promise<BuidlingReviewListResponse>}
    */
   static async getReviewList(
     buildingId: string,
@@ -49,11 +50,16 @@ export class BuildingAPI {
       const response = await api.get(`/api/v1/building/${buildingId}/review`, {
         params: {
           num: options?.num ?? 10,
-          page: options?.page ?? 1,
+          page: options?.page ?? 0,
           sortBy: options?.sortBy ?? 'LATEST',
           isAgency: options?.isAgency ?? false,
         },
         useAuth: true,
+      });
+
+      console.log("Review API 호출 파라미터", {
+        buildingId,
+        ...options
       });
 
       if (!response.data || response.data.code !== 200) {

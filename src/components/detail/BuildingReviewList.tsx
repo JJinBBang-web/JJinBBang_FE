@@ -84,7 +84,6 @@ const BuildingReviewList: React.FC = () => {
   // 기본값: 최신순, 1페이지, 10개
   const { data, isLoading, isError } = useBuildingReviewList({
     buildingId: buildingId ?? "",
-    page: 1,
     sortBy: "LATEST",
     isAgency: false,
   });
@@ -103,8 +102,13 @@ const BuildingReviewList: React.FC = () => {
   }
 }, [data]);
 
+  console.log(data?.items);
+
   if (isLoading) return <div>리뷰 불러오는 중...</div>;
   if (isError) return <div>리뷰 불러오기 실패</div>;
+
+  console.log("리코일 저장 후 리뷰", reviews);
+
 
   // useEffect(() => {
   //   setReviews(mockData);
