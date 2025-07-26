@@ -93,7 +93,6 @@ const BuildingReviewList: React.FC = () => {
       ...item,
       reviewInfo: {
         ...item.reviewInfo,
-        updatedAt: new Date(item.reviewInfo.updateAt),
       },
     }));
 
