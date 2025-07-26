@@ -12,98 +12,100 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
-import { MarkerFilter, MarkerRequest } from '../types/entity/map/MapInterface';
+import { MarkerFilter, MarkerRequest, NearByRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilValue } from 'recoil';
 import { filterState, housingTypeState } from '../recoil/map/mapRecoilState';
 import { universityLabelState } from '../recoil/map/universityRecoilState';
+import { useNearBy } from '../hooks/useNearBy';
 
 
-const mockup = {
-    num : 10,
-    page : 1,
-    itemNum : 10,
-    items: [
-      {
-        dormitoryBasicInfo: {
-          id: 1,
-          name: "지희관",
-          university: "경상국립대",
-          type: "기숙사",
-          floor: "저", // 옥탑방은 0, 반지하는 -1
-          space: 26.44,
-          capacity: 2,
-          dormFee: 10,
-          rating: 3,
-          liked: true, // false
-        },
-        reviewInfo: {
-          content: "집이 너무 깔끔하고...",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-          likesCount: 120,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-        },
-        image: campus_img_1,
-      },
-      {
-        basicInfo: {
-          reviewId: 2,
-          name: "한솔원룸",
-          type: "투룸",
-          contractType: "전세",
-          deposit: 2000,
-          monthlyRent: 0,
-          floor: "고",
-          space: 35.5,
-          maintenanceCost: 5,
-          rating: 4,
-          liked: false,
-        },
-        reviewInfo: {
-          content: "주변이 조용하고 살기 좋아요.",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-          likesCount: 18,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-        },
-        image: campus_img_1,
-      },
-      {
-        basicInfo: {
-          reviewId: 3,
-          name: "강남하우스",
-          type: "오피스텔",
-          contractType: "월세",
-          deposit: 1000,
-          monthlyRent: 70,
-          floor: "중",
-          space: 42.7,
-          maintenanceCost: 15,
-          rating: 5,
-          liked: true,
-        },
-        reviewInfo: {
-          content: "채광이 좋고 전망이 멋져요.",
-          keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-          likesCount: 12,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-        },
-        image: campus_img_1,
-      },
-    ] as any[],
-}
+// const mockup = {
+//     num : 10,
+//     page : 1,
+//     itemNum : 10,
+//     items: [
+//       {
+//         dormitoryBasicInfo: {
+//           id: 1,
+//           name: "지희관",
+//           university: "경상국립대",
+//           type: "기숙사",
+//           floor: "저", // 옥탑방은 0, 반지하는 -1
+//           space: 26.44,
+//           capacity: 2,
+//           dormFee: 10,
+//           rating: 3,
+//           liked: true, // false
+//         },
+//         reviewInfo: {
+//           content: "집이 너무 깔끔하고...",
+//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
+//           likesCount: 120,
+//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
+//         },
+//         image: campus_img_1,
+//       },
+//       {
+//         basicInfo: {
+//           reviewId: 2,
+//           name: "한솔원룸",
+//           type: "투룸",
+//           contractType: "전세",
+//           deposit: 2000,
+//           monthlyRent: 0,
+//           floor: "고",
+//           space: 35.5,
+//           maintenanceCost: 5,
+//           rating: 4,
+//           liked: false,
+//         },
+//         reviewInfo: {
+//           content: "주변이 조용하고 살기 좋아요.",
+//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
+//           likesCount: 18,
+//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
+//         },
+//         image: campus_img_1,
+//       },
+//       {
+//         basicInfo: {
+//           reviewId: 3,
+//           name: "강남하우스",
+//           type: "오피스텔",
+//           contractType: "월세",
+//           deposit: 1000,
+//           monthlyRent: 70,
+//           floor: "중",
+//           space: 42.7,
+//           maintenanceCost: 15,
+//           rating: 5,
+//           liked: true,
+//         },
+//         reviewInfo: {
+//           content: "채광이 좋고 전망이 멋져요.",
+//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
+//           likesCount: 12,
+//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
+//         },
+//         image: campus_img_1,
+//       },
+//     ] as any[],
+// }
 
 const MapPage = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSheetVisible, setIsSheetVisible] = useState(true);
     const [mapBounds, setMapBounds] = useState<MarkerRequest['bounds'] | null>(null);
+    const [selectedSort, setSelectedSort] = useState<"RCMND" | "LATEST" | "LIKES" | "STARS">("RCMND");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const isInitialized = useRef(false);
 
     const formatDepositValue = (value: number) => value * 100;  // 단순히 ×100
 
     const formatMonthlyRentValue = (value: number) => {
-        // 예시: 15 → 75만, 53 → 330만
         if (value === 50) return null;  // 제한 없음 처리
         if (value <= 40) return value * 5;
         return 200 + (value - 40) * 10;
@@ -154,6 +156,22 @@ const MapPage = () => {
         : undefined
     );
 
+    const nearByParams: NearByRequest | undefined = mapBounds
+    ? {
+        num: 10,
+        page: 1,
+        type: viewType,           
+        sortBy: selectedSort,        
+        idList: markerData.map((m) => m.id),
+        }
+    : undefined;
+
+    const {
+        data: nearByData,
+        isLoading: isNearByLoading,
+        isError: isNearByError,
+    } = useNearBy(nearByParams);
+
     const handleOpenModal = () => {
         setIsSheetVisible(false);
         setIsModalOpen(true);
@@ -177,6 +195,14 @@ const MapPage = () => {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // 토큰 여부 확인
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        setIsLoggedIn(!!token);
+    }, []);
+
+    // 학생 인증 확인
 
     return (
         <div className={styles.content}             
@@ -268,7 +294,8 @@ const MapPage = () => {
             </div>
             <FilterBar/>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
-            {mockup.items.length > 0 ?
+            {/* 토큰 없는 경우 && 인증 X 경우 ? 팝업 등장 (안에서 학교인증X ? 학생인증 : 회/로 ) */}
+            {!!nearByData?.items?.length ?
                 (isModalOpen && <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
                         <div className={styles.wrap}>
                             <div className={styles.sheet_header}>
@@ -276,39 +303,45 @@ const MapPage = () => {
                             </div>
                             <div className={styles.sheet_title_wrap}>
                                 <div className={styles.sheet_info_wrap}>
-                                    <p className={styles.sheet_title}>내 주변 찐빵 (<span>{mockup.itemNum}</span>)</p>
+                                    <p className={styles.sheet_title}>내 주변 찐빵 (<span>{nearByData.itemNum}</span>)</p>
                                 </div>
                                 <img src={iconClose} width="24px" onClick={handleCloseModal}/>
                             </div>
                             <div className={styles.contentWrap}>
                                 <div className={styles.filterWrap}>
-                                    <>
-                                        <p className={styles.selectedText}>
-                                            <span>•</span>추천순
+                                    {[
+                                        { label: "추천순", value: "RCMND" },
+                                        { label: "최신순", value: "LATEST" },
+                                        { label: "좋아요순", value: "LIKES" },
+                                        { label: "별점순", value: "STARS" },
+                                    ].map((sortOption) => (
+                                        <p
+                                        key={sortOption.value}
+                                        className={
+                                            selectedSort === sortOption.value
+                                            ? styles.selectedText
+                                            : undefined
+                                        }
+                                        onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
+                                        >
+                                        <span>•</span>{sortOption.label}
                                         </p>
-                                        <p>
-                                            <span>•</span>최신순
-                                        </p>
-                                        <p>
-                                            <span>•</span>좋아요순
-                                        </p>
-                                        <p>
-                                            <span>•</span>별점순
-                                        </p>
-                                    </>
+                                    ))}
                                 </div>
-                                {mockup.items.map((review) => (
-                                    <div key={review.basicInfo?.reviewId ?? review.dormitoryBasicInfo?.id}>
+                                {(nearByData?.items ?? []).map((review) => (
+                                    <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildInfo?.id ?? review.generalBuildingInfo?.id}>
                                         <div className={styles.line} />
                                         <PreviewReview review={review} />
                                     </div>
                                     ))}
                             </div>               
                         </div>
-                    </Modal>
-                )
-            : 
-            ( isModalOpen && <Modal onClose={handleCloseModal} >
+                    </Modal>)
+                    : isModalOpen && (
+                        <Modal onClose={handleCloseModal}>...</Modal>
+                    )
+                }
+            { !isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >
                 <div className={styles.wrap2}>
                     <div className={styles.sheet_header}>
                         <div className={styles.header_divider}></div>
@@ -324,13 +357,11 @@ const MapPage = () => {
                         <p className={styles.sheetText}>학교 인증 후<br/>찐빵의 찐거주 후기들을<br/>무료 열람해보세요!</p>
                     </div>
                     <div className={styles.btnWrap}>
-                            <button className={styles.confirmBtn} onClick={()=>{}}>학교 인증하기</button>
+                        <button className={styles.confirmBtn} onClick={()=>{}}>학교 인증하기</button>
                     </div>      
                 </div>
             </Modal>
-            )
-        }
-            
+            }
         </div>
     )
 }

@@ -1,3 +1,5 @@
+import { PreviewBuildingReview } from "../../../recoil/detail/PreviewBuildingReviewRecoilState";
+
 export interface MapBounds {
   neLat: number;
   neLng: number;
@@ -28,4 +30,19 @@ export interface MarkerResponse {
   latitude: number;
   longitude: number;
   isReviews: boolean;
+}
+
+export interface NearByRequest {
+  num : number,
+  page : number,
+  type : "REVIEW"|"BUILDING",
+  sortBy : "RCMND" | "LATEST" | "LIKES" | "STARS",
+  idList : number[],
+}
+
+export interface NearByResponse {
+  num : number,
+  page : number,
+  itemNum : number,
+  items : PreviewBuildingReview[],
 }
