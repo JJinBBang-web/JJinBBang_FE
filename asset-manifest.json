@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/JJinBBang_FE/static/css/main.aa0ad202.css",
-    "main.js": "/JJinBBang_FE/static/js/main.c1ece217.js",
+    "main.js": "/JJinBBang_FE/static/js/main.b350b811.js",
     "static/media/example_image2.png": "/JJinBBang_FE/static/media/example_image2.a31a47494c72536804f5.png",
     "static/media/campusImg1.svg": "/JJinBBang_FE/static/media/campusImg1.d843d00b0fe3c580b96d9a9ff260bfe4.svg",
     "static/media/SpoqaHanSansNeo-Bold.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Bold.1db18034ccc384032a4a.woff2",
@@ -188,10 +188,10 @@
     "static/media/notSelectDot.svg": "/JJinBBang_FE/static/media/notSelectDot.b617819f5f22d0b1c65086a135eb8ffd.svg",
     "static/media/selectDot.svg": "/JJinBBang_FE/static/media/selectDot.3921dd6a5a166c7441fe8ff4af7061c5.svg",
     "main.aa0ad202.css.map": "/JJinBBang_FE/static/css/main.aa0ad202.css.map",
-    "main.c1ece217.js.map": "/JJinBBang_FE/static/js/main.c1ece217.js.map"
+    "main.b350b811.js.map": "/JJinBBang_FE/static/js/main.b350b811.js.map"
   },
   "entrypoints": [
     "static/css/main.aa0ad202.css",
-    "static/js/main.c1ece217.js"
+    "static/js/main.b350b811.js"
   ]
 }
