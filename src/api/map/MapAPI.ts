@@ -5,6 +5,7 @@ import { MarkerRequest, MarkerResponse } from "../../types/entity/map/MapInterfa
 export class MapAPI {
   static async fetchMarkers(body: MarkerRequest): Promise<MarkerResponse[]> {
     try {
+      console.log("📍 MapAPI.fetchMarkers 요청 body:", body);
       const res = await api.post("/api/v1/map/markers", body, {
         useAuth: false,
       });

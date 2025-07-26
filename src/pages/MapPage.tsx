@@ -130,7 +130,7 @@ const MapPage = () => {
         viewType: viewType, 
         buildType: buildType.length === 0 ? ["ALL"] : [buildType],
         contractType: null,
-        campus: [universityLabel],
+        campus: universityLabel ? [universityLabel] : null,
         depositMin: depositMin,
         depositMax: depositMax,
         monthlyRentMin: monthlyRentMin,
@@ -224,7 +224,7 @@ const MapPage = () => {
                 >
                     <MarkerClusterer
                         averageCenter={true}
-                        minLevel={4}
+                        minLevel={5}
                         styles={[
                             {
                             width: "44px",

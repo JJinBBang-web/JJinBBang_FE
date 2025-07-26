@@ -94,9 +94,9 @@ export const selectedUniversityState = atom<number | null>({
     default: null,
 })
 
-export const universityLabelState = atom<string>({
+export const universityLabelState = atom<string | null>({
   key: 'universityLabelState',
-  default: "경상국립대_가좌캠퍼스",
+  default: null,
 });
 
 // 대학교 필터링
