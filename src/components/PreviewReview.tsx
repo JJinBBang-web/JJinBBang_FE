@@ -85,6 +85,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
     setLikeCount,
   ]);
 
+
   return (
     <div
       className={styles.previewReviewContainer}
@@ -166,6 +167,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
           likeCount: likeCount,
           updateAt: review.reviewInfo.updateAt,
         }}
+
       />
     </div>
   );

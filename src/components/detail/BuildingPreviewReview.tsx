@@ -149,6 +149,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
             src={isLiked ? heartIconOn : heartIconOff}
             alt="heartIcon"
           />
+
         </div>
       </div>
 

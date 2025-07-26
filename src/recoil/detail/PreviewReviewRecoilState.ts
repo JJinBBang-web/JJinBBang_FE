@@ -41,6 +41,7 @@ export interface ReviewInfo {
   keyword: string[];
   likeCount: number;
   updateAt: string;
+
 }
 
 export interface ReviewPreview {
@@ -61,6 +62,7 @@ export const ReviewPreviewState = atom<ReviewPreview[]>({
         keyword: [],
         likeCount: 0,
         updateAt: "",
+
       },
       image: "",
     },
