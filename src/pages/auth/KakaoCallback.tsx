@@ -34,29 +34,20 @@ const KakaoCallback: React.FC = () => {
           });
 
           if (response.success && response.data) {
-            // 토큰을 로컬 스토리지에 저장
-            localStorage.setItem('accessToken', response.data.accessToken);
-            localStorage.setItem('refreshToken', response.data.refreshToken);
+            const { accessToken, refreshToken, user } = response.data;
 
-            // Recoil 상태 업데이트
-            setAuth({
-              isAuthenticated: true,
-              email: response.data.user.email,
-              verificationStatus: response.data.user.isVerified
-                ? 'verified'
-                : 'unverified',
-              isFirstLogin: isFirstLogin, // 첫 로그인 여부 설정
-            });
+            // localStorage만 저장
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('email', user.email);
+            localStorage.setItem(
+              'verificationStatus',
+              user.isVerified ? 'verified' : 'unverified'
+            );
+            localStorage.removeItem('isFirstLogin'); // 제거
 
-            // 첫 로그인 플래그 초기화
-            localStorage.removeItem('isFirstLogin');
-
-            // 이메일 인증 상태에 따라 리다이렉트
-            if (response.data.user.isVerified) {
-              navigate('/mypage');
-            } else {
-              navigate('/auth/verify');
-            }
+            // Recoil 설정하지 말고 바로 이동
+            window.location.href = '/mypage';
           }
         } catch (error) {
           console.error('카카오 로그인 처리 중 오류 발생:', error);

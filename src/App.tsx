@@ -78,7 +78,7 @@ const AppContent: React.FC = () => {
     '/building/',
     '/building/rv/',
     '/building/rv/report',
-    '/building/rv/report/'
+    '/building/rv/report/',
   ].includes(location.pathname);
 
   return (
@@ -144,7 +144,7 @@ const App: React.FC = () => {
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter >
+        <BrowserRouter>
           <AppContent />
           <ModalBottomSheet />
         </BrowserRouter>

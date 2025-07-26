@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../../recoil/auth/atoms';
+import { authApi } from '../../api/auth';
 import styles from '../../styles/auth/NewStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
@@ -23,17 +24,19 @@ const NewStudentVerification: React.FC = () => {
   ) => {
     const files = event.target.files;
     if (!files?.length) return;
+
     try {
       const file = files[0];
       validateFile(file);
       setFile(file);
-      // API 연동 대신 바로 complete 상태로 변경
+
+      // 합격증명서 인증 (신입생용)
+      await authApi.verifyAdmissionCertificate(file);
       setVerificationStatus('complete');
     } catch (error) {
       alert(
         error instanceof Error ? error.message : '파일 업로드에 실패했습니다.'
       );
-      setVerificationStatus('initial');
     }
   };
 
