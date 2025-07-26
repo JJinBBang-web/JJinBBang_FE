@@ -18,8 +18,22 @@ export const contractTypeToKorean: Record<string, string> = {
   DEPOSIT_RENT: '전세',
 };
 
+export const koreanToContractType: Record<string, string> = Object.entries(contractTypeToKorean)
+  .reduce((acc, [eng, kor]) => {
+    acc[kor] = eng;
+    return acc;
+  }, {} as Record<string, string>);
+
 export const floorToKorean: Record<string, string> = {
   HIGH: '고층',
   MID: '중층',
   LOW: '저층',
+  BASEMENT : '반지하',
+  ATTIC : '옥탑',
 };
+
+export const koreanToFloor: Record<string, string> = Object.entries(floorToKorean)
+  .reduce((acc, [eng, kor]) => {
+    acc[kor] = eng;
+    return acc;
+}, {} as Record<string, string>);
