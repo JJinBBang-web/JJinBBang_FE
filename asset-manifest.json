@@ -1,12 +1,11 @@
 {
   "files": {
     "main.css": "/JJinBBang_FE/static/css/main.88435982.css",
-    "main.js": "/JJinBBang_FE/static/js/main.c2748a15.js",
+    "main.js": "/JJinBBang_FE/static/js/main.ed9c1e7e.js",
     "static/media/campusImg1.svg": "/JJinBBang_FE/static/media/campusImg1.d843d00b0fe3c580b96d9a9ff260bfe4.svg",
     "static/media/SpoqaHanSansNeo-Bold.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Bold.1db18034ccc384032a4a.woff2",
     "static/media/SpoqaHanSansNeo-Regular.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Regular.452bf1579d6a73fbaffc.woff2",
     "static/media/SpoqaHanSansNeo-Medium.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Medium.8589927a4fa35d637a8d.woff2",
-    "static/media/example_image1.png": "/JJinBBang_FE/static/media/example_image1.0e4a845cab97d64d05c5.png",
     "static/media/verifiedSheetCharacter.svg": "/JJinBBang_FE/static/media/verifiedSheetCharacter.6bace9297518ddcb58a2a0f414d94298.svg",
     "static/media/PO_AG_PD_02.svg": "/JJinBBang_FE/static/media/PO_AG_PD_02.7e13f51ee09b45f52a1403e24dad59ee.svg",
     "static/media/PO_AG_SO_04.svg": "/JJinBBang_FE/static/media/PO_AG_SO_04.e393069ef0eef91007cd74983a170600.svg",
@@ -188,10 +187,10 @@
     "static/media/notSelectDot.svg": "/JJinBBang_FE/static/media/notSelectDot.b617819f5f22d0b1c65086a135eb8ffd.svg",
     "static/media/selectDot.svg": "/JJinBBang_FE/static/media/selectDot.3921dd6a5a166c7441fe8ff4af7061c5.svg",
     "main.88435982.css.map": "/JJinBBang_FE/static/css/main.88435982.css.map",
-    "main.c2748a15.js.map": "/JJinBBang_FE/static/js/main.c2748a15.js.map"
+    "main.ed9c1e7e.js.map": "/JJinBBang_FE/static/js/main.ed9c1e7e.js.map"
   },
   "entrypoints": [
     "static/css/main.88435982.css",
-    "static/js/main.c2748a15.js"
+    "static/js/main.ed9c1e7e.js"
   ]
 }
