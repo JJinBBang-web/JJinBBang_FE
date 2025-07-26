@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../styles/global.css'
 import HousingFilter from '../components/map/HousingFilter';
 import SearchBar from '../components/map/SearchBar';
@@ -12,13 +12,8 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
-
-
-interface MarkerData {
-  id: number;
-  latitude: number;
-  longitude: number;
-}
+import { MarkerFilter, MarkerRequest } from '../types/entity/map/MapInterface';
+import { useMapMarkers } from '../hooks/useMapMarker';
 
 
 const mockup = {
@@ -98,29 +93,38 @@ const MapPage = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSheetVisible, setIsSheetVisible] = useState(true);
+    const [mapBounds, setMapBounds] = useState<MarkerRequest['bounds'] | null>(null);
 
-    const [markerData, setMarkerData] = useState<MarkerData[]>([
-        {
-            id: 1,
-            latitude: 35.149245,
-            longitude:128.101412,
-        },
-        {
-            id: 2,
-            latitude: 35.148898,
-            longitude: 128.101436,
-        },
-        {
-            id: 3,
-            latitude: 35.150038,
-            longitude: 128.103103,
-        },
-        {
-            id: 4,
-            latitude: 35.147435,
-            longitude: 128.101605,
-        },
-    ]);
+    const isInitialized = useRef(false);
+
+
+    const markerFilters: MarkerFilter = {
+        viewType: "REVIEW",
+        buildType: ["ALL"],
+        contractType: null,
+        campus: ["경상국립대_가좌캠퍼스"],
+        depositMin: 0,
+        depositMax: null,
+        monthlyRentMin: 0,
+        monthlyRentMax: null,
+        inMaintenanceCost: false,
+        reviewKeyword: [],
+    };
+
+    console.log(mapBounds);
+
+    const {
+        data: markerData = [],
+        isLoading,
+        isError,
+    } = useMapMarkers(
+    mapBounds
+        ? {
+            bounds: mapBounds,
+            filters: markerFilters,
+        }
+        : undefined // now allowed
+    );
 
     const handleOpenModal = () => {
         setIsSheetVisible(false);
@@ -146,16 +150,37 @@ const MapPage = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    if (isLoading) return <div>지도 불러오는 중...</div>;
+    if (isError) return <div>지도 데이터를 불러오지 못했습니다.</div>;
+
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.map}>
                 <Map
-                center={{ lat: 35.148898, lng: 128.101436 }}
+                center={{ lat: 35.153237, lng: 128.101090 }}
                 style={{ width: '100%', height: '100%' }}
                 level={4}
                 draggable
                 zoomable
+                onCreate={(map) => {
+                    if (isInitialized.current) return; // 최초 1회만 실행
+
+                    const bounds = map.getBounds();
+                    const ne = bounds.getNorthEast();
+                    const sw = bounds.getSouthWest();
+
+                    const extractedBounds = {
+                        neLat: ne.getLat(),
+                        neLng: ne.getLng(),
+                        swLat: sw.getLat(),
+                        swLng: sw.getLng(),
+                    };
+
+                    console.log("🧭 초기 지도 bounds:", extractedBounds);
+                    setMapBounds(extractedBounds);
+                    isInitialized.current = true;
+                }}
                 >
                     <MarkerClusterer
                         averageCenter={true}

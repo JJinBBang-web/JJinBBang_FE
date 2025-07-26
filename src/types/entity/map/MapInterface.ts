@@ -1,6 +1,31 @@
-// 예시 (example)
-export interface MapInterface {
-  id?: string;            // 생성 전에는 없을 수 있으므로 optional
-  title: string;          // 테스트 제목
-  data: any;              // 자유로운 데이터 구조 (필요하면 타입 정의)
+export interface MapBounds {
+  neLat: number;
+  neLng: number;
+  swLat: number;
+  swLng: number;
+}
+
+export interface MarkerFilter {
+  viewType?: 'BUILDING' | 'REVIEW';
+  buildType?: string[];
+  contractType?: 'MONTHLY_RENT' | 'DEPOSIT_RENT' | null;
+  campus?: string[];
+  depositMin?: number;
+  depositMax?: number | null;
+  monthlyRentMin?: number;
+  monthlyRentMax?: number | null;
+  inMaintenanceCost?: boolean;
+  reviewKeyword?: string[];
+}
+
+export interface MarkerRequest {
+  bounds: MapBounds;
+  filters: MarkerFilter;
+}
+
+export interface MarkerResponse {
+  id: number;
+  latitude: number;
+  longitude: number;
+  isReviews: boolean;
 }
