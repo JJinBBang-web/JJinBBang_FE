@@ -1,4 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
+import { setLoggedIn } from "../recoil/auth/loginStateManager";
+
+
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -12,6 +15,7 @@ export const api = axios.create({
 declare module "axios" {
   export interface AxiosRequestConfig {
     useAuth?: boolean;
+    isFile?: boolean;
     _retry?: boolean;
   }
 }
@@ -27,6 +31,16 @@ api.interceptors.request.use((config) => {
       } else {
         (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
       }
+    }
+  }
+
+  if (config.isFile) {
+    // axios는 FormData 사용 시 Content-Type 생략하는 게 안전합니다.
+    // 브라우저가 자동으로 boundary 설정해줌
+    if (typeof config.headers?.set === "function") {
+      config.headers.set("Content-Type", "multipart/form-data");
+    } else {
+      (config.headers as any)["Content-Type"] = "multipart/form-data";
     }
   }
   return config;
@@ -54,6 +68,9 @@ const processQueue = (error: any, token: string | null = null) => {
 api.interceptors.response.use(
   (res) => {
     console.log("✅ Axios Response:", res.data);
+    if (res.config.useAuth) {
+      setLoggedIn(true); // 로그인 상태 업데이트
+    }
     return res;
   },
   async (error: AxiosError) => {
@@ -69,6 +86,7 @@ api.interceptors.response.use(
 
       if (!refreshToken) {
         // window.location.href = "/login";
+        setLoggedIn(false);
         return Promise.reject(error);
       }
 
@@ -103,9 +121,9 @@ api.interceptors.response.use(
             },
           }
         );
-        
+
         const newToken = response.data.data.accessToken;
-      
+
         localStorage.setItem("accessToken", newToken);
         processQueue(null, newToken);
 
@@ -119,6 +137,7 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
+        setLoggedIn(false);
         processQueue(err, null);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");

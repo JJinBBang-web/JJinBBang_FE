@@ -1,49 +1,72 @@
 // src/App.tsx
-import React from 'react';
-import logo from './logo.svg';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, matchPath, Route, Routes, useLocation } from 'react-router-dom';
-import Home from './pages/Home';
-import MapPage from './pages/MapPage';
-import Heart from './pages/HeartListPage';
-import MyPage from './pages/MyPage';
-import Nav from './components/Nav';
-import KakaoCallback from './pages/auth/KakaoCallback';
-import KakaoAuthPage from './pages/auth/KakaoAuthPage';
-import MyAccountPage from './pages/auth/MyAccountPage';
-import AccountAuthPage from './pages/auth/AccountAuthPage';
-import NewStudentVerification from './pages/auth/NewStudentVerification';
-import CurrentStudentVerification from './pages/auth/CurrentStudentVerification';
-import StudentEmailVerification from './pages/auth/StudentEmailVerification';
-import ReviewTypePage from './pages/review/ReviewTypePage';
-import AddressInputPage from './pages/review/AddressInputPage';
-import AddressSearchPage from './pages/review/AddressSearchPage';
-import AddressResultPage from './pages/review/AddressResultPage';
-import DormitoryInputPage from './pages/review/DormitoryInputPage';
-import DormitoryConditionsPage from './pages/review/DormitoryConditionsPage';
-import DormitoryAmenitiesPage from './pages/review/DormitoryAmenitiesPage';
-import FloorInputPage from './pages/review/FloorInputPage';
-import AgencyInputPage from './pages/review/AgencyInputPage';
-import PaymentTypePage from './pages/review/PaymentTypePage';
-import JeonseInputPage from './pages/review/JeonseInputPage';
-import WolseInputPage from './pages/review/WolseInputPage';
-import RoomInfoPage from './pages/review/PhotoUploadPage';
-import ReviewAdvantagePage from './pages/review/ReviewAdvantagePage';
-import ReviewDisadvantagePage from './pages/review/ReviewDisadvantagePage';
-import ReviewContentPage from './pages/review/ReviewContentPage';
-import ReviewConfirmPage from './pages/review/ReviewConfirmPage';
+import React from "react";
+import logo from "./logo.svg";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  BrowserRouter,
+  matchPath,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
+import Home from "./pages/Home";
+import MapPage from "./pages/MapPage";
+import Heart from "./pages/HeartListPage";
+import MyPage from "./pages/MyPage";
+import Nav from "./components/Nav";
+import KakaoCallback from "./pages/auth/KakaoCallback";
+import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
+import MyAccountPage from "./pages/auth/MyAccountPage";
+import AccountAuthPage from "./pages/auth/AccountAuthPage";
+import NewStudentVerification from "./pages/auth/NewStudentVerification";
+import CurrentStudentVerification from "./pages/auth/CurrentStudentVerification";
+import StudentEmailVerification from "./pages/auth/StudentEmailVerification";
+import ReviewTypePage from "./pages/review/ReviewTypePage";
+import AddressInputPage from "./pages/review/AddressInputPage";
+import AddressSearchPage from "./pages/review/AddressSearchPage";
+import AddressResultPage from "./pages/review/AddressResultPage";
+import DormitoryInputPage from "./pages/review/DormitoryInputPage";
+import DormitoryConditionsPage from "./pages/review/DormitoryConditionsPage";
+import DormitoryAmenitiesPage from "./pages/review/DormitoryAmenitiesPage";
+import FloorInputPage from "./pages/review/FloorInputPage";
+import AgencyInputPage from "./pages/review/AgencyInputPage";
+import PaymentTypePage from "./pages/review/PaymentTypePage";
+import JeonseInputPage from "./pages/review/JeonseInputPage";
+import WolseInputPage from "./pages/review/WolseInputPage";
+import RoomInfoPage from "./pages/review/PhotoUploadPage";
+import ReviewAdvantagePage from "./pages/review/ReviewAdvantagePage";
+import ReviewDisadvantagePage from "./pages/review/ReviewDisadvantagePage";
+import ReviewContentPage from "./pages/review/ReviewContentPage";
+import ReviewConfirmPage from "./pages/review/ReviewConfirmPage";
 
-import { RecoilRoot } from 'recoil';
-import ModalBottomSheet from './components/util/ModalBottomSheet';
-import Review from './pages/Review';
-import Building from './pages/Building';
-import ReportPage from './pages/ReportPage';
-import KakaoCallback1 from './pages/KakaoCallBack';
+import { RecoilRoot } from "recoil";
+import ModalBottomSheet from "./components/util/ModalBottomSheet";
+import Review from "./pages/Review";
+import Building from "./pages/Building";
+import ReportPage from "./pages/ReportPage";
+import KakaoCallback1 from "./pages/KakaoCallBack";
 
-const queryClient = new QueryClient();
+import { useRecoilState } from "recoil";
+import { useEffect } from "react";
+import { isLoginState } from "./recoil/auth/isLoginState";
+import { setLoginStateUpdater } from "./recoil/auth/loginStateManager";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      // retry: false, // 재시도 비활성화
+      // retry: 5,   // 5번 재시도
+    },
+  },
+});
 const AppContent: React.FC = () => {
   const location = useLocation();
+  const [, setIsLoggedIn] = useRecoilState(isLoginState);
+  useEffect(() => {
+    setLoginStateUpdater(setIsLoggedIn);
+  }, []);
+  
 
   // const showHeaderAndNav = ![
   //   '/auth/verify',
@@ -79,12 +102,12 @@ const AppContent: React.FC = () => {
   // ].includes(location.pathname);
 
   const hiddenNavPaths = [
-    '/auth/*',
-    '/myaccount',
-    '/review/*',
-    '/building/:buildingId',
-    '/building/review/:reviewId',
-    '/building/review/:reviewId/report',
+    "/auth/*",
+    "/myaccount",
+    "/review/*",
+    "/building/:buildingId",
+    "/building/review/:reviewId",
+    "/building/review/:reviewId/report",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -140,9 +163,12 @@ const AppContent: React.FC = () => {
           <Route path="content" element={<ReviewContentPage />} />
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-       <Route path="/building/:buildingId" element={<Building />} />
-      <Route path="/building/review/:reviewId" element={<Review />} />
-      <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
+        <Route path="/building/:buildingId" element={<Building />} />
+        <Route path="/building/review/:reviewId" element={<Review />} />
+        <Route
+          path="/building/review/:reviewId/report"
+          element={<ReportPage />}
+        />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

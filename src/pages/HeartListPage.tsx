@@ -49,7 +49,7 @@ const api = {
           type: "ROOM",
           contractType: "MONTHLY_RENT",
           deposit: 2000,
-          monthlyRent: 0,
+          price: 40,
           floor: "LOW",
           space: 35.5,
           maintenanceCost: 5,

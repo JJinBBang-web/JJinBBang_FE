@@ -11,7 +11,9 @@ import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import pencil from "../assets/image/pencil.svg";
 import iconRight from "../assets/image/iconRight.svg";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI ,deleteAPI} from "../api/bassAPI";
+import { getAPI, putAPI, deleteAPI } from "../api/bassAPI";
+import { isLoginState } from "../recoil/auth/isLoginState";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -22,35 +24,87 @@ const getReviewKey = (review: any) => {
 };
 
 const QUERY_KEYS = {
+  userData: "USER_DATA",
   campusData: "CAMPUS_DATA",
-  reviewData: "REVIEW_DATA",
+  reviewData: "RECENT_REVIEW_DATA",
 };
 
 const Home: React.FC = () => {
   const queryClient = useQueryClient();
 
-  // 수정 예정
-  const universityName = "경상국립대학교";
+  const university = "경상국립대학교";
 
+  const isLogin = useRecoilValue(isLoginState);
+  useEffect(() => {
+    // 로그인 상태가 변경될 때마다 실행되는 부분
+    console.log("로그인 상태가 바뀜:", isLogin);
+
+    // 여기서 쿼리 refetch하거나 로컬 상태 초기화 가능
+  }, [isLogin]);
+
+  // ✅ 로그인한 경우에만 실행
   const {
-    data: campusList,
-    isFetching: isFetchingCampus,
-    isError: isErrorCampus,
+    data: userData,
+    isFetching: isFetchingUser,
+    isError: isErrorUser,
   } = useQuery({
-    queryKey: [QUERY_KEYS.campusData],
+    queryKey: [QUERY_KEYS.userData],
+    queryFn: async () => {
+      const response = await getAPI(`/api/v1/user`, true);
+      return response.data;
+    },
+    enabled: isLogin,
+    refetchOnWindowFocus: false,
+  });
+
+  // ✅ 로그인한 경우에만 실행
+  const {
+    data: campusListLogin,
+    isFetching: isFetchingCampusLogin,
+    isError: isErrorCampusLogin,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.campusData, "login"],
     queryFn: async () => {
       const response = await getAPI(
-        `/api/v1/user/univ/campus?universityName=${universityName}`
+        `/api/v1/user/univ/campus?universityName=${userData?.university}`
       );
-
       return response.data.campusList.map((campus: any) => ({
         img: campus.logoImageUrl || "default_image_url",
-        univ: "경상국립대학교",
+        univ: userData.university,
         campus: campus.campusName,
       }));
     },
+    enabled: isLogin && !!userData?.university,
     refetchOnWindowFocus: false,
   });
+
+  // ✅ 비로그인일 때만 실행
+  const {
+    data: campusListGuest,
+    isFetching: isFetchingCampusGuest,
+    isError: isErrorCampusGuest,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.campusData, "guest"],
+    queryFn: async () => {
+      const response = await getAPI(
+        `/api/v1/user/univ/campus?universityName=${university}`
+      );
+      return response.data.campusList.map((campus: any) => ({
+        img: campus.logoImageUrl || "default_image_url",
+        univ: university,
+        campus: campus.campusName,
+      }));
+    },
+    enabled: !isLogin,
+    refetchOnWindowFocus: false,
+  });
+
+  // ✅ 공통 처리
+  const campusList = isLogin ? campusListLogin : campusListGuest;
+  const isFetchingCampus = isLogin
+    ? isFetchingCampusLogin
+    : isFetchingCampusGuest;
+  const isErrorCampus = isLogin ? isErrorCampusLogin : isErrorCampusGuest;
 
   const rawReviewList = localStorage.getItem("reviewList");
 
@@ -60,7 +114,6 @@ const Home: React.FC = () => {
     rawReviewList.endsWith("]")
       ? rawReviewList.slice(1, -1)
       : "";
-  
 
   const {
     data: reviewData,
@@ -78,18 +131,17 @@ const Home: React.FC = () => {
       );
       return response.data;
     },
+    enabled: isLogin,
     refetchOnWindowFocus: false,
   });
-  
-  if (isFetchingCampus || isFetchingReviewInfo) {
+  const validReviewData = Array.isArray(reviewData) ? reviewData : [];
+
+  if (isFetchingUser || isFetchingCampus || isFetchingReviewInfo) {
     console.log("로딩 중...");
     return null;
   }
 
-  if (isErrorCampus || isErrorReviewInfo) {
-    console.error("에러 발생");
-    return null;
-  }
+
 
   return (
     <div className={styles.container}>
@@ -113,7 +165,7 @@ const Home: React.FC = () => {
         <CampusSlide campusList={campusList} />
       </div>
 
-      <div className={styles.safetyContainer} >
+      <div className={styles.safetyContainer}>
         <img src={pencil} alt="pencil" />
         <div>
           <p className={styles.safetyText}>
@@ -133,8 +185,8 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        {reviewData.length > 0 ? (
-          reviewData.map((review: any) => {
+        {validReviewData.length > 0 ? (
+          validReviewData.map((review: any) => {
             return (
               <div key={getReviewKey(review)}>
                 <div className={styles.line} />

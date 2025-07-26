@@ -40,7 +40,6 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
       const letterSpacing = -0.581;
       const text = tagMessages[keyword[i]] || keyword[i];
       const baseWidth = ctx!.measureText(text).width;
-      console.log(tagMessages[keyword[i]]);
 
       // 글자 수만큼 letter-spacing 적용 (마지막 글자는 적용 안됨)
       const spacingAdjustment = (text.length - 1) * letterSpacing;
@@ -64,7 +63,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
 
       const tagWidth = baseWidth + spacingAdjustment + 9;
 
-      console.log("+" + tempHidden.toString(), tagWidth);
+      // console.log("+" + tempHidden.toString(), tagWidth);
       if (usedWidth > MAX_WIDTH - tagWidth) {
         tempVisible.pop();
         tempHidden -= 1;

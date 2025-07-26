@@ -149,7 +149,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
             src={isLiked ? heartIconOn : heartIconOff}
             alt="heartIcon"
           />
-
         </div>
       </div>
 
@@ -164,7 +163,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
                 ? "전세" // contractType이 'DEPOSIT_RENT'일 경우 표시
                 : generalInfo.contractType // 둘 다 아닐 경우 원래 값 표시
             }{" "}
-            {generalInfo?.deposit}/{generalInfo?.monthlyRent}
+            {generalInfo?.deposit}/{generalInfo?.price}
           </div>
         )}
         {dormitoryInfo && (

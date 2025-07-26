@@ -3,6 +3,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { setLoggedIn } from "../recoil/auth/loginStateManager";
+
 
 const url = process.env.REACT_APP_API_URL;
 export const getSignupToken = () => localStorage.getItem("signupToken");
@@ -91,6 +93,7 @@ function KakaoCallback1() {
             localStorage.setItem("accessToken", response.data.accessToken);
             localStorage.setItem("refreshToken", response.data.refreshToken);
             console.log("로그인 성공, 토큰 저장 완료");
+            setLoggedIn(true);
           } else if (response.data.signupToken) {
             // 회원가입 필요 시, signupToken 저장
             localStorage.setItem("signupToken", response.data.signupToken);
@@ -105,6 +108,7 @@ function KakaoCallback1() {
                     accessToken: data.accessToken,
                     refreshToken: data.refreshToken,
                   });
+                  setLoggedIn(true);
                 } else {
                   console.error("약관 동의 실패:", message);
                 }
@@ -120,6 +124,7 @@ function KakaoCallback1() {
           console.error("로그인 요청 중 에러:", err);
         });
     }
+
     // 3) 로그인 성공 시, 메인 페이지로 리다이렉트
     navigate("/mypage"); // 메인 페이지로 리다이렉트
   }, [location]);

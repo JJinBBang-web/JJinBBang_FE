@@ -37,7 +37,7 @@ export interface GeneralReviewInfo {
   type: string;
   contractType: string;
   deposit: number;
-  monthlyRent: number;
+  price: number;
   floor: string;
   space: number;
   maintenanceCost: number;
