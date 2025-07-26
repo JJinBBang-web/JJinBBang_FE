@@ -1,9 +1,9 @@
 import { atom } from "recoil";
 
 // 매물 유형 상태
-export const housingTypeState = atom<string | null> ({
+export const housingTypeState = atom<string> ({
     key: "housingTypeState",
-    default: "전체",
+    default: "ALL",
 })
 
 // 임시 변경 상태 (하우징)

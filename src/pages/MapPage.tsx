@@ -14,6 +14,8 @@ import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
 import { MarkerFilter, MarkerRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
+import { useRecoilValue } from 'recoil';
+import { housingTypeState } from '../recoil/map/mapRecoilState';
 
 
 const mockup = {
@@ -97,10 +99,12 @@ const MapPage = () => {
 
     const isInitialized = useRef(false);
 
+    // filter Recoil
+    const buildType = useRecoilValue(housingTypeState);
 
     const markerFilters: MarkerFilter = {
         viewType: "REVIEW",
-        buildType: ["ALL"],
+        buildType: buildType.length === 0 ? ["ALL"] : [buildType],
         contractType: null,
         campus: ["경상국립대_가좌캠퍼스"],
         depositMin: 0,
@@ -123,7 +127,7 @@ const MapPage = () => {
             bounds: mapBounds,
             filters: markerFilters,
         }
-        : undefined // now allowed
+        : undefined
     );
 
     const handleOpenModal = () => {
@@ -150,12 +154,10 @@ const MapPage = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    if (isLoading) return <div>지도 불러오는 중...</div>;
-    if (isError) return <div>지도 데이터를 불러오지 못했습니다.</div>;
-
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
+            {isLoading ? <div>로딩중..</div> :
             <div className={styles.map}>
                 <Map
                 center={{ lat: 35.153237, lng: 128.101090 }}
@@ -221,6 +223,7 @@ const MapPage = () => {
                     </MarkerClusterer>
                 </Map>
             </div>
+            }
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
                 <SearchBar/>
