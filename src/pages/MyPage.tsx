@@ -117,6 +117,10 @@ const MyPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error('리뷰 조회 실패:', error);
+      // 404 에러는 리뷰가 없는 것으로 처리
+      if (error.response?.status === 404) {
+        setUserReviews([]);
+      }
     } finally {
       setReviewsLoading(false);
     }
@@ -293,7 +297,7 @@ const MyPage: React.FC = () => {
       <div className={styles.reviewList}>
         {userReviews.map((review) => (
           <div key={review.id} className={styles.reviewItem}>
-            <h3>{review.title}</h3>
+            <h3>{review.title || review.buildingName || '제목 없음'}</h3>
             <p>{review.content}</p>
             <div className={styles.reviewMeta}>
               <span>평점: {review.rating}/5</span>

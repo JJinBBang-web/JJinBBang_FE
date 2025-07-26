@@ -39,6 +39,12 @@ export interface ReviewQueryParams {
   orderby?: 'latest' | 'oldest';
 }
 
+export interface ReviewQueryParams {
+  offset?: number;
+  limit?: number;
+  orderby?: 'latest' | 'oldest';
+}
+
 export const userApi = {
   getUserInfo: async (): Promise<UserInfoResponse> => {
     const response = await api.get('/api/v1/user', { useAuth: true });

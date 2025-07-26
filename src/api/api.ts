@@ -1,31 +1,32 @@
-import axios, { AxiosRequestConfig, AxiosError } from "axios";
+// src/api/api.ts
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: {
-    "Content-Type": "application/json; charset=UTF-8",
-    Accept: "application/json",
+    'Content-Type': 'application/json; charset=UTF-8',
+    Accept: 'application/json',
   },
 });
 
-// ✅ AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
-declare module "axios" {
+// AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
+declare module 'axios' {
   export interface AxiosRequestConfig {
     useAuth?: boolean;
     _retry?: boolean;
   }
 }
 
-// ✅ 요청 인터셉터 (access token 자동 삽입)
+// 요청 인터셉터 (access token 자동 삽입)
 api.interceptors.request.use((config) => {
   if (config.useAuth) {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
 
     if (accessToken) {
-      if (typeof config.headers?.set === "function") {
-        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      if (typeof config.headers?.set === 'function') {
+        config.headers.set('Authorization', `Bearer ${accessToken}`);
       } else {
-        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+        (config.headers as any)['Authorization'] = `Bearer ${accessToken}`;
       }
     }
   }
@@ -38,7 +39,7 @@ let failedQueue: Array<{
   reject: (err: any) => void;
 }> = [];
 
-// ✅ 대기 중이던 요청 처리
+// 대기 중이던 요청 처리
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (token) {
@@ -50,14 +51,14 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// ✅ 응답 인터셉터 (401 처리 및 토큰 갱신)
+// 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
-    console.log("✅ Axios Response:", res.data);
+    console.log('✅ Axios Response:', res.data);
     return res;
   },
   async (error: AxiosError) => {
-    console.error("❌ Axios Error:", error.response?.data);
+    console.error('❌ Axios Error:', error.response?.data);
     const originalRequest = error.config as AxiosRequestConfig;
 
     if (
@@ -65,10 +66,9 @@ api.interceptors.response.use(
       originalRequest.useAuth &&
       !originalRequest._retry
     ) {
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = localStorage.getItem('refreshToken');
 
       if (!refreshToken) {
-        // window.location.href = "/login";
         return Promise.reject(error);
       }
 
@@ -76,11 +76,11 @@ api.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({
             resolve: (token: string) => {
-              if (typeof originalRequest.headers?.set === "function") {
-                originalRequest.headers.set("Authorization", `Bearer ${token}`);
+              if (typeof originalRequest.headers?.set === 'function') {
+                originalRequest.headers.set('Authorization', `Bearer ${token}`);
               } else {
                 (originalRequest.headers as any)[
-                  "Authorization"
+                  'Authorization'
                 ] = `Bearer ${token}`;
               }
               resolve(api(originalRequest));
@@ -103,26 +103,25 @@ api.interceptors.response.use(
             },
           }
         );
-        
+
         const newToken = response.data.data.accessToken;
-      
-        localStorage.setItem("accessToken", newToken);
+
+        localStorage.setItem('accessToken', newToken);
         processQueue(null, newToken);
 
-        if (typeof originalRequest.headers?.set === "function") {
-          originalRequest.headers.set("Authorization", `Bearer ${newToken}`);
+        if (typeof originalRequest.headers?.set === 'function') {
+          originalRequest.headers.set('Authorization', `Bearer ${newToken}`);
         } else {
           (originalRequest.headers as any)[
-            "Authorization"
+            'Authorization'
           ] = `Bearer ${newToken}`;
         }
 
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        // window.location.href = "/login";
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
