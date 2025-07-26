@@ -1,7 +1,5 @@
 import { useRecoilState } from "recoil";
 import styles from "./BuildingReviewList.module.css";
-import PreviewBuildingReview from "./PreviewBuildingReview";
-import { PreviewBuildingReviewState } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
 import { useEffect } from "react";
 import BuildingPreviewReview from "./BuildingPreviewReview";
 import { ReviewPreviewState } from "../../recoil/detail/PreviewReviewRecoilState";
@@ -23,9 +21,9 @@ const mockData = [
     },
     reviewInfo: {
       content: "집이 너무 깔끔하고...",
-      keywords: ["PO_BD_LO_01", "PO_BD_MT_01", "PO_BD_LO_04"],
-      likesCount: 120,
-      updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
+      keyword: ["PO_BD_LO_01", "PO_BD_MT_01", "PO_BD_LO_04"],
+      likeCount: 120,
+      updateAt: "2025-02-23T04:06:00.000+09:00",
     },
     reviewImage: "http://localhost:8080/image/1.jpg",
   },
@@ -39,15 +37,15 @@ const mockData = [
     },
     reviewInfo: {
       content: "집이 너무 깔끔하고...",
-      keywords: [
+      keyword: [
         "PO_AG_PD_01",
         "PO_AG_PD_01",
         "NE_AG_PD_01",
         "PO_AG_SO_04",
         "NE_AG_SO_04",
       ],
-      likesCount: 120,
-      updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), //yyyy-MM-dd'T'HH:mm:ss.SSSXXX
+      likeCount: 120,
+      updateAt: "2025-02-23T04:06:00.000+09:00", //yyyy-MM-dd'T'HH:mm:ss.SSSXXX
     },
     image: "http://localhost:8080/image/1.jpg",
   },
@@ -66,9 +64,9 @@ const mockData = [
     },
     reviewInfo: {
       content: "조용하고 좋은데, 편의점이 멀어요.",
-      keywords: ["PO_BD_ST_01", "NE_BD_LO_07", "NE_BD_LO_01", "PO_BD_ST_05"],
-      likesCount: 45,
-      updatedAt: new Date("2025-02-20T11:30:00.000+09:00"),
+      keyword: ["PO_BD_ST_01", "NE_BD_LO_07", "NE_BD_LO_01", "PO_BD_ST_05"],
+      likeCount: 45,
+      updateAt: "2025-02-20T11:30:00.000+09:00",
     },
     image: "http://localhost:8080/image/2.jpg",
   },
@@ -100,13 +98,13 @@ const BuildingReviewList: React.FC = () => {
       {reviews.map((review) => (
         <div
           key={
-            review.basicInfo?.reviewId ??
-            review.dormitoryBasicInfo?.id ??
+            review.generalReviewInfo?.id ??
+            review.dormitoryReviewInfo?.id ??
             review.agencyReviewInfo?.id
           }
         >
           <div className={styles.line} />
-          <BuildingPreviewReview review={review} />
+          {/* <BuildingPreviewReview review={review} /> */}
         </div>
       ))}
     </div>

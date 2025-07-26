@@ -10,139 +10,87 @@ import campus_img_1 from "../assets/image/campusImg1.svg";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import pencil from "../assets/image/pencil.svg";
 import iconRight from "../assets/image/iconRight.svg";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { getAPI, putAPI ,deleteAPI} from "../api/bassAPI";
 
-const api = {
-  code: 200,
-  message: "조회 성공",
-  data: {
-    reviews: [
-      {
-        dormitoryBasicInfo: {
-          id: 1,
-          name: "지희관",
-          universityName: "경상국립대",
-          type: "기숙사",
-          floor: "고층", // 옥탑방은 0, 반지하는 -1
-          space: 26.44,
-          dormFee: 10,
-          rating: 3,
-          liked: true, // false
-        },
-        reviewInfo: {
-          content:
-            "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
-          keywords: [
-            "PO_BD_LO_02",
-            "PO_BD_LO_01",
-            "PO_BD_LO_04",
-            "PO_BD_LO_01", // ... 필요한 키워드 추가
-            "PO_BD_LO_01",
-          ],
-          likesCount: 120,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-        },
-        image: "http://localhost:8080/image/1.jpg",
-      },
-      {
-        basicInfo: {
-          reviewId: 2,
-          name: "한솔원룸",
-          type: "투룸",
-          contractType: "전세",
-          deposit: 2000,
-          monthlyRent: 0,
-          floor: "저층",
-          space: 35.5,
-          maintenanceCost: 5,
-          rating: 4,
-          liked: false,
-        },
-        reviewInfo: {
-          content: "주변이 조용하고 살기 좋아요.",
-          keywords: [
-            "PO_BD_LO_02",
-            "PO_BD_LO_01",
-            "PO_BD_LO_04",
-            "PO_BD_LO_01", // ... 필요한 키워드 추가
-            "PO_BD_LO_01",
-          ],
-          likesCount: 18,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-        },
-        image: campus_img_1,
-      },
-      {
-        basicInfo: {
-          reviewId: 3,
-          name: "강남하우스",
-          type: "오피스텔",
-          contractType: "월세",
-          deposit: 1000,
-          monthlyRent: 70,
-          floor: "중층",
-          space: 42.7,
-          maintenanceCost: 15,
-          rating: 5,
-          liked: true,
-        },
-        reviewInfo: {
-          content: "채광이 좋고 전망이 멋져요.",
-          keywords: [
-            "PO_BD_LO_02",
-            "PO_BD_LO_01",
-            "PO_BD_LO_04",
-            "PO_BD_LO_01", // ... 필요한 키워드 추가
-            "PO_BD_LO_01",
-          ],
-          likesCount: 12,
-          updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-        },
-        image: campus_img_1,
-      },
-    ] as any[],
-  },
+const getReviewKey = (review: any) => {
+  if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
+  if (review.dormitoryReviewInfo)
+    return `dormitory-${review.dormitoryReviewInfo.id}`;
+  if (review.agencyReviewInfo) return `agency-${review.agencyReviewInfo.id}`;
+  return "unknown";
 };
 
-const campus_api = {
-  code: 200,
-  message: "조회 성공",
-  data: {
-    campusList: [
-      {
-        id: 1,
-        campusName: "가좌캠퍼스",
-        logoImageUrl: "http://localhost:8080/~~~",
-        campusAddress: "경상남도 진주시 ~~",
-        latitude: 37.5605,
-        longitude: 127.0103,
-      },
-      {
-        id: 2,
-        campusName: "칠암캠퍼스",
-        logoImageUrl: null, // 이미지가 없는 경우
-        campusAddress: "경상남도 진주시 ~~",
-        latitude: 37.5605,
-        longitude: 127.0103,
-      },
-      {
-        id: 3,
-        campusName: "통영캠퍼스",
-        logoImageUrl: "http://localhost:8080/~~~",
-        campusAddress: "경상남도 진주시 ~~",
-        latitude: 37.5605,
-        longitude: 127.0103,
-      },
-    ],
-  },
+const QUERY_KEYS = {
+  campusData: "CAMPUS_DATA",
+  reviewData: "REVIEW_DATA",
 };
-
-const campusList = campus_api.data.campusList.map((campus) => ({
-  img: campus.logoImageUrl || "default_image_url",
-  univ: "경상국립대학교",
-  campus: campus.campusName,
-}));
 
 const Home: React.FC = () => {
+  const queryClient = useQueryClient();
+
+  // 수정 예정
+  const universityName = "경상국립대학교";
+
+  const {
+    data: campusList,
+    isFetching: isFetchingCampus,
+    isError: isErrorCampus,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.campusData],
+    queryFn: async () => {
+      const response = await getAPI(
+        `/api/v1/user/univ/campus?universityName=${universityName}`
+      );
+
+      return response.data.campusList.map((campus: any) => ({
+        img: campus.logoImageUrl || "default_image_url",
+        univ: "경상국립대학교",
+        campus: campus.campusName,
+      }));
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const rawReviewList = localStorage.getItem("reviewList");
+
+  const reviewList =
+    rawReviewList &&
+    rawReviewList.startsWith("[") &&
+    rawReviewList.endsWith("]")
+      ? rawReviewList.slice(1, -1)
+      : "";
+  
+
+  const {
+    data: reviewData,
+    isFetching: isFetchingReviewInfo,
+    isError: isErrorReviewInfo,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.reviewData],
+    queryFn: async () => {
+      if (!reviewList) {
+        return [];
+      }
+      const response = await getAPI(
+        `/api/v1/user/recentReview?reviewIds=${reviewList}`,
+        true
+      );
+      return response.data;
+    },
+    refetchOnWindowFocus: false,
+  });
+  
+  if (isFetchingCampus || isFetchingReviewInfo) {
+    console.log("로딩 중...");
+    return null;
+  }
+
+  if (isErrorCampus || isErrorReviewInfo) {
+    console.error("에러 발생");
+    return null;
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -165,7 +113,7 @@ const Home: React.FC = () => {
         <CampusSlide campusList={campusList} />
       </div>
 
-      <div className={styles.safetyContainer}>
+      <div className={styles.safetyContainer} >
         <img src={pencil} alt="pencil" />
         <div>
           <p className={styles.safetyText}>
@@ -185,16 +133,13 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        {api.data.reviews.length > 0 ? (
-          api.data.reviews.map((review) => {
+        {reviewData.length > 0 ? (
+          reviewData.map((review: any) => {
             return (
-              <>
+              <div key={getReviewKey(review)}>
                 <div className={styles.line} />
-                <PreviewReview
-                  key={review.basicInfo?.reviewId ?? review.dormitoryBasicInfo?.id} // `any`로 강제 타입 지정
-                  review={review}
-                />
-              </>
+                <PreviewReview review={review} />
+              </div>
             );
           })
         ) : (

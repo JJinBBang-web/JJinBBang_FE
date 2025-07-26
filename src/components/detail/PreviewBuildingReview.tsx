@@ -5,35 +5,35 @@ import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import PreviewReviewContent from "../PreviewReviewContent";
 import { tagMessages, tagImages } from "../Tag";
-import { BuildingReviewPreview } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
+import { PreviewBuildingReview } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 
 interface Props {
-  review: BuildingReviewPreview;
+  review: PreviewBuildingReview;
 }
 
 const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
-  const name = review.basicInfo?.name ?? review.dormitoryBuildInfo?.name;
-  const type = review.basicInfo?.type ?? review.dormitoryBuildInfo?.type;
-  const rating = review.basicInfo?.rating ?? review.dormitoryBuildInfo?.rating;
-  const address =
-    review.basicInfo?.address ?? review.dormitoryBuildInfo?.address;
-  const reviewCount =
-    review.basicInfo?.reviewCount ?? review.dormitoryBuildInfo?.reviewCount;
-  const liked = review.basicInfo?.liked ?? review.dormitoryBuildInfo?.liked;
+  // const name = review.basicInfo?.name ?? review.dormitoryBuildInfo?.name;
+  // const type = review.basicInfo?.type ?? review.dormitoryBuildInfo?.type;
+  // const rating = review.basicInfo?.rating ?? review.dormitoryBuildInfo?.rating;
+  // const address =
+  //   review.basicInfo?.address ?? review.dormitoryBuildInfo?.address;
+  // const reviewCount =
+  //   review.basicInfo?.reviewCount ?? review.dormitoryBuildInfo?.reviewCount;
+  // const liked = review.basicInfo?.liked ?? review.dormitoryBuildInfo?.liked;
 
-  const [isLiked, setIsLiked] = useState(liked);
-  const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
+  // const [isLiked, setIsLiked] = useState(liked);
+  // const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-  useEffect(() => {
-    setIsLiked(liked);
-    setLikeCount(review.reviewInfo.likesCount);
-  }, [liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
+  // useEffect(() => {
+  //   setIsLiked(liked);
+  //   setLikeCount(review.reviewInfo.likeCount);
+  // }, [liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
   return (
     <div className={styles.content}>
-      <img src="" alt="" className={styles.buildingImg} />
+      {/* <img src="" alt="" className={styles.buildingImg} />
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>
@@ -85,11 +85,11 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
       <PreviewReviewContent
         reviewInfo={{
           content: review.reviewInfo.content,
-          keywords: review.reviewInfo.keywords,
-          likesCount: likeCount,
-          updatedAt: review.reviewInfo.updatedAt,
+          keyword: review.reviewInfo.keyword,
+          likeCount: likeCount,
+          updateAt: review.reviewInfo.updateAt,
         }}
-      />
+      /> */}
     </div>
   );
 };

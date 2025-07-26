@@ -1,140 +1,215 @@
-import styles from "./PreviewBuildingReview.module.css"
+import styles from "./BuildingPreviewReview.module.css";
 import heartIconOn from "../../assets/image/heartIconOn.svg";
 import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import PreviewReviewContent from "../PreviewReviewContent";
 import { tagMessages, tagImages } from "../Tag";
-import { ReviewPreview } from "../../recoil/detail/PreviewReviewRecoilState";
+import {
+  ReviewPreview,
+  GeneralReviewInfo,
+  AgencyReviewInfo,
+  DormitoryReviewInfo,
+} from "../../recoil/detail/PreviewReviewRecoilState";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-    review: ReviewPreview;
+  review: ReviewPreview;
 }
 
-const BuildingPreviewReview:React.FC<Props> = ({review}) => {
-    const liked = review.basicInfo?.liked ?? review.dormitoryBasicInfo?.liked ?? review.agencyReviewInfo?.liked;
-    const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type ?? review.agencyReviewInfo?.type;
-    const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
-    const floor = review.basicInfo?.floor ?? review.dormitoryBasicInfo?.floor;
-    const space = review.basicInfo?.space;
-    const fee = review.basicInfo?.maintenanceCost ?? review.dormitoryBasicInfo?.dormFee;
-    const capacity = review.dormitoryBasicInfo?.capacity;
+const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
+  let activeReviewInfo:
+    | GeneralReviewInfo
+    | AgencyReviewInfo
+    | DormitoryReviewInfo
+    | undefined;
 
-    const [isLiked, setIsLiked] = useState(liked);
-    const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
+  if (review.generalReviewInfo) {
+    activeReviewInfo = review.generalReviewInfo;
+  } else if (review.dormitoryReviewInfo) {
+    activeReviewInfo = review.dormitoryReviewInfo;
+  } else if (review.agencyReviewInfo) {
+    activeReviewInfo = review.agencyReviewInfo;
+  }
 
-    const navigate = useNavigate();
+  const generalInfo = review.generalReviewInfo;
+  const dormitoryInfo = review.dormitoryReviewInfo;
+  const agencyInfo = review.agencyReviewInfo;
 
+  const rawRating = activeReviewInfo?.rating;
+  const numericRating = Number(rawRating) || 0;
+  const rating = Math.round(numericRating);
 
-    useEffect(() => {
-        setIsLiked(liked);
-        setLikeCount(review.reviewInfo.likesCount);
-    }, [liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
+  let type;
+  if (activeReviewInfo?.type === "ROOM") {
+    type = "원룸";
+  } else if (activeReviewInfo?.type === "APARTMENT") {
+    type = "아파트";
+  } else if (activeReviewInfo?.type === "DORMITORY") {
+    type = "기숙사";
+  } else if (activeReviewInfo?.type === "HOUSE") {
+    type = "빌라";
+  } else if (activeReviewInfo?.type === "AGENCY") {
+    type = "공인중개사";
+  } else if (activeReviewInfo?.type === "OFFICETEL") {
+    type = "오피스텔";
+  } else if (activeReviewInfo?.type === "BOARDING_HOUSE") {
+    type = "하숙집";
+  }
+  console.log(type);
 
+  const floorinfo = generalInfo ?? dormitoryInfo;
+  let floor = "";
+  if (floorinfo?.floor === "HIGH") {
+    floor = "고층";
+  } else if (floorinfo?.floor === "LOW") {
+    floor = "저층";
+  } else if (floorinfo?.floor === "MID") {
+    floor = "중층";
+  } else if (floorinfo?.floor === "ATTIC") {
+    floor = "옥탑";
+  } else if (floorinfo?.floor === "BASEMENT") {
+    floor = "반지하";
+  }
+  console.log(0, floorinfo);
+  // const liked = review.basicInfo?.liked ?? review.dormitoryBasicInfo?.liked ?? review.agencyReviewInfo?.liked;
+  // const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type ?? review.agencyReviewInfo?.type;
+  // const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
+  // const floor = review.basicInfo?.floor ?? review.dormitoryBasicInfo?.floor;
+  // const space = review.basicInfo?.space;
+  // const fee = review.basicInfo?.maintenanceCost ?? review.dormitoryBasicInfo?.dormFee;
+  // const capacity = review.dormitoryBasicInfo?.capacity;
 
-    
-    // 공인중개사 프리뷰
+  const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
+  const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-    // 기숙사 프리뷰
+  const navigate = useNavigate();
 
-    // 일반 프리뷰
+  useEffect(() => {
+    setIsLiked(activeReviewInfo?.liked);
+    setLikeCount(review.reviewInfo.likeCount);
+  }, [
+    activeReviewInfo?.liked,
+    review.reviewInfo.likeCount,
+    setIsLiked,
+    setLikeCount,
+  ]);
 
-    return (
-        <div className={styles.content} onClick={()=> {navigate('/building/rv'); window.scrollTo(0, 0);}}>
-            <img src="" alt="" className={styles.buildingImg}/>
-            <div className={styles.infoAndLike}>
-                {review.basicInfo && (
-                    <div className={styles.buildingInfo}>{floor}, {space}m2, 관리비 {fee}만</div>
-                )}
-                {review.dormitoryBasicInfo && (
-                    <div className={styles.buildingInfo}>{floor}, {capacity}인실, 기숙사비 {fee}만</div>
-                )}
-                {review.agencyReviewInfo && (
-                    <div className={styles.buildingRating}>
-                        {[...Array(rating)].map((_, index) => (
-                        <img key={`on-${index}`} src={starIconOn} alt="rate" />
-                        ))}
-                        {[...Array(5 - rating)].map((_, index) => (
-                        <img key={`off-${index}`} src={starIconOff} alt="rate" />
-                        ))}
-                    </div>
-                )}
-                <div className={styles.likeContainer}>
-                    <img
-                        className={styles.likeButton}
-                        onClick={(event) => {
-                        event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-                        console.log(likeCount);
-                          setLikeCount((prev) => {
-                            return isLiked ? prev - 1 : prev + 1;
-                          });
-                          setIsLiked((prev) => !prev);
-                        }}
-                        src={isLiked ? heartIconOn : heartIconOff}
-                        alt="heartIcon"
-                    />
-                </div>
-            </div>
-            {review.basicInfo && (
-                <>
-                <div className={styles.buildingContent}>
-                    <div className={styles.buildingPrice}>{type}</div>
-                    {review.basicInfo && (
-                    review.basicInfo.contractType === "월세" ? (
-                        <div className={styles.buildingPrice}>
-                        {review.basicInfo.contractType} {review.basicInfo.deposit}/
-                        {review.basicInfo.monthlyRent}
-                        </div>
-                    ) : (
-                        <div className={styles.buildingPrice}>
-                        {review.basicInfo.contractType} {review.basicInfo.deposit}
-                        </div>
-                    )
-                    )}
-                </div>
-                <div className={styles.buildingRating}>
-                    {[...Array(rating)].map((_, index) => (
-                    <img key={`on-${index}`} src={starIconOn} alt="rate" />
-                    ))}
-                    {[...Array(5 - rating)].map((_, index) => (
-                    <img key={`off-${index}`} src={starIconOff} alt="rate" />
-                    ))}
-                </div>
-                </>
-            )}
-            {review.dormitoryBasicInfo && (
-                <>
-                <div className={styles.buildingContent}>
-                    <div className={`${styles.buildingPrice}`}>
-                    {review.dormitoryBasicInfo.type}
-                    </div>
-                    <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
-                        {review.dormitoryBasicInfo.university}
-                    </div>
-                </div>
-                <div className={styles.buildingRating}>
-                    {[...Array(rating)].map((_, index) => (
-                    <img key={`on-${index}`} src={starIconOn} alt="rate" />
-                    ))}
-                    {[...Array(5 - rating)].map((_, index) => (
-                    <img key={`off-${index}`} src={starIconOff} alt="rate" />
-                    ))}
-                </div>
-                </>
-            )}
-            <PreviewReviewContent
-                reviewInfo={{
-                    content : review.reviewInfo.content,
-                    keywords : review.reviewInfo.keywords,
-                    likesCount : likeCount,
-                    updatedAt : review.reviewInfo.updatedAt
-                }}
-            />
+  // 공인중개사 프리뷰
+
+  // 기숙사 프리뷰
+
+  // 일반 프리뷰
+
+  return (
+    <div
+      className={styles.content}
+      onClick={() => {
+        navigate("/building/rv");
+        window.scrollTo(0, 0);
+      }}
+    >
+      <img src="" alt="" className={styles.buildingImg} />
+      <div className={styles.infoAndLike}>
+        {generalInfo && (
+          <div className={styles.buildingInfo}>
+            {floor}, {generalInfo.space}m2, 관리비 {generalInfo.maintenanceCost}
+            만
+          </div>
+        )}
+        {dormitoryInfo && (
+          <div className={styles.buildingInfo}>
+            {floor}, {dormitoryInfo.capacity}인실, 기숙사비{" "}
+            {dormitoryInfo.dormFee}만
+          </div>
+        )}
+        {agencyInfo && (
+          <div className={styles.buildingRating}>
+            {[...Array(rating)].map((_, index) => (
+              <img key={`on-${index}`} src={starIconOn} alt="rate" />
+            ))}
+            {[...Array(5 - rating)].map((_, index) => (
+              <img key={`off-${index}`} src={starIconOff} alt="rate" />
+            ))}
+          </div>
+        )}
+        <div className={styles.likeContainer}>
+          <img
+            className={styles.likeButton}
+            onClick={(event) => {
+              event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
+              console.log(likeCount);
+              setLikeCount((prev) => {
+                return isLiked ? prev - 1 : prev + 1;
+              });
+              setIsLiked((prev) => !prev);
+            }}
+            src={isLiked ? heartIconOn : heartIconOff}
+            alt="heartIcon"
+          />
         </div>
-    )
-}
+      </div>
+
+      <div className={styles.buildingContent}>
+        <div className={styles.buildingPrice}>{type}</div>
+        {generalInfo && (
+          <div className={styles.buildingPrice}>
+            {
+              generalInfo.contractType === "MONTHLY_RENT"
+                ? "월세" // contractType이 'MONTHLY_RENT'일 경우 표시
+                : generalInfo.contractType === "DEPOSIT_RENT"
+                ? "전세" // contractType이 'DEPOSIT_RENT'일 경우 표시
+                : generalInfo.contractType // 둘 다 아닐 경우 원래 값 표시
+            }{" "}
+            {generalInfo?.deposit}/{generalInfo?.monthlyRent}
+          </div>
+        )}
+        {dormitoryInfo && (
+          <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
+            {dormitoryInfo.universityName.slice(0, -2)}
+          </div>
+        )}
+      </div>
+      <div className={styles.buildingRating}>
+        {[...Array(rating)].map((_, index) => (
+          <img key={`on-${index}`} src={starIconOn} alt="rate" />
+        ))}
+        {[...Array(5 - rating)].map((_, index) => (
+          <img key={`off-${index}`} src={starIconOff} alt="rate" />
+        ))}
+      </div>
+      {/* {review.dormitoryBasicInfo && (
+        <>
+          <div className={styles.buildingContent}>
+            <div className={`${styles.buildingPrice}`}>
+              {review.dormitoryBasicInfo.type}
+            </div>
+            <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
+              {review.dormitoryBasicInfo.university}
+            </div>
+          </div>
+          <div className={styles.buildingRating}>
+            {[...Array(rating)].map((_, index) => (
+              <img key={`on-${index}`} src={starIconOn} alt="rate" />
+            ))}
+            {[...Array(5 - rating)].map((_, index) => (
+              <img key={`off-${index}`} src={starIconOff} alt="rate" />
+            ))}
+          </div>
+        </>
+      )} */}
+      <PreviewReviewContent
+        reviewInfo={{
+          content: review.reviewInfo.content,
+          keyword: review.reviewInfo.keyword,
+          likeCount: likeCount,
+          updateAt: review.reviewInfo.updateAt,
+        }}
+      />
+    </div>
+  );
+};
 
 export default BuildingPreviewReview;
