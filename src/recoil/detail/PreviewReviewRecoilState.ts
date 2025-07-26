@@ -7,7 +7,7 @@ export interface GeneralReviewInfo {
   type: string;
   contractType: string;
   deposit: number; // 보증금
-  monthlyRent: number; // 월세
+  price: number; // 월세
   floor: string;
   space: number; // area -> space 변경
   maintenanceCost: number;
