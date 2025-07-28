@@ -11,6 +11,16 @@ interface Props {
     building : Building;
 }
 
+const typeNameMap: Record<string, string> = {
+  ROOM: "원룸",
+  HOUSE: "주택/빌라",
+  OFFICETEL: "오피스텔",
+  APARTMENT: "아파트",
+  DORMITORY: "기숙사",
+  BOARDING_HOUSE: "하숙집/고시원",
+  AGENCY: "공인중개사", 
+};
+
 const BuildingInfo: React.FC<Props> = ({building}) => {
     const [isLiked, setIsLiked] = useState(building.basicInfo.liked);
 
@@ -20,52 +30,48 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
     }, [building]);
 
     const renderExtraInfo = () => {
-        if (building.basicInfo.type.includes("기숙사")) {
-            return <>
-                <div className={styles.buildingType}>{(building.basicInfo as dormBuildingInfo).type}</div>
-                <div className={styles.campusType}>{(building.basicInfo as dormBuildingInfo).campus}</div>
-            </>
-        }
-        if (building.basicInfo.type.includes("공인중개사")) {
-            return <div className={styles.agencyType}>{(building.basicInfo as agencyBuildingInfo).type}</div>
-        }
-        return (            
-                <>
-                {(building.basicInfo as generalBuildingInfo).type.map((t, index) => (
-                    <div key={index} className={styles.buildingType}>{t}</div>
-                ))}
-                </>
+        if (building.basicInfo.type.includes("DORMITORY")) {
+            const dorm = building.basicInfo as dormBuildingInfo;
+            return (
+            <div className={styles.buildingTypeWrap}>
+                <div className={styles.buildingType}>
+                {dorm.type.map((t) => typeNameMap[t] ?? t).join(" / ")}
+                </div>
+                <div className={styles.campusType}>{dorm.universityName}</div>
+            </div>
             );
-      }
+        }
+
+        if (building.basicInfo.type.includes("AGENCY")) {
+            const agency = building.basicInfo as agencyBuildingInfo;
+            return (
+            <div className={styles.agencyType}>
+                {agency.type.map((t) => typeNameMap[t] ?? t).join(" / ")}
+            </div>
+            );
+        }
+
+        const general = building.basicInfo as generalBuildingInfo;
+        return (
+            <div className={styles.buildingTypeWrap}>
+            {general.type.map((t, index) => (
+                <div key={index} className={styles.buildingType}>
+                {typeNameMap[t] ?? t}
+                </div>
+            ))}
+            </div>
+        );
+    };
     
-    // const renderTageInfo = () => {
-    //     if (building.basicInfo.type.includes("기숙사")) {
-    //         return (
-    //             <>
-    //             {(building.keywords as dormBuildingInfo).map((keyword)=> (
-    //                 <div className={styles.keywordBack}>
-    //                     <div className={styles.keywordContent}>
-    //                         <img className={styles.keywordImg} src={tagImages[keyword.key]}/>
-    //                         <p className={styles.keyword}>{tagLongMessages[keyword.key]}</p>
-    //                     </div>
-    //                     <p className={styles.keywordCount}>{keyword.count}</p>
-    //                 </div>
-    //             ))}
-    //             </>
-    //         );
-    //     }
-    //     if (building.basicInfo.type.includes("공인중개사")) {
-    //         return <div className={styles.agencyType}>{(building.basicInfo as agencyBuildingInfo).type}</div>
-    //     }
-    //     return <div className={styles.buildingType}>{(building.basicInfo as generalBuildingInfo).type}</div>;
-    // }
+    const roundedRating = Math.round(building.basicInfo?.rating ?? 0);
+    const filledStars = Math.min(roundedRating, 5);
+    const emptyStars = Math.max(5 - filledStars, 0);
+
 
     return (
         <div className={styles.content}>
             <div className={styles.typeAndLike}>
-                <div className={styles.buildingTypeWrap}>
-                    {renderExtraInfo()}
-                </div>
+                {renderExtraInfo()}
                 <div className={styles.likeContainer}>
                     <img
                         className={styles.likeButton}
@@ -84,11 +90,11 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
             </div>
             <div className={styles.reviewsInfo}>
                 <div className={styles.buildingRating}>
-                    {[...Array(building.basicInfo.rating)].map((_, index) => (
-                    <img src={starIconOn} alt="rate"></img>
+                    {[...Array(filledStars)].map((_, i) => (
+                        <img key={`filled-${i}`} src={starIconOn} alt="rate" />
                     ))}
-                    {[...Array(5 - Math.round(building.basicInfo.rating))].map((_, index) => (
-                    <img key={index} src={starIconOff} alt="rate" />
+                    {[...Array(emptyStars)].map((_, i) => (
+                        <img key={`empty-${i}`} src={starIconOff} alt="rate" />
                     ))}
                 </div>
                 <div className={styles.reviewCountDiv}>

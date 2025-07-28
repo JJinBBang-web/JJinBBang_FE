@@ -165,7 +165,7 @@ const Home: React.FC = () => {
     },
     refetchOnWindowFocus: false,
   });
-
+  
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -188,7 +188,7 @@ const Home: React.FC = () => {
         <CampusSlide campusList={campusList} />
       </div>
 
-      <div className={styles.safetyContainer}>
+      <div className={styles.safetyContainer} >
         <img src={pencil} alt="pencil" />
         <div>
           <p className={styles.safetyText}>
@@ -208,10 +208,10 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        {api.data.reviews.length > 0 ? (
-          api.data.reviews.map((review) => {
+        {reviewData.length > 0 ? (
+          reviewData.map((review: any) => {
             return (
-              <>
+              <div key={getReviewKey(review)}>
                 <div className={styles.line} />
                 <PreviewReview
                   key={

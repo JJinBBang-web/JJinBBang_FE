@@ -36,7 +36,7 @@ export interface dormBuildingInfo{
     id: number | null;
     type: string[];
     name: string;
-    campus: string;
+    universityName: string;
     address: String;
     rating: number;
     reviewCount: number;
@@ -60,7 +60,7 @@ export const BuildingInfoState = atom<Building>({
             address: "",
             rating: 0,
             reviewCount: 0,
-            campus: "",
+            universityName: "",
         },
         buildingImages: {
             count: 0,

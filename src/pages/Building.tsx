@@ -5,140 +5,37 @@ import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
 import TopButton from "../components/util/TopButton";
 import BuildingReviewList from "../components/detail/BuildingReviewList";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { BuildingInfoState } from "../recoil/detail/BuildingRecoilState";
 import exampleImage1 from '../assets/image/example_image1.png';
 import exampleImage2 from '../assets/image/example_image2.png';
-
-// const mockData = {
-//     basicInfo: {
-//         liked: true,
-//         id: 3,
-//         type: ["아파트", "원룸"],
-//         name: "진주가좌그린빌 주공아파트",
-//         address: "경남 진주시 내동로348번길 10 [가좌동 573-10]",
-//         rating: 3,
-//         reviewCount: 25
-//     },
-//     buildingImages: {
-//         count: 2,
-//         imageUrl: [
-//             exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,
-//         ]
-//     },
-//     keywords: [ // 키워드 정보
-//                 {
-//                     "key": "PO_BD_LO_01",
-//                     "count": 10
-//                 },
-//                 {
-//                     "key": "PO_BD_LO_02",
-//                     "count": 6
-//                 },
-//                 {
-//                     "key": "PO_BD_MT_01",
-//                     "count": 4
-//                 },
-//                 {
-//                     "key": "PO_BD_MT_04",
-//                     "count": 3
-//                 },
-//                 {
-//                     "key": "PO_BD_ST_01",
-//                     "count": 2
-//                 },
-//             ],
-// }
-
-const mockData = {
-    basicInfo: {
-        liked: true,
-        id: 3,
-        type: ["공인중개사"],
-        name: "e편한공인중개사사무소",
-        address: "경남 진주시 내동로348번길 10 [가좌동 573-10]",
-        rating: 3,
-        reviewCount: 25
-    },
-    buildingImages: {
-        count: 2,
-        imageUrl: [
-            exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,
-        ]
-    },
-    keywords: [ // 키워드 정보
-                {
-                    "key": "PO_AG_PD_01",
-                    "count": 10
-                },
-                {
-                    "key": "PO_AG_PD_02",
-                    "count": 6
-                },
-                {
-                    "key": "PO_AG_SO_01",
-                    "count": 4
-                },
-                {
-                    "key": "PO_AG_SO_02",
-                    "count": 3
-                },
-                {
-                    "key": "PO_AG_SO_05",
-                    "count": 2
-                },
-            ],
-}
-
-
-// const mockData = {
-//     basicInfo: {
-//         liked: true,
-//         id: 3,
-//         type: ["기숙사"],
-//         name: "지희관",
-//         campus:"경상국립대 칠암캠퍼스",
-//         address: "경남 진주시 내동로348번길 10 [가좌동 573-10]",
-//         rating: 3,
-//         reviewCount: 25
-//     },
-//     buildingImages: {
-//         count: 2,
-//         imageUrl: [
-//             exampleImage1,exampleImage2,exampleImage1,exampleImage1,exampleImage2,
-//         ]
-//     },
-//     keywords: [ // 키워드 정보
-//                 {
-//                     "key": "PO_DM_LO_01",
-//                     "count": 10
-//                 },
-//                 {
-//                     "key": "PO_MT_02",
-//                     "count": 6
-//                 },
-//                 {
-//                     "key": "PO_MT_03",
-//                     "count": 4
-//                 },
-//                 {
-//                     "key": "PO_MT_04",
-//                     "count": 3
-//                 },
-//                 {
-//                     "key": "PO_MT_05",
-//                     "count": 2
-//                 },
-//             ],
-// }
+import { useNavigate, useParams } from "react-router-dom";
+import { useBuildingDetail } from "../hooks/useBuildingDetail";
 
 const Building: React.FC = () => {
+    const navigate = useNavigate();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [buildingInfo, setBuildingInfo] = useRecoilState(BuildingInfoState);
     
+    const { buildingId } = useParams(); // URL에서 buildingId 추출
+    const isAgency = false; // 필요 시 로직으로 결정
+
+    const { data, isLoading, isError } = useBuildingDetail(buildingId!, isAgency);
+
     useEffect(() => {
-        setBuildingInfo(mockData);
-    }, []);
+        if (!data) return;
+
+        const basicInfo = data.generalBuildingInfo ?? data.agencyBuildingInfo ?? data.dormitoryBuildingInfo;
+
+        // basicInfo가 undefined일 가능성도 있으므로 체크 필요
+        if (!basicInfo) return;
+
+        setBuildingInfo({
+            basicInfo,
+            buildingImages: data.reviewImages,
+            keywords: data.keywords,
+        });
+    }, [data]);
     
     useEffect(() => {
         const handleResize = () => {
@@ -152,17 +49,27 @@ const Building: React.FC = () => {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    const building = useRecoilValue(BuildingInfoState);
+
+
+    if (isLoading) return <div>로딩 중...</div>;
+    if (isError) return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
+    
+    const handleBack = () => {
+        navigate(-1);
+    };
     
     return (
         <div className={styles.content}
         style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.container}>
                 {/* 헤더 */}
-                <Header/>
+                <Header onClick={handleBack}/>
                 {/* 이미지슬라이더 */}
-                <ImageSlider building={buildingInfo} review={null}/>
+                <ImageSlider building={building} review={null}/>
                 {/* 건물 정보 및 키워드 */}
-                <BuildingInfo building={buildingInfo}/>
+                <BuildingInfo building={building}/>
                 <hr/>
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>

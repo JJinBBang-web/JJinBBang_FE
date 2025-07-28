@@ -5,29 +5,86 @@ import heartIconOff from "../assets/image/heartIconOff.svg";
 import starIconOn from "../assets/image/starIconOn.svg";
 import starIconOff from "../assets/image/starIconOff.svg";
 import PreviewReviewContent from "../components/PreviewReviewContent";
-import { ReviewPreview } from "../recoil/detail/PreviewReviewRecoilState";
+import {
+  ReviewPreview,
+  GeneralReviewInfo,
+  AgencyReviewInfo,
+  DormitoryReviewInfo,
+} from "../recoil/detail/PreviewReviewRecoilState";
 
 interface Props {
   review: ReviewPreview;
 }
 
-const PreviewReview: React.FC<Props> = ({
-  review,
-}) => {
-  const liked = review.basicInfo?.liked ?? review.dormitoryBasicInfo?.liked;
-  const name = review.basicInfo?.name ?? review.dormitoryBasicInfo?.name;
-  const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type;
-  const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating;
-  const floor = review.basicInfo?.floor ?? review.dormitoryBasicInfo?.floor;
-  const space = review.basicInfo?.space ?? review.dormitoryBasicInfo?.space;
+const PreviewReview: React.FC<Props> = ({ review }) => {
+  let activeReviewInfo:
+    | GeneralReviewInfo
+    | AgencyReviewInfo
+    | DormitoryReviewInfo
+    | undefined;
 
-  const [isLiked, setIsLiked] = useState(liked);
-  const [likeCount, setLikeCount] = useState(review.reviewInfo.likesCount);
+  if (review.generalReviewInfo) {
+    activeReviewInfo = review.generalReviewInfo;
+  } else if (review.dormitoryReviewInfo) {
+    activeReviewInfo = review.dormitoryReviewInfo;
+  } else if (review.agencyReviewInfo) {
+    activeReviewInfo = review.agencyReviewInfo;
+  }
+
+  const generalInfo = review.generalReviewInfo;
+  const dormitoryInfo = review.dormitoryReviewInfo;
+  const agencyInfo = review.agencyReviewInfo;
+
+  const rawRating = activeReviewInfo?.rating;
+
+  const numericRating = Number(rawRating) || 0;
+
+  const rating = Math.round(numericRating);
+
+  let type;
+  if (activeReviewInfo?.type === "ROOM") {
+    type = "원룸";
+  } else if (activeReviewInfo?.type === "APARTMENT") {
+    type = "아파트";
+  } else if (activeReviewInfo?.type === "DORMITORY") {
+    type = "기숙사";
+  } else if (activeReviewInfo?.type === "HOUSE") {
+    type = "빌라";
+  } else if (activeReviewInfo?.type === "AGENCY") {
+    type = "공인중개사";
+  } else if (activeReviewInfo?.type === "OFFICETEL") {
+    type = "오피스텔";
+  } else if (activeReviewInfo?.type === "BOARDING_HOUSE") {
+    type = "하숙집";
+  }
+
+  const floorinfo = generalInfo ?? dormitoryInfo;
+  let floor = "";
+  if (floorinfo?.floor === "HIGH") {
+    floor = "고층";
+  } else if (floorinfo?.floor === "LOW") {
+    floor = "저층";
+  } else if (floorinfo?.floor === "MID") {
+    floor = "중층";
+  } else if (floorinfo?.floor === "ATTIC") {
+    floor = "옥탑";
+  } else if (floorinfo?.floor === "BASEMENT") {
+    floor = "반지하";
+  }
+
+  const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
+  const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
   useEffect(() => {
-    setIsLiked(liked);
-    setLikeCount(review.reviewInfo.likesCount);
-  }, [liked, review.reviewInfo.likesCount, setIsLiked, setLikeCount]);
+    setIsLiked(activeReviewInfo?.liked);
+    setLikeCount(review.reviewInfo.likeCount);
+  }, [
+    activeReviewInfo?.liked,
+    review.reviewInfo.likeCount,
+    setIsLiked,
+    setLikeCount,
+  ]);
+
 
   return (
     <div
@@ -37,10 +94,14 @@ const PreviewReview: React.FC<Props> = ({
       }}
     >
       <div className={styles.buildingContainer}>
-        <img className={styles.buildingImg} src={review.image} alt={name} />
+        <img
+          className={styles.buildingImg}
+          src={review.image}
+          alt={activeReviewInfo?.name}
+        />
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
-            <p className={styles.buildingName}>{name}</p>
+            <p className={styles.buildingName}>{activeReviewInfo?.name}</p>
             <div className={styles.likeContainer}>
               <img
                 className={styles.likeButton}
@@ -57,47 +118,56 @@ const PreviewReview: React.FC<Props> = ({
             </div>
           </div>
           <div className={styles.buildingContent2}>
-            <div className={styles.buildingPrice}>{type}</div>
-            {review.basicInfo && (
+            <div
+              className={`${styles.buildingPrice} ${
+                agencyInfo ? styles.agency : ""
+              }`}
+            >
+              {type}
+            </div>
+            {generalInfo && (
               <div className={styles.buildingPrice}>
-                {review.basicInfo.contractType} {review.basicInfo.deposit}/
-                {review.basicInfo.monthlyRent}
+                {
+                  generalInfo.contractType === "MONTHLY_RENT"
+                    ? "월세" // contractType이 'MONTHLY_RENT'일 경우 표시
+                    : generalInfo.contractType === "DEPOSIT_RENT"
+                    ? "전세" // contractType이 'DEPOSIT_RENT'일 경우 표시
+                    : generalInfo.contractType // 둘 다 아닐 경우 원래 값 표시
+                }{" "}
+                {generalInfo?.deposit}/{generalInfo?.price}
               </div>
             )}
-            {review.dormitoryBasicInfo && (
+            {dormitoryInfo && (
               <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
-                {review.dormitoryBasicInfo.university}
+                {dormitoryInfo.universityName.slice(0, -2)}
               </div>
             )}
           </div>
           <p className={styles.buildingContent3}>
-            {floor}, {space}㎡,{" "}
-            {review.basicInfo && `관리비 ${review.basicInfo.maintenanceCost}만`}{" "}
-            {review.dormitoryBasicInfo &&
-              `기숙사비 ${review.dormitoryBasicInfo.dormFee}만`}
+            {(generalInfo || dormitoryInfo) && `${floor}, `}
+            {generalInfo &&
+              `${generalInfo?.space}㎡, 관리비 ${generalInfo?.maintenanceCost}만`}
+            {dormitoryInfo &&
+              `${dormitoryInfo?.capacity}인실, 기숙사비 ${dormitoryInfo?.dormFee}만`}
           </p>
           <div className={styles.buildingContent4}>
-            {[...Array(rating ?? 0)].map((_, index) => (
+            {[...Array(rating)].map((_, index) => (
               <img key={index} src={starIconOn} alt="rate"></img>
             ))}
-            {[...Array(5 - (rating ?? 0))].map((_, index) => (
+            {[...Array(5 - rating)].map((_, index) => (
               <img key={index} src={starIconOff} alt="rate"></img>
             ))}
           </div>
         </div>
       </div>
       <PreviewReviewContent
-                reviewInfo={{
+        reviewInfo={{
           content: review.reviewInfo.content,
-          keywords: review.reviewInfo.keywords,
-          likesCount: likeCount,
-          updatedAt: {
-                  content: review.reviewInfo.content,
-                  keywords: review.reviewInfo.keywords,
-                  likesCount: likeCount,
-                  updatedAt: review.reviewInfo.updatedAt,
-        }.updatedAt,
-                }}
+          keyword: review.reviewInfo.keyword,
+          likeCount: likeCount,
+          updateAt: review.reviewInfo.updateAt,
+        }}
+
       />
     </div>
   );

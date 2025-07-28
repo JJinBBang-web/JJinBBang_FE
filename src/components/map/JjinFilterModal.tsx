@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
 import { filterState, housingTypeState, selectedJjinFilterState } from "../../recoil/map/mapRecoilState";
 import { isEqual } from "lodash";
+import { DormFilterState } from "../../recoil/util/dormFilterState";
 
 const JjinFilterModal = () => {
     // const [filters, setFilters] = useRecoilState(JjinFilterState);
@@ -20,8 +21,8 @@ const JjinFilterModal = () => {
 
     // 공인중개사면 JjinAgencyFilterState 사용, 아니면 JjinFilterState
     const filters = useRecoilValue(
-        housingType === "공인중개사" ? JjinAgencyFilterState 
-            : housingType === "기숙사" ? JjinAgencyFilterState
+        housingType === "AGENCY" ? JjinAgencyFilterState 
+            : housingType === "DORMITORY" ? DormFilterState
             : JjinFilterState
     );
 
@@ -33,7 +34,7 @@ const JjinFilterModal = () => {
     const handleScrollDown = (index: number) => {
         const ref = filterContentRefs.current[index];
         if (ref) {
-            ref.scrollBy({ top: 250, behavior: "smooth" });
+            ref.scrollBy({ top: 290, behavior: "smooth" });
             // 스크롤이 내려가면 이미지를 위로 스크롤로 바꿔줍니다.
             setScrolled((prevState) => ({
                 ...prevState,
@@ -46,7 +47,7 @@ const JjinFilterModal = () => {
     const handleScrollUp = (index : number) => {
         const ref = filterContentRefs.current[index];
         if (ref) {
-            ref.scrollBy({ top: -250, behavior: "smooth" });
+            ref.scrollBy({ top: -290, behavior: "smooth" });
              // 스크롤이 내려가면 이미지를 위로 스크롤로 바꿔줍니다.
              setScrolled((prevState) => ({
                 ...prevState,
