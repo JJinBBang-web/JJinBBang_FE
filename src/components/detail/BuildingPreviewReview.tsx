@@ -107,7 +107,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
     <div
       className={styles.content}
       onClick={() => {
-        navigate("/building/rv");
+        navigate(`/building/review/${activeReviewInfo?.id}`);
         window.scrollTo(0, 0);
       }}
     >
@@ -172,6 +172,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
                 {dormitoryInfo.universityName.slice(0, -2)}
               </div>
             )}
+
           </div>
           <div className={styles.buildingRating}>
             {[...Array(rating)].map((_, index) => (
