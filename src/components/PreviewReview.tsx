@@ -13,12 +13,15 @@ import {
 } from "../recoil/detail/PreviewReviewRecoilState";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { getAPI, putAPI, deleteAPI, postAPI } from "../api/bassAPI";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   review: ReviewPreview;
 }
 
 const PreviewReview: React.FC<Props> = ({ review }) => {
+  const navigate = useNavigate();
+
   const queryClient = useQueryClient();
 
   let activeReviewInfo:
@@ -110,9 +113,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
   return (
     <div
       className={styles.previewReviewContainer}
-      onClick={() => {
-        window.location.href = "https://www.naver.com"; // 현재 창에서 이동
-      }}
+      onClick={() => navigate(`/building/review/${activeReviewInfo?.id}`)}
     >
       <div className={styles.buildingContainer}>
         <img
@@ -129,7 +130,6 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
                 onClick={(event) => {
                   event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
                   mutation.mutate();
-
                 }}
                 src={isLiked ? heartIconOn : heartIconOff}
                 alt="heartIcon"

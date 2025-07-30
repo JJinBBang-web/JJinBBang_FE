@@ -4,10 +4,17 @@ import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import PreviewReviewContent from "../PreviewReviewContent";
-import { AgencyBuildingInfo, DormitoryBuildingInfo, GeneralBuildingInfo, PreviewBuildingReviewInfo } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
+import {
+  AgencyBuildingInfo,
+  DormitoryBuildingInfo,
+  GeneralBuildingInfo,
+  PreviewBuildingReviewInfo,
+} from "../../recoil/detail/PreviewBuildingReviewRecoilState";
 import { useEffect, useState } from "react";
 import { typeToKorean } from "../../util/mapping";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { postAPI } from "../../api/bassAPI";
 
 interface Props {
   review: PreviewBuildingReviewInfo;
@@ -17,10 +24,10 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   const navigate = useNavigate();
 
   let activeReviewInfo:
-      | GeneralBuildingInfo
-      | AgencyBuildingInfo
-      | DormitoryBuildingInfo
-      | undefined;
+    | GeneralBuildingInfo
+    | AgencyBuildingInfo
+    | DormitoryBuildingInfo
+    | undefined;
 
   if (review.generalBuildingInfo) {
     activeReviewInfo = review.generalBuildingInfo;
@@ -34,13 +41,34 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   const dormitoryInfo = review.dormitoryBuildInfo;
   const agencyInfo = review.agencyBuildingInfo;
 
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return postAPI(
+        `/api/v1/user/bookmark`,
+        {
+          type: "building",
+          id: activeReviewInfo?.id,
+          bookmark: !isLiked,
+        },
+        true
+      );
+    },
+    onSuccess: (data) => {
+      setIsLiked(!isLiked);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    },
+    onError: (error) => {},
+  });
+
   const rawRating = activeReviewInfo?.rating;
   const numericRating = Number(rawRating) || 0;
   const rating = Math.round(numericRating);
 
-
   const name = activeReviewInfo?.name;
-  const type = generalInfo?.type.map((type) => typeToKorean[type]) ?? dormitoryInfo?.type ?? agencyInfo?.type;
+  const type =
+    generalInfo?.type.map((type) => typeToKorean[type]) ??
+    dormitoryInfo?.type ??
+    agencyInfo?.type;
   const address = activeReviewInfo?.address;
   const reviewCount = activeReviewInfo?.reviewCount;
   const liked = activeReviewInfo?.liked;
@@ -59,11 +87,7 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
       className={styles.content}
       onClick={() => navigate(`/building/${activeReviewInfo?.id}`)}
     >
-      <img
-        src={image}
-        alt={name}
-        className={styles.buildingImg}
-      />
+      <img src={image} alt={name} className={styles.buildingImg} />
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>
@@ -71,11 +95,11 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
             className={styles.likeButton}
             onClick={(event) => {
               event.stopPropagation();
-              console.log(likeCount);
-              setLikeCount((prev) => {
-                return isLiked ? prev - 1 : prev + 1;
-              });
-              setIsLiked((prev) => !prev);
+              mutation.mutate();
+              // setLikeCount((prev) => {
+              //   return isLiked ? prev - 1 : prev + 1;
+              // });
+              // setIsLiked((prev) => !prev);
             }}
             src={isLiked ? heartIconOn : heartIconOff}
             alt="heartIcon"
