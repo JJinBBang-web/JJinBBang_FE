@@ -67,8 +67,8 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   const name = activeReviewInfo?.name;
   const type =
     generalInfo?.type.map((type) => typeToKorean[type]) ??
-    dormitoryInfo?.type ??
-    agencyInfo?.type;
+    (dormitoryInfo?.type && typeToKorean[dormitoryInfo.type]) ??
+    (agencyInfo?.type && typeToKorean[agencyInfo.type]);
   const address = activeReviewInfo?.address;
   const reviewCount = activeReviewInfo?.reviewCount;
   const liked = activeReviewInfo?.liked;
@@ -120,7 +120,7 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
         )}
         {dormitoryInfo && (
           <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
-            {dormitoryInfo.universityName}
+            {dormitoryInfo.universityName.slice(0, -2)}
           </div>
         )}
       </div>
