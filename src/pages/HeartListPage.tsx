@@ -1,97 +1,82 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useRecoilState } from "recoil";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useRecoilState , useRecoilValue } from "recoil";
 import styles from "./HeartListPage.module.css";
 import Banner from "../components/Banner";
 import PreviewReview from "../components/PreviewReview";
 import downIcon from "../assets/image/downIcon.svg";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import FilterModal from "../components/hartListPage/FilterModal";
-import { isFilterModalOpenState } from "../recoil/hartListPage/isFilterModalOpenState";
+import { filterConfigState } from "../recoil/hartListPage/filterConfigState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import BuildingPreviewReview from "../components/detail/BuildingPreviewReview";
+import PreviewBuildingReview from "../components/detail/PreviewBuildingReview";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { getAPI, putAPI, deleteAPI } from "../api/bassAPI";
+import { isLoginState } from "../recoil/auth/isLoginState";
 
-const api = {
-  code: 200,
-  message: "조회 성공",
-  data: {
-    reviews: [
-      {
-        dormitoryReviewInfo: {
-          id: 1,
-          name: "지희관",
-          universityName: "경상국립대학교",
-          type: "DORMITORY",
-          floor: "HIGH", // 옥탑방은 0, 반지하는 -1
-          capacity: 2,
-          dormFee: 10,
-          rating: 3,
-          liked: true, // false
-        },
-        reviewInfo: {
-          content:
-            "집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요",
-          keyword: [
-            "PO_BD_LO_02",
-            "PO_BD_LO_01",
-            "PO_BD_LO_04",
-            "PO_BD_LO_01", // ... 필요한 키워드 추가
-            "PO_BD_LO_01",
-          ],
-          likeCount: 120,
-          updateAt: "2025-02-23T04:06:00.000+09:00", // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-        },
-        image: "http://localhost:8080/image/1.jpg",
-      },
-      {
-        generalReviewInfo: {
-          id: 2,
-          name: "한솔원룸",
-          type: "ROOM",
-          contractType: "MONTHLY_RENT",
-          deposit: 2000,
-          price: 40,
-          floor: "LOW",
-          space: 35.5,
-          maintenanceCost: 5,
-          rating: 4,
-          liked: false,
-        },
-        reviewInfo: {
-          content: "주변이 조용하고 살기 좋아요.",
-          keyword: [
-            "PO_BD_LO_02",
-            "PO_BD_LO_01",
-            "PO_BD_LO_04",
-            "PO_BD_LO_01", // ... 필요한 키워드 추가
-            "PO_BD_LO_01",
-          ],
-          likeCount: 18,
-          updateAt: "2025-02-23T04:06:00.000+09:00",
-        },
-        image: campus_img_1,
-      },
-      // {
-      //   agencyReviewInfo: {
-      //     id: 1,
-      //     name: "1",
-      //     type: "AGENCY",
-      //     rating: 1,
-      //     liked: false,
-      //   },
-      //   reviewInfo: {
-      //     content: "1",
-      //     keyword: ["PO_BD_LO_01"],
-      //     likeCount: 1,
-      //     updateAt: "2025-02-23T04:06:00.000+09:00",
-      //   },
-      //   image: "http://localhost:8080/image/1.jpg",
-      // },
-    ] as any[],
-  },
+const QUERY_KEYS = {
+  heartListData: "heartListData",
 };
 
 const Heart: React.FC = () => {
-  const [isOpen, setIsOpen] = useRecoilState(isFilterModalOpenState);
+  const [filterConfig, setFilterConfig] = useRecoilState(filterConfigState);
+  const isLogin = useRecoilValue(isLoginState);
+
+  const queryClient = useQueryClient();
+
+  const {
+    data: heartListData,
+    isFetching: isFetchingHeartList,
+    isError: isErrorHeartList,
+    refetch,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.heartListData, filterConfig.sortBy, filterConfig.type],
+    queryFn: async () => {
+      const response = await getAPI(
+        `api/v1/user/bookmark?sortBy=${filterConfig.sortBy}&type=${filterConfig.type}`,
+        true
+      );
+      return response.data;
+    },
+    enabled: isLogin,
+    refetchOnWindowFocus: false,
+  });
+
+  const validHeartListData = isLogin ? heartListData : [];
+
+  if (isFetchingHeartList) {
+    console.log("로딩 중...");
+    return null;
+  }
+
+  const combinedData = validHeartListData.map((review: any) => {
+    const combinedId =
+      review.agencyReviewInfo?.id ??
+      review.generalReviewInfo?.id ??
+      review.dormitoryReviewInfo?.id ??
+      review.generalBuildingInfo?.id ??
+      review.dormitoryBuildingInfo?.id ??
+      review.agencyBuildingInfo?.id;
+    let combinedType;
+    if (
+      review.agencyReviewInfo ||
+      review.generalReviewInfo ||
+      review.dormitoryReviewInfo
+    ) {
+      combinedType = "REVIEW";
+    } else if (
+      review.generalBuildingInfo ||
+      review.dormitoryBuildingInfo ||
+      review.agencyBuildingInfo
+    ) {
+      combinedType = "BUILDING";
+    }
+
+    return {
+      ...review,
+      id: combinedId,
+      type: combinedType,
+    };
+  });
 
   return (
     <>
@@ -102,28 +87,44 @@ const Heart: React.FC = () => {
           <div className={styles.filterContainer}>
             <div
               className={styles.filter}
-              onClick={() => setIsOpen((prev) => !prev)}
+              onClick={() =>
+                setFilterConfig((prev) => ({
+                  ...prev,
+                  isOpen: !prev.isOpen,
+                }))
+              }
             >
               <p className={styles.filterText}>필터</p>
               <img className={styles.filterImg} src={downIcon} alt="downIcon" />
             </div>
           </div>
-          {api.data.reviews.length > 0 ? (
-            api.data.reviews.map((review) => (
-              <div key={review.basicInfo?.id ?? review.dormitoryBasicInfo?.id}>
+          {combinedData.length > 0 ? (
+            combinedData.map((review: any) => (
+              <div key={review.id + review.type} style={{ width: "100%" }}>
                 <div className={styles.line} />
-                <BuildingPreviewReview review={review} />
+                {review.type === "REVIEW" ? (
+                  <PreviewReview review={review} />
+                ) : null}
+                {review.type === "BUILDING" ? (
+                  <PreviewBuildingReview review={review} />
+                ) : null}
               </div>
             ))
           ) : (
             <div className={styles.noReviewContainer}>
               <div className={styles.line} />
-              <img src={emptyCharacterIcon} alt="빈 캐릭터 아이콘" />
-              <p className={styles.noReviewText}>
-                앗! 아직 관심목록이 없어요!
-                <br />
-                지도에서 내 주변 찐빵을 둘러볼까요?
-              </p>
+              <div className={styles.noReviewImgContainer}>
+                <img src={emptyCharacterIcon} alt="빈 캐릭터 아이콘" />
+                <p className={styles.noReviewText}>
+                  {isLogin
+                    ? "앗! 아직 관심목록이 없어요!"
+                    : "로그인 후 이용가능해요!"}
+                  <br />
+                  {isLogin
+                    ? "지도에서 내 주변 찐빵을 둘러볼까요?"
+                    : "학교 인증 후 관심목록 기능을 이용해보세요!"}
+                </p>
+              </div>
             </div>
           )}
         </div>

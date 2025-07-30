@@ -27,22 +27,14 @@ const QUERY_KEYS = {
   userData: "USER_DATA",
   campusData: "CAMPUS_DATA",
   reviewData: "RECENT_REVIEW_DATA",
+  univData: "UNIV_DATA",
 };
 
 const Home: React.FC = () => {
   const queryClient = useQueryClient();
 
-  const university = "경상국립대학교";
-
   const isLogin = useRecoilValue(isLoginState);
-  useEffect(() => {
-    // 로그인 상태가 변경될 때마다 실행되는 부분
-    console.log("로그인 상태가 바뀜:", isLogin);
 
-    // 여기서 쿼리 refetch하거나 로컬 상태 초기화 가능
-  }, [isLogin]);
-
-  // ✅ 로그인한 경우에만 실행
   const {
     data: userData,
     isFetching: isFetchingUser,
@@ -80,6 +72,28 @@ const Home: React.FC = () => {
 
   // ✅ 비로그인일 때만 실행
   const {
+    data: universityList,
+    isFetching: isFetchingUniversityList,
+    isError: isErrorUniversityList,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.univData, "guest"],
+    queryFn: async () => {
+      const response = await getAPI(`/api/v1/user/univ`);
+      return response.data.map((univ: any) => ({
+        name: univ.universityName,
+        code: univ.universityName[0].charCodeAt(0),
+      }));
+    },
+    enabled: !!!userData?.university,
+    refetchOnWindowFocus: false,
+  });
+
+  const university =
+    universityList?.reduce((minUniv: any, currentUniv: any) =>
+      currentUniv.code < minUniv.code ? currentUniv : minUniv
+    )?.name || null;
+
+  const {
     data: campusListGuest,
     isFetching: isFetchingCampusGuest,
     isError: isErrorCampusGuest,
@@ -95,16 +109,14 @@ const Home: React.FC = () => {
         campus: campus.campusName,
       }));
     },
-    enabled: !isLogin,
+    enabled: !!!userData?.university && !!university,
     refetchOnWindowFocus: false,
   });
 
-  // ✅ 공통 처리
-  const campusList = isLogin ? campusListLogin : campusListGuest;
+  const campusList = campusListLogin || campusListGuest || [];
   const isFetchingCampus = isLogin
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
-  const isErrorCampus = isLogin ? isErrorCampusLogin : isErrorCampusGuest;
 
   const rawReviewList = localStorage.getItem("reviewList");
 
@@ -113,7 +125,7 @@ const Home: React.FC = () => {
     rawReviewList.startsWith("[") &&
     rawReviewList.endsWith("]")
       ? rawReviewList.slice(1, -1)
-      : "";
+      : null;
 
   const {
     data: reviewData,
@@ -131,17 +143,22 @@ const Home: React.FC = () => {
       );
       return response.data;
     },
-    enabled: isLogin,
+    enabled: isLogin && !!reviewList,
     refetchOnWindowFocus: false,
   });
-  const validReviewData = Array.isArray(reviewData) ? reviewData : [];
 
-  if (isFetchingUser || isFetchingCampus || isFetchingReviewInfo) {
+  const validReviewData =
+    Array.isArray(reviewData) && isLogin ? reviewData : [];
+
+  if (
+    isFetchingUser ||
+    isFetchingCampus ||
+    isFetchingReviewInfo ||
+    isFetchingUniversityList
+  ) {
     console.log("로딩 중...");
     return null;
   }
-
-
 
   return (
     <div className={styles.container}>
@@ -197,12 +214,14 @@ const Home: React.FC = () => {
         ) : (
           <div className={styles.noReviewContainer}>
             <div className={styles.line} />
-            <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
-            <p className={styles.noReviewText}>
-              앗! 아직 최근 본 찐빵이 없어요!
-              <br />
-              지도에서 내 주변 찐빵을 둘러볼까요?
-            </p>
+            <div className={styles.noReviewImgContainer}>
+              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
+              <p className={styles.noReviewText}>
+                앗! 아직 최근 본 찐빵이 없어요!
+                <br />
+                지도에서 내 주변 찐빵을 둘러볼까요?
+              </p>
+            </div>
           </div>
         )}
       </div>

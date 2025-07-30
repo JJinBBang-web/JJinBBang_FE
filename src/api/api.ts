@@ -1,7 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
-import { setLoggedIn } from "../recoil/auth/loginStateManager";
-
-
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -25,12 +22,10 @@ api.interceptors.request.use((config) => {
   if (config.useAuth) {
     const accessToken = localStorage.getItem("accessToken");
 
-    if (accessToken) {
-      if (typeof config.headers?.set === "function") {
-        config.headers.set("Authorization", `Bearer ${accessToken}`);
-      } else {
-        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
-      }
+    if (typeof config.headers?.set === "function") {
+      config.headers.set("Authorization", `Bearer ${accessToken}`);
+    } else {
+      (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
     }
   }
 
@@ -67,14 +62,22 @@ const processQueue = (error: any, token: string | null = null) => {
 // ✅ 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
-    console.log("✅ Axios Response:", res.data);
-    if (res.config.useAuth) {
-      setLoggedIn(true); // 로그인 상태 업데이트
-    }
+    console.log(
+      "✅ Axios Response:",
+      res.data,
+      "\n✅ Axios Response URL:",
+      res.config.url
+    );
+
     return res;
   },
   async (error: AxiosError) => {
-    console.error("❌ Axios Error:", error.response?.data);
+    console.error(
+      "❌ Axios Error:",
+      error.response?.data,
+      "\n❌ Axios Error URL:",
+      error.response?.config.url
+    );
     const originalRequest = error.config as AxiosRequestConfig;
 
     if (
@@ -86,7 +89,6 @@ api.interceptors.response.use(
 
       if (!refreshToken) {
         // window.location.href = "/login";
-        setLoggedIn(false);
         return Promise.reject(error);
       }
 
@@ -137,7 +139,6 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
-        setLoggedIn(false);
         processQueue(err, null);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");

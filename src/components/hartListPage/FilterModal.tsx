@@ -1,23 +1,39 @@
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import styles from "./FilterModal.module.css";
-import { isFilterModalOpenState } from "../../recoil/hartListPage/isFilterModalOpenState";
+import { filterConfigState } from "../../recoil/hartListPage/filterConfigState";
 import iconClose from "../../assets/image/iconClose.svg";
 
 const FilterModal = () => {
-  const [isOpen, setIsOpen] = useRecoilState(isFilterModalOpenState);
-  const [selectedTab, setSelectedTab] = useState("전체");
-  const tabs = ["전체", "후기만", "건물만"];
-  const [selectedSort, setSelectedSort] = useState("최신순");
-  const sorts = ["최신순", "좋아요순", "별점순"];
+  const [filterConfig, setFilterConfig] = useRecoilState(filterConfigState);
+  const [selectedTab, setSelectedTab] = useState(filterConfig.type);
+  const tabs = ["all", "review", "building"];
+  const [selectedSort, setSelectedSort] = useState(filterConfig.sortBy);
+  const sorts = ["latest", "likes", "stars"];
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSelectedTab(filterConfig.type);
+      setSelectedSort(filterConfig.sortBy);
+    }, 500);
+  }, [filterConfig.isOpen]);
 
   return (
     <>
       <div
-        className={`${styles.overlay} ${isOpen ? styles.open : ""}`}
-        onClick={() => setIsOpen(false)}
+        className={`${styles.overlay} ${
+          filterConfig.isOpen ? styles.open : ""
+        }`}
+        onClick={() =>
+          setFilterConfig((prev) => ({
+            ...prev,
+            isOpen: false,
+          }))
+        }
       />
-      <div className={`${styles.sheet} ${isOpen ? styles.open : ""}`}>
+      <div
+        className={`${styles.sheet} ${filterConfig.isOpen ? styles.open : ""}`}
+      >
         <div className={styles.header_divider} />
         <div className={styles.title}>
           <p className={styles.titleText}>필터</p>
@@ -25,7 +41,12 @@ const FilterModal = () => {
             className={styles.exitImg}
             src={iconClose}
             alt="iconClose"
-            onClick={() => setIsOpen(false)}
+            onClick={() =>
+              setFilterConfig((prev) => ({
+                ...prev,
+                isOpen: false,
+              }))
+            }
           />
         </div>
         <div className={styles.filterTabsContainer}>
@@ -42,7 +63,7 @@ const FilterModal = () => {
                   selectedTab === tab ? styles.active : ""
                 }`}
               >
-                {tab}
+                {tab === "all" ? "전체" : tab === "review" ? "후기만" : "건물만"}
               </p>
             </div>
           ))}
@@ -50,30 +71,32 @@ const FilterModal = () => {
         <div className={styles.thickLine} />
         <div className={styles.sortFilterContainer}>
           {sorts.map((sort) => (
-            <>
+            <div key={sort} style={{ width: "100%" }}>
               <p
-                key={sort}
                 className={`${styles.sortFilterText} ${
                   selectedSort === sort ? styles.active : ""
                 }`}
                 onClick={() => {
-                  console.log("Clicked:", sort); // 클릭된 값 확인
                   setSelectedSort(sort);
                 }}
               >
-                {sort}
+                {sort === "latest"
+                  ? "최신순"
+                  : sort === "likes"
+                  ? "좋아요순"
+                  : "별점순"}
               </p>
 
               <div className={styles.line} />
-            </>
+            </div>
           ))}
         </div>
         <div className={styles.buttonContainer}>
           <div
             className={styles.button}
             onClick={() => {
-              setSelectedTab("전체");
-              setSelectedSort("최신순");
+              setSelectedTab("all");
+              setSelectedSort("latest");
             }}
           >
             <p className={styles.buttonText}>초기화</p>
@@ -81,7 +104,13 @@ const FilterModal = () => {
           <div
             className={styles.button}
             style={{ background: "var(--primary-color)" }}
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setFilterConfig((prev) => ({
+                sortBy: selectedSort,
+                type: selectedTab,
+                isOpen: false,
+              }));
+            }}
           >
             <p className={styles.buttonText} style={{ color: "var(--white)" }}>
               확인

@@ -49,7 +49,8 @@ import KakaoCallback1 from "./pages/KakaoCallBack";
 import { useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { isLoginState } from "./recoil/auth/isLoginState";
-import { setLoginStateUpdater } from "./recoil/auth/loginStateManager";
+import { getAPI } from "./api/bassAPI";
+import { useQuery } from "@tanstack/react-query";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,11 +63,31 @@ const queryClient = new QueryClient({
 });
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const [, setIsLoggedIn] = useRecoilState(isLoginState);
+  const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
+  const {
+    data: userData,
+    isFetching: isFetchingUser,
+    isError: isErrorUser,
+    isSuccess: isSuccessUser,
+  } = useQuery({
+    queryKey: [location.pathname],
+    queryFn: async () => {
+      const response = await getAPI(`/api/v1/user`, true);
+      return response.data;
+    },
+    enabled: isLogin,
+    refetchOnWindowFocus: false,
+  });
+
   useEffect(() => {
-    setLoginStateUpdater(setIsLoggedIn);
-  }, []);
-  
+    if (isSuccessUser) {
+      console.log("로그인");
+      setIsLoggedIn(true);
+    } else {
+      console.log("로그아웃");
+      setIsLoggedIn(false);
+    }
+  }, [isSuccessUser]);
 
   // const showHeaderAndNav = ![
   //   '/auth/verify',

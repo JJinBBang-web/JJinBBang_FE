@@ -151,35 +151,39 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
           />
         </div>
       </div>
-
-      <div className={styles.buildingContent}>
-        <div className={styles.buildingPrice}>{type}</div>
-        {generalInfo && (
-          <div className={styles.buildingPrice}>
-            {
-              generalInfo.contractType === "MONTHLY_RENT"
-                ? "월세" // contractType이 'MONTHLY_RENT'일 경우 표시
-                : generalInfo.contractType === "DEPOSIT_RENT"
-                ? "전세" // contractType이 'DEPOSIT_RENT'일 경우 표시
-                : generalInfo.contractType // 둘 다 아닐 경우 원래 값 표시
-            }{" "}
-            {generalInfo?.deposit}/{generalInfo?.price}
+      {(generalInfo || dormitoryInfo) && (
+        <>
+          <div className={styles.buildingContent}>
+            <div className={styles.buildingPrice}>{type}</div>
+            {generalInfo && (
+              <div className={styles.buildingPrice}>
+                {
+                  generalInfo.contractType === "MONTHLY_RENT"
+                    ? "월세" // contractType이 'MONTHLY_RENT'일 경우 표시
+                    : generalInfo.contractType === "DEPOSIT_RENT"
+                    ? "전세" // contractType이 'DEPOSIT_RENT'일 경우 표시
+                    : generalInfo.contractType // 둘 다 아닐 경우 원래 값 표시
+                }{" "}
+                {generalInfo?.deposit}/{generalInfo?.price}
+              </div>
+            )}
+            {dormitoryInfo && (
+              <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
+                {dormitoryInfo.universityName.slice(0, -2)}
+              </div>
+            )}
           </div>
-        )}
-        {dormitoryInfo && (
-          <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
-            {dormitoryInfo.universityName.slice(0, -2)}
+          <div className={styles.buildingRating}>
+            {[...Array(rating)].map((_, index) => (
+              <img key={`on-${index}`} src={starIconOn} alt="rate" />
+            ))}
+            {[...Array(5 - rating)].map((_, index) => (
+              <img key={`off-${index}`} src={starIconOff} alt="rate" />
+            ))}
           </div>
-        )}
-      </div>
-      <div className={styles.buildingRating}>
-        {[...Array(rating)].map((_, index) => (
-          <img key={`on-${index}`} src={starIconOn} alt="rate" />
-        ))}
-        {[...Array(5 - rating)].map((_, index) => (
-          <img key={`off-${index}`} src={starIconOff} alt="rate" />
-        ))}
-      </div>
+        </>
+      )}
+      
       {/* {review.dormitoryBasicInfo && (
         <>
           <div className={styles.buildingContent}>

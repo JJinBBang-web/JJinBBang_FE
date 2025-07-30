@@ -3,8 +3,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { setLoggedIn } from "../recoil/auth/loginStateManager";
-
+import { isLoginState } from "../recoil/auth/isLoginState";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const url = process.env.REACT_APP_API_URL;
 export const getSignupToken = () => localStorage.getItem("signupToken");
@@ -74,60 +74,57 @@ export const getUserInfo = async () => {
 function KakaoCallback1() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [, setIsLoggedIn] = useRecoilState(isLoginState);
 
   useEffect(() => {
-    // 1) URL에서 code 파라미터 추출
-    const searchParams = new URLSearchParams(location.search);
-    const code = searchParams.get("code");
-    console.log("인가 코드:", code);
+    const handleLogin = async () => {
+      const searchParams = new URLSearchParams(location.search);
+      const code = searchParams.get("code");
+      console.log("인가 코드:", code);
 
-    // 2) 백엔드에 POST 요청 (로그인 시도)
-    if (code) {
-      kakaoLogin(code)
-        .then((response) => {
-          console.log("백엔드 응답:", response);
-          // data 안에는 "로그인 성공", accessToken, refreshToken 등이 있을 것
-          // 필요한 로직: 토큰 저장(localStorage 등) 혹은 리다이렉트
-          if (response.data.accessToken) {
-            // 로그인 성공 시, 토큰 저장
-            localStorage.setItem("accessToken", response.data.accessToken);
-            localStorage.setItem("refreshToken", response.data.refreshToken);
-            console.log("로그인 성공, 토큰 저장 완료");
-            setLoggedIn(true);
-          } else if (response.data.signupToken) {
-            // 회원가입 필요 시, signupToken 저장
-            localStorage.setItem("signupToken", response.data.signupToken);
-            agreeToTerms()
-              .then(({ code, message, data }) => {
-                console.log("약관 동의 응답:", code, message, data);
-                // 약관 동의 처리 로직
-                if (code === 200) {
-                  console.log("약관 동의 성공");
-                  // 약관 동의 성공 후 처리 로직
-                  setTokens({
-                    accessToken: data.accessToken,
-                    refreshToken: data.refreshToken,
-                  });
-                  setLoggedIn(true);
-                } else {
-                  console.error("약관 동의 실패:", message);
-                }
-              })
-              .catch((err) => {
-                console.error("약관 동의 요청 중 에러:", err);
+      if (!code) return;
+
+      try {
+        const response = await kakaoLogin(code);
+        console.log("백엔드 응답:", response);
+
+        if (response.data.accessToken) {
+          localStorage.setItem("accessToken", response.data.accessToken);
+          localStorage.setItem("refreshToken", response.data.refreshToken);
+          console.log("로그인 성공, 토큰 저장 완료");
+          setIsLoggedIn(true);
+          navigate("/mypage");
+        } else if (response.data.signupToken) {
+          localStorage.setItem("signupToken", response.data.signupToken);
+          try {
+            const { code: agreeCode, message, data } = await agreeToTerms();
+            console.log("약관 동의 응답:", agreeCode, message, data);
+
+            if (agreeCode === 200) {
+              setTokens({
+                accessToken: data.accessToken,
+                refreshToken: data.refreshToken,
               });
-          } else {
-            console.error("로그인 실패:", response);
+              console.log("약관 동의 및 토큰 설정 완료");
+              setIsLoggedIn(true);
+              navigate("/mypage");
+            } else {
+              console.error("약관 동의 실패:", message);
+            }
+          } catch (err) {
+            console.error("약관 동의 요청 중 에러:", err);
           }
-        })
-        .catch((err) => {
-          console.error("로그인 요청 중 에러:", err);
-        });
-    }
+        } else {
+          console.error("로그인 실패:", response);
+        }
+      } catch (err) {
+        console.error("로그인 요청 중 에러:", err);
+      }
+    };
 
-    // 3) 로그인 성공 시, 메인 페이지로 리다이렉트
-    navigate("/mypage"); // 메인 페이지로 리다이렉트
+    handleLogin();
   }, [location]);
+
   return null;
 }
 

@@ -44,6 +44,7 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   const address = activeReviewInfo?.address;
   const reviewCount = activeReviewInfo?.reviewCount;
   const liked = activeReviewInfo?.liked;
+  const image = review.image;
 
   const [isLiked, setIsLiked] = useState(liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
@@ -54,10 +55,15 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   }, [liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
   return (
-    <div className={styles.content}
-      onClick={()=> navigate(`/building/${activeReviewInfo?.id}`)}
+    <div
+      className={styles.content}
+      onClick={() => navigate(`/building/${activeReviewInfo?.id}`)}
     >
-      <img src="" alt="" className={styles.buildingImg} />
+      <img
+        src={image}
+        alt={name}
+        className={styles.buildingImg}
+      />
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>
@@ -84,7 +90,9 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
             </div>
           ))
         ) : (
-          <div className={`${styles.buildingPrice} ${styles.agency}`}>{type}</div>
+          <div className={`${styles.buildingPrice} ${styles.agency}`}>
+            {type}
+          </div>
         )}
         {dormitoryInfo && (
           <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
