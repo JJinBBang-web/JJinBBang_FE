@@ -80,6 +80,12 @@
   flex-direction: column;
   align-items: center;
 }
+.noReviewImgContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
 
 .noReviewText {
   color: var(--color-gray60);

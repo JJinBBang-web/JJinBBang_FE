@@ -12,6 +12,7 @@ export const api = axios.create({
 declare module "axios" {
   export interface AxiosRequestConfig {
     useAuth?: boolean;
+    isFile?: boolean;
     _retry?: boolean;
   }
 }
@@ -21,12 +22,20 @@ api.interceptors.request.use((config) => {
   if (config.useAuth) {
     const accessToken = localStorage.getItem("accessToken");
 
-    if (accessToken) {
-      if (typeof config.headers?.set === "function") {
-        config.headers.set("Authorization", `Bearer ${accessToken}`);
-      } else {
-        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
-      }
+    if (typeof config.headers?.set === "function") {
+      config.headers.set("Authorization", `Bearer ${accessToken}`);
+    } else {
+      (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+    }
+  }
+
+  if (config.isFile) {
+    // axios는 FormData 사용 시 Content-Type 생략하는 게 안전합니다.
+    // 브라우저가 자동으로 boundary 설정해줌
+    if (typeof config.headers?.set === "function") {
+      config.headers.set("Content-Type", "multipart/form-data");
+    } else {
+      (config.headers as any)["Content-Type"] = "multipart/form-data";
     }
   }
   return config;
@@ -53,11 +62,22 @@ const processQueue = (error: any, token: string | null = null) => {
 // ✅ 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
-    console.log("✅ Axios Response:", res.data);
+    console.log(
+      "✅ Axios Response:",
+      res.data,
+      "\n✅ Axios Response URL:",
+      res.config.url
+    );
+
     return res;
   },
   async (error: AxiosError) => {
-    console.error("❌ Axios Error:", error.response?.data);
+    console.error(
+      "❌ Axios Error:",
+      error.response?.data,
+      "\n❌ Axios Error URL:",
+      error.response?.config.url
+    );
     const originalRequest = error.config as AxiosRequestConfig;
 
     if (
@@ -103,9 +123,9 @@ api.interceptors.response.use(
             },
           }
         );
-        
+
         const newToken = response.data.data.accessToken;
-      
+
         localStorage.setItem("accessToken", newToken);
         processQueue(null, newToken);
 
