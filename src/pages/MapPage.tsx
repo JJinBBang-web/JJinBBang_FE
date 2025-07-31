@@ -409,7 +409,7 @@ const MapPage = () => {
                                     ))}
                                 </div>
                                 {(nearByData?.items ?? []).map((review) => (
-                                    <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildInfo?.id ?? review.generalBuildingInfo?.id}>
+                                    <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}>
                                         <div className={styles.line} />
                                         <PreviewReview review={review} />
                                     </div>

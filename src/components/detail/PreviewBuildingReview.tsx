@@ -31,15 +31,16 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
 
   if (review.generalBuildingInfo) {
     activeReviewInfo = review.generalBuildingInfo;
-  } else if (review.dormitoryBuildInfo) {
-    activeReviewInfo = review.dormitoryBuildInfo;
+  } else if (review.dormitoryBuildingInfo) {
+    activeReviewInfo = review.dormitoryBuildingInfo;
   } else if (review.agencyBuildingInfo) {
     activeReviewInfo = review.agencyBuildingInfo;
   }
 
   const generalInfo = review.generalBuildingInfo;
-  const dormitoryInfo = review.dormitoryBuildInfo;
+  const dormitoryInfo = review.dormitoryBuildingInfo;
   const agencyInfo = review.agencyBuildingInfo;
+  console.log("dormitoryInfo", dormitoryInfo);
 
   const mutation = useMutation({
     mutationFn: async () => {
