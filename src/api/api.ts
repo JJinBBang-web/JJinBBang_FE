@@ -124,17 +124,22 @@ api.interceptors.response.use(
           }
         );
 
-        const newToken = response.data.data.accessToken;
-
-        localStorage.setItem("accessToken", newToken);
-        processQueue(null, newToken);
+        const newAccessToken = response.data.data.accessToken;
+        const newRefreshToken = response.data.data.refreshToken;
+        
+        localStorage.setItem("accessToken", newAccessToken);
+        localStorage.setItem("refreshToken", newRefreshToken);
+        processQueue(null, newAccessToken);
 
         if (typeof originalRequest.headers?.set === "function") {
-          originalRequest.headers.set("Authorization", `Bearer ${newToken}`);
+          originalRequest.headers.set(
+            "Authorization",
+            `Bearer ${newAccessToken}`
+          );
         } else {
           (originalRequest.headers as any)[
             "Authorization"
-          ] = `Bearer ${newToken}`;
+          ] = `Bearer ${newAccessToken}`;
         }
 
         return api(originalRequest);

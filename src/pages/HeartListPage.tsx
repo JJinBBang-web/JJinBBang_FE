@@ -1,5 +1,11 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { useRecoilState , useRecoilValue } from "recoil";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./HeartListPage.module.css";
 import Banner from "../components/Banner";
 import PreviewReview from "../components/PreviewReview";
@@ -9,7 +15,11 @@ import FilterModal from "../components/hartListPage/FilterModal";
 import { filterConfigState } from "../recoil/hartListPage/filterConfigState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import PreviewBuildingReview from "../components/detail/PreviewBuildingReview";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  useMutation,
+} from "@tanstack/react-query";
 import { getAPI, putAPI, deleteAPI } from "../api/bassAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 
@@ -22,31 +32,74 @@ const Heart: React.FC = () => {
   const isLogin = useRecoilValue(isLoginState);
 
   const queryClient = useQueryClient();
+  const observer = useRef<IntersectionObserver | null>(null);
 
   const {
-    data: heartListData,
-    isFetching: isFetchingHeartList,
-    isError: isErrorHeartList,
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetching,
+    isLoading,
+    isError,
     refetch,
-  } = useQuery({
-    queryKey: [QUERY_KEYS.heartListData, filterConfig.sortBy, filterConfig.type],
-    queryFn: async () => {
+  } = useInfiniteQuery({
+    queryKey: [
+      QUERY_KEYS.heartListData,
+      filterConfig.sortBy,
+      filterConfig.type,
+    ],
+    queryFn: async ({ pageParam = 0 }) => {
       const response = await getAPI(
-        `api/v1/user/bookmark?sortBy=${filterConfig.sortBy}&type=${filterConfig.type}`,
+        `api/v1/user/bookmark?sortBy=${filterConfig.sortBy}&type=${filterConfig.type}&page=${pageParam}&size=5`,
         true
       );
       return response.data;
     },
     enabled: isLogin,
     refetchOnWindowFocus: false,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < 5) return undefined;
+      return allPages.length;
+    },
   });
 
+  // 모든 페이지의 데이터를 하나로 합치기
+  const heartListData = data?.pages.flatMap((page) => page) || [];
   const validHeartListData = isLogin ? heartListData : [];
 
-  if (isFetchingHeartList) {
-    console.log("로딩 중...");
-    return null;
-  }
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isFetchingNextPage) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        {
+          threshold: 0.1,
+          rootMargin: "100px",
+        }
+      );
+
+      if (node) observer.current.observe(node);
+    },
+    [isFetchingNextPage, fetchNextPage, hasNextPage]
+  );
+
+  // 컴포넌트 언마운트 시 observer 정리
+  useEffect(() => {
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+    };
+  }, []);
 
   const combinedData = validHeartListData.map((review: any) => {
     const combinedId =
@@ -78,6 +131,16 @@ const Heart: React.FC = () => {
     };
   });
 
+  // 초기 로딩 상태
+  if (isLoading) {
+    return null;
+  }
+
+  // 에러 상태
+  if (isError) {
+    return null
+  }
+
   return (
     <>
       <div className={styles.container}>
@@ -98,18 +161,34 @@ const Heart: React.FC = () => {
               <img className={styles.filterImg} src={downIcon} alt="downIcon" />
             </div>
           </div>
+
           {combinedData.length > 0 ? (
-            combinedData.map((review: any) => (
-              <div key={review.id + review.type} style={{ width: "100%" }}>
-                <div className={styles.line} />
-                {review.type === "REVIEW" ? (
-                  <PreviewReview review={review} />
-                ) : null}
-                {review.type === "BUILDING" ? (
-                  <PreviewBuildingReview review={review} />
-                ) : null}
-              </div>
-            ))
+            <>
+              {combinedData.map((review: any, index: number) => (
+                <div
+                  key={review.id + review.type}
+                  style={{ width: "100%" }}
+                  ref={
+                    index === combinedData.length - 1 ? lastElementRef : null
+                  }
+                >
+                  <div className={styles.line} />
+                  {review.type === "REVIEW" ? (
+                    <PreviewReview review={review} />
+                  ) : null}
+                  {review.type === "BUILDING" ? (
+                    <PreviewBuildingReview review={review} />
+                  ) : null}
+                </div>
+              ))}
+
+              {/* 추가 로딩 표시 */}
+              {isFetchingNextPage && (
+                <div className={styles.additionalLoading}>
+                  <p>더 불러오는 중...</p>
+                </div>
+              )}
+            </>
           ) : (
             <div className={styles.noReviewContainer}>
               <div className={styles.line} />
