@@ -11,13 +11,14 @@ import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
 import Footer from '../components/detail/Footer';
 import ReportButton from '../components/util/ReportButton';
 import ReviewFacilitiesInfo from '../components/detail/ReviewFacilitiesInfo';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useReviewDetail } from '../hooks/useReviewDetail';
 import { updateReviewState } from '../recoil/review/updateReviewAtoms';
 import { convertToReviewState } from '../util/convertToReviewState';
 
 
 const Review: React.FC = () => {
+    const navigate = useNavigate();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [reviews, setReviews] = useRecoilState(ReviewInfoState);
     const setUpdateReview = useSetRecoilState(updateReviewState);
@@ -53,6 +54,10 @@ const Review: React.FC = () => {
         }
     }, [data]);
         
+    const handleBack = () => {
+        navigate(-1);
+    };
+
     if (isLoading) return <div>로딩 중...</div>;
     if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
 
@@ -62,7 +67,7 @@ const Review: React.FC = () => {
         style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.container}>
                 {/* 헤더 */}
-                <Header/>
+                <Header onClick={handleBack}/>
                 {/* 이미지슬라이더 */}
                 <ImageSlider review={reviews} building={null}/>
                 {/* 리뷰 정보 및 키워드 */}
@@ -94,7 +99,7 @@ const Review: React.FC = () => {
                 </div>
                 : 
                 <div className={styles.fixedWrap}>
-                    <ReportButton/>
+                    <ReportButton reviewId = {reviewId}/>
                     <TopButton/>
                 </div>
             }

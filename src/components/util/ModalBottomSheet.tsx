@@ -51,9 +51,9 @@ const ModalBottomSheet = () => {
         if (type === "housing") {
             setSelectedType(housingType);
         } 
-        if (type === "university") {
-            setSelectedTypeNum(university);
-        }
+        // if (type === "university") {
+        //     setSelectedTypeNum(university);
+        // }
         if (type === "contract") {
             setSelectedContractState(contractType);
             setDepositRangeState([depositMin, depositMax]);

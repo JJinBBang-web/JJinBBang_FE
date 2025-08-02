@@ -11,7 +11,9 @@ import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import pencil from "../assets/image/pencil.svg";
 import iconRight from "../assets/image/iconRight.svg";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI ,deleteAPI} from "../api/bassAPI";
+import { getAPI, putAPI, deleteAPI } from "../api/bassAPI";
+import { isLoginState } from "../recoil/auth/isLoginState";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -22,35 +24,99 @@ const getReviewKey = (review: any) => {
 };
 
 const QUERY_KEYS = {
+  userData: "USER_DATA",
   campusData: "CAMPUS_DATA",
-  reviewData: "REVIEW_DATA",
+  reviewData: "RECENT_REVIEW_DATA",
+  univData: "UNIV_DATA",
 };
 
 const Home: React.FC = () => {
   const queryClient = useQueryClient();
 
-  // 수정 예정
-  const universityName = "경상국립대학교";
+  const isLogin = useRecoilValue(isLoginState);
 
   const {
-    data: campusList,
-    isFetching: isFetchingCampus,
-    isError: isErrorCampus,
+    data: userData,
+    isFetching: isFetchingUser,
+    isError: isErrorUser,
   } = useQuery({
-    queryKey: [QUERY_KEYS.campusData],
+    queryKey: [QUERY_KEYS.userData],
+    queryFn: async () => {
+      const response = await getAPI(`/api/v1/user`, true);
+      return response.data;
+    },
+    enabled: isLogin,
+    refetchOnWindowFocus: false,
+  });
+
+  // ✅ 로그인한 경우에만 실행
+  const {
+    data: campusListLogin,
+    isFetching: isFetchingCampusLogin,
+    isError: isErrorCampusLogin,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.campusData, "login"],
     queryFn: async () => {
       const response = await getAPI(
-        `/api/v1/user/univ/campus?universityName=${universityName}`
+        `/api/v1/user/univ/campus?universityName=${userData?.university}`
       );
-
       return response.data.campusList.map((campus: any) => ({
         img: campus.logoImageUrl || "default_image_url",
-        univ: "경상국립대학교",
+        univ: userData.university,
         campus: campus.campusName,
       }));
     },
+    enabled: isLogin && !!userData?.university,
     refetchOnWindowFocus: false,
   });
+
+  // ✅ 비로그인일 때만 실행
+  const {
+    data: universityList,
+    isFetching: isFetchingUniversityList,
+    isError: isErrorUniversityList,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.univData, "guest"],
+    queryFn: async () => {
+      const response = await getAPI(`/api/v1/user/univ`);
+      return response.data.map((univ: any) => ({
+        name: univ.universityName,
+        code: univ.universityName[0].charCodeAt(0),
+      }));
+    },
+    enabled: !!!userData?.university,
+    refetchOnWindowFocus: false,
+  });
+
+  const university =
+    universityList?.reduce((minUniv: any, currentUniv: any) =>
+      currentUniv.code < minUniv.code ? currentUniv : minUniv
+    )?.name || null;
+
+  const {
+    data: campusListGuest,
+    isFetching: isFetchingCampusGuest,
+    isError: isErrorCampusGuest,
+  } = useQuery({
+    queryKey: [QUERY_KEYS.campusData, "guest"],
+    queryFn: async () => {
+      const response = await getAPI(
+        `/api/v1/user/univ/campus?universityName=${university}`
+      );
+      return response.data.campusList.map((campus: any) => ({
+        img: campus.logoImageUrl || "default_image_url",
+        univ: university,
+        campus: campus.campusName,
+      }));
+    },
+    enabled: !!!userData?.university && !!university,
+    refetchOnWindowFocus: false,
+  });
+
+  const campusList = campusListLogin || campusListGuest || [];
+  const isFetchingCampus = isLogin
+    ? isFetchingCampusLogin
+    : isFetchingCampusGuest;
 
   const rawReviewList = localStorage.getItem("reviewList");
 
@@ -59,8 +125,7 @@ const Home: React.FC = () => {
     rawReviewList.startsWith("[") &&
     rawReviewList.endsWith("]")
       ? rawReviewList.slice(1, -1)
-      : "";
-  
+      : null;
 
   const {
     data: reviewData,
@@ -78,16 +143,20 @@ const Home: React.FC = () => {
       );
       return response.data;
     },
+    enabled: isLogin && !!reviewList,
     refetchOnWindowFocus: false,
   });
-  
-  if (isFetchingCampus || isFetchingReviewInfo) {
-    console.log("로딩 중...");
-    return null;
-  }
 
-  if (isErrorCampus || isErrorReviewInfo) {
-    console.error("에러 발생");
+  const validReviewData =
+    Array.isArray(reviewData) && isLogin ? reviewData : [];
+
+  if (
+    isFetchingUser ||
+    isFetchingCampus ||
+    isFetchingReviewInfo ||
+    isFetchingUniversityList
+  ) {
+    console.log("로딩 중...");
     return null;
   }
 
@@ -113,7 +182,7 @@ const Home: React.FC = () => {
         <CampusSlide campusList={campusList} />
       </div>
 
-      <div className={styles.safetyContainer} >
+      <div className={styles.safetyContainer}>
         <img src={pencil} alt="pencil" />
         <div>
           <p className={styles.safetyText}>
@@ -133,8 +202,8 @@ const Home: React.FC = () => {
           </p>
         </div>
 
-        {reviewData.length > 0 ? (
-          reviewData.map((review: any) => {
+        {validReviewData.length > 0 ? (
+          validReviewData.map((review: any) => {
             return (
               <div key={getReviewKey(review)}>
                 <div className={styles.line} />
@@ -145,12 +214,14 @@ const Home: React.FC = () => {
         ) : (
           <div className={styles.noReviewContainer}>
             <div className={styles.line} />
-            <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
-            <p className={styles.noReviewText}>
-              앗! 아직 최근 본 찐빵이 없어요!
-              <br />
-              지도에서 내 주변 찐빵을 둘러볼까요?
-            </p>
+            <div className={styles.noReviewImgContainer}>
+              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
+              <p className={styles.noReviewText}>
+                앗! 아직 최근 본 찐빵이 없어요!
+                <br />
+                지도에서 내 주변 찐빵을 둘러볼까요?
+              </p>
+            </div>
           </div>
         )}
       </div>

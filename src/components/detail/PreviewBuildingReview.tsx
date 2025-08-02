@@ -4,48 +4,103 @@ import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import PreviewReviewContent from "../PreviewReviewContent";
-import { tagMessages, tagImages } from "../Tag";
-import { PreviewBuildingReview } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
+import {
+  AgencyBuildingInfo,
+  DormitoryBuildingInfo,
+  GeneralBuildingInfo,
+  PreviewBuildingReviewInfo,
+} from "../../recoil/detail/PreviewBuildingReviewRecoilState";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { typeToKorean } from "../../util/mapping";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { postAPI } from "../../api/bassAPI";
 
 interface Props {
-  review: PreviewBuildingReview;
+  review: PreviewBuildingReviewInfo;
 }
 
 const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
-  // const name = review.basicInfo?.name ?? review.dormitoryBuildInfo?.name;
-  // const type = review.basicInfo?.type ?? review.dormitoryBuildInfo?.type;
-  // const rating = review.basicInfo?.rating ?? review.dormitoryBuildInfo?.rating;
-  // const address =
-  //   review.basicInfo?.address ?? review.dormitoryBuildInfo?.address;
-  // const reviewCount =
-  //   review.basicInfo?.reviewCount ?? review.dormitoryBuildInfo?.reviewCount;
-  // const liked = review.basicInfo?.liked ?? review.dormitoryBuildInfo?.liked;
+  const navigate = useNavigate();
 
-  // const [isLiked, setIsLiked] = useState(liked);
-  // const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
+  let activeReviewInfo:
+    | GeneralBuildingInfo
+    | AgencyBuildingInfo
+    | DormitoryBuildingInfo
+    | undefined;
 
-  // useEffect(() => {
-  //   setIsLiked(liked);
-  //   setLikeCount(review.reviewInfo.likeCount);
-  // }, [liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
+  if (review.generalBuildingInfo) {
+    activeReviewInfo = review.generalBuildingInfo;
+  } else if (review.dormitoryBuildingInfo) {
+    activeReviewInfo = review.dormitoryBuildingInfo;
+  } else if (review.agencyBuildingInfo) {
+    activeReviewInfo = review.agencyBuildingInfo;
+  }
+
+  const generalInfo = review.generalBuildingInfo;
+  const dormitoryInfo = review.dormitoryBuildingInfo;
+  const agencyInfo = review.agencyBuildingInfo;
+  console.log("dormitoryInfo", dormitoryInfo);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return postAPI(
+        `/api/v1/user/bookmark`,
+        {
+          type: "building",
+          id: activeReviewInfo?.id,
+          bookmark: !isLiked,
+        },
+        true
+      );
+    },
+    onSuccess: (data) => {
+      setIsLiked(!isLiked);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    },
+    onError: (error) => {},
+  });
+
+  const rawRating = activeReviewInfo?.rating;
+  const numericRating = Number(rawRating) || 0;
+  const rating = Math.round(numericRating);
+
+  const name = activeReviewInfo?.name;
+  const type =
+    generalInfo?.type.map((type) => typeToKorean[type]) ??
+    (dormitoryInfo?.type && typeToKorean[dormitoryInfo.type]) ??
+    (agencyInfo?.type && typeToKorean[agencyInfo.type]);
+  const address = activeReviewInfo?.address;
+  const reviewCount = activeReviewInfo?.reviewCount;
+  const liked = activeReviewInfo?.liked;
+  const image = review.image;
+
+  const [isLiked, setIsLiked] = useState(liked);
+  const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
+
+  useEffect(() => {
+    setIsLiked(liked);
+    setLikeCount(review.reviewInfo.likeCount);
+  }, [liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
   return (
-    <div className={styles.content}>
-      {/* <img src="" alt="" className={styles.buildingImg} />
+    <div
+      className={styles.content}
+      onClick={() => navigate(`/building/${activeReviewInfo?.id}`)}
+    >
+      <img src={image} alt={name} className={styles.buildingImg} />
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>
           <img
             className={styles.likeButton}
             onClick={(event) => {
-              event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-              console.log(likeCount);
-              setLikeCount((prev) => {
-                return isLiked ? prev - 1 : prev + 1;
-              });
-              setIsLiked((prev) => !prev);
+              event.stopPropagation();
+              mutation.mutate();
+              // setLikeCount((prev) => {
+              //   return isLiked ? prev - 1 : prev + 1;
+              // });
+              // setIsLiked((prev) => !prev);
             }}
             src={isLiked ? heartIconOn : heartIconOff}
             alt="heartIcon"
@@ -53,21 +108,21 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
         </div>
       </div>
       <div className={styles.buildingContent}>
-        {review.basicInfo &&
-          review.basicInfo.type.map((typeItem, index) => (
+        {Array.isArray(type) ? (
+          type.map((typeItem, index) => (
             <div key={index} className={styles.buildingPrice}>
               {typeItem}
             </div>
-          ))}
-        {review.dormitoryBuildInfo && (
-          <>
-            <div className={styles.buildingPrice}>
-              {review.dormitoryBuildInfo.type}
-            </div>
-            <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
-              {review.dormitoryBuildInfo.universityName}
-            </div>
-          </>
+          ))
+        ) : (
+          <div className={`${styles.buildingPrice} ${styles.agency}`}>
+            {type}
+          </div>
+        )}
+        {dormitoryInfo && (
+          <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
+            {dormitoryInfo.universityName.slice(0, -2)}
+          </div>
         )}
       </div>
       <p className={styles.address}>{address}</p>
@@ -89,7 +144,7 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
           likeCount: likeCount,
           updateAt: review.reviewInfo.updateAt,
         }}
-      /> */}
+      />
     </div>
   );
 };

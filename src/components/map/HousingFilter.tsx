@@ -3,6 +3,7 @@ import { housingTypeState, selectedTypeState } from "../../recoil/map/mapRecoilS
 import housingIcon from "../../assets/image/iconHousing.svg"
 import styles from './HousingFilter.module.css'
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
+import { typeToKorean } from "../../util/mapping";
 
 
 const HousingFilter = () => {
@@ -13,6 +14,7 @@ const HousingFilter = () => {
     const [, setSelectedType] = useRecoilState(selectedTypeState);
 
 
+    const housingTypeToKr = typeToKorean[housingType];
     const isOver = housingType!.length >= 7;
 
     // UI 디자인
@@ -21,7 +23,7 @@ const HousingFilter = () => {
             setSelectedType(housingType);
             setBottomSheet({ isOpenModal: true, type: "housing" }); }}>
             <img src={housingIcon} alt="housing"/>
-            <p className={`${styles.housing_type} ${isOver ? styles.housing_type_2 : ""}`}>{housingType ? housingType : "전체"}</p>
+            <p className={`${styles.housing_type} ${isOver ? styles.housing_type_2 : ""}`}>{housingTypeToKr ? housingTypeToKr : "전체"}</p>
         </div>
     )
 }
