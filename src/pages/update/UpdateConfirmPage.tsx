@@ -95,6 +95,16 @@ const UpdateConfirmPage: React.FC = () => {
     }
   };
 
+  const navigateToPros = () => {
+    localStorage.setItem('updateReviewState', JSON.stringify(review));
+    navigate(`/review/${reviewId}/update/filter-ad`, {
+      state: {
+        ...review,
+        from: "update",
+      },
+    });
+  };
+
     const getIconFromLabel = (label: string): string => {
         // 기숙사 유형에 따라 적절한 필터 선택
         const currentFilters = isDormitory
@@ -396,7 +406,7 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToPros)}
+              onClick={() => handleItemClick(navigateToPros)}
             >
               <span className={styles.label}>장점</span>
               <div className={styles.value}>
