@@ -1,4 +1,3 @@
-/* src/styles/review/AddressInput.module.css */
 .container {
   background-color: var(--white);
   padding: 0 1rem;
@@ -10,11 +9,11 @@
 .header {
   display: flex;
   flex-direction: column;
-  padding: 8.75vh 0 1.5vh;
+  padding-top: 8.75vh;
   position: relative;
 }
 
-.backButton {
+.closeButton {
   background: none;
   border: none;
   cursor: pointer;
@@ -28,55 +27,54 @@
   height: 0.2rem;
   background-color: var(--color-gray20);
   border-radius: 2px;
-  margin: 2.5rem 0 1rem;
+  margin-top: 2.5rem;
 }
 
 .progressFill {
-  width: 40%;
+  width: 50%;
   height: 0.2rem;
   background-color: var(--primary-color);
   border-radius: 2px;
 }
 
 .header h1 {
-  font-weight: 600;
   font-size: 1.25rem;
+  font-weight: 700;
   line-height: 160%;
   letter-spacing: -0.0375rem;
-  color: var(--black);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.88rem 0;
 }
 
-.description {
-  font-size: 1rem;
+.optionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.62rem;
+}
+
+.optionButton {
+  width: 100%;
+  height: 3.9375rem;
+  padding: 1.125rem 1.25rem;
+  border: 1px solid var(--color-gray20);
+  border-radius: 16px;
+  background-color: var(--white);
+  font-size: 1.125rem;
+  font-weight: 500;
   line-height: 150%;
   letter-spacing: -0.0375rem;
   color: var(--color-gray60);
-  margin-bottom: 8px;
-}
-
-.searchBox {
-  width: 20rem;
-  height: 1.69rem;
-  padding: 1.12rem 1.25rem;
-  background-color: var(--white);
-  border: 1px solid var(--color-gray20);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  text-align: left;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.placeholder {
-  color: var(--color-gray40);
-  font-size: 1.125rem;
-  line-height: 150%;
-  letter-spacing: -0.0375rem;
-}
-
-.searchIcon {
-  width: 24px;
-  height: 24px;
+.optionButton.selected {
+  background-color: var(--block-salmon);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .footer {
@@ -116,4 +114,8 @@
 
 .nextButton:disabled {
   cursor: not-allowed;
+}
+
+.nextButton.enabled {
+  background-color: var(--primary-color);
 }

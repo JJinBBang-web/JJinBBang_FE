@@ -51,6 +51,49 @@ const UpdateConfirmPage: React.FC = () => {
       },
     });
   };
+  const navigateToAddress = () => {
+    navigate(`/review/${reviewId}/update/address`, {
+      state: {
+        ...review,
+        from: 'update',
+      },
+    });
+  };
+
+  const navigateToContractType = () => {
+    localStorage.setItem('updateReviewState', JSON.stringify(review));
+    if (review?.housingType === 'DORMITORY') {
+      navigate('/review/dormitory-conditions', {
+        state: {
+          from: 'update',
+        },
+      });
+    } else {
+      navigate(`/review/${reviewId}/update/contract/`, {
+        state: {
+          from: 'update',
+        },
+      });
+    }
+  };
+
+  const navigateToContractDetails = () => {
+    localStorage.setItem('updateReviewState', JSON.stringify(review));
+    if (review?.housingType === 'DORMITORY') {
+      navigate('/review/dormitory-amenities', {
+        state: {
+          from: 'update',
+        },
+      });
+    } else {
+
+      navigate(`/review/${reviewId}/update/contract/price`, {
+        state: {
+          from: 'update',
+        },
+      });
+    }
+  };
 
     const getIconFromLabel = (label: string): string => {
         // 기숙사 유형에 따라 적절한 필터 선택
@@ -169,7 +212,7 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToAddress)}
+              onClick={() => handleItemClick(navigateToAddress)}
             >
               <span className={styles.label}>주소</span>
               <div className={styles.value}>
@@ -200,7 +243,7 @@ const UpdateConfirmPage: React.FC = () => {
               <>
                 <div
                   className={styles.infoItem}
-                  // onClick={() => handleItemClick(navigateToContractType)}
+                  onClick={() => handleItemClick(navigateToContractType)}
                 >
                   <span className={styles.label}>
                     {review?.housingType === "DORMITORY"
@@ -258,7 +301,7 @@ const UpdateConfirmPage: React.FC = () => {
 
                 <div
                   className={styles.infoItem}
-                  // onClick={() => handleItemClick(navigateToContractDetails)}
+                  onClick={() => handleItemClick(navigateToContractDetails)}
                 >
                   <span className={styles.label}>
                     {review?.housingType === "DORMITORY"
@@ -326,7 +369,7 @@ const UpdateConfirmPage: React.FC = () => {
                               : "보증금 정보 없음"}
                           </span>
                           {(!review?.contractType ||
-                            review.contractType === "월세") && (
+                            review.contractType === "MONTHLY_RENT") && (
                             <span className={styles.valueText}>
                               {review?.monthlyRent
                                 ? `월세 ${review.monthlyRent}만원`

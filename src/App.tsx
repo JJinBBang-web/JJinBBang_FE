@@ -14,6 +14,11 @@ import MapPage from "./pages/MapPage";
 import Heart from "./pages/HeartListPage";
 import MyPage from "./pages/MyPage";
 import Nav from "./components/Nav";
+import Building from "./pages/Building";
+import Review from "./pages/Review";
+import ReportPage from "./pages/ReportPage";
+import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
+import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
 import KakaoCallback from "./pages/auth/KakaoCallback";
 import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
 import MyAccountPage from "./pages/auth/MyAccountPage";
@@ -38,11 +43,19 @@ import ReviewAdvantagePage from "./pages/review/ReviewAdvantagePage";
 import ReviewDisadvantagePage from "./pages/review/ReviewDisadvantagePage";
 import ReviewContentPage from "./pages/review/ReviewContentPage";
 import ReviewConfirmPage from "./pages/review/ReviewConfirmPage";
-import { useRecoilState } from "recoil";
+import { RecoilRoot, useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/bassAPI";
 import { useQuery } from "@tanstack/react-query";
+import ModalBottomSheet from "./components/util/ModalBottomSheet";
+import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
+import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
+import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";
+import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
+import UpdateAdventagePage from "./pages/update/UpdateAdventagePage";
+import UpdateDisadventagePage from "./pages/update/UpdateDisadventagePage";
+import UpdateContentPage from "./pages/update/UpdateContentPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -131,7 +144,7 @@ const AppContent: React.FC = () => {
     <>
       {showHeaderAndNav}
       <Routes>
-        <Route path="/login/kakao" element={<KakaoCallback1 />} />
+        <Route path="/login/kakao" element={<KakaoCallback />} />
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
@@ -181,6 +194,15 @@ const AppContent: React.FC = () => {
       <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
       <Route path="/review/:reviewId/update" element={<UpdateConfirmPage/>}/>
       <Route path="/review/:reviewId/update/type" element={<UpdateBuildTypePage/>}/>
+      <Route path="/review/:reviewId/update/input-address" element={<UpdateAddressInputPage/>}/>
+      <Route path="/review/:reviewId/update/contract" element={<UpdateContractTypePage/>}/>
+      <Route path="/review/:reviewId/update/contract/price" element={<UpdateContractPricePage/>}/>
+      <Route path="/review/:reviewId/update/room-info" element={<UpdatePhotoUploadPage/>}/>
+      <Route path="/review/:reviewId/update/filter-ad" element={<UpdateAdventagePage/>}/>
+      <Route path="/review/:reviewId/update/filter-disad" element={<UpdateDisadventagePage/>}/>
+      <Route path="/review/:reviewId/update/content" element={<UpdateContentPage/>}/>
+
+
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
