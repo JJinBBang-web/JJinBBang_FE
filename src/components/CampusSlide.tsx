@@ -19,7 +19,6 @@ interface CampusItem {
 
 const Campus: React.FC<CampusItem> = ({ img, univ, campus, scrollLeft, latitude, longitude }) => {
   const navigation = useNavigate();
-  console.log(univ, campus, latitude, longitude);
 
   return (
     <div
