@@ -4,6 +4,7 @@ import campus_arrow from "../assets/image/campusArrow.svg";
 import select_dot from "../assets/image/selectDot.svg";
 import not_select_dot from "../assets/image/notSelectDot.svg";
 import preparingService from "../assets/image/preparingService.svg";
+import { useNavigate } from "react-router-dom";
 
 const SLIDE_WIDTH = 173;
 
@@ -12,15 +13,19 @@ interface CampusItem {
   univ: string;
   campus: string;
   scrollLeft?: number; // ✅ 선택적(optional) 속성으로 변경
+  latitude?: number;
+  longitude?: number;
 }
 
-const Campus: React.FC<CampusItem> = ({ img, univ, campus, scrollLeft }) => {
+const Campus: React.FC<CampusItem> = ({ img, univ, campus, scrollLeft, latitude, longitude }) => {
+  const navigation = useNavigate();
+
   return (
     <div
       className={styles.campus}
       onClick={() => {
-        if (typeof scrollLeft === "number" && scrollLeft % SLIDE_WIDTH === 0) {
-          window.location.href = "https://www.naver.com"; // 현재 창에서 이동
+        if (typeof scrollLeft === "number" && scrollLeft % SLIDE_WIDTH === 0 && univ !== "서비스 준비중!") {
+          navigation(`/map`, { state: { campusName: campus, latitude, longitude } });
         }
       }}
     >
@@ -184,6 +189,8 @@ const CampusSlide: React.FC<CampusSlideProps> = ({ campusList }) => {
             univ={item.univ}
             campus={item.campus}
             scrollLeft={scrollLeft}
+            latitude={item.latitude}
+            longitude={item.longitude}
           />
         ))}
       </div>

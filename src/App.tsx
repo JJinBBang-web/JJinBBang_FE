@@ -92,7 +92,7 @@ const AppContent: React.FC = () => {
       console.log("로그아웃");
       setIsLoggedIn(false);
     }
-  }, [isSuccessUser]);
+  }, [isSuccessUser, location.pathname]);
 
   // const showHeaderAndNav = ![
   //   '/auth/verify',

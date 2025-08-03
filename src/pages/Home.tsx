@@ -64,6 +64,8 @@ const Home: React.FC = () => {
         img: campus.logoImageUrl || "default_image_url",
         univ: userData.university,
         campus: campus.campusName,
+        latitude: campus.latitude,
+        longitude: campus.longitude,
       }));
     },
     enabled: isLogin && !!userData?.university,
@@ -107,6 +109,8 @@ const Home: React.FC = () => {
         img: campus.logoImageUrl || "default_image_url",
         univ: university,
         campus: campus.campusName,
+        latitude: campus.latitude,
+        longitude: campus.longitude,
       }));
     },
     enabled: !!!userData?.university && !!university,
