@@ -40,14 +40,13 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   const generalInfo = review.generalBuildingInfo;
   const dormitoryInfo = review.dormitoryBuildingInfo;
   const agencyInfo = review.agencyBuildingInfo;
-  console.log("dormitoryInfo", dormitoryInfo);
 
   const mutation = useMutation({
     mutationFn: async () => {
       return postAPI(
         `/api/v1/user/bookmark`,
         {
-          type: "building",
+          type: agencyInfo? "agency" : "building",
           id: activeReviewInfo?.id,
           bookmark: !isLiked,
         },
@@ -115,7 +114,13 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
             </div>
           ))
         ) : (
-          <div className={`${styles.buildingPrice} ${styles.agency}`}>
+          <div
+            className={
+              agencyInfo
+                ? `${styles.buildingPrice} ${styles.agency}`
+                : styles.buildingPrice
+            }
+          >
             {type}
           </div>
         )}
