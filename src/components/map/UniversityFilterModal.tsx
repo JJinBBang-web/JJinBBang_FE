@@ -167,9 +167,9 @@ const UniversityFilterModal = () => {
                             setSelectedUniversityKey(`${uni.universityName}_${campus.campusName}`);
                         }}
                         >
-                        <img src={campus.logoImageUrl} alt={uni.universityName} />
-                        <p className={styles.uni_title}>{uni.universityName}</p>
-                        <p className={styles.uni_campus}>{campus.campusName}</p>
+                        <img src={campus.logoImageUrl} alt={uni.universityName} className={styles.univLogo} />
+                        <p className={`${styles.uni_title} ${selectedTypeNum === campus.id ? styles.selected_text : ""}`}>{uni.universityName}</p>
+                        <p className={`${styles.uni_campus} ${selectedTypeNum === campus.id ? styles.selected_text : ""}`}>{campus.campusName}</p>
                         </button>
                     </div>
                     ))

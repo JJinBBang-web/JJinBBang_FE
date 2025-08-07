@@ -7,7 +7,6 @@ import FilterBar from '../components/map/FilterBar';
 import ReviewListHeader from '../components/map/ReviewListHeader';
 import Modal from '../components/review/Modal';
 import iconClose from "../assets/image/iconClose.svg"
-import campus_img_1 from "../assets/image/example_image1.png";
 import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
@@ -18,11 +17,8 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { filterState, housingTypeState, searchKeywordState } from '../recoil/map/mapRecoilState';
 import { universityLabelState } from '../recoil/map/universityRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
-import { ReviewPreview } from '../recoil/detail/PreviewReviewRecoilState';
 import { useSearch } from '../hooks/useSearch';
-import BuildingPreviewReview from '../components/detail/BuildingPreviewReview';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
-import { useNavigate } from 'react-router-dom';
 
 const MapPage = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
