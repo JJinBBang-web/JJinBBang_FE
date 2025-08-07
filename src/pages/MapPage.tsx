@@ -318,93 +318,94 @@ const MapPage = () => {
             <FilterBar/>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
             {/* 토큰 없는 경우 && 인증 X 경우 ? 팝업 등장 (안에서 학교인증X ? 학생인증 : 회/로 ) */}
-            {!!nearByData?.items?.length ?
-                (isModalOpen && <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
-                        <div className={styles.wrap}>
-                            <div className={styles.sheet_header}>
-                                <div className={styles.header_divider}></div>
-                            </div>
-                            <div className={styles.sheet_title_wrap}>
-                                <div className={styles.sheet_info_wrap}>
-                                    <p className={styles.sheet_title}>{viewType === "REVIEW" ? "내 주변 찐빵" : "검색된 건물"} (<span>{nearByData.itemNum}</span>)</p>
-                                </div>
-                                <img src={iconClose} width="24px" onClick={handleCloseModal}/>
-                            </div>
-                            <div className={styles.contentWrap}>
-                                <div className={styles.filterWrap}>
-                                    {[
-                                        { label: "추천순", value: "RCMND" },
-                                        { label: "최신순", value: "LATEST" },
-                                        { label: "좋아요순", value: "LIKES" },
-                                        { label: "별점순", value: "STARS" },
-                                    ].map((sortOption) => (
-                                        <p
-                                        key={sortOption.value}
-                                        className={
-                                            selectedSort === sortOption.value
-                                            ? styles.selectedText
-                                            : undefined
-                                        }
-                                        onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
-                                        >
-                                        <span>•</span>{sortOption.label}
-                                        </p>
-                                    ))}
-                                </div>
-                                {(nearByData?.items ?? []).map((review) => (
-                                    <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}>
-                                        <div className={styles.line} />
-                                        {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
-                                    </div>
-                                    ))}
-                            </div>               
+            {isModalOpen && searchKeyword && (searchData?.items?.length as number) > 0 && (
+                <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                    <div className={styles.wrap}>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
                         </div>
-                    </Modal>)
-                    : isModalOpen && (
-                        <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
-                        <div className={styles.wrap}>
-                            <div className={styles.sheet_header}>
-                                <div className={styles.header_divider}></div>
+                        <div className={styles.sheet_title_wrap}>
+                            <div className={styles.sheet_info_wrap}>
+                                <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum}</span>)</p>
                             </div>
-                            <div className={styles.sheet_title_wrap}>
-                                <div className={styles.sheet_info_wrap}>
-                                    <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum}</span>)</p>
-                                </div>
-                                <img src={iconClose} width="24px" onClick={handleCloseModal}/>
-                            </div>
-                            <div className={styles.contentWrap}>
-                                <div className={styles.filterWrap}>
-                                    {[
-                                        { label: "추천순", value: "RCMND" },
-                                        { label: "최신순", value: "LATEST" },
-                                        { label: "좋아요순", value: "LIKES" },
-                                        { label: "별점순", value: "STARS" },
-                                    ].map((sortOption) => (
-                                        <p
-                                        key={sortOption.value}
-                                        className={
-                                            selectedSort === sortOption.value
-                                            ? styles.selectedText
-                                            : undefined
-                                        }
-                                        onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
-                                        >
-                                        <span>•</span>{sortOption.label}
-                                        </p>
-                                    ))}
-                                </div>
-                                {(searchData?.items ?? []).map((review) => (
-                                    <div key={review.generalBuildingInfo?.id}>
-                                        <div className={styles.line} />
-                                        <PreviewBuildingReview review={review} />
-                                    </div>
-                                    ))}
-                            </div>               
+                            <img src={iconClose} width="24px" onClick={handleCloseModal}/>
                         </div>
-                    </Modal>
-                    )
-                }
-            { !isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >
+                        <div className={styles.contentWrap}>
+                            <div className={styles.filterWrap}>
+                                {[
+                                    { label: "추천순", value: "RCMND" },
+                                    { label: "최신순", value: "LATEST" },
+                                    { label: "좋아요순", value: "LIKES" },
+                                    { label: "별점순", value: "STARS" },
+                                ].map((sortOption) => (
+                                    <p
+                                    key={sortOption.value}
+                                    className={
+                                        selectedSort === sortOption.value
+                                        ? styles.selectedText
+                                        : undefined
+                                    }
+                                    onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
+                                    >
+                                    <span>•</span>{sortOption.label}
+                                    </p>
+                                ))}
+                            </div>
+                            {(searchData?.items ?? []).map((review) => (
+                                <div key={review.generalBuildingInfo?.id}>
+                                    <div className={styles.line} />
+                                    <PreviewBuildingReview review={review} />
+                                </div>
+                                ))}
+                        </div>               
+                    </div>
+                </Modal>
+            )}
+            {isModalOpen && (!searchKeyword || !searchData?.items?.length) && (nearByData?.items?.length as number) > 0 && (
+                <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                    <div className={styles.wrap}>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
+                        </div>
+                        <div className={styles.sheet_title_wrap}>
+                            <div className={styles.sheet_info_wrap}>
+                                <p className={styles.sheet_title}>{viewType === "REVIEW" ? "내 주변 찐빵" : "검색된 건물"} (<span>{nearByData?.itemNum}</span>)</p>
+                            </div>
+                            <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+                        </div>
+                        <div className={styles.contentWrap}>
+                            <div className={styles.filterWrap}>
+                                {[
+                                    { label: "추천순", value: "RCMND" },
+                                    { label: "최신순", value: "LATEST" },
+                                    { label: "좋아요순", value: "LIKES" },
+                                    { label: "별점순", value: "STARS" },
+                                ].map((sortOption) => (
+                                    <p
+                                    key={sortOption.value}
+                                    className={
+                                        selectedSort === sortOption.value
+                                        ? styles.selectedText
+                                        : undefined
+                                    }
+                                    onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
+                                    >
+                                    <span>•</span>{sortOption.label}
+                                    </p>
+                                ))}
+                            </div>
+                            {(nearByData?.items ?? []).map((review) => (
+                                <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}>
+                                    <div className={styles.line} />
+                                    {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
+                                </div>
+                                ))}
+                        </div>               
+                    </div>
+                </Modal>
+            )}
+            
+            {!isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >
                 <div className={styles.wrap2}>
                     <div className={styles.sheet_header}>
                         <div className={styles.header_divider}></div>
