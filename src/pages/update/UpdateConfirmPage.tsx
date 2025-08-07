@@ -101,6 +101,18 @@ const UpdateConfirmPage: React.FC = () => {
       state: {
         ...review,
         from: "update",
+        advantages: review?.pros || [],
+      },
+    });
+  };
+
+  const navigateToCons = () => {
+    localStorage.setItem('updateReviewState', JSON.stringify(review));
+    navigate(`/review/${reviewId}/update/filter-disad`, {
+      state: {
+        ...review,
+        from: "update",
+        disadvantages: review?.cons || [],
       },
     });
   };
@@ -419,7 +431,7 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToCons)}
+              onClick={() => handleItemClick(navigateToCons)}
             >
               <span className={styles.label}>단점</span>
               <div className={styles.value}>

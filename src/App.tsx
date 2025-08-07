@@ -19,7 +19,7 @@ import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
 import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
 import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
-import KakaoCallback from "./pages/auth/KakaoCallback";
+import KakaoCallback from "./pages/KakaoCallBack";
 import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
 import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
