@@ -179,9 +179,9 @@
 }
 
 .prevButton {
-  background-color: var(--color-gray20);
-  color: var(--color-gray60);
-  border: none;
+  background-color: var(--white);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 .nextButton {

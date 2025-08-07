@@ -12,6 +12,10 @@ import { updateReviewState } from "../../recoil/review/updateReviewAtoms";
 import { JjinAgencyFilterState, JjinFilterState } from "../../recoil/util/filterRecoilState";
 import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
+import { useCancelModal } from "../../util/useCancelModal";
+import CancelModal from "../../components/review/CancelModal";
+import { defaultReviewState } from "../../recoil/review/reviewAtoms";
+import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 
 const UpdateConfirmPage: React.FC = () => {
     const navigate = useNavigate();
@@ -19,10 +23,17 @@ const UpdateConfirmPage: React.FC = () => {
 
     const { reviewId } = useParams();
 
-    const review = useRecoilValue(updateReviewState);
+    const [review,setReview] = useRecoilState(updateReviewState);
     const filters = useRecoilValue(JjinFilterState);
     const dormFilters = useRecoilValue(DormFilterState); // 기숙사 필터 추가
     const agencyFilters = useRecoilValue(JjinAgencyFilterState);
+    const [rating, setRating] = useState(0);
+    const [hoveredRating, setHoveredRating] = useState(0);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showDeleteConfirmModal, setShowDeleteMConfirmodal] = useState(false);
 
     const housingType = typeToKorean[review?.housingType ?? ''] || '';
     const contractType = contractTypeToKorean[review?.contractType ?? ''] || '';
@@ -32,103 +43,170 @@ const UpdateConfirmPage: React.FC = () => {
     const isDormitory = review?.housingType === 'DORMITORY';
     const isAgency = review?.housingType === 'AGENCY';
 
+    const [showRatingModal, setShowRatingModal] = useState(false);
+    
+    const {
+        showCancelModal,
+        handleCloseButtonClick,
+        handleCancelModalClose,
+      } = useCancelModal();
+    
+    // 뒤로가기 함수
     const handleBack = () => {
       navigate(`/building/review/${reviewId}`);
     };
+    
+    // 삭제 모달 함수
+    const handleDelete = () => {
+      console.log('삭제모달등장')
+      setShowDeleteModal(true);
+    };
 
+    // 별점 모달 함수
+    const handleRateReview = () => {
+      setShowRatingModal(true);
+    };
+
+    // api 연동해야함.
+    // 최종 재업로드 함수
+    const handleSubmitRating = () => {
+      setReview((prev) => {
+        if (!prev) return null; // 또는 초기값으로 적절한 객체 반환
+
+        return {
+          ...prev,
+          rating: rating,
+        };
+      });
+
+      setShowRatingModal(false);
+      setShowConfirmModal(true);
+    };
+
+    // 최종 삭제 함수
+    const handleDeleteConfirm = () => {
+      setShowDeleteMConfirmodal(true);
+      setShowDeleteModal(false);
+    };
+
+    // 아이템 클릭 & 이동 함수
     const handleItemClick = (navigationFunction: () => void) => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigationFunction();
     };
 
+    // 재업로드 후 이동 함수
+    const handleConfirmSubmit = async () => {
+        setIsSubmitting(true);
+    
+        try {
+          setTimeout(() => {
+            setIsSubmitting(false);
+            setShowConfirmModal(false);
+            navigate(`/building/review/${reviewId}`);
+            setReview(defaultReviewState);
+          }, 1000);
+        } catch (error) {
+          setIsSubmitting(false);
+          console.error('Failed to submit review:', error);
+        }
+      };
+
+    // 삭제 확인 함수
+    const handleDeleteSubmit = () => {
+      setIsDelete(true);
+      setShowDeleteMConfirmodal(false);
+    }
+
+    // 
     const navigateToHousingType = () => {
-    localStorage.setItem('updateReviewState', JSON.stringify(review));
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
 
-    navigate(`/review/${reviewId}/update/type`, {
-      state: {
-        ...review,
-        from: 'update',
-      },
-    });
-  };
-  const navigateToAddress = () => {
-    navigate(`/review/${reviewId}/update/address`, {
-      state: {
-        ...review,
-        from: 'update',
-      },
-    });
-  };
-
-  const navigateToContractType = () => {
-    localStorage.setItem('updateReviewState', JSON.stringify(review));
-    if (review?.housingType === 'DORMITORY') {
-      navigate('/review/dormitory-conditions', {
+      navigate(`/review/${reviewId}/update/type`, {
         state: {
+          ...review,
           from: 'update',
         },
       });
-    } else {
-      navigate(`/review/${reviewId}/update/contract/`, {
+    };
+
+
+    const navigateToAddress = () => {
+      navigate(`/review/${reviewId}/update/address`, {
         state: {
+          ...review,
           from: 'update',
         },
       });
-    }
-  };
+    };
 
-  const navigateToContractDetails = () => {
-    localStorage.setItem('updateReviewState', JSON.stringify(review));
-    if (review?.housingType === 'DORMITORY') {
-      navigate('/review/dormitory-amenities', {
+    const navigateToContractType = () => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      if (review?.housingType === 'DORMITORY') {
+        navigate('/review/dormitory-conditions', {
+          state: {
+            from: 'update',
+          },
+        });
+      } else {
+        navigate(`/review/${reviewId}/update/contract/`, {
+          state: {
+            from: 'update',
+          },
+        });
+      }
+    };
+
+    const navigateToContractDetails = () => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      if (review?.housingType === 'DORMITORY') {
+        navigate('/review/dormitory-amenities', {
+          state: {
+            from: 'update',
+          },
+        });
+      } else {
+
+        navigate(`/review/${reviewId}/update/contract/price`, {
+          state: {
+            from: 'update',
+          },
+        });
+      }
+    };
+
+    const navigateToPros = () => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      navigate(`/review/${reviewId}/update/filter-ad`, {
         state: {
+          ...review,
+          from: "update",
+          advantages: review?.pros || [],
+        },
+      });
+    };
+
+    const navigateToCons = () => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      navigate(`/review/${reviewId}/update/filter-disad`, {
+        state: {
+          ...review,
+          from: "update",
+          disadvantages: review?.cons || [],
+        },
+      });
+    };
+
+    const navigateToContent = () => {
+      navigate(`/review/${reviewId}/update/content`, {
+        state: {
+          ...review,
+          content: review?.description,
           from: 'update',
         },
       });
-    } else {
+    };
 
-      navigate(`/review/${reviewId}/update/contract/price`, {
-        state: {
-          from: 'update',
-        },
-      });
-    }
-  };
-
-  console.log(review);
-
-
-  const navigateToPros = () => {
-    localStorage.setItem('updateReviewState', JSON.stringify(review));
-    navigate(`/review/${reviewId}/update/filter-ad`, {
-      state: {
-        ...review,
-        from: "update",
-        advantages: review?.pros || [],
-      },
-    });
-  };
-
-  const navigateToCons = () => {
-    localStorage.setItem('updateReviewState', JSON.stringify(review));
-    navigate(`/review/${reviewId}/update/filter-disad`, {
-      state: {
-        ...review,
-        from: "update",
-        disadvantages: review?.cons || [],
-      },
-    });
-  };
-
-  const navigateToContent = () => {
-    navigate(`/review/${reviewId}/update/content`, {
-      state: {
-        ...review,
-        content: review?.description,
-        from: 'update',
-      },
-    });
-  };
     const getIconFromLabel = (label: string): string => {
         // 기숙사 유형에 따라 적절한 필터 선택
         const currentFilters = isDormitory
@@ -215,7 +293,7 @@ const UpdateConfirmPage: React.FC = () => {
         <div className={styles.header}>
           <button
             className={styles.closeButton}
-            // onClick={handleCloseButtonClick}
+            onClick={handleCloseButtonClick}
           >
             <img src={closeIcon} alt="close" />
           </button>
@@ -473,17 +551,16 @@ const UpdateConfirmPage: React.FC = () => {
         </div>
 
         <footer className={styles.footer}>
-          <button className={styles.prevButton} onClick={handleBack}>
-            이전
+          <button className={styles.prevButton} onClick={handleDelete}>
+            찐빵 삭제
           </button>
-          {/* <button className={styles.nextButton} onClick={handleRateReview}> */}
-          <button className={styles.nextButton}>
-            다음
+          <button className={styles.nextButton} onClick={handleRateReview}>
+            재업로드
           </button>
         </footer>
       </div>
-
-      {/* {showRatingModal && (
+      
+      {showRatingModal && (
         <div
           className={styles.modalOverlay}
           onClick={() => setShowRatingModal(false)}
@@ -494,7 +571,7 @@ const UpdateConfirmPage: React.FC = () => {
           >
             <div className={styles.modalHandle}></div>
             <div className={styles.ratingModal}>
-              <h2 className={styles.ratingTitle}>찐빵을 업로드 할까요?</h2>
+              <h2 className={styles.ratingTitle}>찐빵을 재업로드 할까요?</h2>
               <p className={styles.ratingSubtitle}>
                 작성해 주신 찐빵의 총점을 매겨 <br />
                 찐빵을 업로드해 보세요!
@@ -529,11 +606,79 @@ const UpdateConfirmPage: React.FC = () => {
           </div>
         </div>
       )}
+      {showDeleteModal && (
+        <div className={styles.modalOverlay} onClick={() => setShowDeleteModal(false)}>
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHandle}></div>
+            <div className={styles.cancelModal}>
+              <h2 className={styles.modalTitle}>찐빵을 삭제할까요?</h2>
+              <p className={styles.modalSubtitle}>
+                삭제된 내용은 복구할 수 없어요!
+                <br /> 신중하게 고민해 주세요!
+              </p>
+              <img
+                src={emptyCharacterIcon}
+                alt="비어있는 찐빵 캐릭터"
+                className={styles.emptyCharacterIcon}
+              />
+              <div className={styles.modalButtons}>
+                <button className={styles.cancelButton} onClick={() => setShowDeleteModal(false)}>
+                  이전
+                </button>
+                <button
+                  className={styles.cm_confirmButton}
+                  onClick={() => {
+                    handleDeleteConfirm();
+                  }}
+                >
+                  삭제
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirmModal && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => !isDelete && setShowDeleteMConfirmodal(false)}
+        >
+          <div
+            className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHandle}></div>
+            <div className={styles.confirmModal}>
+              <img
+                src={checkIcon}
+                alt="완료"
+                className={styles.checkIconImage}
+              />
+              <h2 className={styles.completeModalTitle}>삭제 완료</h2>
+              <p className={styles.modalSubtitle}>
+                나의 찐빵에서 삭제 여부를<br />
+                확인해 주세요!
+              </p>
+              <button
+                className={styles.confirmButton}
+                onClick={handleDeleteSubmit}
+                disabled={isDelete}
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCancelModal && (
         <CancelModal
           onClose={handleCancelModalClose}
-          onConfirm={handleConfirmCancel}
+          onConfirm={handleBack}
         />
       )}
 
@@ -568,7 +713,7 @@ const UpdateConfirmPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }

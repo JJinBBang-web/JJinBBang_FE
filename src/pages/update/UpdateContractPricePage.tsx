@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { updateReviewState } from "../../recoil/review/updateReviewAtoms";
-import styles from "./UpdateContractPriceTypePage.module.css";
+import styles from "./UpdateContractPricePage.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
 const UpdateContractPriceTypePage: React.FC = () => {
@@ -154,7 +154,7 @@ const UpdateContractPriceTypePage: React.FC = () => {
           onClick={handleNext}
           disabled={!isNextEnabled}
         >
-          다음
+          확인
         </button>
       </footer>
     </div>
