@@ -24,80 +24,6 @@ import BuildingPreviewReview from '../components/detail/BuildingPreviewReview';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
 import { useNavigate } from 'react-router-dom';
 
-
-// const mockup = {
-//     num : 10,
-//     page : 1,
-//     itemNum : 10,
-//     items: [
-//       {
-//         dormitoryBasicInfo: {
-//           id: 1,
-//           name: "지희관",
-//           university: "경상국립대",
-//           type: "기숙사",
-//           floor: "저", // 옥탑방은 0, 반지하는 -1
-//           space: 26.44,
-//           capacity: 2,
-//           dormFee: 10,
-//           rating: 3,
-//           liked: true, // false
-//         },
-//         reviewInfo: {
-//           content: "집이 너무 깔끔하고...",
-//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-//           likesCount: 120,
-//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-//         },
-//         image: campus_img_1,
-//       },
-//       {
-//         basicInfo: {
-//           reviewId: 2,
-//           name: "한솔원룸",
-//           type: "투룸",
-//           contractType: "전세",
-//           deposit: 2000,
-//           monthlyRent: 0,
-//           floor: "고",
-//           space: 35.5,
-//           maintenanceCost: 5,
-//           rating: 4,
-//           liked: false,
-//         },
-//         reviewInfo: {
-//           content: "주변이 조용하고 살기 좋아요.",
-//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-//           likesCount: 18,
-//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-//         },
-//         image: campus_img_1,
-//       },
-//       {
-//         basicInfo: {
-//           reviewId: 3,
-//           name: "강남하우스",
-//           type: "오피스텔",
-//           contractType: "월세",
-//           deposit: 1000,
-//           monthlyRent: 70,
-//           floor: "중",
-//           space: 42.7,
-//           maintenanceCost: 15,
-//           rating: 5,
-//           liked: true,
-//         },
-//         reviewInfo: {
-//           content: "채광이 좋고 전망이 멋져요.",
-//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-//           likesCount: 12,
-//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-//         },
-//         image: campus_img_1,
-//       },
-//     ] as any[],
-// }
-
 const MapPage = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -383,7 +309,7 @@ const MapPage = () => {
                             </div>
                             <div className={styles.sheet_title_wrap}>
                                 <div className={styles.sheet_info_wrap}>
-                                    <p className={styles.sheet_title}>내 주변 찐빵 (<span>{nearByData.itemNum}</span>)</p>
+                                    <p className={styles.sheet_title}>{viewType === "REVIEW" ? "내 주변 찐빵" : "검색된 건물"} (<span>{nearByData.itemNum}</span>)</p>
                                 </div>
                                 <img src={iconClose} width="24px" onClick={handleCloseModal}/>
                             </div>
@@ -411,7 +337,7 @@ const MapPage = () => {
                                 {(nearByData?.items ?? []).map((review) => (
                                     <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}>
                                         <div className={styles.line} />
-                                        <PreviewReview review={review} />
+                                        {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
                                     </div>
                                     ))}
                             </div>               
