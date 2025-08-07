@@ -27,6 +27,7 @@ const MapPage = () => {
     const [mapBounds, setMapBounds] = useState<MarkerRequest['bounds'] | null>(null);
     const [selectedSort, setSelectedSort] = useState<"RCMND" | "LATEST" | "LIKES" | "STARS">("RCMND");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [markerDetailParams, setMarkerDetailParams] = useState<NearByRequest | undefined>(undefined);
 
     const isInitialized = useRef(false);
 
@@ -85,12 +86,18 @@ const MapPage = () => {
     const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
     const [searchParams, setSearchParams] = useState<SearchRequest>();
     const [mapCenter, setMapCenter] = useState({ lat: 35.153237, lng: 128.101090 });
-
+    
     const {
         data: searchData,
         isLoading: isSearchLoading,
         isError: isSearchError
     } = useSearch(searchParams);
+
+    // 마커 하나 선택시
+    const {
+        data: markerDetailData,
+        isLoading: isMarkerDetailLoading,
+    } = useNearBy(markerDetailParams);
 
     const handleSearch = () => {
         if (!searchKeyword) return;
@@ -182,6 +189,19 @@ const MapPage = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setIsSheetVisible(true);
+    };
+
+    const handleMarkerClick = (markerId: number) => {
+        const params: NearByRequest = {
+            num: 1,
+            page: 1,
+            type: viewType, // "REVIEW" 또는 "BUILDING"
+            sortBy: "LIKES",
+            idList: [markerId],
+        };
+
+        // 호출해서 받은 데이터를 모달에 표시
+        setMarkerDetailParams(params); // 상태로 저장
     };
 
 
@@ -284,6 +304,7 @@ const MapPage = () => {
                                 height: 40,
                                 },
                             }}
+                            onClick={() => handleMarkerClick(marker.id)}
                             />
                         ))}
                     </MarkerClusterer>
@@ -404,6 +425,23 @@ const MapPage = () => {
                 </div>
             </Modal>
             }
+
+            {markerDetailData?.items?.length && (
+                <Modal onClose={() => setMarkerDetailParams(undefined)} style={{ zIndex: 999 }}>
+                    <div className={styles.wrap}>
+                    <div className={styles.sheet_header}>
+                        <div className={styles.header_divider}></div>
+                    </div>
+                    <div className={styles.contentMarker}>
+                        {viewType === "REVIEW" ? (
+                        <PreviewReview review={markerDetailData.items[0]} />
+                        ) : (
+                        <PreviewBuildingReview review={markerDetailData.items[0]} />
+                        )}
+                    </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }
