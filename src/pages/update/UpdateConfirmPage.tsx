@@ -95,6 +95,9 @@ const UpdateConfirmPage: React.FC = () => {
     }
   };
 
+  console.log(review);
+
+
   const navigateToPros = () => {
     localStorage.setItem('updateReviewState', JSON.stringify(review));
     navigate(`/review/${reviewId}/update/filter-ad`, {
@@ -117,6 +120,15 @@ const UpdateConfirmPage: React.FC = () => {
     });
   };
 
+  const navigateToContent = () => {
+    navigate(`/review/${reviewId}/update/content`, {
+      state: {
+        ...review,
+        content: review?.description,
+        from: 'update',
+      },
+    });
+  };
     const getIconFromLabel = (label: string): string => {
         // 기숙사 유형에 따라 적절한 필터 선택
         const currentFilters = isDormitory
@@ -444,7 +456,7 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToContent)}
+              onClick={() => handleItemClick(navigateToContent)}
             >
               <span className={styles.label}>글 후기</span>
               <div className={styles.value}>

@@ -42,8 +42,6 @@ const UpdateAdventagePage:React.FC = () => {
         return labelsFromKeys;
     });
 
-    console.log(advantages);
-
     const handleBack = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {

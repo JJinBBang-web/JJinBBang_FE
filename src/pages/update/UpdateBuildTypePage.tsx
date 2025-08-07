@@ -7,6 +7,7 @@ import { updateReviewState } from "../../recoil/review/updateReviewAtoms";
 import { defaultReviewState } from "../../recoil/review/reviewAtoms";
 import { koreanToType, typeToKorean } from "../../util/mapping";
 
+
 const UpdateBuildTypePage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
