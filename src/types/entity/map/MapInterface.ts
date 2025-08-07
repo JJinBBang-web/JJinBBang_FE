@@ -28,9 +28,9 @@ export interface MarkerRequest {
 
 export interface MarkerResponse {
   id: number;
+  type: "ROOM" | "HOUSE" | "OFFICETEL" | "APARTMENT" | "BOARDING_HOUSE" | "DORMITORY" | "AGENCY";
   latitude: number;
   longitude: number;
-  isReviews: boolean;
 }
 
 export interface NearByRequest {
@@ -39,6 +39,7 @@ export interface NearByRequest {
   type : "REVIEW"|"BUILDING",
   sortBy : "RCMND" | "LATEST" | "LIKES" | "STARS",
   idList : number[],
+  AgencyIdList: number[] | null,
 }
 
 export interface NearByResponse {

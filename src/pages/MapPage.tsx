@@ -19,8 +19,13 @@ import { universityLabelState } from '../recoil/map/universityRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
 import { useSearch } from '../hooks/useSearch';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
+import { campusCenterState } from '../recoil/map/universityRecoilState';
+import { useLocation } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 
 const MapPage = () => {
+    const location = useLocation();
+
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSheetVisible, setIsSheetVisible] = useState(true);
@@ -28,6 +33,9 @@ const MapPage = () => {
     const [selectedSort, setSelectedSort] = useState<"RCMND" | "LATEST" | "LIKES" | "STARS">("RCMND");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [markerDetailParams, setMarkerDetailParams] = useState<NearByRequest | undefined>(undefined);
+    const campusCenter = useRecoilValue(campusCenterState);
+    const setCampusCenter = useSetRecoilState(campusCenterState);
+    const mapRef = useRef<kakao.maps.Map | null>(null);
 
     const isInitialized = useRef(false);
 
@@ -38,6 +46,19 @@ const MapPage = () => {
         if (value <= 40) return value * 5;
         return 200 + (value - 40) * 10;
     };
+
+    useEffect(() => {
+        const lat = location.state?.latitude;
+        const lng = location.state?.longitude;
+
+        if (lat && lng) {
+            console.log("🎯 Home에서 받은 캠퍼스 위치:", lat, lng);
+            setCampusCenter({ lat, lng });
+        }
+    }, [location.state]);
+
+    console.log("🧭 location.state:", location.state);
+
 
     // filter Recoil
     const buildType = useRecoilValue(housingTypeState);
@@ -126,6 +147,26 @@ const MapPage = () => {
             : undefined
     );
 
+    useEffect(() => {
+        if (campusCenter && mapRef.current) {
+            const offset = 0.01;
+
+            // 지도 중심 이동
+            mapRef.current.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
+
+            // bounds 업데이트
+            setMapBounds({
+                neLat: campusCenter.lat + offset,
+                neLng: campusCenter.lng + offset,
+                swLat: campusCenter.lat - offset,
+                swLng: campusCenter.lng - offset,
+            });
+
+            // center 상태도 동기화 (선택사항)
+            setMapCenter({ lat: campusCenter.lat, lng: campusCenter.lng });
+        }
+    }, [campusCenter]);
+
     // 검색 모달
     useEffect(() => {
         if (searchKeyword && searchData?.items && searchData.items.length > 0) {
@@ -169,11 +210,17 @@ const MapPage = () => {
     ? {
         num: 10,
         page: 1,
-        type: viewType,           
-        sortBy: selectedSort,        
+        type: viewType,
+        sortBy: selectedSort,
         idList: markerData.map((m) => m.id),
+        AgencyIdList: viewType === "BUILDING"
+            ? markerData
+                .filter((m) => m.type === "AGENCY")
+                .map((m) => m.id)
+            : null,
         }
     : undefined;
+
 
     const {
         data: nearByData,
@@ -192,16 +239,19 @@ const MapPage = () => {
     };
 
     const handleMarkerClick = (markerId: number) => {
+        const marker = markerData.find((m) => m.id === markerId);
+        const isAgency = marker?.type === "AGENCY";
+
         const params: NearByRequest = {
             num: 1,
             page: 1,
-            type: viewType, // "REVIEW" 또는 "BUILDING"
+            type: viewType,
             sortBy: "LIKES",
             idList: [markerId],
+            AgencyIdList: viewType === "BUILDING" && isAgency ? [markerId] : viewType === "BUILDING" ? [] : null,
         };
 
-        // 호출해서 받은 데이터를 모달에 표시
-        setMarkerDetailParams(params); // 상태로 저장
+        setMarkerDetailParams(params);
     };
 
 
@@ -234,11 +284,13 @@ const MapPage = () => {
                 <Map
                 center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
-                level={5}
+                level={6}
                 draggable
                 zoomable
                 onCreate={(map) => {
-                    if (isInitialized.current) return; // 최초 1회만 실행
+                    mapRef.current = map;
+
+                    if (isInitialized.current) return;
 
                     const bounds = map.getBounds();
                     const ne = bounds.getNorthEast();
@@ -253,6 +305,21 @@ const MapPage = () => {
 
                     console.log("🧭 초기 지도 bounds:", extractedBounds);
                     setMapBounds(extractedBounds);
+
+                    // 🔥 campusCenter가 있다면 초기 위치로 이동!
+                    if (campusCenter) {
+                        console.log("📍 초기 이동: ", campusCenter);
+                        map.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
+
+                        const offset = 0.01;
+                        setMapBounds({
+                        neLat: campusCenter.lat + offset,
+                        neLng: campusCenter.lng + offset,
+                        swLat: campusCenter.lat - offset,
+                        swLng: campusCenter.lng - offset,
+                        });
+                        setMapCenter(campusCenter);
+                    }
                     isInitialized.current = true;
                 }}
                 onBoundsChanged={(map) => {

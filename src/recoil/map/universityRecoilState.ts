@@ -112,3 +112,8 @@ export const universitiesFilterState = selector({
         return universities.filter((uni) => uni.initial === initial);
     }
 })
+
+export const campusCenterState = atom<{ lat: number; lng: number } | null>({
+  key: 'campusCenterState',
+  default: null,
+});
