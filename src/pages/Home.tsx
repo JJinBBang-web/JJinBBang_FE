@@ -11,7 +11,7 @@ import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import pencil from "../assets/image/pencil.svg";
 import iconRight from "../assets/image/iconRight.svg";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI, deleteAPI } from "../api/bassAPI";
+import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import { useRecoilState, useRecoilValue } from "recoil";
 

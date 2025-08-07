@@ -27,6 +27,11 @@ export interface ReviewState {
     semesterGrade?: number;
     roomCapacity?: number;
   };
+  facilityConditions?: {
+    private: Record<string, boolean>;
+    public: Record<string, boolean>;
+    lounge: Record<string, boolean>;
+  };
 }
 
 export const defaultReviewState: ReviewState = {

@@ -20,7 +20,7 @@ import {
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import { getAPI, putAPI, deleteAPI } from "../api/bassAPI";
+import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 
 const QUERY_KEYS = {

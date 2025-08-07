@@ -73,7 +73,7 @@ export interface Keywords {
 
 export interface Conditions {
     currentRegion : string,
-    currentGrade : string,
+    currentGrade : number,
 }
 
 export interface Facilities {
@@ -155,7 +155,7 @@ export const ReviewInfoState = atom<Review>({
         },
         conditions: {
             currentRegion: "",
-            currentGrade: ""
+            currentGrade: 0.0,
         },
         facilities:{
             private: [],
