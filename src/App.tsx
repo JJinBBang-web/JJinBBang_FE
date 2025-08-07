@@ -46,7 +46,7 @@ import ReviewConfirmPage from "./pages/review/ReviewConfirmPage";
 import { RecoilRoot, useRecoilState } from "recoil";
 import { useEffect } from "react";
 import { isLoginState } from "./recoil/auth/isLoginState";
-import { getAPI } from "./api/bassAPI";
+import { getAPI } from "./api/baseAPI";
 import { useQuery } from "@tanstack/react-query";
 import ModalBottomSheet from "./components/util/ModalBottomSheet";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";

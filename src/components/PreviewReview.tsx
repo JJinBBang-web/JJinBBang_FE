@@ -12,7 +12,7 @@ import {
   DormitoryReviewInfo,
 } from "../recoil/detail/PreviewReviewRecoilState";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI, deleteAPI, postAPI } from "../api/bassAPI";
+import { getAPI, putAPI, deleteAPI, postAPI } from "../api/baseAPI";
 import { useNavigate } from "react-router-dom";
 
 interface Props {

@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { typeToKorean } from "../../util/mapping";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { postAPI } from "../../api/bassAPI";
+import { postAPI } from "../../api/baseAPI";
 
 interface Props {
   review: PreviewBuildingReviewInfo;

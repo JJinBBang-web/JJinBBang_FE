@@ -16,6 +16,8 @@ import { useCancelModal } from "../../util/useCancelModal";
 import CancelModal from "../../components/review/CancelModal";
 import { defaultReviewState } from "../../recoil/review/reviewAtoms";
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
+import { deleteAPI } from "../../api/baseAPI";
+
 
 const UpdateConfirmPage: React.FC = () => {
     const navigate = useNavigate();
@@ -58,7 +60,6 @@ const UpdateConfirmPage: React.FC = () => {
     
     // 삭제 모달 함수
     const handleDelete = () => {
-      console.log('삭제모달등장')
       setShowDeleteModal(true);
     };
 
@@ -84,9 +85,24 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     // 최종 삭제 함수
-    const handleDeleteConfirm = () => {
-      setShowDeleteMConfirmodal(true);
-      setShowDeleteModal(false);
+    const handleDeleteConfirm = async () => {
+      if (!reviewId) return;
+
+      try {
+        setIsDelete(true);
+
+        const response = await deleteAPI(`/api/v1/review/${reviewId}`, true);
+
+        console.log("리뷰 삭제 성공:", response);
+
+        setReview(defaultReviewState);
+        setShowDeleteMConfirmodal(true);
+        setShowDeleteModal(false);
+
+      } catch (error) {
+        console.error("리뷰 삭제 실패:", error);
+        setIsDelete(false); // 실패 시 다시 버튼 활성화
+      }
     };
 
     // 아이템 클릭 & 이동 함수
@@ -116,6 +132,7 @@ const UpdateConfirmPage: React.FC = () => {
     const handleDeleteSubmit = () => {
       setIsDelete(true);
       setShowDeleteMConfirmodal(false);
+      navigate('/mypage');
     }
 
     // 
@@ -666,7 +683,7 @@ const UpdateConfirmPage: React.FC = () => {
               <button
                 className={styles.confirmButton}
                 onClick={handleDeleteSubmit}
-                disabled={isDelete}
+                disabled={!isDelete}
               >
                 확인
               </button>
