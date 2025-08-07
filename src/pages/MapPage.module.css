@@ -129,7 +129,6 @@
 
 .line {
   width: 100%;
-  height: 20px;
   border-top: 1.5px solid #eee;
   margin-top: 20px;
 }
@@ -141,6 +140,12 @@
 .contentWrap {
     width: 100%;
     height: 56vh;
+    overflow: scroll;
+}
+
+.contentMarker {
+    width: 100%;
+    height: fit-content;
     overflow: scroll;
 }
 
