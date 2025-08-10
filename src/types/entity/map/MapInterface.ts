@@ -12,7 +12,7 @@ export interface MarkerFilter {
   viewType?: 'BUILDING' | 'REVIEW';
   buildType?: string[];
   contractType?: 'MONTHLY_RENT' | 'DEPOSIT_RENT' | null;
-  campus?: string[] |  null;
+  campus?: number[] |  null;
   depositMin?: number | null;
   depositMax?: number | null;
   monthlyRentMin?: number | null;

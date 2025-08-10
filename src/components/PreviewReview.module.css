@@ -35,7 +35,7 @@
 }
 
 .buildingName {
-  width: 174px;
+  width: 144px;
   flex-shrink: 0;
   overflow: hidden;
   color: var(--black);

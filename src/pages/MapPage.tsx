@@ -15,7 +15,6 @@ import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../ty
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { filterState, housingTypeState, searchKeywordState } from '../recoil/map/mapRecoilState';
-import { universityLabelState } from '../recoil/map/universityRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
 import { useSearch } from '../hooks/useSearch';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
@@ -36,6 +35,8 @@ const MapPage = () => {
     const campusCenter = useRecoilValue(campusCenterState);
     const setCampusCenter = useSetRecoilState(campusCenterState);
     const mapRef = useRef<kakao.maps.Map | null>(null);
+    const [modalContent, setModalContent] = useState<'search' | 'nearby' | 'login' | null>(null);
+
 
     const isInitialized = useRef(false);
 
@@ -76,13 +77,12 @@ const MapPage = () => {
         ? filter.monthlyRentMax === 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 
         : null;
 
-    const universityLabel = useRecoilValue(universityLabelState);
 
     const markerFilters = useMemo<MarkerFilter>(() => ({
         viewType: viewType,
         buildType: buildType.length === 0 ? ["ALL"] : [buildType],
         contractType: contractType,
-        campus: universityLabel ? [universityLabel] : null,
+        campus: filter.university ? [filter.university] : null,
         depositMin: depositMin,
         depositMax: depositMax,
         monthlyRentMin: monthlyRentMin,
@@ -93,7 +93,7 @@ const MapPage = () => {
         viewType,
         buildType,
         contractType,
-        universityLabel,
+        filter.university,
         depositMin,
         depositMax,
         monthlyRentMin,
@@ -107,7 +107,7 @@ const MapPage = () => {
     const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
     const [searchParams, setSearchParams] = useState<SearchRequest>();
     const [mapCenter, setMapCenter] = useState({ lat: 35.153237, lng: 128.101090 });
-    
+
     const {
         data: searchData,
         isLoading: isSearchLoading,
@@ -129,9 +129,12 @@ const MapPage = () => {
             page: 1,
             filters: {
                 ...markerFilters,
-                viewType: "BUILDING",
+                viewType
             }, 
         });
+        setModalContent('search');
+        setIsModalOpen(true);
+        setIsSheetVisible(false);
     };
 
     const {
@@ -147,6 +150,37 @@ const MapPage = () => {
             : undefined
     );
 
+    // 검색 결과 → 마커 배열 변환
+    const searchMarkers = useMemo(() => {
+        if (!searchData?.items?.length) return [];
+
+        return searchData.items
+            .map((item) => {
+            const id =
+                item.agencyBuildingInfo?.id ??
+                item.dormitoryBuildingInfo?.id ??
+                item.generalBuildingInfo?.id;
+
+            const lat = item.boundInfo?.latitude;
+            const lng = item.boundInfo?.longitude;
+
+            if (!id || lat == null || lng == null) return null;
+
+            // 타입은 preview에서 쓰는 구분을 그대로 맞춰주면 좋아요
+            const type = item.agencyBuildingInfo
+                ? "AGENCY"
+                : item.dormitoryBuildingInfo
+                ? "DORMITORY"
+                : "GENERAL";
+
+            return { id, latitude: lat, longitude: lng, type };
+            })
+            .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
+    }, [searchData]);
+
+    const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
+
+    
     useEffect(() => {
         if (campusCenter && mapRef.current) {
             const offset = 0.01;
@@ -166,14 +200,6 @@ const MapPage = () => {
             setMapCenter({ lat: campusCenter.lat, lng: campusCenter.lng });
         }
     }, [campusCenter]);
-
-    // 검색 모달
-    useEffect(() => {
-        if (searchKeyword && searchData?.items && searchData.items.length > 0) {
-            setIsModalOpen(true);
-            setIsSheetVisible(false);
-        }
-    }, [searchData]);
 
     useEffect(() => {
         if (searchData?.items?.length) {
@@ -230,16 +256,20 @@ const MapPage = () => {
 
     const handleOpenModal = () => {
         setIsSheetVisible(false);
+        setModalContent('nearby');
         setIsModalOpen(true);
     };
     
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setIsSheetVisible(true);
+        setModalContent(null);
     };
 
     const handleMarkerClick = (markerId: number) => {
-        const marker = markerData.find((m) => m.id === markerId);
+        const marker =
+            (modalContent === 'search' ? searchMarkers : markerData).find((m) => m.id === markerId);
+
         const isAgency = marker?.type === "AGENCY";
 
         const params: NearByRequest = {
@@ -248,7 +278,10 @@ const MapPage = () => {
             type: viewType,
             sortBy: "LIKES",
             idList: [markerId],
-            AgencyIdList: viewType === "BUILDING" && isAgency ? [markerId] : viewType === "BUILDING" ? [] : null,
+            AgencyIdList:
+            viewType === "BUILDING"
+                ? (isAgency ? [markerId] : [])
+                : null,
         };
 
         setMarkerDetailParams(params);
@@ -274,7 +307,21 @@ const MapPage = () => {
         setIsLoggedIn(!!token);
     }, []);
 
-    // 학생 인증 확인
+    useEffect(() => {
+        if (modalContent !== 'search') return;
+        if (!searchKeyword) return;
+
+        setSearchParams(prev => ({
+            ...(prev ?? {}),
+            keyword: searchKeyword,
+            num: prev?.num ?? 10,
+            page: 1,
+            filters: {
+            ...markerFilters,
+            viewType,
+            },
+        } as any));
+    }, [selectedSort, modalContent, searchKeyword, markerFilters]);
 
     return (
         <div className={styles.content}             
@@ -284,7 +331,7 @@ const MapPage = () => {
                 <Map
                 center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
-                level={6}
+                level={5}
                 draggable
                 zoomable
                 onCreate={(map) => {
@@ -360,7 +407,7 @@ const MapPage = () => {
                             },
                         ]}
                     >
-                        {markerData.map((marker) => (
+                        {/* {markerData.map((marker) => (
                             <MapMarker
                             key={marker.id}
                             position={{ lat: marker.latitude, lng: marker.longitude }}
@@ -372,6 +419,14 @@ const MapPage = () => {
                                 },
                             }}
                             onClick={() => handleMarkerClick(marker.id)}
+                            />
+                        ))} */}
+                        {markersToRender.map((marker) => (
+                            <MapMarker
+                                key={`${modalContent}-${marker.id}`}
+                                position={{ lat: marker.latitude, lng: marker.longitude }}
+                                image={{ src: JBMarker, size: { width: 40, height: 40 } }}
+                                onClick={() => handleMarkerClick(marker.id)}
                             />
                         ))}
                     </MarkerClusterer>
@@ -385,8 +440,9 @@ const MapPage = () => {
             <FilterBar/>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
             {/* 토큰 없는 경우 && 인증 X 경우 ? 팝업 등장 (안에서 학교인증X ? 학생인증 : 회/로 ) */}
-            {isModalOpen && searchKeyword && (searchData?.items?.length as number) > 0 && (
-                <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+            {isModalOpen && modalContent && (
+            <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
+                {modalContent == 'search' && (
                     <div className={styles.wrap}>
                         <div className={styles.sheet_header}>
                             <div className={styles.header_divider}></div>
@@ -421,15 +477,14 @@ const MapPage = () => {
                             {(searchData?.items ?? []).map((review) => (
                                 <div key={review.generalBuildingInfo?.id}>
                                     <div className={styles.line} />
-                                    <PreviewBuildingReview review={review} />
+                                    {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
                                 </div>
                                 ))}
                         </div>               
                     </div>
-                </Modal>
-            )}
-            {isModalOpen && (!searchKeyword || !searchData?.items?.length) && (nearByData?.items?.length as number) > 0 && (
-                <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                )}
+                
+                {modalContent === 'nearby' && (
                     <div className={styles.wrap}>
                         <div className={styles.sheet_header}>
                             <div className={styles.header_divider}></div>
@@ -469,44 +524,44 @@ const MapPage = () => {
                                 ))}
                         </div>               
                     </div>
-                </Modal>
-            )}
-            
-            {!isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >
-                <div className={styles.wrap2}>
-                    <div className={styles.sheet_header}>
-                        <div className={styles.header_divider}></div>
-                    </div>
-                    <div className={styles.sheet_title_wrap}>
-                        <div className={styles.sheet_info_wrap}>
-                            <p className={styles.sheet_title}></p>
+                )}
+
+                {modalContent == 'login' && (
+                    <div className={styles.wrap2}>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
                         </div>
-                        <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+                        <div className={styles.sheet_title_wrap}>
+                            <div className={styles.sheet_info_wrap}>
+                                <p className={styles.sheet_title}></p>
+                            </div>
+                            <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+                        </div>
+                        <div className={styles.sheetWrap}>
+                            <img src={verifiedCharacter}/>
+                            <p className={styles.sheetText}>학교 인증 후<br/>찐빵의 찐거주 후기들을<br/>무료 열람해보세요!</p>
+                        </div>
+                        <div className={styles.btnWrap}>
+                            <button className={styles.confirmBtn} onClick={()=>{}}>학교 인증하기</button>
+                        </div>      
                     </div>
-                    <div className={styles.sheetWrap}>
-                        <img src={verifiedCharacter}/>
-                        <p className={styles.sheetText}>학교 인증 후<br/>찐빵의 찐거주 후기들을<br/>무료 열람해보세요!</p>
-                    </div>
-                    <div className={styles.btnWrap}>
-                        <button className={styles.confirmBtn} onClick={()=>{}}>학교 인증하기</button>
-                    </div>      
-                </div>
+                )}
             </Modal>
-            }
+            )}
 
             {markerDetailData?.items?.length && (
                 <Modal onClose={() => setMarkerDetailParams(undefined)} style={{ zIndex: 999 }}>
                     <div className={styles.wrap}>
-                    <div className={styles.sheet_header}>
-                        <div className={styles.header_divider}></div>
-                    </div>
-                    <div className={styles.contentMarker}>
-                        {viewType === "REVIEW" ? (
-                        <PreviewReview review={markerDetailData.items[0]} />
-                        ) : (
-                        <PreviewBuildingReview review={markerDetailData.items[0]} />
-                        )}
-                    </div>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
+                        </div>
+                        <div className={styles.contentMarker}>
+                            {viewType === "REVIEW" ? (
+                            <PreviewReview review={markerDetailData.items[0]} />
+                            ) : (
+                            <PreviewBuildingReview review={markerDetailData.items[0]} />
+                            )}
+                        </div>
                     </div>
                 </Modal>
             )}
