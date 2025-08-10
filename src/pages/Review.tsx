@@ -11,14 +11,18 @@ import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
 import Footer from '../components/detail/Footer';
 import ReportButton from '../components/util/ReportButton';
 import ReviewFacilitiesInfo from '../components/detail/ReviewFacilitiesInfo';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useReviewDetail } from '../hooks/useReviewDetail';
 import { updateReviewState } from '../recoil/review/updateReviewAtoms';
 import { convertToReviewState } from '../util/convertToReviewState';
+import { isLoginState } from '../recoil/auth/isLoginState';
+import { useQuery } from '@tanstack/react-query';
+import { getAPI } from '../api/baseAPI';
 
 
 const Review: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [reviews, setReviews] = useRecoilState(ReviewInfoState);
     const setUpdateReview = useSetRecoilState(updateReviewState);
@@ -28,8 +32,18 @@ const Review: React.FC = () => {
     const reviewType = searchParams.get("reviewType") ?? "GENERAL"; // 쿼리에서 추출
 
     const { data, isLoading, isError } = useReviewDetail(reviewId ?? "", reviewType);
-
-    const loginUserId = 2;
+    const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
+    const {
+        data: userData,
+    } = useQuery({
+        queryKey: [location.pathname],
+        queryFn: async () => {
+            const response = await getAPI(`/api/v1/user`, true);
+            return response.data;
+        },
+        enabled: isLogin,
+        refetchOnWindowFocus: false,
+    });
 
     useEffect(() => {
         const handleResize = () => {
@@ -92,7 +106,7 @@ const Review: React.FC = () => {
                 <ReviewMapInfo review={reviews}/>
             </div>
             {/* 작성id === 로그인 id 같으면 Footer 보이게+reportBtn안보이게, 아니면 반대 */}
-            { loginUserId == reviews.authorId ? 
+            { userData?.id == reviews.authorId ? 
                 <div className={styles.fixedWrap}>
                     <TopButton/>
                     <Footer reviewId={reviewId ?? ""} />
