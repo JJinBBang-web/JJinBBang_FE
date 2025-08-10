@@ -19,6 +19,11 @@ const UpdateBuildTypePage: React.FC = () => {
         review?.housingType || null
     );
 
+    const excludeList = ["기숙사", "공인중개사"];
+    const filteredValues = Object.values(typeToKorean).filter(
+    (korean) => !excludeList.includes(korean)
+    );
+
     const handleTypeSelect = (korean: string) => {
         const englishType = koreanToType[korean];
         setSelectedType(englishType);
@@ -82,7 +87,7 @@ const UpdateBuildTypePage: React.FC = () => {
                 <h1>찐빵 유형을 선택해 볼까요?</h1>
                 </header>
                 <div className={styles.buttonGroup}>
-                {Object.values(typeToKorean).map((korean) => (
+                {filteredValues.map((korean) => (
                     <button
                         key={korean}
                         className={`${styles.typeButton} ${
