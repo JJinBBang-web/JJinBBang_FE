@@ -6,7 +6,11 @@ import reportModalIcon from "../../assets/image/ReportModalIcon.svg"
 import verifyCompleteIcon from "../../assets/image/verifyCompleteIcon.svg"
 import { useLocation, useNavigate } from "react-router-dom"
 
-const ReportButton:React.FC = () => {
+type Props = {
+    reviewId : string | undefined;
+}
+
+const ReportButton:React.FC<Props> = ({reviewId}) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isReported, setIsReported] = useState(false)
 
@@ -14,7 +18,8 @@ const ReportButton:React.FC = () => {
     const locate = useLocation();
 
     const handleButtonClick = () => {
-        navigate('/building/rv/report', { state: locate.state });
+        navigate(`/building/review/${reviewId}/report`, { state: locate.state });
+        setIsOpen(true);
       };
 
     return (

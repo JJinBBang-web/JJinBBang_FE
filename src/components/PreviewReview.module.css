@@ -34,7 +34,7 @@
 }
 
 .buildingName {
-  width: 153px;
+  width: 145px;
   flex-shrink: 0;
   overflow: hidden;
   color: var(--black);
@@ -46,6 +46,8 @@
   line-height: 150%; /* 27px */
   letter-spacing: -0.6px;
   margin: 0;
+  white-space: nowrap;
+  
 }
 .likeContainer {
   position: relative;
@@ -53,6 +55,7 @@
   flex-direction: column;
   width: 22px;
   height: 22px;
+  margin-left: 8px;
 }
 .likeButton {
   position: relative;
@@ -78,7 +81,7 @@
   border-radius: 4px;
   background: #eef3ff;
   /* body/Body 2 */
-  font-family: "Spoqa Han Sans Neo";
+  font-family: Inter;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -91,8 +94,13 @@
   color: var(--block-yellow);
 }
 
+.buildingPrice.agency {
+  background: #FFF7F4;
+  color: var(--primary-color);
+}
+
 .buildingContent3 {
-  color: var(#3f3f3f);
+  color: var(--color-gray80);
 
   /* body/Body 2 */
   font-family: Inter;
@@ -100,6 +108,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: 21px; /* 21px */
+  min-height: 21px;
   letter-spacing: -0.6px;
   margin: 0 0 8px 0;
 }

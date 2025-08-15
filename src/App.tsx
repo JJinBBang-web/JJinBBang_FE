@@ -2,7 +2,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, matchPath, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import MapPage from './pages/MapPage';
 import Heart from './pages/HeartListPage';
@@ -132,10 +132,9 @@ const AppContent: React.FC = () => {
           <Route path="content" element={<ReviewContentPage />} />
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-        <Route path="/building" element={<Building />} />
-        <Route path="/building/rv" element={<Review />} />
-        <Route path="/building/rv/report" element={<ReportPage />} />
-        <Route path="/building" element={<Building />} />
+       <Route path="/building/:buildingId" element={<Building />} />
+      <Route path="/building/review/:reviewId" element={<Review />} />
+      <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

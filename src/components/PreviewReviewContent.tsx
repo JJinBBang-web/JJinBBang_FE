@@ -6,14 +6,14 @@ import { tagMessages, tagImages } from './Tag';
 interface PreviewReviewContentProps {
   reviewInfo: {
     content: string; // 리뷰 내용
-    keywords: string[]; // 태그 목록
-    likesCount: number;
-    updatedAt: Date;
+    keyword: string[]; // 태그 목록
+    likeCount: number;
+    updateAt: string;
   };
 }
 const MAX_WIDTH = 292; // 최대 너비
 const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
-  reviewInfo: { content, keywords, likesCount, updatedAt },
+  reviewInfo: { content, keyword, likeCount, updateAt },
 }) => {
   const formatDate = (dateValue: any) => {
     if (!dateValue) return '';
@@ -31,6 +31,15 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [visibleKeywords, setVisibleKeywords] = useState<string[]>([]);
   const [hiddenCount, setHiddenCount] = useState(0);
+  const date = new Date(updateAt); // 날짜/시간 문자열을 Date 객체로 파싱
+
+  const year = date.getFullYear();
+
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+
+  const dateTimeString = `${year}.${month}.${day}`;
+  
 
   useEffect(() => {
     let usedWidth = 0;
@@ -41,24 +50,27 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
     const ctx = canvas.getContext('2d');
     ctx!.font = '400 13.545px Inter';
 
-    for (let i = 0; i < keywords.length; i++) {
+    for (let i = 0; i < keyword.length; i++) {
       const letterSpacing = -0.581;
-      const text = tagMessages[keywords[i]] || keywords[i];
+      const text = tagMessages[keyword[i]] || keyword[i];
       const baseWidth = ctx!.measureText(text).width;
+      console.log(tagMessages[keyword[i]]);
 
       // 글자 수만큼 letter-spacing 적용 (마지막 글자는 적용 안됨)
       const spacingAdjustment = (text.length - 1) * letterSpacing;
       const tagWidth = baseWidth + spacingAdjustment + 28;
 
+
       if (usedWidth + tagWidth > MAX_WIDTH) {
-        tempHidden = keywords.length - i;
+        tempHidden = keyword.length - i;
         break;
       }
 
       usedWidth += tagWidth;
 
-      tempVisible.push(keywords[i]);
+      tempVisible.push(keyword[i]);
     }
+
 
     if (tempHidden !== 0) {
       const letterSpacing = -0.581;
@@ -77,7 +89,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
 
     setVisibleKeywords(tempVisible);
     setHiddenCount(tempHidden);
-  }, [keywords]);
+  }, [keyword]);
 
   return (
     <div className={styles.reviewContainer}>
@@ -95,7 +107,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
         ))}
       </div>
       <div className={styles.dateLikeContainer}>
-        <p className={styles.date}>{formatDate(updatedAt)}</p>
+        <p className={styles.date}>{dateTimeString}</p>
         <div className={styles.likeContainer}>
           <img className={styles.likeImg} src={heartIcon} alt="heart" />
           <p className={styles.likeNum}>

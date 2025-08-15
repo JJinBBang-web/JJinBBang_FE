@@ -5,7 +5,7 @@ import '../../styles/global.css'
 import searchIcon from "../../assets/image/iconSearch.svg"
 
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }: { onSearch: () => void }) => {
     // keyword 상태 관리 함수
     const [keyword, setKeyword] = useRecoilState(searchKeywordState);
 
@@ -19,7 +19,7 @@ const SearchBar = () => {
                 onChange={(e) => setKeyword(e.target.value)}
                 className={styles.search_text}
             />
-            <img src={searchIcon} alt="search"/>
+            <img src={searchIcon} alt="search" className={styles.searchIcon} onClick={onSearch}/>
         </div>
     )
 }
