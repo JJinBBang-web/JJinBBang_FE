@@ -1,33 +1,33 @@
 // Home.tsx
-import React, { useEffect, useState, useMemo } from "react";
-import styles from "./Home.module.css";
-import home_logo from "../assets/logo/homeLogo.svg";
-import campus_icon from "../assets/image/campusIcon.svg";
-import Banner from "../components/Banner";
-import CampusSlide from "../components/CampusSlide";
-import PreviewReview from "../components/PreviewReview";
-import campus_img_1 from "../assets/image/campusImg1.svg";
-import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import pencil from "../assets/image/pencil.svg";
-import iconRight from "../assets/image/iconRight.svg";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
-import { isLoginState } from "../recoil/auth/isLoginState";
-import { useRecoilState, useRecoilValue } from "recoil";
+import React, { useEffect, useState, useMemo } from 'react';
+import styles from './Home.module.css';
+import home_logo from '../assets/logo/homeLogo.svg';
+import campus_icon from '../assets/image/campusIcon.svg';
+import Banner from '../components/Banner';
+import CampusSlide from '../components/CampusSlide';
+import PreviewReview from '../components/PreviewReview';
+import campus_img_1 from '../assets/image/campusImg1.svg';
+import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import pencil from '../assets/image/pencil.svg';
+import iconRight from '../assets/image/iconRight.svg';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { getAPI, putAPI, deleteAPI } from '../api/baseAPI';
+import { isLoginState } from '../recoil/auth/isLoginState';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
   if (review.dormitoryReviewInfo)
     return `dormitory-${review.dormitoryReviewInfo.id}`;
   if (review.agencyReviewInfo) return `agency-${review.agencyReviewInfo.id}`;
-  return "unknown";
+  return 'unknown';
 };
 
 const QUERY_KEYS = {
-  userData: "USER_DATA",
-  campusData: "CAMPUS_DATA",
-  reviewData: "RECENT_REVIEW_DATA",
-  univData: "UNIV_DATA",
+  userData: 'USER_DATA',
+  campusData: 'CAMPUS_DATA',
+  reviewData: 'RECENT_REVIEW_DATA',
+  univData: 'UNIV_DATA',
 };
 
 const Home: React.FC = () => {
@@ -55,13 +55,13 @@ const Home: React.FC = () => {
     isFetching: isFetchingCampusLogin,
     isError: isErrorCampusLogin,
   } = useQuery({
-    queryKey: [QUERY_KEYS.campusData, "login"],
+    queryKey: [QUERY_KEYS.campusData, 'login'],
     queryFn: async () => {
       const response = await getAPI(
         `/api/v1/user/univ/campus?universityName=${userData?.university}`
       );
       return response.data.campusList.map((campus: any) => ({
-        img: campus.logoImageUrl || "default_image_url",
+        img: campus.logoImageUrl || 'default_image_url',
         univ: userData.university,
         campus: campus.campusName,
         latitude: campus.latitude,
@@ -78,7 +78,7 @@ const Home: React.FC = () => {
     isFetching: isFetchingUniversityList,
     isError: isErrorUniversityList,
   } = useQuery({
-    queryKey: [QUERY_KEYS.univData, "guest"],
+    queryKey: [QUERY_KEYS.univData, 'guest'],
     queryFn: async () => {
       const response = await getAPI(`/api/v1/user/univ`);
       return response.data.map((univ: any) => ({
@@ -100,13 +100,13 @@ const Home: React.FC = () => {
     isFetching: isFetchingCampusGuest,
     isError: isErrorCampusGuest,
   } = useQuery({
-    queryKey: [QUERY_KEYS.campusData, "guest"],
+    queryKey: [QUERY_KEYS.campusData, 'guest'],
     queryFn: async () => {
       const response = await getAPI(
         `/api/v1/user/univ/campus?universityName=${university}`
       );
       return response.data.campusList.map((campus: any) => ({
-        img: campus.logoImageUrl || "default_image_url",
+        img: campus.logoImageUrl || 'default_image_url',
         univ: university,
         campus: campus.campusName,
         latitude: campus.latitude,
@@ -122,12 +122,12 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  const rawReviewList = localStorage.getItem("reviewList");
+  const rawReviewList = localStorage.getItem('reviewList');
 
   const reviewList =
     rawReviewList &&
-    rawReviewList.startsWith("[") &&
-    rawReviewList.endsWith("]")
+    rawReviewList.startsWith('[') &&
+    rawReviewList.endsWith(']')
       ? rawReviewList.slice(1, -1)
       : null;
 
@@ -160,7 +160,7 @@ const Home: React.FC = () => {
     isFetchingReviewInfo ||
     isFetchingUniversityList
   ) {
-    console.log("로딩 중...");
+    console.log('로딩 중...');
     return null;
   }
 

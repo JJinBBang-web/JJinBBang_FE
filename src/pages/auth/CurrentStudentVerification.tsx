@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { authState, AuthState } from '../../recoil/auth/atoms';
+import { authApi } from '../../api/auth';
 import styles from '../../styles/auth/CurrentStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import verifyCompleteIcon from '../../assets/image/verifyCompleteIcon.svg';
@@ -60,36 +61,43 @@ const CurrentStudentVerification: React.FC = () => {
   };
 
   // 이메일 제출 및 인증 코드 발송
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || error) return;
 
     setIsLoading(true);
-    // 실제 API 호출 대신 타임아웃으로 처리
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await authApi.sendVerificationEmail(email);
       setStep(VerificationStep.CODE_VERIFICATION);
-    }, 1000);
+    } catch (error: any) {
+      // 403 에러(이미 인증 완료)인 경우 바로 완료 화면으로
+      if (
+        error.response?.status === 403 ||
+        error.message?.includes('이미 학교 인증 완료')
+      ) {
+        setStep(VerificationStep.COMPLETE);
+      } else {
+        setError('이메일 전송에 실패했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // 인증 코드 검증
-  const handleCodeSubmit = (e: React.FormEvent) => {
+  const handleCodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (verificationCode.length !== 6) {
-      setError('인증번호 6자리를 모두 입력해주세요.');
-      return;
-    }
+    if (verificationCode.length !== 6) return;
 
     setIsLoading(true);
-    // 테스트용: 인증 코드 '123456'으로 고정
-    setTimeout(() => {
+    try {
+      await authApi.verifyEmailCode(email, verificationCode);
+      setStep(VerificationStep.COMPLETE);
+    } catch (error) {
+      setError('인증번호가 일치하지 않아요!');
+    } finally {
       setIsLoading(false);
-      if (verificationCode === '123456') {
-        setStep(VerificationStep.COMPLETE);
-      } else {
-        setError('인증번호가 일치하지 않아요!');
-      }
-    }, 1000);
+    }
   };
 
   // 인증 완료 후 확인
@@ -104,12 +112,16 @@ const CurrentStudentVerification: React.FC = () => {
   };
 
   // 인증 코드 재발송
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     setIsLoading(true);
-    setError(null);
-    setTimeout(() => {
+    try {
+      await authApi.refreshAccessToken(); // 토큰 갱신
+      await authApi.sendVerificationEmail(email); // 재발송
+    } catch (error) {
+      setError('재발송에 실패했습니다.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   // 이메일 입력 화면 렌더링

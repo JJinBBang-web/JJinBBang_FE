@@ -1,17 +1,18 @@
 // src/pages/review/ReviewConfirmPage.tsx
-import { useNavigate, useLocation } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {
   reviewState,
   defaultReviewState,
-} from "../../recoil/review/reviewAtoms";
+} from '../../recoil/review/reviewAtoms';
 import { dormitoryReviewState } from '../../recoil/review/dormitoryReviewAtoms';
 import {
   JjinFilterState,
   JjinAgencyFilterState,
-} from "../../recoil/util/filterRecoilState";
-import { DormFilterState } from '../../recoil/util/dormFilterState'; // 기숙사 필터 추가
+} from '../../recoil/util/filterRecoilState';
+import { DormFilterState } from '../../recoil/util/dormFilterState';
+import { useCreateReview } from '../../hooks/useCreateReview';
 import { tagMessages, tagLongMessages } from '../../components/Tag';
 import styles from '../../styles/review/ReviewConfirm.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
@@ -50,7 +51,7 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
-  console.log("ReviewConfirmPage review:", review);
+  console.log('ReviewConfirmPage review:', review);
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(dormitoryReviewState);
   const filters = useRecoilValue(JjinFilterState);
@@ -103,22 +104,22 @@ const ReviewConfirmPage: React.FC = () => {
     if (locationState && Object.keys(locationState).length > 0) {
       mergedState = {
         ...mergedState,
-        housingType: locationState.housingType || mergedState.housingType || "",
+        housingType: locationState.housingType || mergedState.housingType || '',
         pros: locationState.advantages || mergedState.pros || [],
         cons: locationState.disadvantages || mergedState.cons || [],
-        content: locationState.content || mergedState.content || "",
+        content: locationState.content || mergedState.content || '',
         images: locationState.photos || mergedState.images || [],
         address:
-          locationState.address?.roadAddress || mergedState.address || "",
+          locationState.address?.roadAddress || mergedState.address || '',
         addressDetail:
           locationState.address?.jibunAddress ||
           mergedState.addressDetail ||
-          "",
+          '',
         detailedAddress: locationState.buildingName
           ? `${locationState.buildingName}`
-          : mergedState.detailedAddress || "",
+          : mergedState.detailedAddress || '',
         contractType:
-          locationState.paymentType || mergedState.contractType || "",
+          locationState.paymentType || mergedState.contractType || '',
         deposit: locationState.priceData?.deposit || mergedState.deposit || 0,
         monthlyRent:
           locationState.priceData?.monthlyRent !== undefined
@@ -143,7 +144,7 @@ const ReviewConfirmPage: React.FC = () => {
       ? agencyFilters
       : filters;
 
-    console.log("s:", currentFilters);
+    console.log('s:', currentFilters);
 
     let iconSrc = '';
     let tagKey = '';
@@ -158,7 +159,8 @@ const ReviewConfirmPage: React.FC = () => {
 
     // 찾은 키로 아이콘 가져오기
     if (tagKey) {
-      const filter = review.housingType === "공인중개사" ? agencyFilters : filters;
+      const filter =
+        review.housingType === '공인중개사' ? agencyFilters : filters;
       iconSrc =
         currentFilters
           .find(
@@ -215,19 +217,142 @@ const ReviewConfirmPage: React.FC = () => {
     setShowConfirmModal(true);
   };
 
+  // const createReviewMutation = useCreateReview();
+
+  const convertTagTextToCode = (tagTexts: string[]): string[] => {
+    const tagCodes: string[] = [];
+
+    // tagLongMessages에서 텍스트로 코드 찾기
+    tagTexts.forEach((text) => {
+      for (const [code, message] of Object.entries(tagLongMessages)) {
+        if (message === text) {
+          tagCodes.push(code);
+          break;
+        }
+      }
+    });
+
+    return tagCodes;
+  };
+
+  // handleConfirmSubmit 함수 교체
   const handleConfirmSubmit = async () => {
     setIsSubmitting(true);
 
     try {
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setShowConfirmModal(false);
-        navigate("/review/complete");
-        setReview(defaultReviewState);
-      }, 1000);
+      // 태그 텍스트를 코드로 변환
+      const positiveKeywords = convertTagTextToCode(review.pros || []);
+      const negativeKeywords = convertTagTextToCode(review.cons || []);
+
+      console.log('변환된 긍정 키워드:', positiveKeywords);
+      console.log('변환된 부정 키워드:', negativeKeywords);
+
+      let reviewData: any;
+
+      if (review.housingType === '기숙사') {
+        reviewData = {
+          dormitoryReview: {
+            campus: review.detailedAddress || '캠퍼스명',
+            capacity: review.roomCapacity || 1,
+            dormFee: review.dormitoryFee || 0,
+            floor:
+              review.floorType === '저층'
+                ? 'LOW'
+                : review.floorType === '중층'
+                ? 'MID'
+                : 'HIGH',
+            rating: rating,
+            content: review.description || review.content || '',
+          },
+          imageUrls: review.images || [],
+          buildingRequest: {
+            name: review.detailedAddress || '기숙사명',
+            type: 'DORMITORY',
+            address: review.address || '',
+            latitude: 37.5605,
+            longitude: 127.0103,
+          },
+          keywords: {
+            positive: positiveKeywords,
+            negative: negativeKeywords,
+          },
+          condition: {
+            currentRegion: review.dormitoryConditions?.residenceArea || '미정',
+            currentGrade:
+              review.dormitoryConditions?.semesterGrade?.toString() || '3.0',
+          },
+          facilities: {
+            privateFacilities: ['화장실', '샤워실'],
+            publicFacilities: ['냉장고', '전자레인지'],
+            lounge: true,
+          },
+        };
+      } else if (review.housingType === '공인중개사') {
+        reviewData = {
+          agencyReview: {
+            rating: rating,
+            content: review.description || review.content || '',
+          },
+          imageUrls: review.images || [],
+          buildingRequest: {
+            name: review.detailedAddress || '공인중개사명',
+            type: 'AGENCY',
+            address: review.address || '',
+            latitude: 37.5605,
+            longitude: 127.0103,
+          },
+          keywords: {
+            positive: positiveKeywords,
+            negative: negativeKeywords,
+          },
+        };
+      } else {
+        reviewData = {
+          generalReview: {
+            contractType:
+              review.contractType === '월세' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT',
+            deposit: review.deposit || 0,
+            monthlyRent: review.monthlyRent || null,
+            maintenanceCost: review.managementFee || 0,
+            floor:
+              review.floorType === '저층'
+                ? 'LOW'
+                : review.floorType === '중층'
+                ? 'MID'
+                : 'HIGH',
+            space: 25,
+            rating: rating,
+            content: review.description || review.content || '',
+          },
+          imageUrls: review.images || [],
+          buildingRequest: {
+            name: review.detailedAddress || '건물명',
+            type: 'APARTMENT',
+            address: review.address || '',
+            latitude: 37.5605,
+            longitude: 127.0103,
+          },
+          keywords: {
+            positive: positiveKeywords,
+            negative: negativeKeywords,
+          },
+        };
+      }
+
+      console.log('📤 리뷰 데이터:', reviewData);
+
+      // 임시: Mock API 사용
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log('✅ 리뷰 작성 성공 (Mock)');
+
+      setIsSubmitting(false);
+      setShowConfirmModal(false);
+      navigate('/mypage');
+      setReview(defaultReviewState);
     } catch (error) {
       setIsSubmitting(false);
-      console.error('Failed to submit review:', error);
+      console.error('❌ 리뷰 작성 실패:', error);
+      alert('리뷰 작성에 실패했습니다.');
     }
   };
 
@@ -252,12 +377,11 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToDetailedAddress = () => {
-    // localStorage.setItem('reviewState', JSON.stringify(review));
-    if (review.housingType === "공인중개사") {
-      navigate("/review/agency", {
+    if (review.housingType === '공인중개사') {
+      navigate('/review/agency', {
         state: {
           ...locationState,
-          from: "confirm",
+          from: 'confirm',
         },
       });
     } else {
@@ -328,28 +452,28 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToPros = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
-    navigate("/review/filter-ad", {
+    navigate('/review/filter-ad', {
       state: {
         ...locationState,
         photos: review.images,
         advantages: review.pros,
         disadvantages: review.cons,
         content: review.content,
-        from: "confirm",
+        from: 'confirm',
       },
     });
   };
 
   const navigateToCons = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
-    navigate("/review/filter-disad", {
+    navigate('/review/filter-disad', {
       state: {
         ...locationState,
         photos: review.images,
         advantages: review.pros,
         disadvantages: review.cons,
         content: review.content,
-        from: "confirm",
+        from: 'confirm',
       },
     });
   };
@@ -376,7 +500,6 @@ const ReviewConfirmPage: React.FC = () => {
         {tags.map((tagLabel, index) => {
           // 긴 라벨("교통이 편리해요")에서 짧은 라벨("교통 편리")로 변환
           let shortLabel = tagLabel;
-          
 
           // tagLongMessages에서 키 찾기
           for (const [key, value] of Object.entries(tagLongMessages)) {
@@ -432,7 +555,7 @@ const ReviewConfirmPage: React.FC = () => {
               <span className={styles.label}>찐빵 유형</span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {review.housingType || "유형을 선택해주세요"}
+                  {review.housingType || '유형을 선택해주세요'}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -446,7 +569,7 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div>
                   <span className={styles.valueText}>
-                    {review.address || "주소를 입력해주세요"}
+                    {review.address || '주소를 입력해주세요'}
                   </span>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
@@ -460,47 +583,47 @@ const ReviewConfirmPage: React.FC = () => {
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {review.detailedAddress || "상세 주소를 입력해주세요"}
+                  {review.detailedAddress || '상세 주소를 입력해주세요'}
                   <br />
-                  {review.floorType || ""}
+                  {review.floorType || ''}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
             </div>
-            {review.housingType != "공인중개사" && (
+            {review.housingType != '공인중개사' && (
               <>
                 <div
                   className={styles.infoItem}
                   onClick={() => handleItemClick(navigateToContractType)}
                 >
                   <span className={styles.label}>
-                    {review.housingType === "기숙사"
-                      ? "입주 조건"
-                      : "계약 형태"}
+                    {review.housingType === '기숙사'
+                      ? '입주 조건'
+                      : '계약 형태'}
                   </span>
                   <div className={styles.value}>
                     <div className={styles.contractDetails}>
-                      {review.housingType === "기숙사" ? (
+                      {review.housingType === '기숙사' ? (
                         review.dormitoryConditions ? (
                           <>
                             {review.dormitoryConditions.hasDistanceCriteria &&
                               review.dormitoryConditions.residenceArea && (
                                 <span className={styles.valueText}>
-                                  거주 지역{" "}
+                                  거주 지역{' '}
                                   {review.dormitoryConditions.residenceArea}
                                 </span>
                               )}
                             {review.dormitoryConditions.hasGradeCriteria &&
                               review.dormitoryConditions.semesterGrade && (
                                 <span className={styles.valueText}>
-                                  학기 성적{" "}
+                                  학기 성적{' '}
                                   {review.dormitoryConditions.semesterGrade}
                                 </span>
                               )}
                             {(review.dormitoryConditions.dormitoryFee ||
                               review.dormitoryFee) && (
                               <span className={styles.valueText}>
-                                기숙사비{" "}
+                                기숙사비{' '}
                                 {review.dormitoryConditions.dormitoryFee ||
                                   review.dormitoryFee ||
                                   0}
@@ -515,7 +638,7 @@ const ReviewConfirmPage: React.FC = () => {
                         )
                       ) : (
                         <span className={styles.valueText}>
-                          {review.contractType || "계약 형태를 선택해주세요"}
+                          {review.contractType || '계약 형태를 선택해주세요'}
                         </span>
                       )}
                     </div>
@@ -532,13 +655,13 @@ const ReviewConfirmPage: React.FC = () => {
                   onClick={() => handleItemClick(navigateToContractDetails)}
                 >
                   <span className={styles.label}>
-                    {review.housingType === "기숙사"
-                      ? "편의 시설"
-                      : "계약 조건"}
+                    {review.housingType === '기숙사'
+                      ? '편의 시설'
+                      : '계약 조건'}
                   </span>
                   <div className={styles.value}>
                     <div className={styles.contractDetails}>
-                      {review.housingType === "기숙사" ? (
+                      {review.housingType === '기숙사' ? (
                         dormitoryReview.facilityConditions ? (
                           <>
                             {Object.entries(
@@ -567,20 +690,20 @@ const ReviewConfirmPage: React.FC = () => {
                           <span className={styles.valueText}>
                             {review.deposit
                               ? `보증금 ${review.deposit}만원`
-                              : "보증금 정보 없음"}
+                              : '보증금 정보 없음'}
                           </span>
                           {(!review.contractType ||
-                            review.contractType === "월세") && (
+                            review.contractType === '월세') && (
                             <span className={styles.valueText}>
                               {review.monthlyRent
                                 ? `월세 ${review.monthlyRent}만원`
-                                : "월세 정보 없음"}
+                                : '월세 정보 없음'}
                             </span>
                           )}
                           <span className={styles.valueText}>
                             {review.managementFee
                               ? `관리비 ${review.managementFee}만원`
-                              : "관리비 정보 없음"}
+                              : '관리비 정보 없음'}
                           </span>
                         </>
                       )}
@@ -631,7 +754,7 @@ const ReviewConfirmPage: React.FC = () => {
                   <span className={styles.reviewText}>
                     {review.content ||
                       review.description ||
-                      "후기를 작성해주세요"}
+                      '후기를 작성해주세요'}
                   </span>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
@@ -675,7 +798,7 @@ const ReviewConfirmPage: React.FC = () => {
                         ? starFilledIcon
                         : starEmptyIcon
                     }
-                    alt={star <= rating ? "채워진 별" : "빈 별"}
+                    alt={star <= rating ? '채워진 별' : '빈 별'}
                     className={styles.starIcon}
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoveredRating(star)}
@@ -685,7 +808,7 @@ const ReviewConfirmPage: React.FC = () => {
               </div>
               <button
                 className={`${styles.uploadButton} ${
-                  rating > 0 ? styles.enabled : ""
+                  rating > 0 ? styles.enabled : ''
                 }`}
                 onClick={handleSubmitRating}
                 disabled={rating === 0}
