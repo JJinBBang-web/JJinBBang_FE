@@ -7,7 +7,7 @@ export interface BasicInfo {
     type: string,
     contractType: string, // 계약 형태 (월세, 전세)
     deposit: number, // 보증금
-    monthlyRent: number|null, // 월세 (계약 형태가 전세인 경우 null)
+    price: number|null, // 월세 (계약 형태가 전세인 경우 null)
     floor: string, // 층수 (저층, 중층, 고층)
     space: number, // 면적 area -> space
     maintenanceCost: number, // 관리비
@@ -73,7 +73,7 @@ export interface Keywords {
 
 export interface Conditions {
     currentRegion : string,
-    currentGrade : string,
+    currentGrade : number,
 }
 
 export interface Facilities {
@@ -105,7 +105,7 @@ export const ReviewInfoState = atom<Review>({
             type: "",
             contractType: "",
             deposit: 0,
-            monthlyRent: null,
+            price: null,
             floor: "",
             space: 0,
             maintenanceCost: 0,
@@ -155,7 +155,7 @@ export const ReviewInfoState = atom<Review>({
         },
         conditions: {
             currentRegion: "",
-            currentGrade: ""
+            currentGrade: 0.0,
         },
         facilities:{
             private: [],

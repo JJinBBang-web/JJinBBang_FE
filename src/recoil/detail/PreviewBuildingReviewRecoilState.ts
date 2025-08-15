@@ -16,7 +16,7 @@ export interface DormitoryBuildingInfo {
   id: number; // 리뷰 ID
   name: string;
   type: string;
-  universityName?: string;
+  universityName: string;
   address: string;
   rating: number; // 평점
   reviewCount: number;
@@ -42,7 +42,7 @@ export interface ReviewInfo {
 
 export interface PreviewBuildingReviewInfo {
   generalBuildingInfo?: GeneralBuildingInfo;
-  dormitoryBuildInfo?: DormitoryBuildingInfo;
+  dormitoryBuildingInfo?: DormitoryBuildingInfo;
   agencyBuildingInfo?: AgencyBuildingInfo;
   reviewInfo: ReviewInfo;
   image: string;

@@ -60,6 +60,11 @@
     align-items: center;
 }
 
+.univLogo {
+    width: 130px;
+    height: auto;
+}
+
 .uni_btn {
     width: 160px;
     height: 220px;

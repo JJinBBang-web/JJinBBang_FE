@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {selectedInitialState, selectedUniversityState, universitiesFilterState, universitiesState, universityLabelState} from "../../recoil/map/universityRecoilState"
+import {selectedInitialState, campusCenterState, universitiesState, universityLabelState} from "../../recoil/map/universityRecoilState"
 import styles from "./UniversityFilterModal.module.css"
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
@@ -38,21 +38,47 @@ const UniversityFilterModal = () => {
     
     const selectedUni = universities.find((u) => u.id === selectedTypeNum);
     
+    // 대학교 바운더리 상태관리
+    const setCampusCenter = useSetRecoilState(campusCenterState);
+
     const handleConfirm = () => {
-        if (isConfirmActive && selectedUniversityKey) {
+        const selectedCampus = filteredUniversities
+            .flatMap((uni) => uni.campuses)
+            .find((campus) => campus.id === selectedTypeNum);
+
+        if (selectedTypeNum === null) {
+            // 초기화 시 처리
+            setFilterState((prev) => ({
+                ...prev,
+                university: null,
+            }));
+            setUniversityLabel(""); // UI에서 대학명 표시 없앰
+            setCampusCenter(null);  // 지도 초기화 (기본 중심점으로?)
+            setBottomSheet({ isOpenModal: false, type: "university" });
+            return;
+        }
+
+        if (isConfirmActive && selectedUniversityKey && selectedCampus) {
             setFilterState((prev) => ({
                 ...prev,
                 university: selectedTypeNum,
             }));
 
             setUniversityLabel(selectedUniversityKey);
-            setBottomSheet((prev) => ({ ...prev, isOpen: false }));
 
+            // ✅ 캠퍼스 중심 위치 recoil에 저장
+            setCampusCenter({
+                lat: selectedCampus.latitude,
+                lng: selectedCampus.longitude,
+            });
+
+            setBottomSheet((prev) => ({ ...prev, isOpen: false }));
             setTimeout(() => {
-            setBottomSheet({ isOpenModal: false, type: 'university' });
+                setBottomSheet({ isOpenModal: false, type: 'university' });
             }, 200);
         }
     };
+
 
     // 초성별 대학교 필터링
     const groupCampusesByUniversity = (data: CampusResponse[]): GroupedUniversity[] => {
@@ -76,13 +102,6 @@ const UniversityFilterModal = () => {
 
         fetchCampusList();
     }, []);
-
-
-    // // 초성활성화 조건
-    // const activeInitials = new Set(universities.map((uni) => uni.initial));
-    // // 대학교 필터링
-    // const filteredUniversities = universities.filter((uni) => uni.initial === selectedInitial);
-
 
     const activeInitials = useMemo(() => {
         return new Set(groupedUniversities.map((g) => g.initial));
@@ -120,7 +139,9 @@ const UniversityFilterModal = () => {
         swipeToSlide : true,
     }
 
-
+    const selectedCampus = filteredUniversities
+        .flatMap((uni) => uni.campuses)
+        .find((campus) => campus.id === selectedTypeNum);
 
     return (
         <div className={styles.content}>
@@ -167,9 +188,9 @@ const UniversityFilterModal = () => {
                             setSelectedUniversityKey(`${uni.universityName}_${campus.campusName}`);
                         }}
                         >
-                        <img src={campus.logoImageUrl} alt={uni.universityName} />
-                        <p className={styles.uni_title}>{uni.universityName}</p>
-                        <p className={styles.uni_campus}>{campus.campusName}</p>
+                        <img src={campus.logoImageUrl} alt={uni.universityName} className={styles.univLogo} />
+                        <p className={`${styles.uni_title} ${selectedTypeNum === campus.id ? styles.selected_text : ""}`}>{uni.universityName}</p>
+                        <p className={`${styles.uni_campus} ${selectedTypeNum === campus.id ? styles.selected_text : ""}`}>{campus.campusName}</p>
                         </button>
                     </div>
                     ))

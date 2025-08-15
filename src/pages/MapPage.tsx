@@ -7,7 +7,6 @@ import FilterBar from '../components/map/FilterBar';
 import ReviewListHeader from '../components/map/ReviewListHeader';
 import Modal from '../components/review/Modal';
 import iconClose from "../assets/image/iconClose.svg"
-import campus_img_1 from "../assets/image/example_image1.png";
 import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
@@ -18,93 +17,25 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { filterState, housingTypeState, searchKeywordState } from '../recoil/map/mapRecoilState';
 import { universityLabelState } from '../recoil/map/universityRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
-import { ReviewPreview } from '../recoil/detail/PreviewReviewRecoilState';
 import { useSearch } from '../hooks/useSearch';
-import BuildingPreviewReview from '../components/detail/BuildingPreviewReview';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
-import { useNavigate } from 'react-router-dom';
-
-
-// const mockup = {
-//     num : 10,
-//     page : 1,
-//     itemNum : 10,
-//     items: [
-//       {
-//         dormitoryBasicInfo: {
-//           id: 1,
-//           name: "지희관",
-//           university: "경상국립대",
-//           type: "기숙사",
-//           floor: "저", // 옥탑방은 0, 반지하는 -1
-//           space: 26.44,
-//           capacity: 2,
-//           dormFee: 10,
-//           rating: 3,
-//           liked: true, // false
-//         },
-//         reviewInfo: {
-//           content: "집이 너무 깔끔하고...",
-//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-//           likesCount: 120,
-//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-//         },
-//         image: campus_img_1,
-//       },
-//       {
-//         basicInfo: {
-//           reviewId: 2,
-//           name: "한솔원룸",
-//           type: "투룸",
-//           contractType: "전세",
-//           deposit: 2000,
-//           monthlyRent: 0,
-//           floor: "고",
-//           space: 35.5,
-//           maintenanceCost: 5,
-//           rating: 4,
-//           liked: false,
-//         },
-//         reviewInfo: {
-//           content: "주변이 조용하고 살기 좋아요.",
-//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-//           likesCount: 18,
-//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-//         },
-//         image: campus_img_1,
-//       },
-//       {
-//         basicInfo: {
-//           reviewId: 3,
-//           name: "강남하우스",
-//           type: "오피스텔",
-//           contractType: "월세",
-//           deposit: 1000,
-//           monthlyRent: 70,
-//           floor: "중",
-//           space: 42.7,
-//           maintenanceCost: 15,
-//           rating: 5,
-//           liked: true,
-//         },
-//         reviewInfo: {
-//           content: "채광이 좋고 전망이 멋져요.",
-//           keywords: ["PO_BD_ST_01", "PO_BD_MT_03", "NE_BD_LO_07"],
-//           likesCount: 12,
-//           updatedAt: new Date("2025-02-23T04:06:00.000+09:00"),
-//         },
-//         image: campus_img_1,
-//       },
-//     ] as any[],
-// }
+import { campusCenterState } from '../recoil/map/universityRecoilState';
+import { useLocation } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 
 const MapPage = () => {
+    const location = useLocation();
+
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSheetVisible, setIsSheetVisible] = useState(true);
     const [mapBounds, setMapBounds] = useState<MarkerRequest['bounds'] | null>(null);
     const [selectedSort, setSelectedSort] = useState<"RCMND" | "LATEST" | "LIKES" | "STARS">("RCMND");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [markerDetailParams, setMarkerDetailParams] = useState<NearByRequest | undefined>(undefined);
+    const campusCenter = useRecoilValue(campusCenterState);
+    const setCampusCenter = useSetRecoilState(campusCenterState);
+    const mapRef = useRef<kakao.maps.Map | null>(null);
 
     const isInitialized = useRef(false);
 
@@ -115,6 +46,19 @@ const MapPage = () => {
         if (value <= 40) return value * 5;
         return 200 + (value - 40) * 10;
     };
+
+    useEffect(() => {
+        const lat = location.state?.latitude;
+        const lng = location.state?.longitude;
+
+        if (lat && lng) {
+            console.log("🎯 Home에서 받은 캠퍼스 위치:", lat, lng);
+            setCampusCenter({ lat, lng });
+        }
+    }, [location.state]);
+
+    console.log("🧭 location.state:", location.state);
+
 
     // filter Recoil
     const buildType = useRecoilValue(housingTypeState);
@@ -163,12 +107,18 @@ const MapPage = () => {
     const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
     const [searchParams, setSearchParams] = useState<SearchRequest>();
     const [mapCenter, setMapCenter] = useState({ lat: 35.153237, lng: 128.101090 });
-
+    
     const {
         data: searchData,
         isLoading: isSearchLoading,
         isError: isSearchError
     } = useSearch(searchParams);
+
+    // 마커 하나 선택시
+    const {
+        data: markerDetailData,
+        isLoading: isMarkerDetailLoading,
+    } = useNearBy(markerDetailParams);
 
     const handleSearch = () => {
         if (!searchKeyword) return;
@@ -196,6 +146,26 @@ const MapPage = () => {
             }
             : undefined
     );
+
+    useEffect(() => {
+        if (campusCenter && mapRef.current) {
+            const offset = 0.01;
+
+            // 지도 중심 이동
+            mapRef.current.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
+
+            // bounds 업데이트
+            setMapBounds({
+                neLat: campusCenter.lat + offset,
+                neLng: campusCenter.lng + offset,
+                swLat: campusCenter.lat - offset,
+                swLng: campusCenter.lng - offset,
+            });
+
+            // center 상태도 동기화 (선택사항)
+            setMapCenter({ lat: campusCenter.lat, lng: campusCenter.lng });
+        }
+    }, [campusCenter]);
 
     // 검색 모달
     useEffect(() => {
@@ -240,11 +210,17 @@ const MapPage = () => {
     ? {
         num: 10,
         page: 1,
-        type: viewType,           
-        sortBy: selectedSort,        
+        type: viewType,
+        sortBy: selectedSort,
         idList: markerData.map((m) => m.id),
+        AgencyIdList: viewType === "BUILDING"
+            ? markerData
+                .filter((m) => m.type === "AGENCY")
+                .map((m) => m.id)
+            : null,
         }
     : undefined;
+
 
     const {
         data: nearByData,
@@ -260,6 +236,22 @@ const MapPage = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setIsSheetVisible(true);
+    };
+
+    const handleMarkerClick = (markerId: number) => {
+        const marker = markerData.find((m) => m.id === markerId);
+        const isAgency = marker?.type === "AGENCY";
+
+        const params: NearByRequest = {
+            num: 1,
+            page: 1,
+            type: viewType,
+            sortBy: "LIKES",
+            idList: [markerId],
+            AgencyIdList: viewType === "BUILDING" && isAgency ? [markerId] : viewType === "BUILDING" ? [] : null,
+        };
+
+        setMarkerDetailParams(params);
     };
 
 
@@ -292,11 +284,13 @@ const MapPage = () => {
                 <Map
                 center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
-                level={5}
+                level={6}
                 draggable
                 zoomable
                 onCreate={(map) => {
-                    if (isInitialized.current) return; // 최초 1회만 실행
+                    mapRef.current = map;
+
+                    if (isInitialized.current) return;
 
                     const bounds = map.getBounds();
                     const ne = bounds.getNorthEast();
@@ -311,6 +305,21 @@ const MapPage = () => {
 
                     console.log("🧭 초기 지도 bounds:", extractedBounds);
                     setMapBounds(extractedBounds);
+
+                    // 🔥 campusCenter가 있다면 초기 위치로 이동!
+                    if (campusCenter) {
+                        console.log("📍 초기 이동: ", campusCenter);
+                        map.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
+
+                        const offset = 0.01;
+                        setMapBounds({
+                        neLat: campusCenter.lat + offset,
+                        neLng: campusCenter.lng + offset,
+                        swLat: campusCenter.lat - offset,
+                        swLng: campusCenter.lng - offset,
+                        });
+                        setMapCenter(campusCenter);
+                    }
                     isInitialized.current = true;
                 }}
                 onBoundsChanged={(map) => {
@@ -362,6 +371,7 @@ const MapPage = () => {
                                 height: 40,
                                 },
                             }}
+                            onClick={() => handleMarkerClick(marker.id)}
                             />
                         ))}
                     </MarkerClusterer>
@@ -375,93 +385,94 @@ const MapPage = () => {
             <FilterBar/>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
             {/* 토큰 없는 경우 && 인증 X 경우 ? 팝업 등장 (안에서 학교인증X ? 학생인증 : 회/로 ) */}
-            {!!nearByData?.items?.length ?
-                (isModalOpen && <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
-                        <div className={styles.wrap}>
-                            <div className={styles.sheet_header}>
-                                <div className={styles.header_divider}></div>
-                            </div>
-                            <div className={styles.sheet_title_wrap}>
-                                <div className={styles.sheet_info_wrap}>
-                                    <p className={styles.sheet_title}>내 주변 찐빵 (<span>{nearByData.itemNum}</span>)</p>
-                                </div>
-                                <img src={iconClose} width="24px" onClick={handleCloseModal}/>
-                            </div>
-                            <div className={styles.contentWrap}>
-                                <div className={styles.filterWrap}>
-                                    {[
-                                        { label: "추천순", value: "RCMND" },
-                                        { label: "최신순", value: "LATEST" },
-                                        { label: "좋아요순", value: "LIKES" },
-                                        { label: "별점순", value: "STARS" },
-                                    ].map((sortOption) => (
-                                        <p
-                                        key={sortOption.value}
-                                        className={
-                                            selectedSort === sortOption.value
-                                            ? styles.selectedText
-                                            : undefined
-                                        }
-                                        onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
-                                        >
-                                        <span>•</span>{sortOption.label}
-                                        </p>
-                                    ))}
-                                </div>
-                                {(nearByData?.items ?? []).map((review) => (
-                                    <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildInfo?.id ?? review.generalBuildingInfo?.id}>
-                                        <div className={styles.line} />
-                                        <PreviewReview review={review} />
-                                    </div>
-                                    ))}
-                            </div>               
+            {isModalOpen && searchKeyword && (searchData?.items?.length as number) > 0 && (
+                <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                    <div className={styles.wrap}>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
                         </div>
-                    </Modal>)
-                    : isModalOpen && (
-                        <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
-                        <div className={styles.wrap}>
-                            <div className={styles.sheet_header}>
-                                <div className={styles.header_divider}></div>
+                        <div className={styles.sheet_title_wrap}>
+                            <div className={styles.sheet_info_wrap}>
+                                <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum}</span>)</p>
                             </div>
-                            <div className={styles.sheet_title_wrap}>
-                                <div className={styles.sheet_info_wrap}>
-                                    <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum}</span>)</p>
-                                </div>
-                                <img src={iconClose} width="24px" onClick={handleCloseModal}/>
-                            </div>
-                            <div className={styles.contentWrap}>
-                                <div className={styles.filterWrap}>
-                                    {[
-                                        { label: "추천순", value: "RCMND" },
-                                        { label: "최신순", value: "LATEST" },
-                                        { label: "좋아요순", value: "LIKES" },
-                                        { label: "별점순", value: "STARS" },
-                                    ].map((sortOption) => (
-                                        <p
-                                        key={sortOption.value}
-                                        className={
-                                            selectedSort === sortOption.value
-                                            ? styles.selectedText
-                                            : undefined
-                                        }
-                                        onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
-                                        >
-                                        <span>•</span>{sortOption.label}
-                                        </p>
-                                    ))}
-                                </div>
-                                {(searchData?.items ?? []).map((review) => (
-                                    <div key={review.generalBuildingInfo?.id}>
-                                        <div className={styles.line} />
-                                        <PreviewBuildingReview review={review} />
-                                    </div>
-                                    ))}
-                            </div>               
+                            <img src={iconClose} width="24px" onClick={handleCloseModal}/>
                         </div>
-                    </Modal>
-                    )
-                }
-            { !isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >
+                        <div className={styles.contentWrap}>
+                            <div className={styles.filterWrap}>
+                                {[
+                                    { label: "추천순", value: "RCMND" },
+                                    { label: "최신순", value: "LATEST" },
+                                    { label: "좋아요순", value: "LIKES" },
+                                    { label: "별점순", value: "STARS" },
+                                ].map((sortOption) => (
+                                    <p
+                                    key={sortOption.value}
+                                    className={
+                                        selectedSort === sortOption.value
+                                        ? styles.selectedText
+                                        : undefined
+                                    }
+                                    onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
+                                    >
+                                    <span>•</span>{sortOption.label}
+                                    </p>
+                                ))}
+                            </div>
+                            {(searchData?.items ?? []).map((review) => (
+                                <div key={review.generalBuildingInfo?.id}>
+                                    <div className={styles.line} />
+                                    <PreviewBuildingReview review={review} />
+                                </div>
+                                ))}
+                        </div>               
+                    </div>
+                </Modal>
+            )}
+            {isModalOpen && (!searchKeyword || !searchData?.items?.length) && (nearByData?.items?.length as number) > 0 && (
+                <Modal onClose={handleCloseModal} style={{zIndex: 888}}>
+                    <div className={styles.wrap}>
+                        <div className={styles.sheet_header}>
+                            <div className={styles.header_divider}></div>
+                        </div>
+                        <div className={styles.sheet_title_wrap}>
+                            <div className={styles.sheet_info_wrap}>
+                                <p className={styles.sheet_title}>{viewType === "REVIEW" ? "내 주변 찐빵" : "검색된 건물"} (<span>{nearByData?.itemNum}</span>)</p>
+                            </div>
+                            <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+                        </div>
+                        <div className={styles.contentWrap}>
+                            <div className={styles.filterWrap}>
+                                {[
+                                    { label: "추천순", value: "RCMND" },
+                                    { label: "최신순", value: "LATEST" },
+                                    { label: "좋아요순", value: "LIKES" },
+                                    { label: "별점순", value: "STARS" },
+                                ].map((sortOption) => (
+                                    <p
+                                    key={sortOption.value}
+                                    className={
+                                        selectedSort === sortOption.value
+                                        ? styles.selectedText
+                                        : undefined
+                                    }
+                                    onClick={() => setSelectedSort(sortOption.value as typeof selectedSort)}
+                                    >
+                                    <span>•</span>{sortOption.label}
+                                    </p>
+                                ))}
+                            </div>
+                            {(nearByData?.items ?? []).map((review) => (
+                                <div key={review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}>
+                                    <div className={styles.line} />
+                                    {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
+                                </div>
+                                ))}
+                        </div>               
+                    </div>
+                </Modal>
+            )}
+            
+            {!isLoggedIn && isModalOpen && <Modal onClose={handleCloseModal} >
                 <div className={styles.wrap2}>
                     <div className={styles.sheet_header}>
                         <div className={styles.header_divider}></div>
@@ -482,6 +493,23 @@ const MapPage = () => {
                 </div>
             </Modal>
             }
+
+            {markerDetailData?.items?.length && (
+                <Modal onClose={() => setMarkerDetailParams(undefined)} style={{ zIndex: 999 }}>
+                    <div className={styles.wrap}>
+                    <div className={styles.sheet_header}>
+                        <div className={styles.header_divider}></div>
+                    </div>
+                    <div className={styles.contentMarker}>
+                        {viewType === "REVIEW" ? (
+                        <PreviewReview review={markerDetailData.items[0]} />
+                        ) : (
+                        <PreviewBuildingReview review={markerDetailData.items[0]} />
+                        )}
+                    </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

@@ -32,7 +32,7 @@ const ReveiwContractInfo:React.FC<Props> = ({review}) => {
                         :
                         <p className={styles.infoContent}>
                             보증금 <span>{review.generalReviewInfo.deposit}</span>만원<br/>
-                            월세 <span>{review.generalReviewInfo.monthlyRent}</span>만원<br/>
+                            월세 <span>{review.generalReviewInfo.price}</span>만원<br/>
                             관리비 <span>{review.generalReviewInfo.maintenanceCost}</span>만원<br/>
                         </p>
                     }

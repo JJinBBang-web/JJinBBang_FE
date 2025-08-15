@@ -37,7 +37,7 @@ export interface GeneralReviewInfo {
   type: string;
   contractType: string;
   deposit: number;
-  monthlyRent: number;
+  price: number;
   floor: string;
   space: number;
   maintenanceCost: number;
@@ -70,7 +70,7 @@ export interface AgencyReviewInfo {
 // 기숙사 추가 조건
 export interface DormitoryConditions {
   currentRegion: string;
-  currentGrade: string;
+  currentGrade: number;
 }
 
 // 기숙사 편의시설

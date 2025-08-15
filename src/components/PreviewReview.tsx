@@ -11,12 +11,19 @@ import {
   AgencyReviewInfo,
   DormitoryReviewInfo,
 } from "../recoil/detail/PreviewReviewRecoilState";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { getAPI, putAPI, deleteAPI, postAPI } from "../api/baseAPI";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   review: ReviewPreview;
 }
 
 const PreviewReview: React.FC<Props> = ({ review }) => {
+  const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
   let activeReviewInfo:
     | GeneralReviewInfo
     | AgencyReviewInfo
@@ -35,6 +42,24 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
   const dormitoryInfo = review.dormitoryReviewInfo;
   const agencyInfo = review.agencyReviewInfo;
 
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return postAPI(
+        `/api/v1/user/bookmark`,
+        {
+          type: "review",
+          id: activeReviewInfo?.id,
+          bookmark: !isLiked,
+        },
+        true
+      );
+    },
+    onSuccess: (data) => {
+      setIsLiked(!isLiked);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    },
+    onError: (error) => {},
+  });
   const rawRating = activeReviewInfo?.rating;
 
   const numericRating = Number(rawRating) || 0;
@@ -85,13 +110,10 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
     setLikeCount,
   ]);
 
-
   return (
     <div
       className={styles.previewReviewContainer}
-      onClick={() => {
-        window.location.href = "https://www.naver.com"; // 현재 창에서 이동
-      }}
+      onClick={() => navigate(`/building/review/${activeReviewInfo?.id}`)}
     >
       <div className={styles.buildingContainer}>
         <img
@@ -107,10 +129,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
                 className={styles.likeButton}
                 onClick={(event) => {
                   event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-                  setLikeCount((prev) => {
-                    return isLiked ? prev - 1 : prev + 1;
-                  });
-                  setIsLiked((prev) => !prev);
+                  mutation.mutate();
                 }}
                 src={isLiked ? heartIconOn : heartIconOff}
                 alt="heartIcon"
@@ -167,7 +186,6 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
           likeCount: likeCount,
           updateAt: review.reviewInfo.updateAt,
         }}
-
       />
     </div>
   );
