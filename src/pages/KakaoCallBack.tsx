@@ -1,6 +1,6 @@
 // src/components/KakaoCallback.jsx
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { isLoginState } from '../recoil/auth/isLoginState';
@@ -9,15 +9,14 @@ import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
 const url = process.env.REACT_APP_API_URL;
+export const getSignupToken = () => localStorage.getItem('signupToken');
+export const getAccessToken = () => localStorage.getItem('accessToken');
+export const getRefreshToken = () => localStorage.getItem('refreshToken');
 
 interface Tokens {
   accessToken: string;
   refreshToken: string;
 }
-
-export const getSignupToken = () => localStorage.getItem('signupToken');
-export const getAccessToken = () => localStorage.getItem('accessToken');
-export const getRefreshToken = () => localStorage.getItem('refreshToken');
 
 export const setSignupToken = (signupToken: string) => {
   localStorage.setItem('signupToken', signupToken);
@@ -31,17 +30,6 @@ export const setTokens = ({ accessToken, refreshToken }: Tokens) => {
 export const clearTokens = () => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
-  localStorage.removeItem('signupToken');
-};
-
-// 카카오 로그아웃 함수 (SDK 로그아웃은 선택사항)
-const kakaoLogout = async () => {
-  try {
-    // 브라우저에서 카카오 관련 쿠키나 세션 정리
-    console.log('카카오 로그아웃 처리');
-  } catch (error) {
-    console.error('카카오 로그아웃 중 오류:', error);
-  }
 };
 
 export const kakaoLogin = async (authCode: string) => {
@@ -56,6 +44,15 @@ export const kakaoLogin = async (authCode: string) => {
     }),
   });
   return response.json();
+};
+
+const kakaoLogout = async () => {
+  try {
+    // 브라우저에서 카카오 관련 쿠키나 세션 정리
+    console.log('카카오 로그아웃 처리');
+  } catch (error) {
+    console.error('카카오 로그아웃 중 오류:', error);
+  }
 };
 
 export const agreeToTerms = async () => {
@@ -82,6 +79,10 @@ export const getUserInfo = async () => {
   return response.json();
 };
 
+/**
+ * 카카오 로그인 후, 리다이렉트되는 페이지
+ * URL 예: http://localhost:3000/kakao/callback?code=xxxx
+ */
 function KakaoCallback1() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -92,56 +93,169 @@ function KakaoCallback1() {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    // 1) URL에서 code 파라미터 추출
-    const searchParams = new URLSearchParams(location.search);
-    const code = searchParams.get('code');
-    console.log('인가 코드:', code);
+    const handleLogin = async () => {
+      const searchParams = new URLSearchParams(location.search);
+      const code = searchParams.get('code');
+      console.log('인가 코드:', code);
 
-    // 2) 백엔드에 POST 요청 (로그인 시도)
-    if (code) {
-      kakaoLogin(code)
-        .then((response) => {
+      if (code) {
+        try {
+          const response = await kakaoLogin(code);
           console.log('백엔드 응답:', response);
-          // data 안에는 "로그인 성공", accessToken, refreshToken 등이 있을 것
-          // 필요한 로직: 토큰 저장(localStorage 등) 혹은 리다이렉트
+
           if (response.data.accessToken) {
-            // 로그인 성공 시, 토큰 저장
-            localStorage.setItem('accessToken', response.data.accessToken);
-            localStorage.setItem('refreshToken', response.data.refreshToken);
             console.log('로그인 성공, 토큰 저장 완료');
+            setTokens({
+              accessToken: response.data.accessToken,
+              refreshToken: response.data.refreshToken,
+            });
+            setIsLoading(false);
+            setIsLoggedIn(true);
+            navigate('/mypage');
           } else if (response.data.signupToken) {
-            // 회원가입 필요 시, signupToken 저장
-            localStorage.setItem('signupToken', response.data.signupToken);
-            agreeToTerms()
-              .then(({ code, message, data }) => {
-                console.log('약관 동의 응답:', code, message, data);
-                // 약관 동의 처리 로직
-                if (code === 200) {
-                  console.log('약관 동의 성공');
-                  // 약관 동의 성공 후 처리 로직
-                  setTokens({
-                    accessToken: data.accessToken,
-                    refreshToken: data.refreshToken,
-                  });
-                } else {
-                  console.error('약관 동의 실패:', message);
-                }
-              })
-              .catch((err) => {
-                console.error('약관 동의 요청 중 에러:', err);
-              });
+            console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
+            setSignupToken(response.data.signupToken);
+            setUserEmail(response.data.user?.email || '');
+            setIsLoading(false);
+            setShowTerms(true);
+            // try {
+            //   const { code: agreeCode, message, data } = await agreeToTerms();
+            //   console.log("약관 동의 응답:", agreeCode, message, data);
+
+            //   if (agreeCode === 200) {
+            //     setTokens({
+            //       accessToken: data.accessToken,
+            //       refreshToken: data.refreshToken,
+            //     });
+            //     console.log("약관 동의 및 토큰 설정 완료");
+            //     setIsLoggedIn(true);
+            //     navigate("/mypage");
+            //   } else {
+            //     console.error("약관 동의 실패:", message);
+            //   }
+            // } catch (err) {
+            //   console.error("약관 동의 요청 중 에러:", err);
+            // }
           } else {
-            console.error('로그인 실패:', response);
+            console.error('❌ 예상하지 못한 응답 구조:', response.data);
+            setIsLoading(false);
+            navigate('/mypage');
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.error('로그인 요청 중 에러:', err);
-        });
+          setIsLoading(false);
+          navigate('/mypage');
+        }
+      } else {
+        setIsLoading(false);
+        navigate('/mypage');
+      }
+    };
+
+    handleLogin();
+  }, [location, navigate]);
+
+  // 약관 동의 모달 닫기 (로그인 취소)
+  const handleTermsClose = async () => {
+    try {
+      await kakaoLogout();
+      clearTokens();
+      setShowTerms(false);
+      navigate('/mypage');
+    } catch (error) {
+      console.error('로그인 취소 처리 중 오류:', error);
+      clearTokens();
+      setShowTerms(false);
+      navigate('/mypage');
     }
-    // 3) 로그인 성공 시, 메인 페이지로 리다이렉트
-    navigate('/mypage'); // 메인 페이지로 리다이렉트
-  }, [location]);
-  return null;
+  };
+
+  // 약관 동의 완료
+  const handleTermsComplete = async () => {
+    try {
+      const result = await agreeToTerms();
+      console.log('약관 동의 응답:', result.code, result.message, result.data);
+
+      if (result.code === 200) {
+        console.log('약관 동의 성공');
+        setTokens({
+          accessToken: result.data.accessToken,
+          refreshToken: result.data.refreshToken,
+        });
+
+        // 사용자 정보 저장
+        localStorage.setItem('email', userEmail);
+        localStorage.setItem('verificationStatus', 'unverified');
+        setIsLoggedIn(true);
+        setShowTerms(false);
+        setShowComplete(true);
+      } else {
+        console.error('약관 동의 실패:', result.message);
+        await handleTermsClose();
+      }
+    } catch (err) {
+      console.error('약관 동의 요청 중 에러:', err);
+      await handleTermsClose();
+    }
+  };
+
+  // 가입 완료 모달 확인
+  const handleSignupConfirm = () => {
+    setShowComplete(false);
+    navigate('/mypage');
+  };
+
+  // 가입 완료 모달 인증하기
+  const handleSignupVerify = () => {
+    setShowComplete(false);
+    navigate('/auth/student/verify');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="content">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            gap: '16px',
+          }}
+        >
+          <img
+            src="/assets/image/loading.gif"
+            alt="loading"
+            style={{ width: '48px', height: '48px' }}
+          />
+          <p>로그인 처리 중입니다...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="content">
+      <div style={{ height: '100vh', background: '#f5f5f5' }}>{/* 배경 */}</div>
+
+      {/* 약관 동의 모달 */}
+      {showTerms && (
+        <TermsAgreementModal
+          onClose={handleTermsClose}
+          onComplete={handleTermsComplete}
+        />
+      )}
+
+      {/* 가입 완료 모달 */}
+      {showComplete && (
+        <SignupCompleteModal
+          onConfirm={handleSignupConfirm}
+          onVerify={handleSignupVerify}
+        />
+      )}
+    </div>
+  );
 }
 
 export default KakaoCallback1;

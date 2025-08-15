@@ -1,12 +1,12 @@
 // src/api/building/ReviewAPI.ts
 import {
-  BuildingReviewResponse,
   CreateReviewRequest,
   ReviewCreateResponse,
   GeneralReviewRequest,
   DormitoryReviewRequest,
   AgencyReviewRequest,
 } from '../../types/entity/building/ReviewCreateInterface';
+import { BuildingReviewResponse } from '../../types/entity/building/BuildingReviewInterface';
 import { api } from '../api';
 
 export class ReviewAPI {

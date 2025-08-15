@@ -1,150 +1,33 @@
 // Home.tsx
-import React, { useEffect, useState, useMemo } from "react";
-import styles from "./Home.module.css";
-import home_logo from "../assets/logo/homeLogo.svg";
-import campus_icon from "../assets/image/campusIcon.svg";
-import Banner from "../components/Banner";
-import CampusSlide from "../components/CampusSlide";
-import PreviewReview from "../components/PreviewReview";
-import campus_img_1 from "../assets/image/campusImg1.svg";
-import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import pencil from "../assets/image/pencil.svg";
-import iconRight from "../assets/image/iconRight.svg";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
-import { isLoginState } from "../recoil/auth/isLoginState";
-import { useRecoilState, useRecoilValue } from "recoil";
+import React, { useEffect, useState, useMemo } from 'react';
+import styles from './Home.module.css';
+import home_logo from '../assets/logo/homeLogo.svg';
+import campus_icon from '../assets/image/campusIcon.svg';
+import Banner from '../components/Banner';
+import CampusSlide from '../components/CampusSlide';
+import PreviewReview from '../components/PreviewReview';
+import campus_img_1 from '../assets/image/campusImg1.svg';
+import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import pencil from '../assets/image/pencil.svg';
+import iconRight from '../assets/image/iconRight.svg';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { getAPI, putAPI, deleteAPI } from '../api/baseAPI';
+import { isLoginState } from '../recoil/auth/isLoginState';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
-const api = {
-  code: 200,
-  message: '조회 성공',
-  data: {
-    reviews: [
-      {
-        dormitoryBasicInfo: {
-          id: 1,
-          name: '지희관',
-          universityName: '경상국립대',
-          type: '기숙사',
-          floor: '고층', // 옥탑방은 0, 반지하는 -1
-          space: 26.44,
-          dormFee: 10,
-          rating: 3,
-          liked: true, // false
-        },
-        reviewInfo: {
-          content:
-            '집이 너무 깔끔하고 좋아요. 다만 조식이 맛이 없어요. 다른 기숙사에 비해 조식이 맛이 없어요. 하지만 조식이 맛이 좋아요',
-          keywords: [
-            'PO_BD_LO_02',
-            'PO_BD_LO_01',
-            'PO_BD_LO_04',
-            'PO_BD_LO_01', // ... 필요한 키워드 추가
-            'PO_BD_LO_01',
-          ],
-          likesCount: 120,
-          updatedAt: new Date('2025-02-23T04:06:00.000+09:00'), // yyyy-MM-dd'T'HH:mm:ss.SSSXXX 형식
-        },
-        image: 'http://localhost:8080/image/1.jpg',
-      },
-      {
-        basicInfo: {
-          reviewId: 2,
-          name: '한솔원룸',
-          type: '투룸',
-          contractType: '전세',
-          deposit: 2000,
-          monthlyRent: 0,
-          floor: '저층',
-          space: 35.5,
-          maintenanceCost: 5,
-          rating: 4,
-          liked: false,
-        },
-        reviewInfo: {
-          content: '주변이 조용하고 살기 좋아요.',
-          keywords: [
-            'PO_BD_LO_02',
-            'PO_BD_LO_01',
-            'PO_BD_LO_04',
-            'PO_BD_LO_01', // ... 필요한 키워드 추가
-            'PO_BD_LO_01',
-          ],
-          likesCount: 18,
-          updatedAt: new Date('2025-02-23T04:06:00.000+09:00'),
-        },
-        image: campus_img_1,
-      },
-      {
-        basicInfo: {
-          reviewId: 3,
-          name: '강남하우스',
-          type: '오피스텔',
-          contractType: '월세',
-          deposit: 1000,
-          monthlyRent: 70,
-          floor: '중층',
-          space: 42.7,
-          maintenanceCost: 15,
-          rating: 5,
-          liked: true,
-        },
-        reviewInfo: {
-          content: '채광이 좋고 전망이 멋져요.',
-          keywords: [
-            'PO_BD_LO_02',
-            'PO_BD_LO_01',
-            'PO_BD_LO_04',
-            'PO_BD_LO_01', // ... 필요한 키워드 추가
-            'PO_BD_LO_01',
-          ],
-          likesCount: 12,
-          updatedAt: new Date('2025-02-23T04:06:00.000+09:00'),
-        },
-        image: campus_img_1,
-      },
-    ] as any[],
-  },
-};
-
-const campus_api = {
-  code: 200,
-  message: '조회 성공',
-  data: {
-    campusList: [
-      {
-        id: 1,
-        campusName: '가좌캠퍼스',
-        logoImageUrl: 'http://localhost:8080/~~~',
-        campusAddress: '경상남도 진주시 ~~',
-        latitude: 37.5605,
-        longitude: 127.0103,
-      },
-      {
-        id: 2,
-        campusName: '칠암캠퍼스',
-        logoImageUrl: null, // 이미지가 없는 경우
-        campusAddress: '경상남도 진주시 ~~',
-        latitude: 37.5605,
-        longitude: 127.0103,
-      },
-      {
-        id: 3,
-        campusName: '통영캠퍼스',
-        logoImageUrl: 'http://localhost:8080/~~~',
-        campusAddress: '경상남도 진주시 ~~',
-        latitude: 37.5605,
-        longitude: 127.0103,
-      },
-    ],
-  },
+const getReviewKey = (review: any) => {
+  if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
+  if (review.dormitoryReviewInfo)
+    return `dormitory-${review.dormitoryReviewInfo.id}`;
+  if (review.agencyReviewInfo) return `agency-${review.agencyReviewInfo.id}`;
+  return 'unknown';
 };
 
 const QUERY_KEYS = {
-  userData: "USER_DATA",
-  campusData: "CAMPUS_DATA",
-  reviewData: "RECENT_REVIEW_DATA",
-  univData: "UNIV_DATA",
+  userData: 'USER_DATA',
+  campusData: 'CAMPUS_DATA',
+  reviewData: 'RECENT_REVIEW_DATA',
+  univData: 'UNIV_DATA',
 };
 
 const Home: React.FC = () => {
@@ -172,13 +55,13 @@ const Home: React.FC = () => {
     isFetching: isFetchingCampusLogin,
     isError: isErrorCampusLogin,
   } = useQuery({
-    queryKey: [QUERY_KEYS.campusData, "login"],
+    queryKey: [QUERY_KEYS.campusData, 'login'],
     queryFn: async () => {
       const response = await getAPI(
         `/api/v1/user/univ/campus?universityName=${userData?.university}`
       );
       return response.data.campusList.map((campus: any) => ({
-        img: campus.logoImageUrl || "default_image_url",
+        img: campus.logoImageUrl || 'default_image_url',
         univ: userData.university,
         campus: campus.campusName,
         latitude: campus.latitude,
@@ -195,7 +78,7 @@ const Home: React.FC = () => {
     isFetching: isFetchingUniversityList,
     isError: isErrorUniversityList,
   } = useQuery({
-    queryKey: [QUERY_KEYS.univData, "guest"],
+    queryKey: [QUERY_KEYS.univData, 'guest'],
     queryFn: async () => {
       const response = await getAPI(`/api/v1/user/univ`);
       return response.data.map((univ: any) => ({
@@ -217,13 +100,13 @@ const Home: React.FC = () => {
     isFetching: isFetchingCampusGuest,
     isError: isErrorCampusGuest,
   } = useQuery({
-    queryKey: [QUERY_KEYS.campusData, "guest"],
+    queryKey: [QUERY_KEYS.campusData, 'guest'],
     queryFn: async () => {
       const response = await getAPI(
         `/api/v1/user/univ/campus?universityName=${university}`
       );
       return response.data.campusList.map((campus: any) => ({
-        img: campus.logoImageUrl || "default_image_url",
+        img: campus.logoImageUrl || 'default_image_url',
         univ: university,
         campus: campus.campusName,
         latitude: campus.latitude,
@@ -239,12 +122,12 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  const rawReviewList = localStorage.getItem("reviewList");
+  const rawReviewList = localStorage.getItem('reviewList');
 
   const reviewList =
     rawReviewList &&
-    rawReviewList.startsWith("[") &&
-    rawReviewList.endsWith("]")
+    rawReviewList.startsWith('[') &&
+    rawReviewList.endsWith(']')
       ? rawReviewList.slice(1, -1)
       : null;
 
@@ -277,7 +160,7 @@ const Home: React.FC = () => {
     isFetchingReviewInfo ||
     isFetchingUniversityList
   ) {
-    console.log("로딩 중...");
+    console.log('로딩 중...');
     return null;
   }
 
@@ -328,13 +211,8 @@ const Home: React.FC = () => {
             return (
               <div key={getReviewKey(review)}>
                 <div className={styles.line} />
-                <PreviewReview
-                  key={
-                    review.basicInfo?.reviewId ?? review.dormitoryBasicInfo?.id
-                  } // `any`로 강제 타입 지정
-                  review={review}
-                />
-              </>
+                <PreviewReview review={review} />
+              </div>
             );
           })
         ) : (

@@ -1,5 +1,5 @@
 // src/api/review/ReviewSubmitAPI.ts
-import { postAPI } from '../bassAPI';
+import { postAPI } from '../baseAPI';
 
 export interface GeneralReviewRequest {
   generalReview: {

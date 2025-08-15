@@ -14,6 +14,7 @@ import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
+import PreviewReview from '../components/PreviewReview';
 
 interface UserProfile {
   isLoggedIn: boolean;
@@ -35,7 +36,7 @@ const MyPage: React.FC = () => {
     isVerified: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [userReviews, setUserReviews] = useState<Review[]>([]);
+  const [userReviews, setUserReviews] = useState<any[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
 
   // 유저 정보 조회 함수
@@ -296,14 +297,15 @@ const MyPage: React.FC = () => {
     return (
       <div className={styles.reviewList}>
         {userReviews.map((review) => (
-          <div key={review.id} className={styles.reviewItem}>
-            <h3>{review.title || review.buildingName || '제목 없음'}</h3>
-            <p>{review.content}</p>
-            <div className={styles.reviewMeta}>
-              <span>평점: {review.rating}/5</span>
-              <span>{new Date(review.createdAt).toLocaleDateString()}</span>
-            </div>
-          </div>
+          <PreviewReview key={review.id} review={review} />
+          // <div key={review.id} className={styles.reviewItem}>
+          //   <h3>{review.title || review.buildingName || '제목 없음'}</h3>
+          //   <p>{review.content}</p>
+          //   <div className={styles.reviewMeta}>
+          //     <span>평점: {review.rating}/5</span>
+          //     <span>{new Date(review.createdAt).toLocaleDateString()}</span>
+          //   </div>
+          // </div>
         ))}
       </div>
     );

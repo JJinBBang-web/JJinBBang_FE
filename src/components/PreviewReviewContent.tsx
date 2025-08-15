@@ -15,31 +15,16 @@ const MAX_WIDTH = 292; // 최대 너비
 const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
   reviewInfo: { content, keyword, likeCount, updateAt },
 }) => {
-  const formatDate = (dateValue: any) => {
-    if (!dateValue) return '';
-
-    // 문자열인 경우 Date 객체로 변환
-    const date =
-      typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
-
-    // Invalid Date 체크
-    if (isNaN(date.getTime())) return '';
-
-    return date.toLocaleDateString('ko-KR');
-  };
-
-  const containerRef = useRef<HTMLDivElement>(null);
   const [visibleKeywords, setVisibleKeywords] = useState<string[]>([]);
   const [hiddenCount, setHiddenCount] = useState(0);
   const date = new Date(updateAt); // 날짜/시간 문자열을 Date 객체로 파싱
 
   const year = date.getFullYear();
 
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
 
   const dateTimeString = `${year}.${month}.${day}`;
-  
 
   useEffect(() => {
     let usedWidth = 0;
@@ -59,7 +44,6 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
       const spacingAdjustment = (text.length - 1) * letterSpacing;
       const tagWidth = baseWidth + spacingAdjustment + 28;
 
-
       if (usedWidth + tagWidth > MAX_WIDTH) {
         tempHidden = keyword.length - i;
         break;
@@ -69,7 +53,6 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
 
       tempVisible.push(keyword[i]);
     }
-
 
     if (tempHidden !== 0) {
       const letterSpacing = -0.581;
@@ -94,7 +77,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
     <div className={styles.reviewContainer}>
       <p className={styles.reviewContent}>{content}</p>
       <div className={styles.tagContainer}>
-        {keywords.map((keyword, index) => (
+        {visibleKeywords.map((keyword, index) => (
           <div key={index} className={styles.tag}>
             <img
               className={styles.tagImg}
@@ -104,14 +87,17 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
             <p className={styles.tagText}>{tagMessages[keyword]}</p>
           </div>
         ))}
+        {hiddenCount > 0 && (
+          <div className={styles.tag}>
+            <p className={styles.tagText}>+{hiddenCount}</p>
+          </div>
+        )}
       </div>
       <div className={styles.dateLikeContainer}>
         <p className={styles.date}>{dateTimeString}</p>
         <div className={styles.likeContainer}>
           <img className={styles.likeImg} src={heartIcon} alt="heart" />
-          <p className={styles.likeNum}>
-            {likesCount > 99 ? '99+' : likesCount}
-          </p>
+          <p className={styles.likeNum}>{likeCount > 99 ? '99+' : likeCount}</p>
         </div>
       </div>
     </div>
