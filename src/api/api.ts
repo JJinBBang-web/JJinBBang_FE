@@ -1,6 +1,31 @@
 // src/api/api.ts
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
+// Helper function to fix localhost URLs in API responses
+const fixLocalhostUrls = (data: any): any => {
+  if (!data) return data;
+  
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
+  
+  if (typeof data === 'string' && data.includes('localhost:8080')) {
+    return data.replace(/http:\/\/localhost:8080/g, apiUrl);
+  }
+  
+  if (Array.isArray(data)) {
+    return data.map(fixLocalhostUrls);
+  }
+  
+  if (typeof data === 'object') {
+    const fixed: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      fixed[key] = fixLocalhostUrls(value);
+    }
+    return fixed;
+  }
+  
+  return data;
+};
+
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: {
@@ -69,6 +94,11 @@ api.interceptors.response.use(
       "\n✅ Axios Response URL:",
       res.config.url
     );
+
+    // Fix localhost image URLs in response data
+    if (res.data && typeof res.data === 'object') {
+      res.data = fixLocalhostUrls(res.data);
+    }
 
     return res;
   },
