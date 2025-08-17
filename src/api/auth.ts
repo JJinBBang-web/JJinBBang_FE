@@ -123,9 +123,18 @@ export const authApi = {
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('서비스 탈퇴 실패:', error);
-      throw new Error('서비스 탈퇴에 실패했습니다.');
+      
+      // API 에러 응답에서 메시지 추출
+      let errorMessage = 'Leave Service Failed.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
     }
   },
 
