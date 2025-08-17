@@ -219,3 +219,9 @@
   line-height: 150%;
   letter-spacing: -0.0375rem;
 }
+
+.line {
+  width: 100%;
+  border: 1.5px solid var(--color-gray10);
+  margin: 20px 0;
+}
