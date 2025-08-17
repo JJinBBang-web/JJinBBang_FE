@@ -96,8 +96,8 @@ const AccountAuthPage: React.FC = () => {
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('signupToken');
 
-      // 로그인 페이지로 이동
-      navigate('/');
+      // MyPage로 이동
+      navigate('/mypage');
     } catch (error) {
       console.error('로그아웃 실패:', error);
     } finally {
