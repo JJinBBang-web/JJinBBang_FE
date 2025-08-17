@@ -8,6 +8,8 @@ import { authApi } from '../../api/auth';
 import styles from '../../styles/auth/AccountAuthPage.module.css';
 import questionIcon from '../../assets/image/questionIcon.svg';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
+import LeaveServiceModal1 from '../../components/auth/LeaveServiceModal1';
+import LeaveServiceModal2 from '../../components/auth/LeaveServiceModal2';
 
 
 const AccountAuthPage: React.FC = () => {
@@ -15,6 +17,8 @@ const AccountAuthPage: React.FC = () => {
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showModal1, setShowModal1] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
 
   // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {
@@ -40,24 +44,28 @@ const AccountAuthPage: React.FC = () => {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    // 1단계: 사용자 확인
-    const isConfirmed = window.confirm(
-      '정말로 탈퇴하시겠습니까?\n탈퇴 후에는 모든 데이터가 삭제되며 복구할 수 없습니다.'
-    );
+  const handleDeleteAccount = () => {
+    setShowModal1(true);
+  };
 
-    if (!isConfirmed) {
-      return;
-    }
+  const handleModal1Leave = () => {
+    setShowModal1(false);
+    setShowModal2(true);
+  };
 
+  const handleModal1Close = () => {
+    setShowModal1(false);
+  };
+
+  const handleModal2Confirm = async () => {
     try {
-      // 2단계: 로딩 상태 시작
       setIsDeleting(true);
+      setShowModal2(false);
 
-      // 3단계: API 호출 (authApi.deleteUser 사용)
+      // API 호출 (authApi.deleteUser 사용)
       const responseData = await authApi.deleteUser();
 
-      // 4단계: 성공 시 상태 초기화 및 이동 (토큰 정리는 authApi.deleteUser에서 처리됨)
+      // 성공 시 상태 초기화 및 이동
       if (responseData.code === 200) {
         setAuth({
           isAuthenticated: false,
@@ -70,11 +78,9 @@ const AccountAuthPage: React.FC = () => {
         navigate('/');
       }
     } catch (error: any) {
-      // 5단계: 에러 처리
       console.error('탈퇴 실패:', error);
       alert(error.message || '탈퇴 처리 중 오류가 발생했습니다.');
     } finally {
-      // 6단계: 로딩 상태 종료
       setIsDeleting(false);
     }
   };
@@ -168,6 +174,18 @@ const AccountAuthPage: React.FC = () => {
           <span>{isLoggingOut ? '로그아웃 중...' : '로그아웃'}</span>
         </button>
       </div>
+
+      {/* Leave Service Modals */}
+      <LeaveServiceModal1
+        isOpen={showModal1}
+        onClose={handleModal1Close}
+        onLeave={handleModal1Leave}
+      />
+      <LeaveServiceModal2
+        isOpen={showModal2}
+        onConfirm={handleModal2Confirm}
+        onClose={() => setShowModal2(false)}
+      />
     </div>
   );
 };
