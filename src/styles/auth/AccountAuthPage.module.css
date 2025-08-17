@@ -133,3 +133,21 @@
   letter-spacing: -0.0375rem;
   color: var(--black);
 }
+
+.logoutButton {
+  width: 100%;
+  display: flex;
+  padding: 1.25rem;
+  justify-content:left;
+  background-color: var(--white);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.logoutButton span {
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: red;
+}

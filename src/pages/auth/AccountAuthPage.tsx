@@ -14,6 +14,7 @@ const AccountAuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {
@@ -78,6 +79,32 @@ const AccountAuthPage: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+
+      // Recoil 상태 초기화
+      setAuth({
+        isAuthenticated: false,
+        email: undefined,
+        verificationStatus: 'unverified',
+        isFirstLogin: false,
+      });
+
+      // 로컬 스토리지 정리
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('signupToken');
+
+      // 로그인 페이지로 이동
+      navigate('/');
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <div className="content">
       <header className={styles.header}>
@@ -127,6 +154,18 @@ const AccountAuthPage: React.FC = () => {
         >
           <span>{isDeleting ? '탈퇴 처리중...' : '서비스 탈퇴'}</span>
           <img src={arrowIcon} alt="forward" />
+        </button>
+
+        <button
+          className={styles.logoutButton}
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          style={{
+            opacity: isLoggingOut ? 0.6 : 1,
+            cursor: isLoggingOut ? 'not-allowed' : 'pointer',
+          }}
+        >
+          <span>{isLoggingOut ? '로그아웃 중...' : '로그아웃'}</span>
         </button>
       </div>
     </div>
