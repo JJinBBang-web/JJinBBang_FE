@@ -12,7 +12,7 @@ import {
   JjinAgencyFilterState,
 } from '../../recoil/util/filterRecoilState';
 import { DormFilterState } from '../../recoil/util/dormFilterState';
-import { useCreateReview } from '../../hooks/useCreateReview';
+import { ReviewSubmitAPI } from '../../api/review/ReviewSubmitAPI';
 import { tagMessages, tagLongMessages } from '../../components/Tag';
 import styles from '../../styles/review/ReviewConfirm.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
@@ -252,20 +252,27 @@ const ReviewConfirmPage: React.FC = () => {
       if (review.housingType === '기숙사') {
         reviewData = {
           dormitoryReview: {
-            campus: review.detailedAddress || '캠퍼스명',
+            campusId: 1, // TODO: Map campus name to ID
             capacity: review.roomCapacity || 1,
             dormFee: review.dormitoryFee || 0,
             floor:
-              review.floorType === '저층'
+              review.floorType === '지하층'
+                ? 'BASEMENT'
+                : review.floorType === '저층'
                 ? 'LOW'
                 : review.floorType === '중층'
                 ? 'MID'
-                : 'HIGH',
+                : review.floorType === '고층'
+                ? 'HIGH'
+                : review.floorType === '옥탑층'
+                ? 'ATTIC'
+                : 'MID',
             rating: rating,
             content: review.description || review.content || '',
           },
-          imageUrls: review.images || [],
+          imageUrls: [], // Will be set after image upload
           buildingRequest: {
+            buildingCode: `DORM_${Date.now()}`,
             name: review.detailedAddress || '기숙사명',
             type: 'DORMITORY',
             address: review.address || '',
@@ -293,8 +300,9 @@ const ReviewConfirmPage: React.FC = () => {
             rating: rating,
             content: review.description || review.content || '',
           },
-          imageUrls: review.images || [],
+          imageUrls: [], // Will be set after image upload
           buildingRequest: {
+            buildingCode: `AGENCY_${Date.now()}`,
             name: review.detailedAddress || '공인중개사명',
             type: 'AGENCY',
             address: review.address || '',
@@ -312,20 +320,27 @@ const ReviewConfirmPage: React.FC = () => {
             contractType:
               review.contractType === '월세' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT',
             deposit: review.deposit || 0,
-            monthlyRent: review.monthlyRent || null,
+            monthlyRent: review.contractType === '전세' ? null : (review.monthlyRent || 0),
             maintenanceCost: review.managementFee || 0,
             floor:
-              review.floorType === '저층'
+              review.floorType === '지하층'
+                ? 'BASEMENT'
+                : review.floorType === '저층'
                 ? 'LOW'
                 : review.floorType === '중층'
                 ? 'MID'
-                : 'HIGH',
-            space: 25,
+                : review.floorType === '고층'
+                ? 'HIGH'
+                : review.floorType === '옥탑층'
+                ? 'ATTIC'
+                : 'MID',
+            space: 25, // TODO: Add space field to review form
             rating: rating,
             content: review.description || review.content || '',
           },
-          imageUrls: review.images || [],
+          imageUrls: [], // Will be set after image upload
           buildingRequest: {
+            buildingCode: `GENERAL_${Date.now()}`,
             name: review.detailedAddress || '건물명',
             type: 'APARTMENT',
             address: review.address || '',
@@ -339,20 +354,67 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
+      // 이미지 URL 처리 - blob URLs를 샘플 이미지 URLs로 변환
+      let processedImageUrls: string[] = [];
+      
+      if (review.images && review.images.length > 0) {
+        console.log('🖼️ 이미지 처리 시작:', review.images.length, '장');
+        
+        // blob URLs는 샘플 이미지 URLs로 교체, 실제 서버 URLs는 그대로 유지
+        processedImageUrls = review.images.map((url, index) => {
+          if (url.startsWith('blob:')) {
+            // blob URL을 샘플 이미지 URL로 변환
+            return `http://localhost:8080/image/${1000 + index}.jpg`;
+          } else {
+            // 이미 실제 서버 URL인 경우 그대로 사용
+            return url;
+          }
+        });
+        
+        console.log('✅ 이미지 처리 완료:', processedImageUrls.length, '장');
+      }
+
+      // 처리된 이미지 URLs를 리뷰 데이터에 설정
+      reviewData.imageUrls = processedImageUrls;
+
       console.log('📤 리뷰 데이터:', reviewData);
 
-      // 임시: Mock API 사용
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('✅ 리뷰 작성 성공 (Mock)');
+      // 이미지 개수 검증
+      const imageCount = reviewData.imageUrls?.length || 0;
+      if (review.housingType !== '공인중개사' && imageCount < 2) {
+        alert('일반 건물 및 기숙사 리뷰는 최소 2장의 사진이 필요합니다. 사진을 업로드해주세요.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 실제 API 호출
+      let result;
+      if (review.housingType === '기숙사') {
+        result = await ReviewSubmitAPI.submitDormitoryReview(reviewData);
+      } else if (review.housingType === '공인중개사') {
+        result = await ReviewSubmitAPI.submitAgencyReview(reviewData);
+      } else {
+        result = await ReviewSubmitAPI.submitGeneralReview(reviewData);
+      }
+      console.log('✅ 리뷰 작성 성공:', result);
 
       setIsSubmitting(false);
       setShowConfirmModal(false);
       navigate('/mypage');
       setReview(defaultReviewState);
-    } catch (error) {
+    } catch (error: any) {
       setIsSubmitting(false);
       console.error('❌ 리뷰 작성 실패:', error);
-      alert('리뷰 작성에 실패했습니다.');
+      console.error('❌ 에러 응답:', error.response?.data);
+      console.error('❌ 상태 코드:', error.response?.status);
+      
+      // 이미지 개수 오류에 대한 특별 처리
+      const errorMessage = error.response?.data?.message;
+      if (errorMessage && errorMessage.includes('이미지 개수')) {
+        alert('사진이 부족합니다. 일반 건물 및 기숙사 리뷰는 2-20장, 공인중개사 리뷰는 최대 20장의 사진이 필요합니다.');
+      } else {
+        alert(`리뷰 작성 중 오류가 발생했습니다: ${errorMessage || error.message}`);
+      }
     }
   };
 

@@ -297,7 +297,10 @@ const MyPage: React.FC = () => {
     return (
       <div className={styles.reviewList}>
         {userReviews.map((review) => (
-          <PreviewReview key={review.id} review={review} />
+          <div key={review.id}>
+            <div className={styles.line} />
+            <PreviewReview review={review} />
+          </div>
           // <div key={review.id} className={styles.reviewItem}>
           //   <h3>{review.title || review.buildingName || '제목 없음'}</h3>
           //   <p>{review.content}</p>

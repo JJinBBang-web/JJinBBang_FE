@@ -99,7 +99,7 @@ export class ReviewSubmitAPI {
       requestData.generalReview.monthlyRent = null;
     }
 
-    return await postAPI('/api/v1/review/general', requestData, true);
+    return await postAPI('/api/v1/review/GENERAL', requestData, true);
   }
 
   /**
@@ -114,7 +114,7 @@ export class ReviewSubmitAPI {
       },
     };
 
-    return await postAPI('/api/v1/review/dormitory', requestData, true);
+    return await postAPI('/api/v1/review/DORMITORY', requestData, true);
   }
 
   /**
@@ -129,7 +129,7 @@ export class ReviewSubmitAPI {
       },
     };
 
-    return await postAPI('/api/v1/review/agency', requestData, true);
+    return await postAPI('/api/v1/review/AGENCY', requestData, true);
   }
 
   /**
