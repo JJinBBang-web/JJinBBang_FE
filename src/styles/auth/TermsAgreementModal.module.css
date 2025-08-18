@@ -70,7 +70,7 @@
   flex-direction: column;
 }
 
-.termItem {
+.allAgreeItem {
   display: flex;
   align-items: center;
   width: 100%;
@@ -79,16 +79,19 @@
   cursor: pointer;
 }
 
-.termItem:first-child span {
+.termItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.allAgreeItem span {
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 160%;
   letter-spacing: -0.0375rem;
   color: var(--black);
-}
-
-.termItem:not(:first-child) {
-  margin-bottom: 1.5rem;
 }
 
 .termItem span {
@@ -136,4 +139,42 @@
 
 .confirmButton:disabled {
   cursor: not-allowed;
+}
+
+.checkButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.checkButton .checkIcon {
+  margin-left: 0.4rem;
+  margin-right: 0.75rem;
+}
+
+.termTextButton {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+}
+
+.termTextButton span {
+  flex: 1;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
+}
+
+.arrowIcon {
+  margin-left: auto;
 }
