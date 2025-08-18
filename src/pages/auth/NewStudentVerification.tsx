@@ -18,6 +18,7 @@ const NewStudentVerification: React.FC = () => {
     useState<VerificationStatus>('initial');
   const [file, setFile] = useState<File | null>(null);
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -38,6 +39,24 @@ const NewStudentVerification: React.FC = () => {
         error instanceof Error ? error.message : '파일 업로드에 실패했습니다.'
       );
     }
+  };
+
+  const handleUploadClick = () => {
+    setShowPermissionModal(true);
+  };
+
+  const handlePermissionAccept = () => {
+    setShowPermissionModal(false);
+    // Trigger file input click
+    const fileInput = document.querySelector('#file-input-initial') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const handlePermissionDecline = () => {
+    setShowPermissionModal(false);
+    navigate('/mypage');
   };
 
   const handleConfirm = () => {
@@ -66,15 +85,16 @@ const NewStudentVerification: React.FC = () => {
               alt="graduate character"
               className={styles.character}
             />
-            <label className={styles.uploadButton}>
-              <input
-                type="file"
-                accept=".pdf,image/*"
-                onChange={handleFileUpload}
-                hidden
-              />
+            <input
+              id="file-input-initial"
+              type="file"
+              accept=".pdf,image/*"
+              onChange={handleFileUpload}
+              hidden
+            />
+            <button className={styles.uploadButton} onClick={handleUploadClick}>
               증명서 업로드
-            </label>
+            </button>
           </>
         );
       case 'pending':
@@ -129,6 +149,29 @@ const NewStudentVerification: React.FC = () => {
         </button>
       </header>
       <main className={styles.container}>{renderContent()}</main>
+      
+      {showPermissionModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.permissionModal}>
+            <h3>파일 접근 권한</h3>
+            <p>갤러리 및 파일에 접근하여<br/> 증명서를 업로드하시겠습니까?</p>
+            <div className={styles.modalButtonGroup}>
+              <button 
+                className={styles.declineButton} 
+                onClick={handlePermissionDecline}
+              >
+                거부
+              </button>
+              <button 
+                className={styles.acceptButton} 
+                onClick={handlePermissionAccept}
+              >
+                허용
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
