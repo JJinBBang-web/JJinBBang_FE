@@ -219,3 +219,18 @@
   line-height: 150%;
   letter-spacing: -0.0375rem;
 }
+
+/* Disabled button styles */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled .menuTitle,
+.disabled .menuDescription {
+  color: var(--color-gray60);
+}
+
+.disabled .pencilIcon {
+  opacity: 0.6;
+}

@@ -192,6 +192,14 @@ const MyPage: React.FC = () => {
     navigate('/auth/student/verify');
   };
 
+  const handleWriteReview = () => {
+    if (auth.verificationStatus !== 'verified') {
+      alert('찐빵 작성은 학교 인증 후 가능해요!');
+      return;
+    }
+    navigate('/review/type');
+  };
+
   const getVerificationStatus = () => {
     switch (auth.verificationStatus) {
       case 'verified':
@@ -334,8 +342,10 @@ const MyPage: React.FC = () => {
           <div className={styles.menuList}>
             {renderProfileSection()}
             <button
-              className={`${styles.menuItem} ${styles.writeItem}`}
-              onClick={() => navigate('/review/type')}
+              className={`${styles.menuItem} ${styles.writeItem} ${
+                auth.verificationStatus !== 'verified' ? styles.disabled : ''
+              }`}
+              onClick={handleWriteReview}
             >
               <img
                 src={pencilIcon}
