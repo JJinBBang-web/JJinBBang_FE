@@ -87,8 +87,15 @@ const ReviewContentPage: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (content.trim().length === 0) {
+    const trimmedLength = content.trim().length;
+    
+    if (trimmedLength === 0) {
       alert('내용을 입력해주세요.');
+      return;
+    }
+    
+    if (trimmedLength < 100) {
+      alert("최소 100자 이상 작성해야 해요!");
       return;
     }
 
@@ -173,10 +180,10 @@ const ReviewContentPage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            content.trim().length > 0 ? styles.enabled : ""
+            content.trim().length >= 100 ? styles.enabled : ""
           }`}
           onClick={handleNext}
-          disabled={content.trim().length === 0}
+          disabled={content.trim().length < 100}
         >
           다음
         </button>
