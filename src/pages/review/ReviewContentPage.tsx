@@ -26,7 +26,7 @@ const AutoHeightTextarea: React.FC<{
   const formattedPlaceholder =
     housingType === "공인중개사"
       ? "자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 방문 후기, 중개 수수료 문제"
-      : "찐거주 후기를 위해 특징과 장단점을 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제";
+      : "찐거주 후기를 위해 특징과 장단점을 최소 100자 이상 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제";
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
