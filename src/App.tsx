@@ -52,10 +52,11 @@ import ModalBottomSheet from "./components/util/ModalBottomSheet";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
 import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
 import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";
-import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import UpdateAdventagePage from "./pages/update/UpdateAdventagePage";
 import UpdateDisadventagePage from "./pages/update/UpdateDisadventagePage";
 import UpdateContentPage from "./pages/update/UpdateContentPage";
+import UpdateAddressSearchPage from "./pages/update/UpdateAddressSearchPage";
+import UpdateFloorInputPage from "./pages/update/UpdateFloorInputPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -195,9 +196,10 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update" element={<UpdateConfirmPage/>}/>
       <Route path="/review/:reviewId/update/type" element={<UpdateBuildTypePage/>}/>
       <Route path="/review/:reviewId/update/input-address" element={<UpdateAddressInputPage/>}/>
+      <Route path="/review/:reviewId/update/address" element={<UpdateAddressSearchPage/>}/>
+      <Route path="/review/:reviewId/update/floor" element={<UpdateFloorInputPage/>}/>
       <Route path="/review/:reviewId/update/contract" element={<UpdateContractTypePage/>}/>
       <Route path="/review/:reviewId/update/contract/price" element={<UpdateContractPricePage/>}/>
-      <Route path="/review/:reviewId/update/room-info" element={<UpdatePhotoUploadPage/>}/>
       <Route path="/review/:reviewId/update/filter-ad" element={<UpdateAdventagePage/>}/>
       <Route path="/review/:reviewId/update/filter-disad" element={<UpdateDisadventagePage/>}/>
       <Route path="/review/:reviewId/update/content" element={<UpdateContentPage/>}/>

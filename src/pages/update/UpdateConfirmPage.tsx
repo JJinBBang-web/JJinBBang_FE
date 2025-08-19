@@ -14,9 +14,19 @@ import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 import { useCancelModal } from "../../util/useCancelModal";
 import CancelModal from "../../components/review/CancelModal";
-import { defaultReviewState } from "../../recoil/review/reviewAtoms";
+import { defaultReviewState, ReviewState } from "../../recoil/review/reviewAtoms";
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
-import { deleteAPI } from "../../api/baseAPI";
+import { deleteAPI, putAPI } from "../../api/baseAPI";
+import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
+import { add } from "lodash";
+
+
+type AddressPick = {
+  roadAddress?: string;
+  jibunAddress?: string;
+  buildingName?: string;
+  buildingCode?: string;
+};
 
 
 const UpdateConfirmPage: React.FC = () => {
@@ -53,6 +63,38 @@ const UpdateConfirmPage: React.FC = () => {
         handleCancelModalClose,
       } = useCancelModal();
     
+      useEffect(() => {
+          const state = location.state as { address?: AddressPick } | undefined;
+          const addr = state?.address;
+          if (!addr) return;
+          
+          setReview((prev) => {
+            // prev가 null이어도 항상 ReviewState가 되도록 보정
+            const base: ReviewState = prev ?? defaultReviewState;
+            const next: ReviewState = { ...base };
+
+            const newAddress = addr.roadAddress ?? addr.jibunAddress;
+            if (newAddress && newAddress.trim().length > 0) {
+              next.address = newAddress;
+            }
+            if (addr.buildingName && addr.buildingName.trim().length > 0) {
+              next.detailedAddress = addr.buildingName.trim();
+            }
+            if (addr.buildingCode && addr.buildingCode.trim().length > 0) {
+              next.buildingCode = addr.buildingCode.trim();
+            }
+
+            return next;
+          });
+
+          // 중복 갱신 방지: history state에서 address 제거
+          navigate(location.pathname, {
+            replace: true,
+            state: { ...(location.state as object), address: undefined },
+          });
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [location.state, navigate, setReview]);
+
     // 뒤로가기 함수
     const handleBack = () => {
       navigate(`/building/review/${reviewId}`);
@@ -70,18 +112,37 @@ const UpdateConfirmPage: React.FC = () => {
 
     // api 연동해야함.
     // 최종 재업로드 함수
-    const handleSubmitRating = () => {
-      setReview((prev) => {
-        if (!prev) return null; // 또는 초기값으로 적절한 객체 반환
+    const handleSubmitRating = async () => {
+      if (!reviewId || !review || rating <= 0) return;
 
-        return {
-          ...prev,
-          rating: rating,
-        };
-      });
+      // setReview((prev) => {
+      //   if (!prev) return null; // 또는 초기값으로 적절한 객체 반환
 
-      setShowRatingModal(false);
-      setShowConfirmModal(true);
+      //   return {
+      //     ...prev,
+      //     rating: rating,
+      //   };
+      // });
+      console.log(buildUpdatePayload(review, rating));
+
+      try {
+          setIsSubmitting(true);
+
+          // UI 반영 (선반영)
+          setReview((prev) => (prev ? { ...prev, rating } : prev));
+
+          const body = buildUpdatePayload(review, rating);
+          // ✅ 인증 필요하면 true
+          await putAPI(`/api/v1/review/${reviewId}`, body, true);
+
+          setShowRatingModal(false);
+          setShowConfirmModal(true);
+      } catch (e) {
+          console.error('리뷰 수정 실패:', e);
+          alert('수정에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      } finally {
+          setIsSubmitting(false);
+      }
     };
 
     // 최종 삭제 함수
@@ -119,7 +180,7 @@ const UpdateConfirmPage: React.FC = () => {
           setTimeout(() => {
             setIsSubmitting(false);
             setShowConfirmModal(false);
-            navigate(`/building/review/${reviewId}`);
+            navigate(`/mypage`);
             setReview(defaultReviewState);
           }, 1000);
         } catch (error) {
@@ -141,7 +202,6 @@ const UpdateConfirmPage: React.FC = () => {
 
       navigate(`/review/${reviewId}/update/type`, {
         state: {
-          ...review,
           from: 'update',
         },
       });
@@ -149,14 +209,28 @@ const UpdateConfirmPage: React.FC = () => {
 
 
     const navigateToAddress = () => {
-      navigate(`/review/${reviewId}/update/address`, {
-        state: {
-          ...review,
-          from: 'update',
-        },
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      navigate(`/review/${reviewId}/update/input-address`, {
+        state: { from: 'update', housingType: review?.housingType },
       });
     };
 
+    const navigateToDetailedAddress = () => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+        navigate(`/review/${reviewId}/update/floor`, {
+          state: {
+            address: {
+              roadAddress: review?.address || '',
+              jibunAddress: '',
+              buildingName: review?.detailedAddress || '',
+            },
+            buildingName: review?.detailedAddress || '',
+            floor: floor || '',
+            space: review?.space || 0,
+            from: 'update',
+          },
+      });
+    };
     const navigateToContractType = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
@@ -196,8 +270,8 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/filter-ad`, {
         state: {
-          ...review,
           from: "update",
+          housingType: review?.housingType,
           advantages: review?.pros || [],
         },
       });
@@ -207,8 +281,8 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/filter-disad`, {
         state: {
-          ...review,
           from: "update",
+          housingType: review?.housingType,
           disadvantages: review?.cons || [],
         },
       });
@@ -217,12 +291,48 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToContent = () => {
       navigate(`/review/${reviewId}/update/content`, {
         state: {
-          ...review,
           content: review?.description,
           from: 'update',
         },
       });
     };
+
+    // Request 매핑 함수
+    const buildUpdatePayload = (r : ReviewState, finalRating: number) : UpdateReviewRequest => {
+      const contractType = r.contractType === 'MONTHLY_RENT' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT';
+      const monthlyRent = contractType === 'MONTHLY_RENT' ? (r.monthlyRent ?? null) : null;
+      const imageUrls = Array.isArray(r.images) ? r.images.filter(Boolean) : [];
+      const buildingRequest = (() => {
+        if (!r.buildingCode) return undefined; // 필수 키 없으면 통째로 생략
+        return {
+          buildingCode: r.buildingCode,
+          name: r.detailedAddress || undefined,
+          type: r.housingType || undefined, // 서버 enum이면 변환 함수로 매핑
+          address: r.address || undefined,
+          latitude: (r as any).latitude,
+          longitude: (r as any).longitude,
+        };
+      })();
+
+      return {
+        generalReview: {
+          contractType,
+          deposit: r.deposit ?? 0,
+          monthlyRent,
+          maintenanceCost: r.managementFee ?? 0,
+          floor: r.floorType ?? 'LOW',
+          space: r.space ?? 0,
+          rating: (finalRating as 1|2|3|4|5),
+          content: r.content ?? r.description ?? '',
+        },
+        imageUrls,
+        keywords: {
+          positive: r.pros ?? [],
+          negative: r.cons ?? [],
+        },
+        ...(buildingRequest ? { buildingRequest } : {}),
+      };
+    }
 
     const getIconFromLabel = (label: string): string => {
         // 기숙사 유형에 따라 적절한 필터 선택
@@ -304,6 +414,7 @@ const UpdateConfirmPage: React.FC = () => {
       );
     };
 
+    console.log(review);
     return (
     <div className="content">
       <div className={styles.container}>
@@ -356,7 +467,7 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToDetailedAddress)}
+              onClick={() => handleItemClick(navigateToDetailedAddress)}
             >
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
