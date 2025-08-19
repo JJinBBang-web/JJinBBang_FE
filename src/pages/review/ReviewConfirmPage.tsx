@@ -491,6 +491,19 @@ const ReviewConfirmPage: React.FC = () => {
     });
   };
 
+  // 65자 이상일 경우 ... 표시하는 함수
+  const truncateReviewText = (text: string): string => {
+    if (!text) return '후기를 작성해주세요';
+    
+    const maxChars = 68;
+    
+    if (text.length > maxChars) {
+      return text.slice(0, maxChars) + '...';
+    }
+    
+    return text;
+  };
+
   // 태그 표시 함수 수정
   const renderTags = (tags: string[]) => {
     if (!tags || tags.length === 0) return null;
@@ -752,9 +765,7 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div className={styles.reviewTextContainer}>
                   <span className={styles.reviewText}>
-                    {review.content ||
-                      review.description ||
-                      '후기를 작성해주세요'}
+                    {truncateReviewText(review.content || review.description || '')}
                   </span>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
