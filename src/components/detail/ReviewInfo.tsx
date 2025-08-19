@@ -95,7 +95,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                 )}
             </div>
             <div className={styles.buildingRating}>
-                {[...Array(rating)].map((_, index) => (
+                {[...Array(Math.round(rating))].map((_, index) => (
                     <img src={starIconOn} alt="rate"></img>
                     ))} 
                     {[...Array(5 - Math.round(rating))].map((_, index) => (

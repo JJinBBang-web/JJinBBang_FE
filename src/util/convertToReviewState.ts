@@ -80,6 +80,9 @@ export function convertToReviewState(
     content: data.reviewInfo?.content ?? '',
     images: data.reviewImages?.imageUrl ?? [],
     description: data.reviewInfo.content,
+    buildingCode: data.building.buildingCode ?? '',
+    latitude: data.building.latitude ?? 0,
+    longitude: data.building.longitude ?? 0,
     dormitoryConditions: isDorm
       ? {
           residenceArea: data.conditions?.currentRegion ?? '',

@@ -5,6 +5,7 @@ export const useReviewDetail = (reviewId: string, reviewType: string) => {
   return useQuery({
     queryKey: ["reviewDetail", reviewId, reviewType],
     queryFn: () => ReviewAPI.getReviewDetail(reviewId, reviewType),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };

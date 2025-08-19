@@ -122,6 +122,7 @@ const UpdateConfirmPage: React.FC = () => {
           setReview((prev) => (prev ? { ...prev, rating } : prev));
 
           const body = buildUpdatePayload(review, rating);
+          console.log(body);
           // ✅ 인증 필요하면 true
           await putAPI(`/api/v1/review/${reviewId}`, body, true);
 
