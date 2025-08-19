@@ -2,8 +2,6 @@
 import React from 'react';
 import styles from '../../styles/auth/TermsDetail.module.css';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
-import checkIcon from '../../assets/image/checkIcon.svg';
-import checkIconActive from '../../assets/image/checkIconActive.svg';
 
 interface ServiceTermsDetailProps {
   onBack: () => void;

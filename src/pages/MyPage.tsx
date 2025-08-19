@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
-import { userApi, Review } from '../api/user';
+import { userApi } from '../api/user';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';

@@ -159,8 +159,6 @@ const ReviewConfirmPage: React.FC = () => {
 
     // 찾은 키로 아이콘 가져오기
     if (tagKey) {
-      const filter =
-        review.housingType === '공인중개사' ? agencyFilters : filters;
       iconSrc =
         currentFilters
           .find(
@@ -652,7 +650,7 @@ const ReviewConfirmPage: React.FC = () => {
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
             </div>
-            {review.housingType != '공인중개사' && (
+            {review.housingType !== '공인중개사' && (
               <>
                 <div
                   className={styles.infoItem}

@@ -1,16 +1,14 @@
 import styles from "./UpdateConfirmPage.module.css";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { tagMessages, tagLongMessages, tagImages } from '../../components/Tag';
+import { useRecoilState } from "recoil";
+import { tagMessages, tagImages } from '../../components/Tag';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';
 import starEmptyIcon from '../../assets/image/starIconOff.svg';
 import checkIcon from '../../assets/image/checkIconActive.svg';
 import { updateReviewState } from "../../recoil/review/updateReviewAtoms";
-import { JjinAgencyFilterState, JjinFilterState } from "../../recoil/util/filterRecoilState";
-import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 import { useCancelModal } from "../../util/useCancelModal";
 import CancelModal from "../../components/review/CancelModal";
@@ -18,7 +16,6 @@ import { defaultReviewState, ReviewState } from "../../recoil/review/reviewAtoms
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 import { deleteAPI, putAPI } from "../../api/baseAPI";
 import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
-import { add } from "lodash";
 
 
 type AddressPick = {
@@ -36,9 +33,6 @@ const UpdateConfirmPage: React.FC = () => {
     const { reviewId } = useParams();
 
     const [review,setReview] = useRecoilState(updateReviewState);
-    const filters = useRecoilValue(JjinFilterState);
-    const dormFilters = useRecoilValue(DormFilterState); // 기숙사 필터 추가
-    const agencyFilters = useRecoilValue(JjinAgencyFilterState);
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState(0);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -50,10 +44,6 @@ const UpdateConfirmPage: React.FC = () => {
     const housingType = typeToKorean[review?.housingType ?? ''] || '';
     const contractType = contractTypeToKorean[review?.contractType ?? ''] || '';
     const floor = floorToKorean[review?.floorType ?? ''] || ""; 
-
-    // 기숙사 유형인지 체크
-    const isDormitory = review?.housingType === 'DORMITORY';
-    const isAgency = review?.housingType === 'AGENCY';
 
     const [showRatingModal, setShowRatingModal] = useState(false);
     
@@ -369,64 +359,6 @@ const UpdateConfirmPage: React.FC = () => {
       }
     }
 
-    const getIconFromLabel = (label: string): string => {
-        // 기숙사 유형에 따라 적절한 필터 선택
-        const currentFilters = isDormitory
-          ? dormFilters
-          : isAgency
-          ? agencyFilters
-          : filters;
-    
-        console.log("s:", currentFilters);
-    
-        let iconSrc = '';
-        let tagKey = '';
-    
-        // longMessage에서 key 찾기 (사용자가 선택한 태그 "교통이 편리해요"로부터 "PO_LO_01" 키 확인)
-        for (const [key, value] of Object.entries(tagLongMessages)) {
-          if (value === label) {
-            tagKey = key;
-            break;
-          }
-        }
-    
-        // 찾은 키로 아이콘 가져오기
-        if (tagKey) {
-          const filter = review?.housingType === "AGENCY" ? agencyFilters : filters;
-          iconSrc =
-            currentFilters
-              .find(
-                (category) =>
-                  category.positiveFilters.some((item) => item.key === tagKey) ||
-                  category.negativeFilters.some((item) => item.key === tagKey)
-              )
-              ?.positiveFilters.find((item) => item.key === tagKey)?.icon ||
-            currentFilters
-              .find(
-                (category) =>
-                  category.positiveFilters.some((item) => item.key === tagKey) ||
-                  category.negativeFilters.some((item) => item.key === tagKey)
-              )
-              ?.negativeFilters.find((item) => item.key === tagKey)?.icon ||
-            '';
-        }
-    
-        // 아이콘을 찾지 못했으면 라벨로 직접 찾기
-        if (!iconSrc) {
-          currentFilters.forEach((category) => {
-            [...category.positiveFilters, ...category.negativeFilters].forEach(
-              (item) => {
-                if (item.label === label) {
-                  iconSrc = item.icon;
-                }
-              }
-            );
-          });
-        }
-    
-        return iconSrc;
-      };
-
     const renderTags = (tags: string[]) => {
       if (!tags || tags.length === 0) return null;
 
@@ -470,8 +402,8 @@ const UpdateConfirmPage: React.FC = () => {
             <div
               className={styles.infoItem}
               onClick={() => 
-                review?.housingType != "AGENCY" 
-                ? review?.housingType != "DORMITORY" ?
+                review?.housingType !== "AGENCY" 
+                ? review?.housingType !== "DORMITORY" ?
                 handleItemClick(navigateToHousingType)
                 : undefined : undefined
               }
@@ -481,7 +413,7 @@ const UpdateConfirmPage: React.FC = () => {
                 <span className={styles.valueText}>
                   {housingType}
                 </span>
-                {review?.housingType != "AGENCY" ? review?.housingType != "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
+                {review?.housingType !== "AGENCY" ? review?.housingType !== "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
               </div>
             </div>
 
@@ -496,7 +428,7 @@ const UpdateConfirmPage: React.FC = () => {
                     {review?.address}
                   </span>
                 </div>
-                {review?.housingType != "AGENCY" ? review?.housingType != "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
+                {review?.housingType !== "AGENCY" ? review?.housingType !== "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
               </div>
             </div>
 
@@ -514,7 +446,7 @@ const UpdateConfirmPage: React.FC = () => {
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
             </div>
-            {review?.housingType != "AGENCY" && (
+            {review?.housingType !== "AGENCY" && (
               <>
                 <div
                   className={styles.infoItem}

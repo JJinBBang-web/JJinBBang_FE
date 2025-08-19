@@ -5,10 +5,8 @@ import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
 import TopButton from "../components/util/TopButton";
 import BuildingReviewList from "../components/detail/BuildingReviewList";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { BuildingInfoState } from "../recoil/detail/BuildingRecoilState";
-import exampleImage1 from '../assets/image/example_image1.png';
-import exampleImage2 from '../assets/image/example_image2.png';
 import { useNavigate, useParams } from "react-router-dom";
 import { useBuildingDetail } from "../hooks/useBuildingDetail";
 

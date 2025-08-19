@@ -39,7 +39,7 @@ const Review: React.FC = () => {
     reviewId ?? "",
     reviewType
   );
-  const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
+  const [isLogin] = useRecoilState(isLoginState);
   const { data: userData } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
@@ -126,7 +126,7 @@ const Review: React.FC = () => {
         <ReviewMapInfo review={reviews} />
       </div>
       {/* 작성id === 로그인 id 같으면 Footer 보이게+reportBtn안보이게, 아니면 반대 */}
-      {userData?.id == reviews.authorId ? (
+      {userData?.id === reviews.authorId ? (
         <div className={styles.fixedWrap}>
           <TopButton />
           <Footer reviewId={reviewId ?? ''} />

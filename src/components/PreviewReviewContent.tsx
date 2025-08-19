@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PreviewReviewContent.module.css';
 import heartIcon from '../assets/image/heartIcon.svg';
 import { tagMessages, tagImages } from './Tag';

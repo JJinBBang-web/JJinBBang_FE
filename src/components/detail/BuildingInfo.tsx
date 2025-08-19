@@ -3,7 +3,7 @@ import heartIconOn from "../../assets/image/heartIconOn.svg";
 import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
-import { tagMessages, tagImages, tagLongMessages } from "../Tag";
+import { tagImages, tagLongMessages } from "../Tag";
 import { agencyBuildingInfo, Building, dormBuildingInfo, generalBuildingInfo } from "../../recoil/detail/BuildingRecoilState";
 import { useEffect, useState } from "react";
 import { typeToKorean } from "../../util/mapping";

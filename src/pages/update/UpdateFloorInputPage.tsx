@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/FloorInput.module.css';
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 import { updateReviewState } from '../../recoil/review/updateReviewAtoms';
 import { floorToKorean, koreanToFloor } from '../../util/mapping';
 import { defaultReviewState, ReviewState } from '../../recoil/review/reviewAtoms';
-import { reverse } from 'lodash';
 
 interface LocationState {
   address: {
