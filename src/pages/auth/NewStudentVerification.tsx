@@ -1,14 +1,13 @@
 // src/pages/auth/NewStudentVerification.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { authState, AuthState } from '../../recoil/auth/atoms';
 import { authApi } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/auth/NewStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
 import verifyCompleteIcon from '../../assets/image/verifyCompleteIcon.svg';
-import { validateFile, uploadFile } from '../../util/fileUpload';
+import { validateFile } from '../../util/fileUpload';
 
 type VerificationStatus = 'initial' | 'uploading' | 'pending' | 'complete';
 
@@ -16,8 +15,7 @@ const NewStudentVerification: React.FC = () => {
   const navigate = useNavigate();
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>('initial');
-  const [file, setFile] = useState<File | null>(null);
-  const [auth, setAuth] = useRecoilState<AuthState>(authState);
+  const { updateVerificationStatus } = useAuth();
   const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   const handleFileUpload = async (
@@ -29,10 +27,13 @@ const NewStudentVerification: React.FC = () => {
     try {
       const file = files[0];
       validateFile(file);
-      setFile(file);
 
       // 합격증명서 인증 (신입생용)
       await authApi.verifyAdmissionCertificate(file);
+      
+      // 업로드 성공 시 인증 상태를 pending으로 설정 (localStorage도 자동 업데이트)
+      updateVerificationStatus('pending');
+      
       setVerificationStatus('complete');
     } catch (error) {
       alert(
@@ -60,11 +61,8 @@ const NewStudentVerification: React.FC = () => {
   };
 
   const handleConfirm = () => {
-    // 인증 상태를 pending으로 설정
-    setAuth((prev: AuthState) => ({
-      ...prev,
-      verificationStatus: 'pending',
-    }));
+    // 인증 상태를 pending으로 설정 (localStorage도 자동 업데이트)
+    updateVerificationStatus('pending');
     navigate('/mypage');
   };
 

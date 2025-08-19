@@ -32,6 +32,8 @@ export const useAuth = () => {
       ...prev,
       verificationStatus: status,
     }));
+    // localStorage에도 상태 저장 (새로고침 시 상태 유지)
+    localStorage.setItem('verificationStatus', status);
   };
 
   const setEmail = (email: string) => {

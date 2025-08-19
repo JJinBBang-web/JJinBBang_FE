@@ -48,35 +48,41 @@ const MyPage: React.FC = () => {
       if (response.code === 200) {
         const { email, university, univAuthentication } = response.data;
 
+        // API에서 받은 상태를 영어로 변환
+        const apiVerificationStatus =
+          univAuthentication === '인증완료'
+            ? 'verified'
+            : univAuthentication === '대기'
+            ? 'pending'
+            : 'unverified';
+
+        // 로컬 상태 확인 (사용자가 방금 인증서를 업로드했을 수 있음)
+        const localStatus = localStorage.getItem('verificationStatus');
+        
+        // 로컬에 'pending'이 있고 API가 아직 '미인증'을 반환하면 로컬 상태 유지
+        const finalVerificationStatus = 
+          (localStatus === 'pending' && apiVerificationStatus === 'unverified')
+            ? 'pending'
+            : apiVerificationStatus;
+
         setAuth((prev) => ({
           ...prev,
           isAuthenticated: true,
           email: email || undefined,
-          verificationStatus:
-            univAuthentication === '인증완료'
-              ? 'verified'
-              : univAuthentication === '대기'
-              ? 'pending'
-              : 'unverified',
+          verificationStatus: finalVerificationStatus,
         }));
 
         setUserProfile((prev) => ({
           ...prev,
           isLoggedIn: true,
           school: university || '찐빵대학교',
-          isVerified: univAuthentication === '인증완료',
+          isVerified: finalVerificationStatus === 'verified',
         }));
 
         if (email) localStorage.setItem('email', email);
         if (university) localStorage.setItem('university', university);
-        localStorage.setItem(
-          'verificationStatus',
-          univAuthentication === '인증완료'
-            ? 'verified'
-            : univAuthentication === '대기'
-            ? 'pending'
-            : 'unverified'
-        );
+        // localStorage 상태도 최종 결정된 상태로 업데이트
+        localStorage.setItem('verificationStatus', finalVerificationStatus);
       }
     } catch (error: any) {
       console.error('유저 정보 조회 실패:', error);
