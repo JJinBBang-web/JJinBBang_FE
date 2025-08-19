@@ -7,6 +7,7 @@ import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 import { updateReviewState } from '../../recoil/review/updateReviewAtoms';
 import { floorToKorean, koreanToFloor } from '../../util/mapping';
 import { defaultReviewState, ReviewState } from '../../recoil/review/reviewAtoms';
+import { reverse } from 'lodash';
 
 interface LocationState {
   address: {
@@ -40,6 +41,8 @@ const UpdateFloorInputPage: React.FC = () => {
 
     const { reviewId } = useParams();
 
+    const isAgency = review?.housingType === "AGENCY";
+
 
     useEffect(() => {
         if (from === 'update') {
@@ -65,6 +68,31 @@ const UpdateFloorInputPage: React.FC = () => {
 
   const handleNext = () => {
     console.log(buildingName);
+    if (isAgency) {
+      const updatedReview = {
+            ...review,
+            detailedAddress: buildingName,
+        };
+
+        setReview(prev => {
+            const base: ReviewState = prev ?? defaultReviewState;
+            return {
+                ...base,
+                detailedAddress: buildingName,
+            };
+        });
+        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+
+        if (from === 'update') {
+            navigate(`/review/${reviewId}/update`, {
+            state: {
+                ...location.state,
+                detailedAddress: buildingName,
+            },
+            });
+        } 
+        console.log(review);
+    } else {
     if (buildingName && selectedFloor && squareFootage) {
         const floorCode = koreanToFloor[selectedFloor];
         const spaceValue = Number(squareFootage);
@@ -100,6 +128,7 @@ const UpdateFloorInputPage: React.FC = () => {
             });
         } 
     }
+  }
   };
 
   const handleBack = () => {
@@ -111,6 +140,7 @@ const UpdateFloorInputPage: React.FC = () => {
   };
 
   const isNextEnabled =
+    isAgency ? buildingName.trimEnd() !== '' :
     buildingName.trim() !== '' &&
     selectedFloor !== null &&
     squareFootage.trim() !== '';
@@ -139,15 +169,21 @@ const UpdateFloorInputPage: React.FC = () => {
             onChange={(e) => setBuildingName(e.target.value)}
             placeholder="예) 찐빵주공아파트"
           />
-          <label className={styles.label}>평수</label>
-          <input
-            type="text"
-            className={styles.buildingInput}
-            value={squareFootage}
-            onChange={handleSquareFootageChange}
-            placeholder="예) 24.5"
-          />
+          {review?.housingType === "AGENCY" ? "" 
+          : <>
+            <label className={styles.label}>평수</label>
+            <input
+              type="text"
+              className={styles.buildingInput}
+              value={squareFootage}
+              onChange={handleSquareFootageChange}
+              placeholder="예) 24.5"
+            />
+            </>}
+          
         </div>
+        {review?.housingType === "AGENCY" ? "" 
+        : <>
         <div className={styles.floorSection}>
           <label className={styles.label}>층수</label>
           <div className={styles.floorOptions}>
@@ -164,6 +200,7 @@ const UpdateFloorInputPage: React.FC = () => {
             ))}
           </div>
         </div>
+        </> }
       </div>
       <footer className={styles.footer}>
         <button className={styles.prevButton} onClick={handleBack}>

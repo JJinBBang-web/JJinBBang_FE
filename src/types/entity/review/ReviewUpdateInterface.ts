@@ -15,6 +15,20 @@ export interface GeneralReview {
   content: string;                // 후기 내용
 }
 
+export interface AgencyReview {
+  rating: 1 | 2 | 3 | 4 | 5;
+  content : string;
+}
+
+export interface DormitoryReview {
+  campusId: number;
+  capacity : number;
+  dormFee : number;
+  floor : string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  content : string;
+}
+
 export interface BuildingRequest {
   buildingCode?: string;           // 카카오 건물 관리번호 (가능하면 필수 유지)
   name?: string;                  // 건물명
@@ -29,9 +43,29 @@ export interface Keywords {
   negative: KeywordCode[];
 }
 
-export interface UpdateReviewRequest {
+// 각 주거 유형별로 다른 Request 타입
+export interface GeneralUpdateReviewRequest {
   generalReview: GeneralReview;
   imageUrls: string[];
   keywords: Keywords;
-  buildingRequest?: BuildingRequest; // 건물정보 없으면 생략
+  buildingRequest?: BuildingRequest;
 }
+
+export interface AgencyUpdateReviewRequest {
+  agencyReview: AgencyReview;
+  imageUrls: string[];
+  keywords: Keywords;
+  buildingRequest?: BuildingRequest;
+}
+
+export interface DormitoryUpdateReviewRequest {
+  dormitoryReview: DormitoryReview;
+  imageUrls: string[];
+  keywords: Keywords;
+  buildingRequest?: BuildingRequest;
+}
+
+export type UpdateReviewRequest = 
+  | GeneralUpdateReviewRequest 
+  | AgencyUpdateReviewRequest 
+  | DormitoryUpdateReviewRequest;

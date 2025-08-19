@@ -66,7 +66,7 @@ const UpdateConfirmPage: React.FC = () => {
       useEffect(() => {
           const state = location.state as { address?: AddressPick } | undefined;
           const addr = state?.address;
-          if (!addr) return;
+          if (!addr || review?.detailedAddress) return;
           
           setReview((prev) => {
             // prev가 null이어도 항상 ReviewState가 되도록 보정
@@ -299,39 +299,74 @@ const UpdateConfirmPage: React.FC = () => {
 
     // Request 매핑 함수
     const buildUpdatePayload = (r : ReviewState, finalRating: number) : UpdateReviewRequest => {
-      const contractType = r.contractType === 'MONTHLY_RENT' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT';
-      const monthlyRent = contractType === 'MONTHLY_RENT' ? (r.monthlyRent ?? null) : null;
+      // 이미지 처리
       const imageUrls = Array.isArray(r.images) ? r.images.filter(Boolean) : [];
+
+      // 공통 키워드 처리
+      const keywords = {
+          positive: r.pros ?? [],
+          negative: r.cons ?? [],
+        };
+      
+      // 공통 건물 정보 처리
       const buildingRequest = (() => {
-        if (!r.buildingCode) return undefined; // 필수 키 없으면 통째로 생략
+        if (!r.buildingCode) return undefined;
         return {
           buildingCode: r.buildingCode,
           name: r.detailedAddress || undefined,
-          type: r.housingType || undefined, // 서버 enum이면 변환 함수로 매핑
+          type: r.housingType || undefined,
           address: r.address || undefined,
           latitude: (r as any).latitude,
           longitude: (r as any).longitude,
         };
       })();
 
-      return {
-        generalReview: {
-          contractType,
-          deposit: r.deposit ?? 0,
-          monthlyRent,
-          maintenanceCost: r.managementFee ?? 0,
-          floor: r.floorType ?? 'LOW',
-          space: r.space ?? 0,
-          rating: (finalRating as 1|2|3|4|5),
-          content: r.content ?? r.description ?? '',
-        },
-        imageUrls,
-        keywords: {
-          positive: r.pros ?? [],
-          negative: r.cons ?? [],
-        },
-        ...(buildingRequest ? { buildingRequest } : {}),
-      };
+      switch (r.housingType) {
+        case "AGENCY" :
+          return {
+          agencyReview: {
+            rating: finalRating as 1|2|3|4|5,
+            content: r.content ?? r.description ?? '',
+          },
+          imageUrls,
+          keywords,
+          ...(buildingRequest ? { buildingRequest } : {}),
+        };
+
+        // case "DORMITORY" :
+        //   return {
+        //     dormitoryReview: {
+        //       campusId: r.campusId ?? 0,
+        //       capacity: r.capacity ?? 1,
+        //       dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
+        //       floor: r.floorType ?? 'LOW',
+        //       rating: finalRating as 1|2|3|4|5,
+        //       content: r.content ?? r.description ?? '',
+        //     },
+        //     imageUrls,
+        //     keywords,
+        //     ...(buildingRequest ? { buildingRequest } : {}),
+        //   };
+
+        default : 
+          const contractType = r.contractType === 'MONTHLY_RENT' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT';
+          const monthlyRent = contractType === 'MONTHLY_RENT' ? (r.monthlyRent ?? null) : null;
+          return {
+            generalReview: {
+              contractType,
+              deposit: r.deposit ?? 0,
+              monthlyRent,
+              maintenanceCost: r.managementFee ?? 0,
+              floor: r.floorType ?? 'LOW',
+              space: r.space ?? 0,
+              rating: (finalRating as 1|2|3|4|5),
+              content: r.content ?? r.description ?? '',
+            },
+            imageUrls,
+            keywords,
+            ...(buildingRequest ? { buildingRequest } : {}),
+        };
+      }
     }
 
     const getIconFromLabel = (label: string): string => {
@@ -446,7 +481,7 @@ const UpdateConfirmPage: React.FC = () => {
                 <span className={styles.valueText}>
                   {housingType}
                 </span>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {review?.housingType != "AGENCY" ? review?.housingType != "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
               </div>
             </div>
 
@@ -461,7 +496,7 @@ const UpdateConfirmPage: React.FC = () => {
                     {review?.address}
                   </span>
                 </div>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {review?.housingType != "AGENCY" ? review?.housingType != "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
               </div>
             </div>
 

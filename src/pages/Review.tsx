@@ -77,7 +77,7 @@ const Review: React.FC = () => {
     if (data) {
       setReviews(data);
       const converted = convertToReviewState(data);
-      console.log(converted);
+      console.log(data);
       setUpdateReview(converted);
       localStorage.setItem('updateReviewState', JSON.stringify(converted));
     }

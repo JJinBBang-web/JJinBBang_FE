@@ -34,7 +34,7 @@ export interface agencyBuildingInfo{
 export interface dormBuildingInfo{
     liked: boolean;
     id: number | null;
-    type: string[];
+    type: string;
     name: string;
     universityName: string;
     address: String;

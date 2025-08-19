@@ -6,22 +6,15 @@ import starIconOff from "../../assets/image/starIconOff.svg";
 import { tagMessages, tagImages, tagLongMessages } from "../Tag";
 import { agencyBuildingInfo, Building, dormBuildingInfo, generalBuildingInfo } from "../../recoil/detail/BuildingRecoilState";
 import { useEffect, useState } from "react";
+import { typeToKorean } from "../../util/mapping";
 
 interface Props {
     building : Building;
 }
 
-const typeNameMap: Record<string, string> = {
-  ROOM: "원룸",
-  HOUSE: "주택/빌라",
-  OFFICETEL: "오피스텔",
-  APARTMENT: "아파트",
-  DORMITORY: "기숙사",
-  BOARDING_HOUSE: "하숙집/고시원",
-  AGENCY: "공인중개사", 
-};
-
 const BuildingInfo: React.FC<Props> = ({building}) => {
+
+    console.log(building);
     const [isLiked, setIsLiked] = useState(building.basicInfo.liked);
 
 
@@ -32,10 +25,11 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
     const renderExtraInfo = () => {
         if (building.basicInfo.type.includes("DORMITORY")) {
             const dorm = building.basicInfo as dormBuildingInfo;
+            console.log(dorm);
             return (
             <div className={styles.buildingTypeWrap}>
                 <div className={styles.buildingType}>
-                {dorm.type.map((t) => typeNameMap[t] ?? t).join(" / ")}
+                    {typeToKorean[dorm.type] ?? dorm.type}
                 </div>
                 <div className={styles.campusType}>{dorm.universityName}</div>
             </div>
@@ -46,7 +40,7 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
             const agency = building.basicInfo as agencyBuildingInfo;
             return (
             <div className={styles.agencyType}>
-                {agency.type.map((t) => typeNameMap[t] ?? t).join(" / ")}
+                {agency.type.map((t) => typeToKorean[t] ?? t).join(" / ")}
             </div>
             );
         }
@@ -56,7 +50,7 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
             <div className={styles.buildingTypeWrap}>
             {general.type.map((t, index) => (
                 <div key={index} className={styles.buildingType}>
-                {typeNameMap[t] ?? t}
+                {typeToKorean[t] ?? t}
                 </div>
             ))}
             </div>

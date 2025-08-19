@@ -50,9 +50,6 @@ const Building: React.FC = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const building = useRecoilValue(BuildingInfoState);
-
-
     if (isLoading) return <div>로딩 중...</div>;
     if (isError) return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
     
@@ -67,9 +64,9 @@ const Building: React.FC = () => {
                 {/* 헤더 */}
                 <Header onClick={handleBack}/>
                 {/* 이미지슬라이더 */}
-                <ImageSlider building={building} review={null}/>
+                <ImageSlider building={buildingInfo} review={null}/>
                 {/* 건물 정보 및 키워드 */}
-                <BuildingInfo building={building}/>
+                <BuildingInfo building={buildingInfo}/>
                 <hr/>
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>
