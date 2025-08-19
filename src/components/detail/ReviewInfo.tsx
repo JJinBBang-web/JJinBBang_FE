@@ -15,12 +15,13 @@ interface Props {
 }
 
 const ReviewInfo: React.FC<Props> = ({review}) => {
-    const liked = review.generalReviewInfo?.liked ?? review.domitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
-    const name = review.generalReviewInfo?.name ?? review.domitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
-    const rawType = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    console.log(review.dormitoryReviewInfo);
+    const liked = review.generalReviewInfo?.liked ?? review.dormitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
+    const name = review.generalReviewInfo?.name ?? review.dormitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
+    const rawType = review.generalReviewInfo?.type ?? review.dormitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
     const type = rawType && typeToKorean[rawType] ? typeToKorean[rawType] : rawType ?? "";
-    const rating = review.generalReviewInfo?.rating ?? review.domitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
-    const rawFloor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const rating = review.generalReviewInfo?.rating ?? review.dormitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
+    const rawFloor = review.generalReviewInfo?.floor ?? review.dormitoryReviewInfo?.floor;
     const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
     const rawConstractType = review.generalReviewInfo?.contractType;
     const constractType = rawConstractType && contractTypeToKorean[rawConstractType] ? contractTypeToKorean[rawConstractType] : rawConstractType ?? "" ;
@@ -33,7 +34,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
         setLikeCount(review.reviewInfo.likeCount);
     },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
-    console.log(constractType);
+    console.log(review);
 
     return (
         <div className={styles.content}>
@@ -55,10 +56,10 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                                 </div>
                             </>
                     )}
-                    {review.domitoryReviewInfo && (
+                    {review.dormitoryReviewInfo && (
                         <>
                             <div className={styles.buildingType}>{type}</div>
-                            <div className={styles.campusType}>{review.domitoryReviewInfo.university}</div>
+                            <div className={styles.campusType}>{review.dormitoryReviewInfo.universityName}</div>
                         </>
                     )}
                     {review.agencyReviewInfo && (
@@ -89,8 +90,8 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                 {review.generalReviewInfo && (
                     <p className={styles.buildingSize}>{floor}, {review.generalReviewInfo.space}m2, 관리비 {review.generalReviewInfo.maintenanceCost}만</p>
                 )}
-                {review.domitoryReviewInfo && (
-                    <p className={styles.buildingSize}>{floor}, {review.domitoryReviewInfo.capacity}인실, 기숙사비 {review.domitoryReviewInfo.dormFee}만</p>
+                {review.dormitoryReviewInfo && (
+                    <p className={styles.buildingSize}>{floor}, {review.dormitoryReviewInfo.capacity}인실, 기숙사비 {review.dormitoryReviewInfo.dormFee}만</p>
 
                 )}
             </div>

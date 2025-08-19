@@ -8,7 +8,7 @@ export function convertResponseToReview(
 ): Review {
   const {
     generalReviewInfo,
-    domitoryReviewInfo,
+    dormitoryReviewInfo,
     agencyReviewInfo,
     reviewInfo,
     reviewImages,
@@ -25,7 +25,7 @@ export function convertResponseToReview(
     keywords,
     authorId,
     facilities,
-    domitoryReviewInfo,
+    dormitoryReviewInfo,
     agencyReviewInfo,
     generalReviewInfo: generalReviewInfo
       ? {
@@ -51,12 +51,12 @@ export function convertResponseToReview(
 export function convertToReviewState(
   data: BuildingReviewResponse
 ): ReviewState {
-  const isDorm = !!data.domitoryReviewInfo;
+  const isDorm = !!data.dormitoryReviewInfo;
   const isAgency = !!data.agencyReviewInfo;
 
   return {
     housingType: isDorm
-      ? data.domitoryReviewInfo?.type ?? ''
+      ? data.dormitoryReviewInfo?.type ?? ''
       : isAgency
       ? data.agencyReviewInfo?.type ?? ''
       : data.generalReviewInfo?.type ?? '',
@@ -64,7 +64,7 @@ export function convertToReviewState(
     addressDetail: '', // 필요시 파싱
     detailedAddress: data.building.name,
     floorType: isDorm
-      ? data.domitoryReviewInfo?.floor ?? ''
+      ? data.dormitoryReviewInfo?.floor ?? ''
       : data.generalReviewInfo?.floor ?? '',
     contractType: data.generalReviewInfo?.contractType ?? '',
     deposit: data.generalReviewInfo?.deposit ?? 0,
@@ -72,7 +72,7 @@ export function convertToReviewState(
     managementFee: data.generalReviewInfo?.maintenanceCost ?? 0,
     rating:
       data.generalReviewInfo?.rating ??
-      data.domitoryReviewInfo?.rating ??
+      data.dormitoryReviewInfo?.rating ??
       data.agencyReviewInfo?.rating ??
       0,
     pros: data.keywords?.positive ?? [],
@@ -87,19 +87,19 @@ export function convertToReviewState(
       ? {
           residenceArea: data.conditions?.currentRegion ?? '',
           semesterGrade: data.conditions?.currentGrade ?? 0.0,
-          dormitoryFee: data.domitoryReviewInfo?.dormFee ?? 0,
+          dormitoryFee: data.dormitoryReviewInfo?.dormFee ?? 0,
           hasDistanceCriteria: !!data.conditions?.currentRegion,
           hasGradeCriteria: !!data.conditions?.currentGrade,
         }
       : undefined,
-    dormitoryFee: data.domitoryReviewInfo?.dormFee ?? 0,
+    dormitoryFee: data.dormitoryReviewInfo?.dormFee ?? 0,
     facilityConditions: isDorm
       ? {
-          private: (data.facilities?.private ?? []).reduce(
+          private: (data.facilities?.privateFacilities ?? []).reduce(
             (acc, cur) => ({ ...acc, [cur]: true }),
             {} as Record<string, boolean>
           ),
-          public: (data.facilities?.public ?? []).reduce(
+          public: (data.facilities?.publicFacilities ?? []).reduce(
             (acc, cur) => ({ ...acc, [cur]: true }),
             {} as Record<string, boolean>
           ),

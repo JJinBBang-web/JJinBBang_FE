@@ -114,7 +114,7 @@ const Review: React.FC = () => {
             <hr className={styles.divider} />
           </>
         )}
-        {reviews.domitoryReviewInfo && (
+        {reviews.dormitoryReviewInfo && (
           <>
             <ReveiwContractInfo review={reviews} />
             <hr className={styles.divider} />

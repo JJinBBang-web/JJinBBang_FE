@@ -19,7 +19,7 @@ export interface DormInfo {
   id: number;
   name: string;
   type: string;
-  university: string;
+  universityName: string;
   floor: string;
   capacity: number;
   dormFee: number;
@@ -77,14 +77,14 @@ export interface Conditions {
 }
 
 export interface Facilities {
-  private: string[];
-  public: string[];
+  privateFacilities: string[];
+  publicFacilities: string[];
   lounge: boolean;
 }
 
 export interface Review {
   generalReviewInfo?: BasicInfo;
-  domitoryReviewInfo?: DormInfo;
+  dormitoryReviewInfo?: DormInfo;
   agencyReviewInfo?: AgencyInfo;
   reviewInfo: reviewInfo;
   reviewImages: ReviewImages;
@@ -112,11 +112,11 @@ export const ReviewInfoState = atom<Review>({
       rating: 0,
       liked: false,
     },
-    domitoryReviewInfo: {
+    dormitoryReviewInfo: {
       id: 0,
       name: '',
       type: '',
-      university: '',
+      universityName: '',
       floor: '',
       capacity: 0,
       dormFee: 0,
@@ -158,8 +158,8 @@ export const ReviewInfoState = atom<Review>({
       currentGrade: 0.0,
     },
     facilities: {
-      private: [],
-      public: [],
+      privateFacilities: [],
+      publicFacilities: [],
       lounge: false,
     },
     authorId: 1,
