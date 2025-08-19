@@ -4,6 +4,8 @@ import styles from '../../styles/auth/TermsAgreementModal.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import checkIcon from '../../assets/image/checkIcon.svg';
 import checkIconActive from '../../assets/image/checkIconActive.svg';
+import ServiceTermsDetail from './ServiceTermsDetail';
+import PrivacyPolicyDetail from './PrivacyPolicyDetail';
 
 interface Term {
   id: string;
@@ -42,26 +44,49 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
       checked: false,
     },
   ]);
-  const [isAllChecked, setIsAllChecked] = useState(false);
+
+  const [currentView, setCurrentView] = useState<
+    'main' | 'service' | 'privacy'
+  >('main');
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
 
-  // 필수 약관 체크 여부 확인
-  const isAllRequiredChecked = terms.every((term) =>
-    term.required ? term.checked : true
-  );
-
-  // 필수 약관 모두 체크되면 모두 동의도 체크
-  useEffect(() => {
-    if (isAllRequiredChecked && !terms[0].checked) {
-      setTerms((prevTerms) => {
-        const newTerms = [...prevTerms];
-        newTerms[0].checked = true;
-        return newTerms;
-      });
-      setIsAllChecked(true);
+  // Nav 숨기기/보이기
+  React.useEffect(() => {
+    const nav = document.querySelector('nav');
+    if (nav) {
+      if (currentView !== 'main') {
+        nav.style.display = 'none';
+      } else {
+        nav.style.display = '';
+      }
     }
-  }, [isAllRequiredChecked]);
+
+    return () => {
+      const nav = document.querySelector('nav');
+      if (nav) {
+        nav.style.display = '';
+      }
+    };
+  }, [currentView]);
+
+  // 필수 약관 체크 여부 확인
+  const isAllRequiredChecked = terms.slice(1).every((term) => term.checked);
+
+  // 모든 개별 약관이 체크되었을 때만 "모두 동의"를 체크
+  useEffect(() => {
+    const allIndividualChecked = terms.slice(1).every((term) => term.checked);
+    setTerms((prevTerms) => {
+      const newTerms = [...prevTerms];
+      newTerms[0].checked = allIndividualChecked;
+      return newTerms;
+    });
+  }, [
+    terms
+      .slice(1)
+      .map((term) => term.checked)
+      .join(','),
+  ]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -82,8 +107,7 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
 
   const handleTermCheck = (termId: string) => {
     if (termId === 'all') {
-      const newCheckedState = !isAllChecked;
-      setIsAllChecked(newCheckedState);
+      const newCheckedState = !terms[0].checked;
       setTerms(
         terms.map((term) => ({
           ...term,
@@ -91,17 +115,26 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
         }))
       );
     } else {
-      const newTerms = terms.map((term) =>
-        term.id === termId ? { ...term, checked: !term.checked } : term
+      setTerms((prevTerms) =>
+        prevTerms.map((term) =>
+          term.id === termId ? { ...term, checked: !term.checked } : term
+        )
       );
-      setTerms(newTerms);
-
-      // 필수 약관이 모두 체크되었는지 확인
-      const allRequiredChecked = newTerms
-        .slice(1)
-        .every((term) => term.checked);
-      setIsAllChecked(allRequiredChecked);
     }
+  };
+
+  const handleTermItemClick = (termId: string) => {
+    if (termId === 'service') {
+      setCurrentView('service');
+    } else if (termId === 'privacy') {
+      setCurrentView('privacy');
+    } else {
+      handleTermCheck(termId);
+    }
+  };
+
+  const handleBackToMain = () => {
+    setCurrentView('main');
   };
 
   // 오버레이 클릭 시 모달 닫기
@@ -110,6 +143,32 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
       onClose();
     }
   };
+
+  if (currentView === 'service') {
+    return (
+      <ServiceTermsDetail
+        onBack={handleBackToMain}
+        onClose={onClose}
+        isChecked={
+          terms.find((term) => term.id === 'service')?.checked || false
+        }
+        onToggleCheck={() => handleTermCheck('service')}
+      />
+    );
+  }
+
+  if (currentView === 'privacy') {
+    return (
+      <PrivacyPolicyDetail
+        onBack={handleBackToMain}
+        onClose={onClose}
+        isChecked={
+          terms.find((term) => term.id === 'privacy')?.checked || false
+        }
+        onToggleCheck={() => handleTermCheck('privacy')}
+      />
+    );
+  }
 
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
@@ -146,7 +205,7 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
             <button
               key={term.id}
               className={styles.termItem}
-              onClick={() => handleTermCheck(term.id)}
+              onClick={() => handleTermItemClick(term.id)}
             >
               <img
                 src={term.checked ? checkIconActive : checkIcon}
@@ -160,7 +219,9 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
                 ></span>
                 {term.title}
               </span>
-              <img src={arrowIcon} alt="arrow" className={styles.arrowIcon} />
+              {(term.id === 'service' || term.id === 'privacy') && (
+                <img src={arrowIcon} alt="arrow" className={styles.arrowIcon} />
+              )}
             </button>
           ))}
         </div>

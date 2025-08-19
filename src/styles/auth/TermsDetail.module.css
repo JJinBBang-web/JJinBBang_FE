@@ -1,0 +1,79 @@
+/* src/styles/auth/TermsDetail.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 360px;
+  height: 100vh;
+  background-color: var(--white);
+  margin: 0 auto;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 4rem 1rem 1.5rem;
+  position: relative;
+  background-color: var(--white);
+  flex-shrink: 0;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.headerTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  color: var(--black);
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: var(--white);
+}
+
+.mainTitle {
+  color: var(--color-gray80);
+  margin: 0 0 1rem 0;
+  line-height: 160%;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+}
+
+.termsContent {
+  padding-bottom: 2rem;
+}
+
+.preformattedContent {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+    Roboto, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-gray80);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  letter-spacing: -0.02rem;
+}

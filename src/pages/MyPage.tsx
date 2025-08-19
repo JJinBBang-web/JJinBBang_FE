@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
+import { userApi, Review } from '../api/user';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
@@ -13,6 +14,7 @@ import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
+import PreviewReview from '../components/PreviewReview';
 
 interface UserProfile {
   isLoggedIn: boolean;
@@ -33,6 +35,126 @@ const MyPage: React.FC = () => {
     school: '찐빵대학교',
     isVerified: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  // 유저 정보 조회 함수
+  const fetchUserInfo = async () => {
+    try {
+      setIsLoading(true);
+      const response = await userApi.getUserInfo();
+
+      if (response.code === 200) {
+        const { email, university, univAuthentication } = response.data;
+
+        setAuth((prev) => ({
+          ...prev,
+          isAuthenticated: true,
+          email: email || undefined,
+          verificationStatus:
+            univAuthentication === '인증완료'
+              ? 'verified'
+              : univAuthentication === '대기'
+              ? 'pending'
+              : 'unverified',
+        }));
+
+        setUserProfile((prev) => ({
+          ...prev,
+          isLoggedIn: true,
+          school: university || '찐빵대학교',
+          isVerified: univAuthentication === '인증완료',
+        }));
+
+        if (email) localStorage.setItem('email', email);
+        if (university) localStorage.setItem('university', university);
+        localStorage.setItem(
+          'verificationStatus',
+          univAuthentication === '인증완료'
+            ? 'verified'
+            : univAuthentication === '대기'
+            ? 'pending'
+            : 'unverified'
+        );
+      }
+    } catch (error: any) {
+      console.error('유저 정보 조회 실패:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setAuth({
+          isAuthenticated: false,
+          email: undefined,
+          verificationStatus: 'unverified',
+          isFirstLogin: false,
+        });
+        setUserProfile({
+          isLoggedIn: false,
+          nickname: '익명의 찐빵이',
+          school: '찐빵대학교',
+          isVerified: false,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 유저 리뷰 조회 함수
+  const fetchUserReviews = async () => {
+    if (!auth.isAuthenticated) return;
+
+    try {
+      setReviewsLoading(true);
+      const response = await userApi.getUserReviews({
+        offset: 0,
+        limit: 20,
+        orderby: 'latest',
+      });
+
+      if (response.code === 200) {
+        setUserReviews(response.data.reviews);
+      }
+    } catch (error: any) {
+      console.error('리뷰 조회 실패:', error);
+      // 404 에러는 리뷰가 없는 것으로 처리
+      if (error.response?.status === 404) {
+        setUserReviews([]);
+      }
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  // localStorage에서 인증 상태 복원
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    const email = localStorage.getItem('email');
+    const verificationStatus = localStorage.getItem('verificationStatus') as
+      | 'verified'
+      | 'unverified'
+      | 'pending';
+
+    if (accessToken) {
+      if (!auth.isAuthenticated) {
+        setAuth({
+          isAuthenticated: true,
+          email: email || undefined,
+          verificationStatus: verificationStatus || 'unverified',
+          isFirstLogin: false,
+        });
+      }
+      fetchUserInfo();
+    }
+  }, []);
+
+  // 인증 상태 변경 시 리뷰 조회
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      fetchUserReviews();
+    }
+  }, [auth.isAuthenticated]);
 
   // 컴포넌트 마운트 시 로그인 상태 확인
   useEffect(() => {
@@ -42,11 +164,8 @@ const MyPage: React.FC = () => {
         isLoggedIn: true,
       }));
 
-      // 첫 로그인인 경우 약관 동의 모달 표시
       if (auth.isFirstLogin) {
         setShowTermsModal(true);
-
-        // 첫 로그인 플래그 초기화 (필요한 경우)
         setAuth((prev: AuthState) => ({
           ...prev,
           isFirstLogin: false,
@@ -55,30 +174,24 @@ const MyPage: React.FC = () => {
     }
   }, [auth, setAuth]);
 
-  // 약관 동의 모달 닫기 핸들러
   const handleCloseTermsModal = () => {
     setShowTermsModal(false);
   };
 
-  // 약관 동의 완료 핸들러
   const handleCompleteTerms = () => {
     setShowTermsModal(false);
-    setShowSignupCompleteModal(true); // 약관 동의 완료 후 회원가입 완료 모달 표시
+    setShowSignupCompleteModal(true);
   };
 
-  // 회원가입 확인 버튼 핸들러
   const handleConfirmSignup = () => {
     setShowSignupCompleteModal(false);
   };
 
-  // 학교 인증 버튼 핸들러
   const handleVerifySchool = () => {
     setShowSignupCompleteModal(false);
-    // 학교 인증 페이지로 이동하거나 인증 모달 열기
-    // 예: navigate('/verify-school');
+    navigate('/auth/student/verify');
   };
 
-  // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {
     switch (auth.verificationStatus) {
       case 'verified':
@@ -91,6 +204,15 @@ const MyPage: React.FC = () => {
   };
 
   const renderProfileSection = () => {
+    if (isLoading) {
+      return (
+        <div className={`${styles.menuItem} ${styles.profileItem}`}>
+          <img src={characterIcon} alt="character" />
+          <span>로딩중...</span>
+        </div>
+      );
+    }
+
     if (!userProfile.isLoggedIn) {
       return (
         <button
@@ -104,7 +226,6 @@ const MyPage: React.FC = () => {
       );
     }
 
-    // 이메일 인증 완료 시 닉네임 대신 이메일 표시
     const displayName =
       auth.verificationStatus === 'verified' && auth.email
         ? auth.email
@@ -138,7 +259,61 @@ const MyPage: React.FC = () => {
     );
   };
 
-  // 모달 관련 스타일 - 배경이 보이도록 함
+  const renderReviewSection = () => {
+    if (!auth.isAuthenticated) {
+      return (
+        <div className={styles.emptyState}>
+          <img
+            src={emptyCharacterIcon}
+            className="emptyIcon"
+            alt="empty character"
+          />
+          <p>로그인 후 나의 찐빵을 확인하세요!</p>
+        </div>
+      );
+    }
+
+    if (reviewsLoading) {
+      return (
+        <div className={styles.emptyState}>
+          <p>리뷰를 불러오는 중...</p>
+        </div>
+      );
+    }
+
+    if (userReviews.length === 0) {
+      return (
+        <div className={styles.emptyState}>
+          <img
+            src={emptyCharacterIcon}
+            className="emptyIcon"
+            alt="empty character"
+          />
+          <p>앗! 아직 등록된 찐빵이 없어요!</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.reviewList}>
+        {userReviews.map((review) => (
+          <div key={review.id}>
+            <div className={styles.line} />
+            <PreviewReview review={review} />
+          </div>
+          // <div key={review.id} className={styles.reviewItem}>
+          //   <h3>{review.title || review.buildingName || '제목 없음'}</h3>
+          //   <p>{review.content}</p>
+          //   <div className={styles.reviewMeta}>
+          //     <span>평점: {review.rating}/5</span>
+          //     <span>{new Date(review.createdAt).toLocaleDateString()}</span>
+          //   </div>
+          // </div>
+        ))}
+      </div>
+    );
+  };
+
   const pageStyle = {
     position: 'relative' as const,
     minHeight: '100vh',
@@ -148,7 +323,6 @@ const MyPage: React.FC = () => {
     <div style={pageStyle}>
       <div className="content">
         <h1 className={styles.title}>나의 찐빵</h1>
-        {/* 인증 완료 상태에서는 가이드 div를 표시하지 않음 */}
         {auth.verificationStatus !== 'verified' && (
           <div className={styles.guide}>
             <img
@@ -182,19 +356,11 @@ const MyPage: React.FC = () => {
           </div>
           <div className={styles.reviewContainer}>
             <h2>나의 찐빵</h2>
-            <div className={styles.emptyState}>
-              <img
-                src={emptyCharacterIcon}
-                className="emptyIcon"
-                alt="empty character"
-              />
-              <p>앗! 아직 등록된 찐빵이 없어요!</p>
-            </div>
+            {renderReviewSection()}
           </div>
         </div>
       </div>
 
-      {/* 모달 컴포넌트들 - 배경이 보이도록*/}
       {showLoginModal && (
         <KakaoLoginModal onClose={() => setShowLoginModal(false)} />
       )}

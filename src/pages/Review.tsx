@@ -16,13 +16,13 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from "react-router-dom";
-import { useReviewDetail } from "../hooks/useReviewDetail";
-import { updateReviewState } from "../recoil/review/updateReviewAtoms";
-import { convertToReviewState } from "../util/convertToReviewState";
-import { isLoginState } from "../recoil/auth/isLoginState";
-import { useQuery } from "@tanstack/react-query";
-import { getAPI } from "../api/baseAPI";
+} from 'react-router-dom';
+import { useReviewDetail } from '../hooks/useReviewDetail';
+import { updateReviewState } from '../recoil/review/updateReviewAtoms';
+import { convertToReviewState } from '../util/convertToReviewState';
+import { isLoginState } from '../recoil/auth/isLoginState';
+import { useQuery } from '@tanstack/react-query';
+import { getAPI } from '../api/baseAPI';
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -55,8 +55,8 @@ const Review: React.FC = () => {
       setWindowHeight(window.visualViewport?.height || window.innerHeight);
     };
 
-    window.addEventListener("resize", handleResize);
-    const reviewList = JSON.parse(localStorage.getItem("reviewList") || "[]");
+    window.addEventListener('resize', handleResize);
+    const reviewList = JSON.parse(localStorage.getItem('reviewList') || '[]');
 
     if (!reviewList || reviewList.length >= 5) {
       reviewList.shift(); // 첫 번째 요소 제거
@@ -64,13 +64,13 @@ const Review: React.FC = () => {
     if (!reviewList.includes(Number(reviewId))) {
       reviewList.push(Number(reviewId));
     }
-    localStorage.setItem("reviewList", JSON.stringify(reviewList));
-    console.log("리뷰 리스트:", reviewList);
+    localStorage.setItem('reviewList', JSON.stringify(reviewList));
+    console.log('리뷰 리스트:', reviewList);
 
     // 초기 로드 시 한 번 실행
     handleResize();
 
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   });
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const Review: React.FC = () => {
       const converted = convertToReviewState(data);
       console.log(converted);
       setUpdateReview(converted);
-      localStorage.setItem("updateReviewState", JSON.stringify(converted));
+      localStorage.setItem('updateReviewState', JSON.stringify(converted));
     }
   }, [data]);
 
@@ -95,8 +95,8 @@ const Review: React.FC = () => {
       className={styles.content}
       style={{
         minHeight: `${windowHeight}px`,
-        display: "flex",
-        flexDirection: "column",
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <div className={styles.container}>
@@ -106,7 +106,7 @@ const Review: React.FC = () => {
         <ImageSlider review={reviews} building={null} />
         {/* 리뷰 정보 및 키워드 */}
         <ReviewInfo review={reviews} />
-        <hr className={styles.divider} style={{ marginTop: "50px" }} />
+        <hr className={styles.divider} style={{ marginTop: '50px' }} />
         {/* 계약형태 */}
         {reviews.generalReviewInfo && (
           <>
@@ -129,7 +129,7 @@ const Review: React.FC = () => {
       {userData?.id == reviews.authorId ? (
         <div className={styles.fixedWrap}>
           <TopButton />
-          <Footer reviewId={reviewId ?? ""} />
+          <Footer reviewId={reviewId ?? ''} />
         </div>
       ) : (
         <div className={styles.fixedWrap}>

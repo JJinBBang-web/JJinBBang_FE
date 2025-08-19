@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect } from "react";
-import styles from "./PreviewReviewContent.module.css";
-import heartIcon from "../assets/image/heartIcon.svg";
-import { tagMessages, tagImages } from "./Tag";
+import React, { useRef, useState, useEffect } from 'react';
+import styles from './PreviewReviewContent.module.css';
+import heartIcon from '../assets/image/heartIcon.svg';
+import { tagMessages, tagImages } from './Tag';
 
 interface PreviewReviewContentProps {
   reviewInfo: {
@@ -21,20 +21,19 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
 
   const year = date.getFullYear();
 
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
 
   const dateTimeString = `${year}.${month}.${day}`;
-  
 
   useEffect(() => {
     let usedWidth = 0;
     const tempVisible: string[] = [];
     let tempHidden = 0;
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx!.font = "400 13.545px Inter";
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx!.font = '400 13.545px Inter';
 
     for (let i = 0; i < keyword.length; i++) {
       const letterSpacing = -0.581;
@@ -57,7 +56,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
 
     if (tempHidden !== 0) {
       const letterSpacing = -0.581;
-      const text = "+" + tempHidden.toString();
+      const text = '+' + tempHidden.toString();
       const baseWidth = ctx!.measureText(text).width;
       const spacingAdjustment = (text.length - 1) * letterSpacing;
 
@@ -98,7 +97,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
         <p className={styles.date}>{dateTimeString}</p>
         <div className={styles.likeContainer}>
           <img className={styles.likeImg} src={heartIcon} alt="heart" />
-          <p className={styles.likeNum}>{likeCount > 99 ? "99+" : likeCount}</p>
+          <p className={styles.likeNum}>{likeCount > 99 ? '99+' : likeCount}</p>
         </div>
       </div>
     </div>
