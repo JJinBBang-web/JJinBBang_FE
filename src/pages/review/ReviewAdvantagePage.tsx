@@ -73,13 +73,19 @@ const ReviewAdvantagePage: React.FC = () => {
   }, [from, review, housingType, setReview]);
 
   const handleFilterClick = (label: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(label)
-        ? prev.filter((item) => item !== label)
-        : prev.length < maxSelections
-        ? [...prev, label]
-        : prev
-    );
+    setSelectedFilters((prev) => {
+      if (prev.includes(label)) {
+        // 이미 선택된 태그를 클릭한 경우 제거
+        return prev.filter((item) => item !== label);
+      } else if (prev.length < maxSelections) {
+        // 최대 선택 수 미만인 경우 추가
+        return [...prev, label];
+      } else {
+        // 최대 선택 수에 도달한 경우 알림 표시
+        alert("최대 5개까지 선택할 수 있습니다!");
+        return prev;
+      }
+    });
   };
 
   const scrollToTop = () => {
