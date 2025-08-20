@@ -241,6 +241,7 @@ const UpdateConfirmPage: React.FC = () => {
         navigate(`/review/${reviewId}/update/dormitory-conditions`, {
           state: {
             from: 'update',
+            facfacilities:review?.facilityConditions
           },
         });
       } else {
@@ -337,20 +338,33 @@ const UpdateConfirmPage: React.FC = () => {
           ...(buildingRequest ? { buildingRequest } : {}),
         };
 
-        // case "DORMITORY" :
-        //   return {
-        //     dormitoryReview: {
-        //       campusId: r.campusId ?? 0,
-        //       capacity: r.capacity ?? 1,
-        //       dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
-        //       floor: r.floorType ?? 'LOW',
-        //       rating: finalRating as 1|2|3|4|5,
-        //       content: r.content ?? r.description ?? '',
-        //     },
-        //     imageUrls,
-        //     keywords,
-        //     ...(buildingRequest ? { buildingRequest } : {}),
-        //   };
+        case "DORMITORY" :
+          return {
+            dormitoryReview: {
+              campusId: 1,
+              capacity: r.roomCapacity ?? 1,
+              dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
+              floor: r.floorType ?? 'LOW',
+              rating: finalRating as 1|2|3|4|5,
+              content: r.content ?? r.description ?? '',
+            },
+            imageUrls,
+            keywords,
+            condition: {
+              currentRegion: r.dormitoryConditions?.residenceArea ?? '',
+              currentGrade: String(r.dormitoryConditions?.semesterGrade) ?? 0, 
+            },
+            facilities: {
+              privateFacilities: Object.keys(r.facilityConditions?.private ?? {}).filter(
+                key => r.facilityConditions?.private?.[key]
+              ),
+              publicFacilities: Object.keys(r.facilityConditions?.public ?? {}).filter(
+                key => r.facilityConditions?.public?.[key]
+              ),
+              lounge: Object.values(r.facilityConditions?.lounge ?? {})[0] ?? false
+            },
+            ...(buildingRequest ? { buildingRequest } : {}),
+          };
 
         default : 
           const contractType = r.contractType === 'MONTHLY_RENT' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT';

@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { ReviewState, reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
+import { ReviewState } from '../../recoil/review/reviewAtoms';
 import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryConditions.module.css';
 import { updateReviewState } from '../../recoil/review/updateReviewAtoms';
@@ -163,7 +162,7 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
     } as ReviewState;;
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+    localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
 
     // 항상 DormitoryAmenitiesPage로 이동하도록 수정
     navigate(`/review/${reviewId}/update/`, {

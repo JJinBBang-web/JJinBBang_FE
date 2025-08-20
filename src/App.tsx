@@ -59,6 +59,7 @@ import UpdateAddressSearchPage from "./pages/update/UpdateAddressSearchPage";
 import UpdateFloorInputPage from "./pages/update/UpdateFloorInputPage";
 import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 import UpdateDormitoryConditionsPage from "./pages/update/UpdateDormitoryConditionsPage";
+import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitiesPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -207,7 +208,7 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/content" element={<UpdateContentPage/>}/>
       <Route path="/review/:reviewId/update/dormitory" element={<UpdateDormitoryInputPage />} />
       <Route path="/review/:reviewId/update/dormitory-conditions" element={<UpdateDormitoryConditionsPage />} />
-      <Route path="/review/:reviewId/update/dormitory-amenities" element={<UpdateDormitoryInputPage />} />
+      <Route path="/review/:reviewId/update/dormitory-amenities" element={<UpdateDormitoryAmenitiesPage />} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

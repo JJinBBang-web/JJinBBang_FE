@@ -2,6 +2,8 @@
 // export type FloorType = 'LOW' | 'MID' | 'HIGH' | 'STRONG' | 'ATTIC';
 // export type BuildType = 'ROOM' | 'HOUSE' | 'OFFICETEL' | 'APARTMENT' | 'BOARDING_HOUSE' | 'DORMITORY' | 'AGENCY';
 
+import { Condition, Facilities } from "../building/ReviewCreateInterface";
+
 export type KeywordCode = string;
 
 export interface GeneralReview {
@@ -63,6 +65,8 @@ export interface DormitoryUpdateReviewRequest {
   imageUrls: string[];
   keywords: Keywords;
   buildingRequest?: BuildingRequest;
+  condition: Condition;
+  facilities: Facilities;
 }
 
 export type UpdateReviewRequest = 

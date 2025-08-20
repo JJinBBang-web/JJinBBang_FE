@@ -40,3 +40,18 @@ export const dormitoryReviewState = atom<DormitoryReviewState>({
     images: [],
   },
 });
+
+export const updateDormitoryReviewState = atom<DormitoryReviewState>({
+  key: 'updateDormitoryReviewState',
+  default: {
+    dormitoryName: '',
+    university: '',
+    period: '',
+    roomType: '',
+    rating: 0,
+    pros: [],
+    cons: [],
+    description: '',
+    images: [],
+  },
+});
