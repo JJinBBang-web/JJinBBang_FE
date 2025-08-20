@@ -1,4 +1,3 @@
-import { DormitoryReviewState } from '../recoil/review/dormitoryReviewAtoms';
 import { ReviewState } from '../recoil/review/reviewAtoms';
 import { BuildingReviewResponse } from '../types/entity/building/BuildingReviewInterface';
 import { Review } from '../recoil/detail/ReviewInfoRecoliState';
@@ -83,6 +82,7 @@ export function convertToReviewState(
     buildingCode: data.building.buildingCode ?? '',
     latitude: data.building.latitude ?? 0,
     longitude: data.building.longitude ?? 0,
+    universityName: isDorm ? data.dormitoryReviewInfo?.universityName : "",
     dormitoryConditions: isDorm
       ? {
           residenceArea: data.conditions?.currentRegion ?? '',
@@ -90,6 +90,7 @@ export function convertToReviewState(
           dormitoryFee: data.dormitoryReviewInfo?.dormFee ?? 0,
           hasDistanceCriteria: !!data.conditions?.currentRegion,
           hasGradeCriteria: !!data.conditions?.currentGrade,
+          roomCapacity: data.dormitoryReviewInfo?.capacity
         }
       : undefined,
     dormitoryFee: data.dormitoryReviewInfo?.dormFee ?? 0,

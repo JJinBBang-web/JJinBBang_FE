@@ -208,19 +208,32 @@ const UpdateConfirmPage: React.FC = () => {
 
     const navigateToDetailedAddress = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
-        navigate(`/review/${reviewId}/update/floor`, {
+      if (review?.housingType === 'DORMITORY') {
+        navigate(`/review/${reviewId}/update/dormitory`, {
           state: {
-            address: {
-              roadAddress: review?.address || '',
-              jibunAddress: '',
+            from: "update",
+            universityName : review?.universityName,
+            roomCapacity: review?.dormitoryConditions?.roomCapacity,
+            floorType: floor || '',
+            buildingName: review?.detailedAddress,
+          }
+        })
+
+      } else {
+          navigate(`/review/${reviewId}/update/floor`, {
+            state: {
+              address: {
+                roadAddress: review?.address || '',
+                jibunAddress: '',
+                buildingName: review?.detailedAddress || '',
+              },
               buildingName: review?.detailedAddress || '',
+              floor: floor || '',
+              space: review?.space || 0,
+              from: 'update',
             },
-            buildingName: review?.detailedAddress || '',
-            floor: floor || '',
-            space: review?.space || 0,
-            from: 'update',
-          },
-      });
+        });
+      }
     };
     const navigateToContractType = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
@@ -439,11 +452,26 @@ const UpdateConfirmPage: React.FC = () => {
             >
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
-                <span className={styles.valueText}>
-                  {review?.detailedAddress}
-                  <br />
-                  {floor}
-                </span>
+                {review?.housingType === "DORMITORY" ? (
+                <>
+                  <span className={styles.valueText}>
+                    {review?.universityName}
+                    <br/>
+                    {review?.detailedAddress}
+                    <br />
+                    {floor}
+                  </span>
+                </>
+                ) : (
+                <>
+                  <span className={styles.valueText}>
+                      {review?.detailedAddress}
+                    <br />
+                    {floor}
+                  </span>
+                </>
+                )
+                }
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
             </div>
@@ -520,21 +548,6 @@ const UpdateConfirmPage: React.FC = () => {
                     <div className={styles.contractDetails}>
                       {review?.housingType === "DORMITORY" ? (
                           <>
-                            {/* {Object.entries(
-                              review.facilityConditions || {}
-                            ).map(([category, options]) => {
-                              const selectedOption = Object.entries(
-                                options
-                              ).find(([_, selected]) => selected)?.[0];
-                              return selectedOption ? (
-                                <span
-                                  key={category}
-                                  className={styles.valueText}
-                                >
-                                  {facility} {selectedOption}
-                                </span>
-                              ) : null;
-                            })} */}
                             {Object.entries(review.facilityConditions || {}).map(([category, options]) => {
                               return Object.entries(options)
                                 .filter(([_, selected]) => selected)
@@ -557,7 +570,7 @@ const UpdateConfirmPage: React.FC = () => {
                                   // 휴게시설은 "유"만 붙이고 끝냄
                                   const label =
                                     category === "lounge"
-                                      ? `${option} ${typeLabel}`
+                                      ? `휴게시설 ${typeLabel}`
                                       : `${option} ${typeLabel}`;
 
                                   return (

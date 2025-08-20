@@ -57,6 +57,7 @@ import UpdateDisadventagePage from "./pages/update/UpdateDisadventagePage";
 import UpdateContentPage from "./pages/update/UpdateContentPage";
 import UpdateAddressSearchPage from "./pages/update/UpdateAddressSearchPage";
 import UpdateFloorInputPage from "./pages/update/UpdateFloorInputPage";
+import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -203,6 +204,7 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/filter-ad" element={<UpdateAdventagePage/>}/>
       <Route path="/review/:reviewId/update/filter-disad" element={<UpdateDisadventagePage/>}/>
       <Route path="/review/:reviewId/update/content" element={<UpdateContentPage/>}/>
+      <Route path="/review/:reviewId/update/dormitory" element={<UpdateDormitoryInputPage />} />
 
 
       </Routes>

@@ -23,6 +23,7 @@ export interface ReviewState {
   latitude?: number | null;
   longitude?: number | null; 
   buildingCode?: string;
+  universityName?: string;
   dormitoryConditions?: {
     hasDistanceCriteria: boolean;
     hasGradeCriteria: boolean;
@@ -57,6 +58,7 @@ export const defaultReviewState: ReviewState = {
   latitude: 0,
   longitude: 0,
   buildingCode: '',
+  universityName: '',
 };
 
 export const reviewState = atom<ReviewState>({
