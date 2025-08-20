@@ -105,16 +105,6 @@ const UpdateConfirmPage: React.FC = () => {
     const handleSubmitRating = async () => {
       if (!reviewId || !review || rating <= 0) return;
 
-      // setReview((prev) => {
-      //   if (!prev) return null; // 또는 초기값으로 적절한 객체 반환
-
-      //   return {
-      //     ...prev,
-      //     rating: rating,
-      //   };
-      // });
-      console.log(buildUpdatePayload(review, rating));
-
       try {
           setIsSubmitting(true);
 

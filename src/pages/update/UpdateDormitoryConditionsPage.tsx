@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { ReviewState } from '../../recoil/review/reviewAtoms';
-import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryConditions.module.css';
 import { updateReviewState } from '../../recoil/review/updateReviewAtoms';
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -46,16 +45,6 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
   const [semesterGrade, setSemesterGrade] = useState<string>(
     dormitoryInfo?.semesterGrade ? dormitoryInfo.semesterGrade.toString() : review?.dormitoryConditions?.semesterGrade ? review?.dormitoryConditions.semesterGrade.toString() : ''
   );
-//   const [roomCapacity, setRoomCapacity] = useState<string>(
-//     dormitoryInfo?.roomCapacity ? dormitoryInfo.roomCapacity.toString() : ''
-//   );
-
-  const {
-    showCancelModal,
-    handleCloseButtonClick,
-    handleCancelModalClose,
-    handleConfirmCancel,
-  } = useCancelModal();
 
   useEffect(() => {
     // 확인 페이지에서 온 경우 기존 값 설정

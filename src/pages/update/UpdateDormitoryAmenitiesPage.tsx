@@ -4,12 +4,10 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { updateDormitoryReviewState } from '../../recoil/review/dormitoryReviewAtoms';
 import styles from '../../styles/review/DormitoryAmenities.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
 import { updateReviewState } from '../../recoil/review/updateReviewAtoms';
 
 interface LocationState {
-  facilities?: any[];
   from?: string;
 }
 
@@ -25,7 +23,7 @@ interface FacilitySelections {
 const UpdateDormitoryAmenitiesPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { facilities, from } = (location.state as LocationState) || {};
+  const { from } = (location.state as LocationState) || {};
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(updateDormitoryReviewState);
   const [review, setReview] = useRecoilState(updateReviewState);

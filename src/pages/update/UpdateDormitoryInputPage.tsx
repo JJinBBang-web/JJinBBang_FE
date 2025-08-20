@@ -2,17 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { ReviewState } from '../../recoil/review/reviewAtoms';
 import styles from './UpdateDormitoryInputPage.module.css'
 import { updateReviewState } from '../../recoil/review/updateReviewAtoms';
 import { floorToKorean, koreanToFloor } from '../../util/mapping';
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
-
-// Extended ReviewState interface to include dormitory-specific fields
-// interface ExtendedReviewState extends ReviewState {
-//   university?: string;
-//   dormitoryName?: string;
-// }
 
 interface LocationState {
   address?: {
