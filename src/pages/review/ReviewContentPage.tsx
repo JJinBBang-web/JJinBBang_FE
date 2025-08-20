@@ -183,7 +183,6 @@ const ReviewContentPage: React.FC = () => {
             content.trim().length >= 100 ? styles.enabled : ""
           }`}
           onClick={handleNext}
-          disabled={content.trim().length < 100}
         >
           다음
         </button>
