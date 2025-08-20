@@ -84,7 +84,7 @@ const Review: React.FC = () => {
   }, [data]);
 
   const handleBack = () => {
-    navigate(-1);
+    navigate(`/map`);
   };
 
   if (isLoading) return <div>로딩 중...</div>;
