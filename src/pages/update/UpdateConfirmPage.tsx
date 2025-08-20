@@ -238,7 +238,7 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToContractType = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
-        navigate('/review/dormitory-conditions', {
+        navigate(`/review/${reviewId}/update/dormitory-conditions`, {
           state: {
             from: 'update',
           },
@@ -255,7 +255,7 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToContractDetails = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
-        navigate('/review/dormitory-amenities', {
+        navigate(`/review/${reviewId}/update/dormitory-amenities`, {
           state: {
             from: 'update',
           },
