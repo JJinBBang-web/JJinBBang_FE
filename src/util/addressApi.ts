@@ -6,16 +6,27 @@ interface KakaoAddressResult {
   road_address: {
     address_name: string;
     building_name: string;
+    main_building_no?: string;
+    sub_building_no?: string;
+    building_code?: string;
   };
   address: {
     address_name: string;
+    main_address_no?: string;
+    sub_address_no?: string;
+    building_code?: string;
   };
+  x?: string; // longitude
+  y?: string; // latitude
 }
 
 export interface AddressResult {
   roadAddress: string;
   jibunAddress: string;
   buildingName: string;
+  buildingCode?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export const searchAddress = async (
@@ -43,6 +54,9 @@ export const searchAddress = async (
       roadAddress: item.road_address?.address_name || '',
       jibunAddress: item.address.address_name,
       buildingName: item.road_address?.building_name || '',
+      buildingCode: item.road_address?.building_code || item.address.building_code || '',
+      latitude: item.y ? parseFloat(item.y) : undefined,
+      longitude: item.x ? parseFloat(item.x) : undefined,
     }));
   } catch (error) {
     console.error('Address search error:', error);

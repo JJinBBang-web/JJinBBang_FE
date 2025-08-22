@@ -217,7 +217,7 @@ const ReviewConfirmPage: React.FC = () => {
     setShowConfirmModal(true);
   };
 
-  // const createReviewMutation = useCreateReview();
+  const createReviewMutation = useCreateReview();
 
   const convertTagTextToCode = (tagTexts: string[]): string[] => {
     const tagCodes: string[] = [];
@@ -266,11 +266,12 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || [],
           buildingRequest: {
+            buildingCode: review.buildingCode || '',
             name: review.detailedAddress || '기숙사명',
             type: 'DORMITORY',
             address: review.address || '',
-            latitude: 37.5605,
-            longitude: 127.0103,
+            latitude: review.latitude || 37.5605,
+            longitude: review.longitude || 127.0103,
           },
           keywords: {
             positive: positiveKeywords,
@@ -295,11 +296,12 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || [],
           buildingRequest: {
+            buildingCode: review.buildingCode || '',
             name: review.detailedAddress || '공인중개사명',
             type: 'AGENCY',
             address: review.address || '',
-            latitude: 37.5605,
-            longitude: 127.0103,
+            latitude: review.latitude || 37.5605,
+            longitude: review.longitude || 127.0103,
           },
           keywords: {
             positive: positiveKeywords,
@@ -326,11 +328,12 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || [],
           buildingRequest: {
+            buildingCode: review.buildingCode || '',
             name: review.detailedAddress || '건물명',
             type: 'APARTMENT',
             address: review.address || '',
-            latitude: 37.5605,
-            longitude: 127.0103,
+            latitude: review.latitude || 37.5605,
+            longitude: review.longitude || 127.0103,
           },
           keywords: {
             positive: positiveKeywords,
@@ -341,9 +344,9 @@ const ReviewConfirmPage: React.FC = () => {
 
       console.log('📤 리뷰 데이터:', reviewData);
 
-      // 임시: Mock API 사용
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('✅ 리뷰 작성 성공 (Mock)');
+      // 실제 API 호출
+      await createReviewMutation.mutateAsync(reviewData);
+      console.log('✅ 리뷰 작성 성공');
 
       setIsSubmitting(false);
       setShowConfirmModal(false);

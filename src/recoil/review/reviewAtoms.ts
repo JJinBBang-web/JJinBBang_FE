@@ -19,6 +19,9 @@ export interface ReviewState {
   description: string;
   roomCapacity?: number;
   dormitoryFee?: number;
+  buildingCode?: string;
+  latitude?: number;
+  longitude?: number;
   dormitoryConditions?: {
     hasDistanceCriteria: boolean;
     hasGradeCriteria: boolean;

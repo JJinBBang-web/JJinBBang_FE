@@ -34,11 +34,15 @@ const AddressSearchPage: React.FC = () => {
               width: '100%',
               height: '100%',
               oncomplete: (data) => {
+                console.log('Daum postcode data:', data); // 사용 가능한 필드 확인
                 const updatedReview = {
                   ...review,
                   address: data.roadAddress,
                   addressDetail: data.jibunAddress || '',
                   detailedAddress: data.buildingName || '',
+                  buildingCode: data.buildingCode || data.bcode || '',
+                  latitude: data.y ? parseFloat(data.y) : undefined,
+                  longitude: data.x ? parseFloat(data.x) : undefined,
                 };
                 setReview(updatedReview);
                 localStorage.setItem(
