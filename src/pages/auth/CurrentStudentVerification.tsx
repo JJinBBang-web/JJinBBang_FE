@@ -9,6 +9,7 @@ import arrowIcon from '../../assets/image/arrowIcon.svg';
 import verifyCompleteIcon from '../../assets/image/verifyCompleteIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
 import warningIcon from '../../assets/image/warningIcon.svg';
+import checkIconActive from '../../assets/image/checkIconActive.svg';
 
 enum VerificationStep {
   EMAIL_INPUT,
@@ -29,6 +30,7 @@ const CurrentStudentVerification: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showResendMessage, setShowResendMessage] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -90,11 +92,21 @@ const CurrentStudentVerification: React.FC = () => {
     if (verificationCode.length !== 6) return;
 
     setIsLoading(true);
+    setError(null); // 이전 에러 메시지 초기화
+    
     try {
-      await authApi.verifyEmailCode(email, verificationCode);
-      setStep(VerificationStep.COMPLETE);
-    } catch (error) {
-      setError('인증번호가 일치하지 않아요!');
+      const result = await authApi.verifyEmailCode(email, verificationCode);
+      console.log('인증 결과:', result);
+      
+      // API 응답이 성공인 경우에만 다음 단계로 진행
+      if (result.success) {
+        setStep(VerificationStep.COMPLETE);
+      } else {
+        setError(result.message || '인증번호가 일치하지 않아요!');
+      }
+    } catch (error: any) {
+      console.error('인증 에러:', error);
+      setError(error.message || '인증번호가 일치하지 않아요!');
     } finally {
       setIsLoading(false);
     }
@@ -115,8 +127,13 @@ const CurrentStudentVerification: React.FC = () => {
   const handleResendCode = async () => {
     setIsLoading(true);
     try {
-      await authApi.refreshAccessToken(); // 토큰 갱신
-      await authApi.sendVerificationEmail(email); // 재발송
+      await authApi.sendVerificationEmail(email); // 재발송 (자동 토큰 갱신 포함)
+      
+      // 재발송 성공 메시지 표시
+      setShowResendMessage(true);
+      setTimeout(() => {
+        setShowResendMessage(false);
+      }, 3000); // 3초 후 메시지 숨김
     } catch (error) {
       setError('재발송에 실패했습니다.');
     } finally {
@@ -211,7 +228,7 @@ const CurrentStudentVerification: React.FC = () => {
           </button>
           <button
             type="submit"
-            className={`${styles.submitButton} ${
+            className={`${styles.submitButton} ${styles.buttonGroupButton} ${
               verificationCode.length < 6 || isLoading ? styles.disabled : ''
             }`}
             disabled={verificationCode.length < 6 || isLoading}
@@ -219,6 +236,12 @@ const CurrentStudentVerification: React.FC = () => {
             {isLoading ? '처리 중...' : '확인'}
           </button>
         </div>
+        {showResendMessage && (
+          <div className={styles.resendMessage}>
+            <img src={checkIconActive} alt="check" className={styles.checkIcon} />
+            인증코드 재발송!
+          </div>
+        )}
       </form>
     </main>
   );
