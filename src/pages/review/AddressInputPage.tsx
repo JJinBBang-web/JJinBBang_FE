@@ -51,6 +51,8 @@ const AddressInputPage: React.FC = () => {
           <span className={styles.placeholder}>
             {housingType === "공인중개사"
               ? "예) 찐빵공인중개사"
+              : housingType === "기숙사"
+              ? "예) 찐빵로 47, 찐빵동 122 (찐빵관)"
               : "예) 찐빵로 47, 찐빵동 122"}
           </span>
           <img src={searchIcon} alt="search" className={styles.searchIcon} />
