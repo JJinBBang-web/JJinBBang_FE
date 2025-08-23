@@ -222,12 +222,32 @@ const ReviewConfirmPage: React.FC = () => {
   const convertTagTextToCode = (tagTexts: string[]): string[] => {
     const tagCodes: string[] = [];
 
-    // tagLongMessages에서 텍스트로 코드 찾기
     tagTexts.forEach((text) => {
-      for (const [code, message] of Object.entries(tagLongMessages)) {
-        if (message === text) {
-          tagCodes.push(code);
-          break;
+      // 현재 주거 유형에 따라 적절한 필터 사용
+      const currentFilters = isDormitory
+        ? dormFilters
+        : isAgency
+        ? agencyFilters
+        : filters;
+
+      // 필터에서 텍스트 매칭으로 코드 찾기
+      let found = false;
+      currentFilters.forEach((category) => {
+        [...category.positiveFilters, ...category.negativeFilters].forEach((item) => {
+          if (item.label === text) {
+            tagCodes.push(item.key);
+            found = true;
+          }
+        });
+      });
+
+      // 필터에서 찾지 못한 경우에만 tagLongMessages 사용 (fallback)
+      if (!found) {
+        for (const [code, message] of Object.entries(tagLongMessages)) {
+          if (message === text) {
+            tagCodes.push(code);
+            break;
+          }
         }
       }
     });
@@ -250,10 +270,34 @@ const ReviewConfirmPage: React.FC = () => {
       let reviewData: any;
 
       if (review.housingType === '기숙사') {
+        // 편의시설 데이터 처리
+        const privateFacilities: string[] = [];
+        const publicFacilities: string[] = [];
+        let lounge = false;
+
+        if (dormitoryReview.facilityConditions) {
+          Object.entries(dormitoryReview.facilityConditions).forEach(([facility, options]) => {
+            const selectedOption = Object.entries(options).find(([_, selected]) => selected)?.[0];
+            if (selectedOption) {
+              if (facility === '휴게시설') {
+                // 휴게시설은 별도 처리
+                lounge = selectedOption === '있음';
+              } else if (selectedOption === '개인') {
+                // 사용자가 '개인'을 선택한 시설들
+                privateFacilities.push(facility);
+              } else if (selectedOption === '공용') {
+                // 사용자가 '공용'을 선택한 시설들
+                publicFacilities.push(facility);
+              }
+              // '없음'을 선택한 경우는 아무것도 추가하지 않음
+            }
+          });
+        }
+
         reviewData = {
           dormitoryReview: {
-            campus: review.detailedAddress || '캠퍼스명',
-            capacity: review.roomCapacity || 1,
+            campusId: 2, // 임시값, 실제로는 캠퍼스 ID를 받아와야 함
+            capacity: review.roomCapacity || dormitoryReview.roomType === '1인실' ? 1 : 2,
             dormFee: review.dormitoryFee || 0,
             floor:
               review.floorType === '저층'
@@ -262,12 +306,12 @@ const ReviewConfirmPage: React.FC = () => {
                 ? 'MID'
                 : 'HIGH',
             rating: rating,
-            content: review.description || review.content || '',
+            content: review.description || review.content || dormitoryReview.description || '',
           },
-          imageUrls: review.images || [],
+          imageUrls: review.images || dormitoryReview.images || [],
           buildingRequest: {
             buildingCode: review.buildingCode || '',
-            name: review.detailedAddress || '기숙사명',
+            name: (review as any).dormitoryName || review.detailedAddress || '기숙사명',
             type: 'DORMITORY',
             address: review.address || '',
             latitude: review.latitude || 37.5605,
@@ -278,14 +322,13 @@ const ReviewConfirmPage: React.FC = () => {
             negative: negativeKeywords,
           },
           condition: {
-            currentRegion: review.dormitoryConditions?.residenceArea || '미정',
-            currentGrade:
-              review.dormitoryConditions?.semesterGrade?.toString() || '3.0',
+            currentRegion: review.dormitoryConditions?.residenceArea || '',
+            currentGrade: review.dormitoryConditions?.semesterGrade?.toString() || '',
           },
           facilities: {
-            privateFacilities: ['화장실', '샤워실'],
-            publicFacilities: ['냉장고', '전자레인지'],
-            lounge: true,
+            privateFacilities: privateFacilities,
+            publicFacilities: publicFacilities,
+            lounge: lounge,
           },
         };
       } else if (review.housingType === '공인중개사') {
@@ -343,6 +386,18 @@ const ReviewConfirmPage: React.FC = () => {
       }
 
       console.log('📤 리뷰 데이터:', reviewData);
+      
+      // 기숙사 리뷰일 경우 상세 로깅
+      if (review.housingType === '기숙사') {
+        console.log('🏢 기숙사 리뷰 상세 데이터:');
+        console.log('- dormitoryReview:', JSON.stringify(reviewData.dormitoryReview, null, 2));
+        console.log('- imageUrls:', reviewData.imageUrls);
+        console.log('- buildingRequest:', JSON.stringify(reviewData.buildingRequest, null, 2));
+        console.log('- keywords:', JSON.stringify(reviewData.keywords, null, 2));
+        console.log('- condition:', JSON.stringify(reviewData.condition, null, 2));
+        console.log('- facilities:', JSON.stringify(reviewData.facilities, null, 2));
+        console.log('🔍 전체 POST 데이터:', JSON.stringify(reviewData, null, 2));
+      }
 
       // 실제 API 호출
       await createReviewMutation.mutateAsync(reviewData);
