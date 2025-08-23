@@ -234,3 +234,15 @@
 .disabled .pencilIcon {
   opacity: 0.6;
 }
+
+/* Review list styles */
+.reviewList {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewList > *:not(:last-child) {
+  border-bottom: 1px solid var(--color-gray20);
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+}
