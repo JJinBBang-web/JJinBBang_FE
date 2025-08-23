@@ -143,9 +143,13 @@
   line-height: 150%;
   letter-spacing: -0.0375rem;
   color: var(--color-gray60);
-  line-height: 1.125;
   width: 100%;
   word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .arrowIcon {
