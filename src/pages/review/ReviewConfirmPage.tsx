@@ -197,6 +197,9 @@ const ReviewConfirmPage: React.FC = () => {
 
   const handleItemClick = (navigationFunction: () => void) => {
     localStorage.setItem('reviewState', JSON.stringify(review));
+    if (isDormitory) {
+      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
+    }
     navigationFunction();
   };
 
@@ -442,6 +445,19 @@ const ReviewConfirmPage: React.FC = () => {
           from: 'confirm',
         },
       });
+    } else if (review.housingType === '기숙사') {
+      navigate('/review/dormitory', {
+        state: {
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          from: 'confirm',
+        },
+      });
     } else {
       navigate('/review/floor', {
         state: {
@@ -460,6 +476,9 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToContractType = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
+    if (isDormitory) {
+      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
+    }
     if (review.housingType === '기숙사') {
       navigate('/review/dormitory-conditions', {
         state: {
@@ -477,6 +496,9 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToContractDetails = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
+    if (isDormitory) {
+      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
+    }
     if (review.housingType === '기숙사') {
       navigate('/review/dormitory-amenities', {
         state: {
@@ -510,6 +532,9 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToPros = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
+    if (isDormitory) {
+      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
+    }
     navigate('/review/filter-ad', {
       state: {
         ...locationState,
@@ -517,6 +542,7 @@ const ReviewConfirmPage: React.FC = () => {
         advantages: review.pros,
         disadvantages: review.cons,
         content: review.content,
+        housingType: review.housingType,
         from: 'confirm',
       },
     });
@@ -524,6 +550,9 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToCons = () => {
     localStorage.setItem('reviewState', JSON.stringify(review));
+    if (isDormitory) {
+      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
+    }
     navigate('/review/filter-disad', {
       state: {
         ...locationState,
@@ -531,6 +560,7 @@ const ReviewConfirmPage: React.FC = () => {
         advantages: review.pros,
         disadvantages: review.cons,
         content: review.content,
+        housingType: review.housingType,
         from: 'confirm',
       },
     });
@@ -544,6 +574,7 @@ const ReviewConfirmPage: React.FC = () => {
         advantages: review.pros,
         disadvantages: review.cons,
         content: review.content,
+        housingType: review.housingType,
         from: 'confirm',
       },
     });
@@ -654,7 +685,16 @@ const ReviewConfirmPage: React.FC = () => {
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {review.detailedAddress || '상세 주소를 입력해주세요'}
+                  {isDormitory 
+                    ? (
+                      <>
+                        {(review as any).university || '대학교를 입력해주세요'}
+                        <br />
+                        {(review as any).dormitoryName || '기숙사명을 입력해주세요'}
+                      </>
+                    )
+                    : (review.detailedAddress || '상세 주소를 입력해주세요')
+                  }
                   <br />
                   {review.floorType || ''}
                 </span>
