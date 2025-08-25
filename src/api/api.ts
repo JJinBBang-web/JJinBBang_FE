@@ -70,10 +70,6 @@ api.interceptors.response.use(
     //   res.config.url
     // );
 
-    // Fix localhost image URLs in response data
-    if (res.data && typeof res.data === 'object') {
-      res.data = fixLocalhostUrls(res.data);
-    }
 
     return res;
   },
