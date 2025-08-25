@@ -71,11 +71,11 @@ const UpdateDormitoryInputPage: React.FC = () => {
     setter(parsedValue);
   };
 
-  const handleDormitoryNameChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setDormitoryName(e.target.value);
-  };
+  // const handleDormitoryNameChange = (
+  //   e: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   setDormitoryName(e.target.value);
+  // };
 
   const handleFloorSelect = (floor: string) => {
     setSelectedFloor(floor);
@@ -160,13 +160,9 @@ const UpdateDormitoryInputPage: React.FC = () => {
           </div>
 
           <label className={styles.label}>기숙사명</label>
-          <input
-            type="text"
-            className={styles.buildingInput}
-            value={dormitoryName}
-            onChange={handleDormitoryNameChange}
-            placeholder="예) 찐빵관"
-          />
+          <div className={styles.buildingInput}>
+            {dormitoryName || "예) 찐빵관"}
+          </div>
 
           <label className={styles.label}>방 인원</label>
           <div className={styles.inputWrapper}>

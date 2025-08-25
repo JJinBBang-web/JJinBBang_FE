@@ -77,7 +77,7 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
             }
 
             // lounge 시설 처리
-            if (facilityData.lounge && facilityData.lounge['휴게시설']) {
+            if (facilityData.lounge && facilityData.lounge['있음']) {
                 newSelections['휴게시설']['있음'] = true;
             } else {
                 newSelections['휴게시설']['없음'] = true;

@@ -45,6 +45,9 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
   const [semesterGrade, setSemesterGrade] = useState<string>(
     dormitoryInfo?.semesterGrade ? dormitoryInfo.semesterGrade.toString() : review?.dormitoryConditions?.semesterGrade ? review?.dormitoryConditions.semesterGrade.toString() : ''
   );
+  const [roomCapacity,setRoomCapacity] = useState<number>(
+    dormitoryInfo?.roomCapacity || review?.dormitoryConditions?.roomCapacity || 0
+  )
 
   useEffect(() => {
     // 확인 페이지에서 온 경우 기존 값 설정
@@ -63,7 +66,7 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
       setDormitoryFee(dormitoryFee ? dormitoryFee.toString() : '');
       setResidenceArea(residenceArea || '');
       setSemesterGrade(semesterGrade ? semesterGrade.toString() : '');
-    //   setRoomCapacity(roomCapacity ? roomCapacity.toString() : '');
+      setRoomCapacity(roomCapacity || 0);
     }
   }, [from, review]);
 
@@ -143,10 +146,12 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
       dormitoryFee: parseFloat(dormitoryFee),
       residenceArea: hasDistanceCriteria ? residenceArea : '',
       semesterGrade: hasGradeCriteria ? parseFloat(semesterGrade) : undefined,
+      roomCapacity: roomCapacity
     };
 
     const updatedReview = {
       ...review,
+      dormitoryFee: parseFloat(dormitoryFee),
       dormitoryConditions,
     } as ReviewState;;
 
@@ -157,6 +162,7 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
     navigate(`/review/${reviewId}/update/`, {
       state: {
         ...location.state,
+        dormitoryFee: parseFloat(dormitoryFee),
         dormitoryConditions,
       },
     });

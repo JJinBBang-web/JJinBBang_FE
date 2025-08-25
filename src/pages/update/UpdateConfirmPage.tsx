@@ -332,7 +332,7 @@ const UpdateConfirmPage: React.FC = () => {
           return {
             dormitoryReview: {
               campusId: 1,
-              capacity: r.roomCapacity ?? 1,
+              capacity: r.dormitoryConditions?.roomCapacity ?? 1,
               dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
               floor: r.floorType ?? 'LOW',
               rating: finalRating as 1|2|3|4|5,
@@ -437,7 +437,12 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              onClick={() => handleItemClick(navigateToAddress)}
+              onClick={() => 
+                review?.housingType !== "AGENCY" 
+                ? review?.housingType !== "DORMITORY" ?
+                handleItemClick(navigateToAddress)
+                : undefined : undefined
+              }
             >
               <span className={styles.label}>주소</span>
               <div className={styles.value}>
@@ -452,7 +457,9 @@ const UpdateConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              onClick={() => handleItemClick(navigateToDetailedAddress)}
+              onClick={() => 
+                review?.housingType == "AGENCY" ? undefined :
+                handleItemClick(navigateToDetailedAddress)}
             >
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
@@ -476,7 +483,7 @@ const UpdateConfirmPage: React.FC = () => {
                 </>
                 )
                 }
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {review?.housingType !== "AGENCY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div>}
               </div>
             </div>
             {review?.housingType !== "AGENCY" && (
