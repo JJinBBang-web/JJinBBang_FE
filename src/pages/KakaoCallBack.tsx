@@ -8,7 +8,8 @@ import { useRecoilState } from 'recoil';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
-const url = process.env.REACT_APP_API_URL;
+// const url = process.env.REACT_APP_API_URL;
+const url = '/api';
 export const getSignupToken = () => localStorage.getItem('signupToken');
 export const getAccessToken = () => localStorage.getItem('accessToken');
 export const getRefreshToken = () => localStorage.getItem('refreshToken');
@@ -83,7 +84,7 @@ export const getUserInfo = async () => {
  * 카카오 로그인 후, 리다이렉트되는 페이지
  * URL 예: http://localhost:3000/kakao/callback?code=xxxx
  */
-function KakaoCallback() {
+function KakaoCallBack() {
   const navigate = useNavigate();
   const location = useLocation();
   const [, setIsLoggedIn] = useRecoilState(isLoginState);
@@ -258,4 +259,4 @@ function KakaoCallback() {
   );
 }
 
-export default KakaoCallback;
+export default KakaoCallBack;

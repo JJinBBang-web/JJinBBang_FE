@@ -1,12 +1,20 @@
 // src/util/kakaoAuth.ts
 const KAKAO_CLIENT_ID = process.env.REACT_APP_KAKAO_CLIENT_ID || '';
-const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI || '';
+// const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI || '';
+const REST_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
+const REDIRECT_URI =
+  process.env.REACT_APP_KAKAO_REDIRECT_URI || `${window.location.origin}/login/kakao`;
 
 if (!KAKAO_CLIENT_ID || !REDIRECT_URI) {
   console.error('카카오 인증 정보가 설정되지 않았습니다.');
 }
 
-export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_KEY}&redirect_uri=${encodeURIComponent(
+  REDIRECT_URI
+)}&response_type=code`;
+
+// export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 export const initializeKakaoSDK = () => {
   if (!window.Kakao) {
     const script = document.createElement('script');

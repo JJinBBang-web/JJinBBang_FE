@@ -18,7 +18,7 @@ import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
 import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
 import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
-import KakaoCallback from "./pages/KakaoCallBack";
+import KakaoCallBack from "./pages/KakaoCallBack";
 import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
 import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
@@ -122,7 +122,7 @@ const AppContent: React.FC = () => {
     <>
       {showHeaderAndNav}
       <Routes>
-        <Route path="/login/kakao" element={<KakaoCallback />} />
+        <Route path="/login/kakao" element={<KakaoCallBack />} />
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
