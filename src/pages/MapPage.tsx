@@ -40,6 +40,7 @@ const MapPage = () => {
     const mapRef = useRef<kakao.maps.Map | null>(null);
     const [modalContent, setModalContent] = useState<'search' | 'nearby' | 'login' | null>(null);
     const setHideNav = useSetRecoilState(hideNavState);
+    const [verificationStatus, setVerificationStatus] = useState(false);
 
     // 페이지네이션 관련 상태
     const [searchCurrentPage, setSearchCurrentPage] = useState(1);
@@ -186,7 +187,7 @@ const MapPage = () => {
     };
 
     const handleOpenModal = () => {
-        if (!isLoggedIn) {
+        if (!isLoggedIn || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
             setHideNav(true);
@@ -454,6 +455,13 @@ const MapPage = () => {
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
         setIsLoggedIn(!!token);
+    }, []);
+
+    // 미인증 여부 확인
+    useEffect(() => {
+        const verification = localStorage.getItem("verificationStatus");
+        console.log("localStorage verification:", verification);
+        setVerificationStatus(verification === 'unverified');
     }, []);
 
     // login & 인증 여부에 따라 다르게 이동
