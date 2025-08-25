@@ -193,7 +193,7 @@ const App: React.FC = () => {
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient} >
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <BrowserRouter>
           <AppContent />
           <ModalBottomSheet />
         </BrowserRouter>
