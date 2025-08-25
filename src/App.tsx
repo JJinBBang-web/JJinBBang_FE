@@ -130,7 +130,6 @@ const AppContent: React.FC = () => {
         <Route path="/myaccount" element={<AccountAuthPage />} />
         <Route path="/auth">
           <Route path="kakao" element={<KakaoAuthPage />} />
-          <Route path="kakao/callback" element={<KakaoCallback />} />
           <Route path="student">
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
