@@ -8,8 +8,7 @@ import { useRecoilState } from 'recoil';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
-// const url = process.env.REACT_APP_API_URL;
-// const url = '/api';
+const url = process.env.REACT_APP_API_URL;
 export const getSignupToken = () => localStorage.getItem('signupToken');
 export const getAccessToken = () => localStorage.getItem('accessToken');
 export const getRefreshToken = () => localStorage.getItem('refreshToken');
@@ -34,7 +33,7 @@ export const clearTokens = () => {
 };
 
 export const kakaoLogin = async (authCode: string) => {
-  const response = await fetch('/api/v1/auth', {
+  const response = await fetch(url + '/api/v1/auth', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -58,7 +57,7 @@ const kakaoLogout = async () => {
 
 export const agreeToTerms = async () => {
   console.log('SignupToken:', getSignupToken());
-  const response = await fetch('/api/v1/auth/signup', {
+  const response = await fetch(url + '/api/v1/auth/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -70,7 +69,7 @@ export const agreeToTerms = async () => {
 };
 
 export const getUserInfo = async () => {
-  const response = await fetch('/api/v1/user', {
+  const response = await fetch(url + '/api/v1/user', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
