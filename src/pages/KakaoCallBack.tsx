@@ -97,12 +97,10 @@ function KakaoCallBack() {
     const handleLogin = async () => {
       const searchParams = new URLSearchParams(location.search);
       const code = searchParams.get('code');
-      console.log('인가 코드:', code);
 
       if (code) {
         try {
           const response = await kakaoLogin(code);
-          console.log('백엔드 응답:', response);
 
           if (response.data.accessToken) {
             console.log('로그인 성공, 토큰 저장 완료');
@@ -175,7 +173,6 @@ function KakaoCallBack() {
   const handleTermsComplete = async () => {
     try {
       const result = await agreeToTerms();
-      console.log('약관 동의 응답:', result.code, result.message, result.data);
 
       if (result.code === 200) {
         console.log('약관 동의 성공');
