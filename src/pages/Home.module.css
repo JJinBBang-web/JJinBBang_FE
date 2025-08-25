@@ -198,7 +198,6 @@
   border-radius: 16px;
   background: var(--white);
   box-sizing: border-box;
-  cursor: pointer;
 }
 
 .safetyText {
