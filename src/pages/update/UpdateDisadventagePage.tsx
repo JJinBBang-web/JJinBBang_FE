@@ -14,31 +14,32 @@ const UpdateDisadventagePage:React.FC = () => {
     const { housingType, disadvantages, from } = locationState;
     const [review,setReview] = useRecoilState(updateReviewState);
     
-    const filters = useRecoilValue<FilterCategory[]>(
-            housingType === "AGENCY" ? JjinAgencyFilterState : JjinFilterState
-          );
-    const dormFilters = useRecoilValue<FilterCategory[]>(DormFilterState);
-    
     const isDormitory = housingType === 'DORMITORY';
-    const currentFilters = isDormitory ? dormFilters : filters;
+    const isAgency = housingType === 'AGENCY';
+
+    const filters = useRecoilValue<FilterCategory[]>(
+      isAgency ? JjinAgencyFilterState : JjinFilterState
+    );
+    const dormFilters = useRecoilValue<FilterCategory[]>(DormFilterState);
+    const currentFilters = isDormitory ? dormFilters : filters;    
+
     const maxSelections = 5;
     const contentRef = useRef<HTMLDivElement>(null);
 
     const { reviewId } = useParams();
 
     const [selectedFilters, setSelectedFilters] = useState<string[]>(() => {
-        const rawKeys = Array.isArray(disadvantages) ? disadvantages : review?.cons || [];
+      const rawKeys = Array.isArray(disadvantages) ? disadvantages : review?.cons || [];
 
-        const allFilters = [...dormFilters, ...filters];
-        const allItems = allFilters.flatMap(f => [...f.positiveFilters, ...f.negativeFilters]);
+      const items = currentFilters.flatMap(f => [
+        ...f.positiveFilters,
+        ...f.negativeFilters,
+      ]);
 
-        const labelsFromKeys = rawKeys.map(key => {
-            const item = allItems.find(item => item.key === key);
-            return item?.label;
-        }).filter((label): label is string => !!label); // 필터: undefined 제거
-
-        return labelsFromKeys;
+      return rawKeys
+        .filter(key => items.some(item => item.key === key)); // key 유지
     });
+
 
     const handleBack = () => {
         // 수정 모드일 경우
@@ -51,12 +52,12 @@ const UpdateDisadventagePage:React.FC = () => {
         }
     };
 
-    const handleFilterClick = (label: string) => {
+    const handleFilterClick = (key: string) => {
         setSelectedFilters((prev) =>
-        prev.includes(label)
-            ? prev.filter((item) => item !== label)
+        prev.includes(key)
+            ? prev.filter((item) => item !== key)
             : prev.length < maxSelections
-            ? [...prev, label]
+            ? [...prev, key]
             : prev
         );
     };
@@ -65,33 +66,17 @@ const UpdateDisadventagePage:React.FC = () => {
         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-        const handleNext = () => {
+    const handleNext = () => {
         if (!review) return;
 
-        // 모든 필터 아이템 모으기
-        const allFilters = [...dormFilters, ...filters];
-        const allItems = allFilters.flatMap(f => [...f.positiveFilters, ...f.negativeFilters]);
-
-        // selectedFilters = label 배열 → key 배열로 변환
-        const keysToSave = selectedFilters
-            .map(label => allItems.find(item => item.label === label)?.key)
-            .filter((key): key is string => !!key); // undefined 제거
-
-        const updatedReview = {
-            ...review,
-            cons: keysToSave,
-        };
-
+        const updatedReview = { ...review, cons: selectedFilters };
         setReview(updatedReview);
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        localStorage.setItem("updateReviewState", JSON.stringify(updatedReview));
 
-        if (from === 'update') {
-            navigate(`/review/${reviewId}/update`, {
-            state: {
-                ...location.state,
-                disadvantages: keysToSave, // 상태도 key 배열로 넘겨줘야 나중에 다시 사용할 수 있음
-            },
-            });
+        if (from === "update") {
+          navigate(`/review/${reviewId}/update`, {
+            state: { ...location.state, disadvantages: selectedFilters },
+          });
         }
     };
 
@@ -127,11 +112,11 @@ const UpdateDisadventagePage:React.FC = () => {
                     <button
                       key={index}
                       className={`${styles.filter_btn} ${
-                        selectedFilters.includes(item.label)
+                        selectedFilters.includes(item.key)
                           ? styles.selected
                           : ""
                       }`}
-                      onClick={() => handleFilterClick(item.label)}
+                      onClick={() => handleFilterClick(item.key)}
                     >
                       <img
                         src={item.icon}

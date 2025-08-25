@@ -1,0 +1,421 @@
+/* src/styles/review/DormitoryInputPage.module.css */
+
+.container {
+  background-color: var(--white);
+  padding: 0 1rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  padding: 8.75vh 0 1.5vh;
+  position: relative;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 8.75vh;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-gray20);
+  border-radius: 2px;
+  margin: 2.5rem 0 1rem;
+}
+
+.progressFill {
+  width: 33%;
+  height: 4px;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+.header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  margin: 1rem 0 1.2rem;
+}
+
+.label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.buildingInput {
+  width: 100%;
+  height: 56px;
+  padding: 0 1.25rem;
+  background-color: var(--white);
+  border: 1px solid var(--color-gray20);
+  border-radius: 16px;
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray80);
+  box-sizing: border-box;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.buildingInput:focus {
+  outline: none;
+  border-color: #ff6b35;
+}
+
+.buildingInput::placeholder {
+  color: var(--color-gray40);
+  font-size: 1.125rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper input {
+  width: 100%;
+  height: 56px;
+  padding: 0 4rem 0 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e8eb;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: #333333;
+  box-sizing: border-box;
+  margin-bottom: 1.25rem;
+}
+
+.inputWrapper input:focus {
+  outline: none;
+  border-color: #ff6b35;
+}
+
+.inputWrapper input::placeholder {
+  color: var(--color-gray40);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+}
+
+.unit {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray40);
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1.25rem;
+}
+
+.floorSection {
+  margin-bottom: 2rem;
+}
+
+.floorOptions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.floorButton {
+  height: 48px;
+  padding: 0.88rem 0.81rem;
+  border: 1px solid var(--color-gray20);
+  border-radius: 12px;
+  background-color: var(--white);
+  color: var(--color-gray40);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.375rem;
+  letter-spacing: -0.0375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+}
+
+.floorButton:hover {
+  border-color: #ff6b35;
+}
+
+.floorButton.selected {
+  border-color: #ff6b35;
+  background-color: #fff7f4;
+  color: #ff6b35;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.75rem;
+  display: flex;
+  gap: 0.5rem;
+  max-width: 393px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background-color: #ffffff;
+}
+
+.prevButton {
+  flex: 1;
+  height: 54px;
+  background-color: #e5e8eb;
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prevButton:hover {
+  background-color: #d1d5db;
+}
+
+.nextButton {
+  flex: 1;
+  height: 54px;
+  background-color: #999999;
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.nextButton:disabled {
+  cursor: not-allowed;
+  background-color: #999999;
+}
+
+.nextButton.enabled {
+  background-color: #ff6b35;
+  cursor: pointer;
+}
+
+.nextButton.enabled:hover {
+  background-color: #e55a2b;
+}
+
+/* Modal styles for university selection */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
+}
+
+.modalBottomSheet {
+  width: 100%;
+  max-width: 393px;
+  background-color: #ffffff;
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+  padding: 0 16px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modalHandle {
+  width: 50px;
+  height: 5px;
+  background-color: #e5e8eb;
+  border-radius: 100px;
+  margin: 10px auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.modalHeader h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: #333333;
+  margin: 0;
+}
+
+.closeModalButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.initialNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  padding: 0 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.initial {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #666666;
+  cursor: pointer;
+  margin: 0 2px;
+}
+
+.selectedInitial {
+  background-color: #fff7f4;
+  color: #ff6b35;
+}
+
+.universityList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.universityItem {
+  width: calc(50% - 6px);
+  height: 220px;
+  border: 1px solid #e5e8eb;
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.selectedUniversity {
+  border-color: #ff6b35;
+  background-color: #fff7f4;
+}
+
+.universityLogo {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.universityInfo {
+  text-align: center;
+}
+
+.universityName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+  margin-bottom: 4px;
+}
+
+.universityCampus {
+  font-size: 12px;
+  color: #666666;
+  margin: 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0 44px;
+}
+
+.resetButton,
+.confirmButton {
+  width: 49%;
+  height: 54px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.resetButton {
+  border: 1px solid #999999;
+  background-color: #ffffff;
+  color: #999999;
+}
+
+.resetButton:hover {
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.confirmButton {
+  border: none;
+  background-color: #999999;
+  color: #ffffff;
+}
+
+.confirmButton.enabled {
+  background-color: #ff6b35;
+}
+
+.confirmButton:disabled {
+  cursor: not-allowed;
+}

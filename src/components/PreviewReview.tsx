@@ -145,16 +145,17 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
               {type}
             </div>
             {generalInfo && (
-              <div className={styles.buildingPrice}>
-                {
-                  generalInfo.contractType === "MONTHLY_RENT"
-                    ? "월세" // contractType이 'MONTHLY_RENT'일 경우 표시
-                    : generalInfo.contractType === "DEPOSIT_RENT"
-                    ? "전세" // contractType이 'DEPOSIT_RENT'일 경우 표시
-                    : generalInfo.contractType // 둘 다 아닐 경우 원래 값 표시
-                }{" "}
-                {generalInfo?.deposit}/{generalInfo?.price}
-              </div>
+              generalInfo.contractType === "MONTHLY_RENT" ? (
+                <div className={styles.buildingPrice}>
+                  월세 {generalInfo?.deposit}/{generalInfo?.price}
+                </div>
+              ) : generalInfo.contractType === "DEPOSIT_RENT" ? (
+                <div className={styles.buildingPrice}>
+                  전세 {generalInfo?.deposit}
+                </div>
+              ) : (
+                <></>
+              )
             )}
             {dormitoryInfo && (
               <div className={`${styles.buildingPrice} ${styles.dormitory}`}>

@@ -4,6 +4,7 @@ import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
 import { Building } from "../../recoil/detail/BuildingRecoilState";
 import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
+import { fixImageUrls } from "../../util/imageUrl";
 
 interface Props {
     building : Building | null,
@@ -11,9 +12,11 @@ interface Props {
 }
 
 const ImageSlider:React.FC<Props> = ({building, review}) => {
-    const images = building
+    const rawImages = building
     ? building.buildingImages.imageUrl
     : review?.reviewImages.imageUrl;
+    
+    const images = rawImages ? fixImageUrls(rawImages) : undefined;
 
     const [currentIndex, setCurrentIndex] = useState(0);
 

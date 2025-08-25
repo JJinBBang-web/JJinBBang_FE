@@ -7,6 +7,7 @@ interface Props {
 
 const ReviewFacilitiesInfo:React.FC<Props> = ({review}) => {
     const rest = review.facilities?.lounge == true ? "유" : "무"
+    console.log(review.facilities)
     return (
         <div className={styles.content}>
             <p className={styles.title}>편의 시설</p>
@@ -14,7 +15,7 @@ const ReviewFacilitiesInfo:React.FC<Props> = ({review}) => {
                 <p className={styles.subTitle}>개인</p>
                 <div className={styles.tagContainer}>
                 {
-                    review.facilities?.private.map((t, index) => (
+                    review.facilities?.privateFacilities.map((t, index) => (
                         <div key={index} className={styles.tag}>
                             <p className={styles.tagText}>{t}</p>
                         </div>
@@ -27,7 +28,7 @@ const ReviewFacilitiesInfo:React.FC<Props> = ({review}) => {
                 <p className={styles.subTitle}>공용</p>
                 <div className={styles.tagContainer}>
                 {
-                    review.facilities?.public.map((t, index) => (
+                    review.facilities?.publicFacilities.map((t, index) => (
                         <div key={index} className={styles.tag}>
                             <p className={styles.tagText}>{t}</p>
                         </div>

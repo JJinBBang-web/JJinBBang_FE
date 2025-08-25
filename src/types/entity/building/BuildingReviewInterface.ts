@@ -50,7 +50,7 @@ export interface DormitoryReviewInfo {
   id: number;
   name: string;
   type: string;
-  university: string;
+  universityName: string;
   floor: string;
   capacity: number;
   dormFee: number;
@@ -75,8 +75,8 @@ export interface DormitoryConditions {
 
 // 기숙사 편의시설
 export interface DormitoryFacilities {
-  private: string[];
-  public: string[];
+  privateFacilities: string[];
+  publicFacilities: string[];
   lounge: boolean;
 }
 
@@ -84,7 +84,7 @@ export interface DormitoryFacilities {
 // 최종 통합 타입
 export interface BuildingReviewResponse {
   generalReviewInfo?: GeneralReviewInfo;
-  domitoryReviewInfo?: DormitoryReviewInfo;
+  dormitoryReviewInfo?: DormitoryReviewInfo;
   agencyReviewInfo?: AgencyReviewInfo;
 
   reviewInfo: ReviewInfo;

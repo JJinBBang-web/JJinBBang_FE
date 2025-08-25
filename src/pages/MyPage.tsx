@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
-import { userApi, Review } from '../api/user';
+import { userApi } from '../api/user';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
@@ -311,7 +311,10 @@ const MyPage: React.FC = () => {
     return (
       <div className={styles.reviewList}>
         {userReviews.map((review) => (
-          <PreviewReview key={review.id} review={review} />
+          <div key={review.id}>
+            <div className={styles.line} />
+            <PreviewReview review={review} />
+          </div>
           // <div key={review.id} className={styles.reviewItem}>
           //   <h3>{review.title || review.buildingName || '제목 없음'}</h3>
           //   <p>{review.content}</p>

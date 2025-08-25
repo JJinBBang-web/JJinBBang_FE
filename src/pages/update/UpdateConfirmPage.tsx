@@ -1,22 +1,29 @@
 import styles from "./UpdateConfirmPage.module.css";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { tagMessages, tagLongMessages, tagImages } from '../../components/Tag';
+import { useRecoilState } from "recoil";
+import { tagMessages, tagImages } from '../../components/Tag';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';
 import starEmptyIcon from '../../assets/image/starIconOff.svg';
 import checkIcon from '../../assets/image/checkIconActive.svg';
 import { updateReviewState } from "../../recoil/review/updateReviewAtoms";
-import { JjinAgencyFilterState, JjinFilterState } from "../../recoil/util/filterRecoilState";
-import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 import { useCancelModal } from "../../util/useCancelModal";
 import CancelModal from "../../components/review/CancelModal";
-import { defaultReviewState } from "../../recoil/review/reviewAtoms";
+import { defaultReviewState, ReviewState } from "../../recoil/review/reviewAtoms";
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
-import { deleteAPI } from "../../api/baseAPI";
+import { deleteAPI, putAPI } from "../../api/baseAPI";
+import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
+
+
+type AddressPick = {
+  roadAddress?: string;
+  jibunAddress?: string;
+  buildingName?: string;
+  buildingCode?: string;
+};
 
 
 const UpdateConfirmPage: React.FC = () => {
@@ -26,9 +33,6 @@ const UpdateConfirmPage: React.FC = () => {
     const { reviewId } = useParams();
 
     const [review,setReview] = useRecoilState(updateReviewState);
-    const filters = useRecoilValue(JjinFilterState);
-    const dormFilters = useRecoilValue(DormFilterState); // 기숙사 필터 추가
-    const agencyFilters = useRecoilValue(JjinAgencyFilterState);
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState(0);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -41,10 +45,6 @@ const UpdateConfirmPage: React.FC = () => {
     const contractType = contractTypeToKorean[review?.contractType ?? ''] || '';
     const floor = floorToKorean[review?.floorType ?? ''] || ""; 
 
-    // 기숙사 유형인지 체크
-    const isDormitory = review?.housingType === 'DORMITORY';
-    const isAgency = review?.housingType === 'AGENCY';
-
     const [showRatingModal, setShowRatingModal] = useState(false);
     
     const {
@@ -53,6 +53,38 @@ const UpdateConfirmPage: React.FC = () => {
         handleCancelModalClose,
       } = useCancelModal();
     
+      useEffect(() => {
+          const state = location.state as { address?: AddressPick } | undefined;
+          const addr = state?.address;
+          if (!addr || review?.detailedAddress) return;
+          
+          setReview((prev) => {
+            // prev가 null이어도 항상 ReviewState가 되도록 보정
+            const base: ReviewState = prev ?? defaultReviewState;
+            const next: ReviewState = { ...base };
+
+            const newAddress = addr.roadAddress ?? addr.jibunAddress;
+            if (newAddress && newAddress.trim().length > 0) {
+              next.address = newAddress;
+            }
+            if (addr.buildingName && addr.buildingName.trim().length > 0) {
+              next.detailedAddress = addr.buildingName.trim();
+            }
+            if (addr.buildingCode && addr.buildingCode.trim().length > 0) {
+              next.buildingCode = addr.buildingCode.trim();
+            }
+
+            return next;
+          });
+
+          // 중복 갱신 방지: history state에서 address 제거
+          navigate(location.pathname, {
+            replace: true,
+            state: { ...(location.state as object), address: undefined },
+          });
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [location.state, navigate, setReview]);
+
     // 뒤로가기 함수
     const handleBack = () => {
       navigate(`/building/review/${reviewId}`);
@@ -70,18 +102,28 @@ const UpdateConfirmPage: React.FC = () => {
 
     // api 연동해야함.
     // 최종 재업로드 함수
-    const handleSubmitRating = () => {
-      setReview((prev) => {
-        if (!prev) return null; // 또는 초기값으로 적절한 객체 반환
+    const handleSubmitRating = async () => {
+      if (!reviewId || !review || rating <= 0) return;
 
-        return {
-          ...prev,
-          rating: rating,
-        };
-      });
+      try {
+          setIsSubmitting(true);
 
-      setShowRatingModal(false);
-      setShowConfirmModal(true);
+          // UI 반영 (선반영)
+          setReview((prev) => (prev ? { ...prev, rating } : prev));
+
+          const body = buildUpdatePayload(review, rating);
+          console.log(body);
+          // ✅ 인증 필요하면 true
+          await putAPI(`/api/v1/review/${reviewId}`, body, true);
+
+          setShowRatingModal(false);
+          setShowConfirmModal(true);
+      } catch (e) {
+          console.error('리뷰 수정 실패:', e);
+          alert('수정에 실패했어요. 잠시 후 다시 시도해 주세요.');
+      } finally {
+          setIsSubmitting(false);
+      }
     };
 
     // 최종 삭제 함수
@@ -119,7 +161,7 @@ const UpdateConfirmPage: React.FC = () => {
           setTimeout(() => {
             setIsSubmitting(false);
             setShowConfirmModal(false);
-            navigate(`/building/review/${reviewId}`);
+            navigate(`/mypage`);
             setReview(defaultReviewState);
           }, 1000);
         } catch (error) {
@@ -141,7 +183,6 @@ const UpdateConfirmPage: React.FC = () => {
 
       navigate(`/review/${reviewId}/update/type`, {
         state: {
-          ...review,
           from: 'update',
         },
       });
@@ -149,20 +190,48 @@ const UpdateConfirmPage: React.FC = () => {
 
 
     const navigateToAddress = () => {
-      navigate(`/review/${reviewId}/update/address`, {
-        state: {
-          ...review,
-          from: 'update',
-        },
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      navigate(`/review/${reviewId}/update/input-address`, {
+        state: { from: 'update', housingType: review?.housingType },
       });
     };
 
+    const navigateToDetailedAddress = () => {
+      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      if (review?.housingType === 'DORMITORY') {
+        navigate(`/review/${reviewId}/update/dormitory`, {
+          state: {
+            from: "update",
+            universityName : review?.universityName,
+            roomCapacity: review?.dormitoryConditions?.roomCapacity,
+            floorType: floor || '',
+            buildingName: review?.detailedAddress,
+          }
+        })
+
+      } else {
+          navigate(`/review/${reviewId}/update/floor`, {
+            state: {
+              address: {
+                roadAddress: review?.address || '',
+                jibunAddress: '',
+                buildingName: review?.detailedAddress || '',
+              },
+              buildingName: review?.detailedAddress || '',
+              floor: floor || '',
+              space: review?.space || 0,
+              from: 'update',
+            },
+        });
+      }
+    };
     const navigateToContractType = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
-        navigate('/review/dormitory-conditions', {
+        navigate(`/review/${reviewId}/update/dormitory-conditions`, {
           state: {
             from: 'update',
+            facfacilities:review?.facilityConditions
           },
         });
       } else {
@@ -177,7 +246,7 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToContractDetails = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
-        navigate('/review/dormitory-amenities', {
+        navigate(`/review/${reviewId}/update/dormitory-amenities`, {
           state: {
             from: 'update',
           },
@@ -196,8 +265,8 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/filter-ad`, {
         state: {
-          ...review,
           from: "update",
+          housingType: review?.housingType,
           advantages: review?.pros || [],
         },
       });
@@ -207,8 +276,8 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/filter-disad`, {
         state: {
-          ...review,
           from: "update",
+          housingType: review?.housingType,
           disadvantages: review?.cons || [],
         },
       });
@@ -217,70 +286,96 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToContent = () => {
       navigate(`/review/${reviewId}/update/content`, {
         state: {
-          ...review,
           content: review?.description,
           from: 'update',
         },
       });
     };
 
-    const getIconFromLabel = (label: string): string => {
-        // 기숙사 유형에 따라 적절한 필터 선택
-        const currentFilters = isDormitory
-          ? dormFilters
-          : isAgency
-          ? agencyFilters
-          : filters;
-    
-        console.log("s:", currentFilters);
-    
-        let iconSrc = '';
-        let tagKey = '';
-    
-        // longMessage에서 key 찾기 (사용자가 선택한 태그 "교통이 편리해요"로부터 "PO_LO_01" 키 확인)
-        for (const [key, value] of Object.entries(tagLongMessages)) {
-          if (value === label) {
-            tagKey = key;
-            break;
-          }
-        }
-    
-        // 찾은 키로 아이콘 가져오기
-        if (tagKey) {
-          const filter = review?.housingType === "AGENCY" ? agencyFilters : filters;
-          iconSrc =
-            currentFilters
-              .find(
-                (category) =>
-                  category.positiveFilters.some((item) => item.key === tagKey) ||
-                  category.negativeFilters.some((item) => item.key === tagKey)
-              )
-              ?.positiveFilters.find((item) => item.key === tagKey)?.icon ||
-            currentFilters
-              .find(
-                (category) =>
-                  category.positiveFilters.some((item) => item.key === tagKey) ||
-                  category.negativeFilters.some((item) => item.key === tagKey)
-              )
-              ?.negativeFilters.find((item) => item.key === tagKey)?.icon ||
-            '';
-        }
-    
-        // 아이콘을 찾지 못했으면 라벨로 직접 찾기
-        if (!iconSrc) {
-          currentFilters.forEach((category) => {
-            [...category.positiveFilters, ...category.negativeFilters].forEach(
-              (item) => {
-                if (item.label === label) {
-                  iconSrc = item.icon;
-                }
-              }
-            );
-          });
-        }
-    
-        return iconSrc;
-      };
+    // Request 매핑 함수
+    const buildUpdatePayload = (r : ReviewState, finalRating: number) : UpdateReviewRequest => {
+      // 이미지 처리
+      const imageUrls = Array.isArray(r.images) ? r.images.filter(Boolean) : [];
+
+      // 공통 키워드 처리
+      const keywords = {
+          positive: r.pros ?? [],
+          negative: r.cons ?? [],
+        };
+      
+      // 공통 건물 정보 처리
+      const buildingRequest = (() => {
+        if (!r.buildingCode) return undefined;
+        return {
+          buildingCode: r.buildingCode,
+          name: r.detailedAddress || undefined,
+          type: r.housingType || undefined,
+          address: r.address || undefined,
+          latitude: (r as any).latitude,
+          longitude: (r as any).longitude,
+        };
+      })();
+
+      switch (r.housingType) {
+        case "AGENCY" :
+          return {
+          agencyReview: {
+            rating: finalRating as 1|2|3|4|5,
+            content: r.content ?? r.description ?? '',
+          },
+          imageUrls,
+          keywords,
+          ...(buildingRequest ? { buildingRequest } : {}),
+        };
+
+        case "DORMITORY" :
+          return {
+            dormitoryReview: {
+              campusId: 1,
+              capacity: r.dormitoryConditions?.roomCapacity ?? 1,
+              dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
+              floor: r.floorType ?? 'LOW',
+              rating: finalRating as 1|2|3|4|5,
+              content: r.content ?? r.description ?? '',
+            },
+            imageUrls,
+            keywords,
+            condition: {
+              currentRegion: r.dormitoryConditions?.residenceArea ?? '',
+              currentGrade: String(r.dormitoryConditions?.semesterGrade) ?? 0, 
+            },
+            facilities: {
+              privateFacilities: Object.keys(r.facilityConditions?.private ?? {}).filter(
+                key => r.facilityConditions?.private?.[key]
+              ),
+              publicFacilities: Object.keys(r.facilityConditions?.public ?? {}).filter(
+                key => r.facilityConditions?.public?.[key]
+              ),
+              lounge: Object.values(r.facilityConditions?.lounge ?? {})[0] ?? false
+            },
+            ...(buildingRequest ? { buildingRequest } : {}),
+          };
+
+        default : 
+          const contractType = r.contractType === 'MONTHLY_RENT' ? 'MONTHLY_RENT' : 'DEPOSIT_RENT';
+          const monthlyRent = contractType === 'MONTHLY_RENT' ? (r.monthlyRent ?? null) : null;
+          return {
+            generalReview: {
+              contractType,
+              deposit: r.deposit ?? 0,
+              monthlyRent,
+              maintenanceCost: r.managementFee ?? 0,
+              floor: r.floorType ?? 'LOW',
+              space: r.space ?? 0,
+              rating: (finalRating as 1|2|3|4|5),
+              content: r.content ?? r.description ?? '',
+            },
+            imageUrls,
+            keywords,
+            ...(buildingRequest ? { buildingRequest } : {}),
+        };
+      }
+    }
 
     const renderTags = (tags: string[]) => {
       if (!tags || tags.length === 0) return null;
@@ -304,6 +399,7 @@ const UpdateConfirmPage: React.FC = () => {
       );
     };
 
+    console.log(review);
     return (
     <div className="content">
       <div className={styles.container}>
@@ -324,8 +420,8 @@ const UpdateConfirmPage: React.FC = () => {
             <div
               className={styles.infoItem}
               onClick={() => 
-                review?.housingType != "AGENCY" 
-                ? review?.housingType != "DORMITORY" ?
+                review?.housingType !== "AGENCY" 
+                ? review?.housingType !== "DORMITORY" ?
                 handleItemClick(navigateToHousingType)
                 : undefined : undefined
               }
@@ -335,13 +431,18 @@ const UpdateConfirmPage: React.FC = () => {
                 <span className={styles.valueText}>
                   {housingType}
                 </span>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {review?.housingType !== "AGENCY" ? review?.housingType !== "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
               </div>
             </div>
 
             <div
               className={styles.infoItem}
-              onClick={() => handleItemClick(navigateToAddress)}
+              onClick={() => 
+                review?.housingType !== "AGENCY" 
+                ? review?.housingType !== "DORMITORY" ?
+                handleItemClick(navigateToAddress)
+                : undefined : undefined
+              }
             >
               <span className={styles.label}>주소</span>
               <div className={styles.value}>
@@ -350,25 +451,42 @@ const UpdateConfirmPage: React.FC = () => {
                     {review?.address}
                   </span>
                 </div>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {review?.housingType !== "AGENCY" ? review?.housingType !== "DORMITORY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div> : <div></div>}
               </div>
             </div>
 
             <div
               className={styles.infoItem}
-              // onClick={() => handleItemClick(navigateToDetailedAddress)}
+              onClick={() => 
+                review?.housingType == "AGENCY" ? undefined :
+                handleItemClick(navigateToDetailedAddress)}
             >
               <span className={styles.label}>상세 주소</span>
               <div className={styles.value}>
-                <span className={styles.valueText}>
-                  {review?.detailedAddress}
-                  <br />
-                  {floor}
-                </span>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {review?.housingType === "DORMITORY" ? (
+                <>
+                  <span className={styles.valueText}>
+                    {review?.universityName}
+                    <br/>
+                    {review?.detailedAddress}
+                    <br />
+                    {floor}
+                  </span>
+                </>
+                ) : (
+                <>
+                  <span className={styles.valueText}>
+                      {review?.detailedAddress}
+                    <br />
+                    {floor}
+                  </span>
+                </>
+                )
+                }
+                {review?.housingType !== "AGENCY" ? <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} /> : <div></div>}
               </div>
             </div>
-            {review?.housingType != "AGENCY" && (
+            {review?.housingType !== "AGENCY" && (
               <>
                 <div
                   className={styles.infoItem}
@@ -441,21 +559,6 @@ const UpdateConfirmPage: React.FC = () => {
                     <div className={styles.contractDetails}>
                       {review?.housingType === "DORMITORY" ? (
                           <>
-                            {/* {Object.entries(
-                              review.facilityConditions || {}
-                            ).map(([category, options]) => {
-                              const selectedOption = Object.entries(
-                                options
-                              ).find(([_, selected]) => selected)?.[0];
-                              return selectedOption ? (
-                                <span
-                                  key={category}
-                                  className={styles.valueText}
-                                >
-                                  {facility} {selectedOption}
-                                </span>
-                              ) : null;
-                            })} */}
                             {Object.entries(review.facilityConditions || {}).map(([category, options]) => {
                               return Object.entries(options)
                                 .filter(([_, selected]) => selected)
@@ -478,7 +581,7 @@ const UpdateConfirmPage: React.FC = () => {
                                   // 휴게시설은 "유"만 붙이고 끝냄
                                   const label =
                                     category === "lounge"
-                                      ? `${option} ${typeLabel}`
+                                      ? `휴게시설 ${typeLabel}`
                                       : `${option} ${typeLabel}`;
 
                                   return (

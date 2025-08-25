@@ -15,7 +15,7 @@ const BuildingReviewList: React.FC = () => {
   // 기본값: 최신순, 1페이지, 10개
   const { data, isLoading, isError } = useBuildingReviewList({
     buildingId: buildingId ?? "",
-    sortBy: "LATEST",
+    sortBy: selectedSort,
     isAgency: false,
   });
   

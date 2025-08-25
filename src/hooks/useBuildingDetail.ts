@@ -5,6 +5,7 @@ export const useBuildingDetail = (buildingId: string, isAgency: boolean) => {
   return useQuery({
     queryKey: ["buildingDetail", buildingId, isAgency],
     queryFn: () => BuildingAPI.getBuildingDetail(buildingId, isAgency),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };

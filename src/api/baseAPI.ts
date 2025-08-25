@@ -9,7 +9,10 @@ export const getAPI = async (url: string, useAuthOption: boolean = false) => {
     }
     const response = await api.get(url, requestConfig);
     return response.data;
-  } catch (error) {}
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
 };
 
 // 이 부분을 추가하세요
@@ -28,7 +31,8 @@ export const postAPI = async (
     const response = await api.post(url, data, requestConfig);
     return response.data;
   } catch (error) {
-    // 에러 처리 필요시 여기에 추가
+    console.error('API Error:', error);
+    throw error;
   }
 };
 
@@ -47,7 +51,8 @@ export const putAPI = async (
     const response = await api.put(url, data, requestConfig);
     return response.data;
   } catch (error) {
-    // 에러 처리 필요시 여기에 추가
+    console.error('API Error:', error);
+    throw error;
   }
 };
 
@@ -65,6 +70,7 @@ export const deleteAPI = async (
     const response = await api.delete(url, requestConfig);
     return response.data;
   } catch (error) {
-    // 에러 처리 필요시 여기에 추가
+    console.error('API Error:', error);
+    throw error;
   }
 };
