@@ -194,7 +194,7 @@ const Home: React.FC = () => {
             찐빵이와 함께라면 어렵지 않아요!
           </p>
         </div>
-        <img src={iconRight} alt="iconRight" />
+        <div style={{ width: '9px', height: '100%' }}/>
       </div>
       <div className={styles.previewReviewContainer}>
         <div className={styles.previewHeader}>
