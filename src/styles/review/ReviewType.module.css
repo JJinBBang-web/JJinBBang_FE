@@ -79,6 +79,13 @@
   color: var(--primary-color);
 }
 
+.typeButton.disabled {
+  background-color: var(--color-gray10);
+  border-color: var(--color-gray20);
+  color: var(--color-gray40);
+  cursor: not-allowed;
+}
+
 /* footer button style */
 /* 이전/다음 버튼을 함께 표시할 때 사용 */
 .buttonContainer {
