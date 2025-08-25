@@ -8,6 +8,7 @@ import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
 import { tagImages, tagMessages } from "../Tag";
 import { useEffect, useState } from "react";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
+import { useNavigate } from "react-router-dom";
 
 
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
 }
 
 const ReviewInfo: React.FC<Props> = ({review}) => {
-    console.log(review.dormitoryReviewInfo);
+    const navigate = useNavigate();
     const liked = review.generalReviewInfo?.liked ?? review.dormitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
     const name = review.generalReviewInfo?.name ?? review.dormitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
     const rawType = review.generalReviewInfo?.type ?? review.dormitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
@@ -25,6 +26,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
     const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
     const rawConstractType = review.generalReviewInfo?.contractType;
     const constractType = rawConstractType && contractTypeToKorean[rawConstractType] ? contractTypeToKorean[rawConstractType] : rawConstractType ?? "" ;
+    const buildingId = review.building.buildingId;
 
     const [isLiked, setIsLiked] = useState(liked);
     const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
@@ -34,7 +36,9 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
         setLikeCount(review.reviewInfo.likeCount);
     },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
-    console.log(review);
+    const handleToBuilding = () => {
+        navigate(`/building/${buildingId}`);
+    };
 
     return (
         <div className={styles.content}>
@@ -45,7 +49,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
-                                    {`${review.generalReviewInfo.contractType} ${review.generalReviewInfo.deposit}`}
+                                    {`${constractType} ${review.generalReviewInfo.deposit}`}
                                 </div>
                             </>
                         :
@@ -85,7 +89,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
             <div className={styles.textWrap}>
                 <div className={styles.nameAndBtn}>
                     <p className={styles.buildingName}>{name}</p>
-                    <div className={styles.detailBtn}>건물 상세</div>
+                    <div className={styles.detailBtn} onClick={handleToBuilding}>건물 상세</div>
                 </div>
                 {review.generalReviewInfo && (
                     <p className={styles.buildingSize}>{floor}, {review.generalReviewInfo.space}m2, 관리비 {review.generalReviewInfo.maintenanceCost}만</p>
