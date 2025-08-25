@@ -117,8 +117,7 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.put(
-          // `${process.env.REACT_APP_API_URL}/api/v1/auth/tokenRefresh`,
-          "/api/v1/auth/tokenRefresh",
+          `${process.env.REACT_APP_API_URL}/api/v1/auth/tokenRefresh`,
           {},
           {
             headers: {
