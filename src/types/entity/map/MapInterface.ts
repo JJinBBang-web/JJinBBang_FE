@@ -53,6 +53,7 @@ export interface SearchRequest {
   keyword: string,
   num : number,
   page : number,
+  sortBy : "RCMND" | "LATEST" | "LIKES" | "STARS",
   filters: MarkerFilter;
 }
 
