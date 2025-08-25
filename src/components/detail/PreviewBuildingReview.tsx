@@ -46,7 +46,7 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
       return postAPI(
         `/api/v1/user/bookmark`,
         {
-          type: agencyInfo? "agency" : "building",
+          type: agencyInfo ? "agency" : "building",
           id: activeReviewInfo?.id,
           bookmark: !isLiked,
         },
@@ -131,25 +131,29 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
         )}
       </div>
       <p className={styles.address}>{address}</p>
-      <div className={styles.buildingRating}>
+      {review.reviewInfo.keyword && (
         <div>
-          {[...Array(rating ?? 0)].map((_, index) => (
-            <img key={index} src={starIconOn} alt="rate"></img>
-          ))}
-          {[...Array(5 - Math.round(rating ?? 0))].map((_, index) => (
-            <img key={index} src={starIconOff} alt="rate" />
-          ))}
+          <div className={styles.buildingRating}>
+            <div>
+              {[...Array(rating ?? 0)].map((_, index) => (
+                <img key={index} src={starIconOn} alt="rate"></img>
+              ))}
+              {[...Array(5 - Math.round(rating ?? 0))].map((_, index) => (
+                <img key={index} src={starIconOff} alt="rate" />
+              ))}
+            </div>
+            <p className={styles.reviewCount}>• {reviewCount}개의 찐빵</p>
+          </div>
+          <PreviewReviewContent
+            reviewInfo={{
+              content: review.reviewInfo.content,
+              keyword: review.reviewInfo.keyword,
+              likeCount: likeCount,
+              updateAt: review.reviewInfo.updateAt,
+            }}
+          />
         </div>
-        <p className={styles.reviewCount}>• {reviewCount}개의 찐빵</p>
-      </div>
-      <PreviewReviewContent
-        reviewInfo={{
-          content: review.reviewInfo.content,
-          keyword: review.reviewInfo.keyword,
-          likeCount: likeCount,
-          updateAt: review.reviewInfo.updateAt,
-        }}
-      />
+      )}
     </div>
   );
 };
