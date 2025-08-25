@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/JJinBBang_FE/static/css/main.034a8836.css",
-    "main.js": "/JJinBBang_FE/static/js/main.b7c76444.js",
+    "main.css": "/JJinBBang_FE/static/css/main.8ce3dc79.css",
+    "main.js": "/JJinBBang_FE/static/js/main.d3e731c8.js",
     "static/media/campusImg1.svg": "/JJinBBang_FE/static/media/campusImg1.d843d00b0fe3c580b96d9a9ff260bfe4.svg",
     "static/media/SpoqaHanSansNeo-Bold.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Bold.1db18034ccc384032a4a.woff2",
     "static/media/SpoqaHanSansNeo-Regular.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Regular.452bf1579d6a73fbaffc.woff2",
@@ -176,7 +176,6 @@
     "static/media/checkIcon.svg": "/JJinBBang_FE/static/media/checkIcon.696904804ad9d6cae287b4f750a1ce53.svg",
     "static/media/checkIconActive.svg": "/JJinBBang_FE/static/media/checkIconActive.dda4b8d5a71a8e652a69c6a9e2220ea1.svg",
     "static/media/verifyCompleteIcon.svg": "/JJinBBang_FE/static/media/verifyCompleteIcon.27b004fbcc0b3e752342ce507d262e2b.svg",
-    "static/media/iconRight.svg": "/JJinBBang_FE/static/media/iconRight.d5127362de6be2bab55e390da149d87d.svg",
     "static/media/arrowIcon.svg": "/JJinBBang_FE/static/media/arrowIcon.4659279d424e1020eb6eecc80fd79a90.svg",
     "static/media/campusArrow.svg": "/JJinBBang_FE/static/media/campusArrow.07418282b9454ad684361a3616a0350c.svg",
     "static/media/iconUp.svg": "/JJinBBang_FE/static/media/iconUp.a86ab3624b1eae6f6ae3e8370d2ef525.svg",
@@ -186,11 +185,11 @@
     "static/media/backIcon.svg": "/JJinBBang_FE/static/media/backIcon.5cc3798a05cd282a1a2b37529b961608.svg",
     "static/media/notSelectDot.svg": "/JJinBBang_FE/static/media/notSelectDot.b617819f5f22d0b1c65086a135eb8ffd.svg",
     "static/media/selectDot.svg": "/JJinBBang_FE/static/media/selectDot.3921dd6a5a166c7441fe8ff4af7061c5.svg",
-    "main.034a8836.css.map": "/JJinBBang_FE/static/css/main.034a8836.css.map",
-    "main.b7c76444.js.map": "/JJinBBang_FE/static/js/main.b7c76444.js.map"
+    "main.8ce3dc79.css.map": "/JJinBBang_FE/static/css/main.8ce3dc79.css.map",
+    "main.d3e731c8.js.map": "/JJinBBang_FE/static/js/main.d3e731c8.js.map"
   },
   "entrypoints": [
-    "static/css/main.034a8836.css",
-    "static/js/main.b7c76444.js"
+    "static/css/main.8ce3dc79.css",
+    "static/js/main.d3e731c8.js"
   ]
 }
