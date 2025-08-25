@@ -10,7 +10,7 @@ if (!KAKAO_CLIENT_ID || !REDIRECT_URI) {
 }
 
 
-export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_KEY}&redirect_uri=${encodeURIComponent(
+export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI
 )}&response_type=code`;
 
