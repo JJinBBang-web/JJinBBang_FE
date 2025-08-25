@@ -185,14 +185,15 @@
   position: fixed;
   display: flex;
   gap: 12px;
-  width: calc(100vw - 3.5rem);
+  width: 100%;
+  max-width: calc(393px - 2rem);
   bottom: 2.75rem;
-  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .resendButton {
   flex: 1;
-  width: 22.5rem;
   height: 3.375rem;
   border-radius: 13px;
   font-size: 1rem;
@@ -206,7 +207,6 @@
 
 .submitButton.buttonGroupButton {
   flex: 1;
-  width: 22.5rem;
   height: 3.375rem;
   position: static;
   background-color: var(--primary-color);
