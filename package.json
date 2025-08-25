@@ -1,5 +1,4 @@
 {
-  "homepage": ".",
   "name": "jjinbbang-fe",
   "version": "0.1.0",
   "private": true,
@@ -65,5 +64,5 @@
     "gh-pages": "^6.3.0",
     "kakao.maps.d.ts": "^0.1.40"
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://3.35.29.235:8080"
 }
