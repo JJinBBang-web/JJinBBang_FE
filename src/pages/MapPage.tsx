@@ -539,7 +539,7 @@ const MapPage = () => {
                 >
                     <MarkerClusterer
                         averageCenter={true}
-                        minLevel={2}
+                        minLevel={3}
                         styles={[
                             {
                             width: "44px",
