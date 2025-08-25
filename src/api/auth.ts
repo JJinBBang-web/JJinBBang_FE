@@ -65,13 +65,15 @@ export const authApi = {
           useAuth: true, // 인증 토큰 필요
         }
       );
+
+      console.log('이메일 인증코드 검증 응답:', response.data);
       
-      // API 응답이 성공이 아닌 경우 에러 처리
-      if (!response.data.success) {
-        throw new Error(response.data.message || '인증코드가 일치하지 않습니다.');
+      // HTTP 상태 코드가 200인 경우 성공으로 간주
+      if (response.status === 200) {
+        return { success: true, message: response.data.message || '인증이 완료되었습니다.' };
       }
       
-      return response.data;
+      throw new Error(response.data.message || '인증코드가 일치하지 않습니다.');
     } catch (error: any) {
       console.error('이메일 인증코드 검증 실패:', error);
       
