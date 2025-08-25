@@ -12,6 +12,20 @@ interface PreviewReviewContentProps {
   };
 }
 const MAX_WIDTH = 292; // 최대 너비
+
+// 리뷰 텍스트 자르기 함수
+const truncateReviewText = (text: string): string => {
+  if (!text) return 'Please write a review';
+  
+  const maxChars = 50;
+  
+  if (text.length > maxChars) {
+    return text.slice(0, maxChars) + '...';
+  }
+  
+  return text;
+};
+
 const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
   reviewInfo: { content, keyword, likeCount, updateAt },
 }) => {
@@ -77,7 +91,7 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
 
   return (
     <div className={styles.reviewContainer}>
-      <p className={styles.reviewContent}>{content}</p>
+      <p className={styles.reviewContent}>{truncateReviewText(content)}</p>
       <div className={styles.tagContainer}>
         {visibleKeywords.map((keyword, index) => (
           <div key={index} className={styles.tag}>

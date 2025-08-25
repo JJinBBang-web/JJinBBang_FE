@@ -110,8 +110,10 @@ const WolseInputPage: React.FC = () => {
     }
   };
 
-  const isNextEnabled =
-    deposit !== '' && monthlyRent !== '' && managementFee !== '';
+  const isNextEnabled = 
+    deposit !== '' && deposit.trim() !== '' && Number(deposit) > 0 &&
+    monthlyRent !== '' && monthlyRent.trim() !== '' && Number(monthlyRent) > 0 && 
+    managementFee !== '' && managementFee.trim() !== '' && Number(managementFee) > 0;
 
   return (
     <div className="content">

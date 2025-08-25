@@ -159,13 +159,22 @@ const DormitoryConditionsPage: React.FC = () => {
     setReview(updatedReview);
     localStorage.setItem('reviewState', JSON.stringify(updatedReview));
 
-    // 항상 DormitoryAmenitiesPage로 이동하도록 수정
-    navigate('/review/dormitory-amenities', {
-      state: {
-        ...location.state,
-        dormitoryConditions,
-      },
-    });
+    if (from === 'confirm') {
+      navigate('/review/confirm', {
+        state: {
+          ...location.state,
+          dormitoryConditions,
+        },
+      });
+    } else {
+      // 기본 플로우: DormitoryAmenitiesPage로 이동
+      navigate('/review/dormitory-amenities', {
+        state: {
+          ...location.state,
+          dormitoryConditions,
+        },
+      });
+    }
   };
 
   const handleBack = () => {

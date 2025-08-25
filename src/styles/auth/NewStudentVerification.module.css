@@ -2,7 +2,7 @@
 .header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 4.56rem 16px 1.19rem;
 }
 
 .backButton {
@@ -142,5 +142,69 @@
   background-color: var(--primary-color);
   border: 1px solid var(--primary-color);
   color: var(--white);
+  cursor: pointer;
+}
+
+/* Permission Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.permissionModal {
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 18rem;
+  width: 90%;
+  text-align: center;
+}
+
+.permissionModal h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 1rem;
+}
+
+.permissionModal p {
+  font-size: 1rem;
+  color: var(--color-gray80);
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 2rem;
+}
+
+.modalButtonGroup {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.declineButton {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--color-gray40);
+  background-color: var(--white);
+  color: var(--color-gray80);
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.acceptButton {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-radius: 12px;
+  font-size: 1rem;
   cursor: pointer;
 }

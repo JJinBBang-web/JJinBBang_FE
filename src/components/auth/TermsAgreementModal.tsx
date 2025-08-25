@@ -188,7 +188,7 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
         <div className={styles.termsList}>
           <button
             key={terms[0].id}
-            className={styles.termItem}
+            className={styles.allAgreeItem}
             onClick={() => handleTermCheck(terms[0].id)}
           >
             <img
@@ -202,27 +202,33 @@ const TermsAgreementModal: React.FC<TermsAgreementModalProps> = ({
           <div className={styles.separator}></div>
 
           {terms.slice(1).map((term) => (
-            <button
-              key={term.id}
-              className={styles.termItem}
-              onClick={() => handleTermItemClick(term.id)}
-            >
-              <img
-                src={term.checked ? checkIconActive : checkIcon}
-                alt="check"
-                className={styles.checkIcon}
-              />
-              <span>
-                <span style={{ color: 'var(--color-gray80)' }}>(필수)</span>
-                <span
-                  style={{ display: 'inline-block', width: '0.5rem' }}
-                ></span>
-                {term.title}
-              </span>
-              {(term.id === 'service' || term.id === 'privacy') && (
-                <img src={arrowIcon} alt="arrow" className={styles.arrowIcon} />
-              )}
-            </button>
+            <div key={term.id} className={styles.termItem}>
+              <button
+                className={styles.checkButton}
+                onClick={() => handleTermCheck(term.id)}
+              >
+                <img
+                  src={term.checked ? checkIconActive : checkIcon}
+                  alt="check"
+                  className={styles.checkIcon}
+                />
+              </button>
+              <button
+                className={styles.termTextButton}
+                onClick={() => handleTermItemClick(term.id)}
+              >
+                <span>
+                  <span style={{ color: 'var(--color-gray80)' }}>(필수)</span>
+                  <span
+                    style={{ display: 'inline-block', width: '0.5rem' }}
+                  ></span>
+                  {term.title}
+                </span>
+                {(term.id === 'service' || term.id === 'privacy') && (
+                  <img src={arrowIcon} alt="arrow" className={styles.arrowIcon} />
+                )}
+              </button>
+            </div>
           ))}
         </div>
         <button

@@ -1,9 +1,8 @@
 // src/pages/auth/NewStudentVerification.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { authState, AuthState } from '../../recoil/auth/atoms';
 import { authApi } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 import styles from '../../styles/auth/NewStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
@@ -16,8 +15,8 @@ const NewStudentVerification: React.FC = () => {
   const navigate = useNavigate();
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>('initial');
-  const [, setFile] = useState<File | null>(null);
-  const [, setAuth] = useRecoilState<AuthState>(authState);
+  const { updateVerificationStatus } = useAuth();
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -28,10 +27,13 @@ const NewStudentVerification: React.FC = () => {
     try {
       const file = files[0];
       validateFile(file);
-      setFile(file);
 
       // 합격증명서 인증 (신입생용)
       await authApi.verifyAdmissionCertificate(file);
+      
+      // 업로드 성공 시 인증 상태를 pending으로 설정 (localStorage도 자동 업데이트)
+      updateVerificationStatus('pending');
+      
       setVerificationStatus('complete');
     } catch (error) {
       alert(
@@ -40,12 +42,27 @@ const NewStudentVerification: React.FC = () => {
     }
   };
 
+  const handleUploadClick = () => {
+    setShowPermissionModal(true);
+  };
+
+  const handlePermissionAccept = () => {
+    setShowPermissionModal(false);
+    // Trigger file input click
+    const fileInput = document.querySelector('#file-input-initial') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const handlePermissionDecline = () => {
+    setShowPermissionModal(false);
+    navigate('/mypage');
+  };
+
   const handleConfirm = () => {
-    // 인증 상태를 pending으로 설정
-    setAuth((prev: AuthState) => ({
-      ...prev,
-      verificationStatus: 'pending',
-    }));
+    // 인증 상태를 pending으로 설정 (localStorage도 자동 업데이트)
+    updateVerificationStatus('pending');
     navigate('/mypage');
   };
 
@@ -66,15 +83,16 @@ const NewStudentVerification: React.FC = () => {
               alt="graduate character"
               className={styles.character}
             />
-            <label className={styles.uploadButton}>
-              <input
-                type="file"
-                accept=".pdf,image/*"
-                onChange={handleFileUpload}
-                hidden
-              />
+            <input
+              id="file-input-initial"
+              type="file"
+              accept=".pdf,image/*"
+              onChange={handleFileUpload}
+              hidden
+            />
+            <button className={styles.uploadButton} onClick={handleUploadClick}>
               증명서 업로드
-            </label>
+            </button>
           </>
         );
       case 'pending':
@@ -129,6 +147,29 @@ const NewStudentVerification: React.FC = () => {
         </button>
       </header>
       <main className={styles.container}>{renderContent()}</main>
+      
+      {showPermissionModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.permissionModal}>
+            <h3>파일 접근 권한</h3>
+            <p>갤러리 및 파일에 접근하여<br/> 증명서를 업로드하시겠습니까?</p>
+            <div className={styles.modalButtonGroup}>
+              <button 
+                className={styles.declineButton} 
+                onClick={handlePermissionDecline}
+              >
+                거부
+              </button>
+              <button 
+                className={styles.acceptButton} 
+                onClick={handlePermissionAccept}
+              >
+                허용
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

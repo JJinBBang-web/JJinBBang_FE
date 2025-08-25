@@ -48,7 +48,19 @@ export class ReviewAPI {
     reviewData: CreateReviewRequest
   ): Promise<ReviewCreateResponse> {
     try {
-      const response = await api.post('/api/v1/review', reviewData, {
+      // reviewType 결정
+      let reviewType: string;
+      if ('generalReview' in reviewData) {
+        reviewType = 'GENERAL';
+      } else if ('dormitoryReview' in reviewData) {
+        reviewType = 'DORM';
+      } else if ('agencyReview' in reviewData) {
+        reviewType = 'AGENCY';
+      } else {
+        throw new Error('알 수 없는 리뷰 타입입니다.');
+      }
+
+      const response = await api.post(`/api/v1/review/${reviewType}`, reviewData, {
         useAuth: true,
       });
 

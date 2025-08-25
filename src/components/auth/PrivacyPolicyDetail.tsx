@@ -124,16 +124,6 @@ Google Analytics : 웹 로그 분석 도구 사용(개인 식별 정보 미�
           </div>
         </div>
 
-        <div className={styles.bottomSection}>
-          <button className={styles.checkButton} onClick={onToggleCheck}>
-            <img
-              src={isChecked ? checkIconActive : checkIcon}
-              alt="check"
-              className={styles.checkIcon}
-            />
-            <span>(필수) 개인정보 수집 및 이용 동의</span>
-          </button>
-        </div>
       </div>
     </div>
   );

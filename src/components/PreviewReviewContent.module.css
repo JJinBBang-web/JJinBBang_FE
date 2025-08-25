@@ -11,11 +11,10 @@
 
 .reviewContent {
   display: -webkit-box;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: horizontal;
   -webkit-line-clamp: 2; /* 줄 수 설정 */
   overflow: hidden;
   color: #333;
-  text-overflow: ellipsis;
   font-family: "Spoqa Han Sans Neo";
   font-size: 14px;
   font-style: normal;
@@ -24,6 +23,8 @@
   letter-spacing: -0.6px;
   margin: 0;
   margin-bottom: 7px;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .tagContainer {

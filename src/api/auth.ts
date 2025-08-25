@@ -65,10 +65,24 @@ export const authApi = {
           useAuth: true, // 인증 토큰 필요
         }
       );
+      
+      // API 응답이 성공이 아닌 경우 에러 처리
+      if (!response.data.success) {
+        throw new Error(response.data.message || '인증코드가 일치하지 않습니다.');
+      }
+      
       return response.data;
     } catch (error: any) {
       console.error('이메일 인증코드 검증 실패:', error);
-      throw new Error('인증에 실패했습니다.');
+      
+      // API 에러 응답에서 메시지 추출
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (error.message) {
+        throw error; // 이미 처리된 에러 메시지 유지
+      } else {
+        throw new Error('인증에 실패했습니다.');
+      }
     }
   },
 
@@ -123,9 +137,18 @@ export const authApi = {
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('서비스 탈퇴 실패:', error);
-      throw new Error('서비스 탈퇴에 실패했습니다.');
+      
+      // API 에러 응답에서 메시지 추출
+      let errorMessage = 'Leave Service Failed.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
     }
   },
 

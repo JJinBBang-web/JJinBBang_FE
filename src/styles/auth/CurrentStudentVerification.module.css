@@ -2,7 +2,7 @@
 .header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 4.56rem 16px 1.19rem;
 }
 
 .backButton {
@@ -60,7 +60,8 @@
 
 .emailInput {
   display: flex;
-  width: calc(100vw - 3.5rem);
+  width: 100vw;
+  max-width: calc(393px - 2rem);
   height: 4.25rem;
   padding: 1.25rem;
   background-color: var(--white);
@@ -110,7 +111,8 @@
 }
 
 .submitButton {
-  width: calc(100vw - 3.5rem);
+  width: 100vw;
+  max-width: calc(393px - 2rem);
   height: 3.375rem;
   position: fixed;
   background-color: var(--primary-color);
@@ -177,4 +179,95 @@
   align-self: center;
   cursor: pointer;
   bottom: 2.75rem;
+}
+
+.buttonGroup {
+  position: fixed;
+  display: flex;
+  gap: 12px;
+  width: calc(100vw - 3.5rem);
+  bottom: 2.75rem;
+  margin: 0 auto;
+}
+
+.resendButton {
+  flex: 1;
+  width: 22.5rem;
+  height: 3.375rem;
+  border-radius: 13px;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  letter-spacing: -0.0375rem;
+  background-color: var(--white);
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.submitButton.buttonGroupButton {
+  flex: 1;
+  width: 22.5rem;
+  height: 3.375rem;
+  position: static;
+  background-color: var(--primary-color);
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.submitButton.buttonGroupButton.disabled {
+  background-color: #CCCCCC;
+  color: var(--white);
+  cursor: not-allowed;
+}
+
+.resendMessage {
+  position: fixed;
+  left: 50%;
+  bottom: 3.75rem;
+  transform: translateX(-50%);
+  width: 11.6rem;
+  height: 1.25rem;
+  display: inline-flex;
+  padding: 1.125rem 1.25rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 3.875rem;
+  background: rgba(103, 103, 103, 0.80);
+  backdrop-filter: blur(7px);
+  color: var(--gray-WHITE, #FFF);
+  text-align: center;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25rem;
+  letter-spacing: -0.0375rem;
+  z-index: 1000;
+  animation: fadeInOut 3s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+.resendMessage .checkIcon {
+  width: 1.25rem;
+  height: 1.25rem;
 }

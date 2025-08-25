@@ -62,14 +62,58 @@ const ReviewDisadvantagePage: React.FC = () => {
     }
   }, [from, review]);
 
+  // 장점-단점 상반된 태그 매핑
+  const oppositeTagMapping: { [key: string]: string } = {
+    // 위치/주변환경
+    "교통이 불편해요": "교통이 편리해요",
+    "환경이 지저분해요": "주변 환경이 깨끗해요",
+    "동네가 시끄러워요": "동네가 조용해요",
+    "공원이 멀어요": "공원이 가까워요",
+    "생활권이 불편해요": "생활권이 편리해요",
+    "학교와 멀어요": "학교와 가까워요",
+    "동네가 안전하지 않아요": "동네가 안전해요",
+    "이웃들이 불친절해요": "이웃들이 친절해요",
+    // 집 내부 상태
+    "채광이 부족해요": "채광이 좋아요",
+    "통풍이 안돼요": "통풍이 잘 돼요",
+    "방음이 안돼요": "방음이 잘 돼요",
+    "집 상태가 낡았어요": "신축이라 세련됐어요",
+    "곰팡이가 많아요": "곰팡이가 없어요",
+    "냉난방이 안돼요": "냉난방이 잘 돼요",
+    "배수와 수압이 약해요": "배수와 수압이 좋아요",
+    // 편의시설과 관리
+    "주차가 어려워요": "주차가 편리해요",
+    "엘리베이터가 없어요": "엘리베이터가 있어요",
+    "쓰레기 처리가 불편해요": "쓰레기 처리가 편해요",
+    "관리비가 비싸요": "관리비가 합리적이에요",
+    "인터넷이 느려요": "인터넷이 잘 돼요",
+    "관리가 부족해요": "관리가 정기적이에요",
+    "이사가 힘들었어요": "이사가 편했어요"
+  };
+
   const handleFilterClick = (label: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(label)
-        ? prev.filter((item) => item !== label)
-        : prev.length < maxSelections
-        ? [...prev, label]
-        : prev
-    );
+    setSelectedFilters((prev) => {
+      if (prev.includes(label)) {
+        // 이미 선택된 태그를 클릭한 경우 제거
+        return prev.filter((item) => item !== label);
+      } else if (prev.length >= maxSelections) {
+        // 최대 선택 수에 도달한 경우 알림 표시
+        alert("최대 5개까지 선택할 수 있습니다!");
+        return prev;
+      } else {
+        // 상반된 태그가 장점에서 선택되었는지 확인
+        const oppositeTag = oppositeTagMapping[label];
+        const selectedAdvantages = advantages || review.pros || [];
+        
+        if (oppositeTag && selectedAdvantages.includes(oppositeTag)) {
+          alert("같은 항목이 장점으로 선택되었습니다!");
+          return prev;
+        }
+        
+        // 최대 선택 수 미만이고 상반된 태그가 없는 경우 추가
+        return [...prev, label];
+      }
+    });
   };
 
   const scrollToTop = () => {

@@ -220,8 +220,29 @@
   letter-spacing: -0.0375rem;
 }
 
-.line {
-  width: 100%;
-  border: 1.5px solid var(--color-gray10);
-  margin: 20px 0;
+/* Disabled button styles */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled .menuTitle,
+.disabled .menuDescription {
+  color: var(--color-gray60);
+}
+
+.disabled .pencilIcon {
+  opacity: 0.6;
+}
+
+/* Review list styles */
+.reviewList {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewList > *:not(:last-child) {
+  border-bottom: 1px solid var(--color-gray20);
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
 }
