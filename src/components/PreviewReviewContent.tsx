@@ -35,23 +35,25 @@ const PreviewReviewContent: React.FC<PreviewReviewContentProps> = ({
     const ctx = canvas.getContext('2d');
     ctx!.font = '400 13.545px Inter';
 
-    for (let i = 0; i < keyword.length; i++) {
-      const letterSpacing = -0.581;
-      const text = tagMessages[keyword[i]] || keyword[i];
-      const baseWidth = ctx!.measureText(text).width;
+    if (keyword) {
+      for (let i = 0; i < keyword.length; i++) {
+        const letterSpacing = -0.581;
+        const text = tagMessages[keyword[i]] || keyword[i];
+        const baseWidth = ctx!.measureText(text).width;
 
-      // 글자 수만큼 letter-spacing 적용 (마지막 글자는 적용 안됨)
-      const spacingAdjustment = (text.length - 1) * letterSpacing;
-      const tagWidth = baseWidth + spacingAdjustment + 28;
+        // 글자 수만큼 letter-spacing 적용 (마지막 글자는 적용 안됨)
+        const spacingAdjustment = (text.length - 1) * letterSpacing;
+        const tagWidth = baseWidth + spacingAdjustment + 28;
 
-      if (usedWidth + tagWidth > MAX_WIDTH) {
-        tempHidden = keyword.length - i;
-        break;
+        if (usedWidth + tagWidth > MAX_WIDTH) {
+          tempHidden = keyword.length - i;
+          break;
+        }
+
+        usedWidth += tagWidth;
+
+        tempVisible.push(keyword[i]);
       }
-
-      usedWidth += tagWidth;
-
-      tempVisible.push(keyword[i]);
     }
 
     if (tempHidden !== 0) {
