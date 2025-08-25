@@ -8,7 +8,7 @@ import styles from '../../styles/auth/NewStudentVerification.module.css';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import graduateCharacter from '../../assets/image/graduateCharacter.svg';
 import verifyCompleteIcon from '../../assets/image/verifyCompleteIcon.svg';
-import { validateFile, uploadFile } from '../../util/fileUpload';
+import { validateFile } from '../../util/fileUpload';
 
 type VerificationStatus = 'initial' | 'uploading' | 'pending' | 'complete';
 
@@ -16,8 +16,8 @@ const NewStudentVerification: React.FC = () => {
   const navigate = useNavigate();
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus>('initial');
-  const [file, setFile] = useState<File | null>(null);
-  const [auth, setAuth] = useRecoilState<AuthState>(authState);
+  const [, setFile] = useState<File | null>(null);
+  const [, setAuth] = useRecoilState<AuthState>(authState);
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>

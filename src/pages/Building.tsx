@@ -5,10 +5,8 @@ import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
 import TopButton from "../components/util/TopButton";
 import BuildingReviewList from "../components/detail/BuildingReviewList";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { BuildingInfoState } from "../recoil/detail/BuildingRecoilState";
-import exampleImage1 from '../assets/image/example_image1.png';
-import exampleImage2 from '../assets/image/example_image2.png';
 import { useNavigate, useParams } from "react-router-dom";
 import { useBuildingDetail } from "../hooks/useBuildingDetail";
 
@@ -50,14 +48,11 @@ const Building: React.FC = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const building = useRecoilValue(BuildingInfoState);
-
-
     if (isLoading) return <div>로딩 중...</div>;
     if (isError) return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
     
     const handleBack = () => {
-        navigate(-1);
+        navigate(`/map`);
     };
     
     return (
@@ -67,9 +62,9 @@ const Building: React.FC = () => {
                 {/* 헤더 */}
                 <Header onClick={handleBack}/>
                 {/* 이미지슬라이더 */}
-                <ImageSlider building={building} review={null}/>
+                <ImageSlider building={buildingInfo} review={null}/>
                 {/* 건물 정보 및 키워드 */}
-                <BuildingInfo building={building}/>
+                <BuildingInfo building={buildingInfo}/>
                 <hr/>
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>

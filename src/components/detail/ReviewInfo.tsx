@@ -8,6 +8,7 @@ import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
 import { tagImages, tagMessages } from "../Tag";
 import { useEffect, useState } from "react";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
+import { useNavigate } from "react-router-dom";
 
 
 interface Props {
@@ -15,15 +16,17 @@ interface Props {
 }
 
 const ReviewInfo: React.FC<Props> = ({review}) => {
-    const liked = review.generalReviewInfo?.liked ?? review.domitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
-    const name = review.generalReviewInfo?.name ?? review.domitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
-    const rawType = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const navigate = useNavigate();
+    const liked = review.generalReviewInfo?.liked ?? review.dormitoryReviewInfo?.liked ?? review.agencyReviewInfo?.liked;
+    const name = review.generalReviewInfo?.name ?? review.dormitoryReviewInfo?.name ?? review.agencyReviewInfo?.name;
+    const rawType = review.generalReviewInfo?.type ?? review.dormitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
     const type = rawType && typeToKorean[rawType] ? typeToKorean[rawType] : rawType ?? "";
-    const rating = review.generalReviewInfo?.rating ?? review.domitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
-    const rawFloor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const rating = review.generalReviewInfo?.rating ?? review.dormitoryReviewInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
+    const rawFloor = review.generalReviewInfo?.floor ?? review.dormitoryReviewInfo?.floor;
     const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
     const rawConstractType = review.generalReviewInfo?.contractType;
     const constractType = rawConstractType && contractTypeToKorean[rawConstractType] ? contractTypeToKorean[rawConstractType] : rawConstractType ?? "" ;
+    const buildingId = review.building.buildingId;
 
     const [isLiked, setIsLiked] = useState(liked);
     const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
@@ -33,7 +36,9 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
         setLikeCount(review.reviewInfo.likeCount);
     },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
-    console.log(constractType);
+    const handleToBuilding = () => {
+        navigate(`/building/${buildingId}`);
+    };
 
     return (
         <div className={styles.content}>
@@ -44,7 +49,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                             <>
                                 <div className={styles.buildingType}>{type}</div>
                                 <div className={styles.buildingType}>
-                                    {`${review.generalReviewInfo.contractType} ${review.generalReviewInfo.deposit}`}
+                                    {`${constractType} ${review.generalReviewInfo.deposit}`}
                                 </div>
                             </>
                         :
@@ -55,10 +60,10 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                                 </div>
                             </>
                     )}
-                    {review.domitoryReviewInfo && (
+                    {review.dormitoryReviewInfo && (
                         <>
                             <div className={styles.buildingType}>{type}</div>
-                            <div className={styles.campusType}>{review.domitoryReviewInfo.university}</div>
+                            <div className={styles.campusType}>{review.dormitoryReviewInfo.universityName}</div>
                         </>
                     )}
                     {review.agencyReviewInfo && (
@@ -84,18 +89,18 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
             <div className={styles.textWrap}>
                 <div className={styles.nameAndBtn}>
                     <p className={styles.buildingName}>{name}</p>
-                    <div className={styles.detailBtn}>건물 상세</div>
+                    <div className={styles.detailBtn} onClick={handleToBuilding}>건물 상세</div>
                 </div>
                 {review.generalReviewInfo && (
                     <p className={styles.buildingSize}>{floor}, {review.generalReviewInfo.space}m2, 관리비 {review.generalReviewInfo.maintenanceCost}만</p>
                 )}
-                {review.domitoryReviewInfo && (
-                    <p className={styles.buildingSize}>{floor}, {review.domitoryReviewInfo.capacity}인실, 기숙사비 {review.domitoryReviewInfo.dormFee}만</p>
+                {review.dormitoryReviewInfo && (
+                    <p className={styles.buildingSize}>{floor}, {review.dormitoryReviewInfo.capacity}인실, 기숙사비 {review.dormitoryReviewInfo.dormFee}만</p>
 
                 )}
             </div>
             <div className={styles.buildingRating}>
-                {[...Array(rating)].map((_, index) => (
+                {[...Array(Math.round(rating))].map((_, index) => (
                     <img src={starIconOn} alt="rate"></img>
                     ))} 
                     {[...Array(5 - Math.round(rating))].map((_, index) => (

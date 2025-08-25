@@ -7,19 +7,26 @@ interface ReviewListParams {
   buildingId: string;
   num?: number;
   page?: number;
-  sortBy?: 'LATEST' | 'LIKES' | 'STARS';
+  sortBy?: "RCMND" | "LATEST" | "LIKES" | "STARS";
   isAgency?: boolean;
 }
 
+type ApiSort = Exclude<NonNullable<ReviewListParams["sortBy"]>, "RCMND"> | undefined;
+
+
 export const useBuildingReviewList = (params: ReviewListParams) => {
+  
+  const apiSort: ApiSort = params.sortBy === "RCMND" ? undefined : params.sortBy;
+
   return useQuery<BuidlingReviewListResponse>({
     queryKey: ['reviewList', params.buildingId, params.page, params.sortBy, params.isAgency],
     queryFn: () => BuildingAPI.getReviewList(params.buildingId, {
       num: params.num,
       page: params.page,
-      sortBy: params.sortBy,
+      sortBy: apiSort,
       isAgency: params.isAgency,
     }),
-    staleTime: 1000 * 60 * 3,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 };

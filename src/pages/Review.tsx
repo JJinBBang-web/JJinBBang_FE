@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import styles from './Review.module.css';
-import Header from '../components/Header';
-import ImageSlider from '../components/detail/ImageSlider';
-import TopButton from '../components/util/TopButton';
-import ReviewInfo from '../components/detail/ReviewInfo';
-import ReveiwContractInfo from '../components/detail/ReviewContractInfo';
-import ReviewMapInfo from '../components/detail/ReviewMapInfo';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { ReviewInfoState } from '../recoil/detail/ReviewInfoRecoliState';
-import Footer from '../components/detail/Footer';
-import ReportButton from '../components/util/ReportButton';
-import ReviewFacilitiesInfo from '../components/detail/ReviewFacilitiesInfo';
+import { useEffect, useState } from "react";
+import styles from "./Review.module.css";
+import Header from "../components/Header";
+import ImageSlider from "../components/detail/ImageSlider";
+import TopButton from "../components/util/TopButton";
+import ReviewInfo from "../components/detail/ReviewInfo";
+import ReveiwContractInfo from "../components/detail/ReviewContractInfo";
+import ReviewMapInfo from "../components/detail/ReviewMapInfo";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { ReviewInfoState } from "../recoil/detail/ReviewInfoRecoliState";
+import Footer from "../components/detail/Footer";
+import ReportButton from "../components/util/ReportButton";
+import ReviewFacilitiesInfo from "../components/detail/ReviewFacilitiesInfo";
 import {
   useLocation,
   useNavigate,
@@ -33,13 +33,13 @@ const Review: React.FC = () => {
 
   const { reviewId } = useParams(); // /building/rv/:reviewId 형식이라면 필요
   const [searchParams] = useSearchParams();
-  const reviewType = searchParams.get('reviewType') ?? 'GENERAL'; // 쿼리에서 추출
+  const reviewType = searchParams.get("reviewType") ?? "GENERAL"; // 쿼리에서 추출
 
   const { data, isLoading, isError } = useReviewDetail(
-    reviewId ?? '',
+    reviewId ?? "",
     reviewType
   );
-  const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
+  const [isLogin] = useRecoilState(isLoginState);
   const { data: userData } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
@@ -77,14 +77,14 @@ const Review: React.FC = () => {
     if (data) {
       setReviews(data);
       const converted = convertToReviewState(data);
-      console.log(converted);
+      console.log(data);
       setUpdateReview(converted);
       localStorage.setItem('updateReviewState', JSON.stringify(converted));
     }
   }, [data]);
 
   const handleBack = () => {
-    navigate(-1);
+    navigate(`/map`);
   };
 
   if (isLoading) return <div>로딩 중...</div>;
@@ -114,7 +114,7 @@ const Review: React.FC = () => {
             <hr className={styles.divider} />
           </>
         )}
-        {reviews.domitoryReviewInfo && (
+        {reviews.dormitoryReviewInfo && (
           <>
             <ReveiwContractInfo review={reviews} />
             <hr className={styles.divider} />
@@ -126,7 +126,7 @@ const Review: React.FC = () => {
         <ReviewMapInfo review={reviews} />
       </div>
       {/* 작성id === 로그인 id 같으면 Footer 보이게+reportBtn안보이게, 아니면 반대 */}
-      {userData?.id == reviews.authorId ? (
+      {userData?.id === reviews.authorId ? (
         <div className={styles.fixedWrap}>
           <TopButton />
           <Footer reviewId={reviewId ?? ''} />

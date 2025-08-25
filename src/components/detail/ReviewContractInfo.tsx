@@ -39,7 +39,7 @@ const ReveiwContractInfo:React.FC<Props> = ({review}) => {
                 </div>
                 </>
             )}
-            {review.domitoryReviewInfo && (
+            {review.dormitoryReviewInfo && (
                 <>
                 <p className={styles.title}>입주자 정보</p>
                 <div className={styles.infoWrap2}>

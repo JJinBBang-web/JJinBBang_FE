@@ -20,6 +20,11 @@ type GroupedUniversity = {
   initial: string;
 };
 
+const DEFAULT_CAMPUS_CENTER = {
+    lat: 35.154,  // 경상국립대 위도
+    lng: 128.1, // 경상국립대 경도
+};
+
 const UniversityFilterModal = () => {
     const [selectedInitial, setSelectedInitial] = useRecoilState(selectedInitialState);
     const [universities, setUniversities] = useRecoilState(universitiesState);
@@ -53,7 +58,7 @@ const UniversityFilterModal = () => {
                 university: null,
             }));
             setUniversityLabel(""); // UI에서 대학명 표시 없앰
-            setCampusCenter(null);  // 지도 초기화 (기본 중심점으로?)
+            setCampusCenter(DEFAULT_CAMPUS_CENTER);  // 지도 초기화 (기본 중심점으로?)
             setBottomSheet({ isOpenModal: false, type: "university" });
             return;
         }

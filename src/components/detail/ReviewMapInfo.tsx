@@ -15,9 +15,9 @@ interface Props {
 }
 
 const ReviewMapInfo:React.FC<Props> = ({review}) => {
-    const rawType = review.generalReviewInfo?.type ?? review.domitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
+    const rawType = review.generalReviewInfo?.type ?? review.dormitoryReviewInfo?.type ?? review.agencyReviewInfo?.type;
     const type = rawType && typeToKorean[rawType] ? typeToKorean[rawType] : rawType ?? "";
-    const rawFloor = review.generalReviewInfo?.floor ?? review.domitoryReviewInfo?.floor;
+    const rawFloor = review.generalReviewInfo?.floor ?? review.dormitoryReviewInfo?.floor;
     const floor = rawFloor && floorToKorean[rawFloor] ? floorToKorean[rawFloor] : rawFloor ?? "";
     
     return (
@@ -32,7 +32,7 @@ const ReviewMapInfo:React.FC<Props> = ({review}) => {
                     <hr/>
                 </>
             )}
-            {review.domitoryReviewInfo && (
+            {review.dormitoryReviewInfo && (
                 <>
                     <p className={styles.title}>단지 정보</p>
                     <div className={styles.infoWrap}>

@@ -1,19 +1,18 @@
 // Home.tsx
-import React, { useEffect, useState, useMemo } from 'react';
+import React from 'react';
 import styles from './Home.module.css';
 import home_logo from '../assets/logo/homeLogo.svg';
 import campus_icon from '../assets/image/campusIcon.svg';
 import Banner from '../components/Banner';
 import CampusSlide from '../components/CampusSlide';
 import PreviewReview from '../components/PreviewReview';
-import campus_img_1 from '../assets/image/campusImg1.svg';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import pencil from '../assets/image/pencil.svg';
 import iconRight from '../assets/image/iconRight.svg';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { getAPI, putAPI, deleteAPI } from '../api/baseAPI';
+import { useQuery } from '@tanstack/react-query';
+import { getAPI } from '../api/baseAPI';
 import { isLoginState } from '../recoil/auth/isLoginState';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -31,7 +30,6 @@ const QUERY_KEYS = {
 };
 
 const Home: React.FC = () => {
-  const queryClient = useQueryClient();
 
   const isLogin = useRecoilValue(isLoginState);
 
