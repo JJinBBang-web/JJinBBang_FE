@@ -83,7 +83,7 @@ export const getUserInfo = async () => {
  * 카카오 로그인 후, 리다이렉트되는 페이지
  * URL 예: http://localhost:3000/kakao/callback?code=xxxx
  */
-function KakaoCallback1() {
+function KakaoCallback() {
   const navigate = useNavigate();
   const location = useLocation();
   const [, setIsLoggedIn] = useRecoilState(isLoginState);
@@ -258,4 +258,4 @@ function KakaoCallback1() {
   );
 }
 
-export default KakaoCallback1;
+export default KakaoCallback;
