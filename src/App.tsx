@@ -42,7 +42,7 @@ import ReviewAdvantagePage from "./pages/review/ReviewAdvantagePage";
 import ReviewDisadvantagePage from "./pages/review/ReviewDisadvantagePage";
 import ReviewContentPage from "./pages/review/ReviewContentPage";
 import ReviewConfirmPage from "./pages/review/ReviewConfirmPage";
-import { RecoilRoot, useRecoilState } from "recoil";
+import { RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { useEffect } from "react";
 import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/baseAPI";
@@ -59,6 +59,7 @@ import UpdateFloorInputPage from "./pages/update/UpdateFloorInputPage";
 import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 import UpdateDormitoryConditionsPage from "./pages/update/UpdateDormitoryConditionsPage";
 import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitiesPage";
+import { hideNavState } from "./recoil/util/modalState";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,6 +73,15 @@ const queryClient = new QueryClient({
 const AppContent: React.FC = () => {
   const location = useLocation();
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
+  const hideNav = useRecoilValue(hideNavState);
+  const setHideNav = useSetRecoilState(hideNavState);
+  
+  // 경로 변환 시 nav 초기화
+  useEffect(() => {
+    setHideNav(false);
+  }, [location.pathname, setHideNav]);
+
+
   const {
     data: userData,
     isFetching: isFetchingUser,
@@ -97,39 +107,6 @@ const AppContent: React.FC = () => {
     }
   }, [isSuccessUser, location.pathname]);
 
-  // const showHeaderAndNav = ![
-  //   '/auth/verify',
-  //   '/auth/signup',
-  //   '/auth/login',
-  //   '/myaccount',
-  //   '/auth/student/verify',
-  //   '/auth/student/new',
-  //   '/auth/student/current',
-  //   '/auth/kakao',
-  //   '/auth/kakao/callback',
-  //   '/auth/student/email-verification',
-  //   '/review/type',
-  //   '/review/input-address',
-  //   '/review/address',
-  //   '/review/dormitory',
-  //   '/review/dormitory-conditions',
-  //   '/review/dormitory-amenities',
-  //   '/review/result',
-  //   '/review/floor',
-  //   '/review/agency',
-  //   '/review/price',
-  //   '/review/jeonse',
-  //   '/review/wolse',
-  //   '/review/room-info',
-  //   '/review/filter-ad',
-  //   '/review/filter-disad',
-  //   '/review/content',
-  //   '/review/confirm',
-  //   '/building/:buildingId',
-  //   '/building/:buildingId/rv',
-  //   '/building/:buildingId/rv/report',
-  // ].includes(location.pathname);
-
   const hiddenNavPaths = [
     "/auth/*",
     "/myaccount",
@@ -141,7 +118,7 @@ const AppContent: React.FC = () => {
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
     matchPath({ path: pattern, end: false }, location.pathname)
-  );
+  ) && !hideNav;
 
   return (
     <>
