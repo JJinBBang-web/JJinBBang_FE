@@ -99,10 +99,8 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     if (isSuccessUser) {
-      console.log("로그인");
       setIsLoggedIn(true);
     } else {
-      console.log("로그아웃");
       setIsLoggedIn(false);
     }
   }, [isSuccessUser, location.pathname]);
