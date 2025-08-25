@@ -88,12 +88,12 @@ const processQueue = (error: any, token: string | null = null) => {
 // 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
-    console.log(
-      "✅ Axios Response:",
-      res.data,
-      "\n✅ Axios Response URL:",
-      res.config.url
-    );
+    // console.log(
+    //   "✅ Axios Response:",
+    //   res.data,
+    //   "\n✅ Axios Response URL:",
+    //   res.config.url
+    // );
 
     // Fix localhost image URLs in response data
     if (res.data && typeof res.data === 'object') {
@@ -103,12 +103,12 @@ api.interceptors.response.use(
     return res;
   },
   async (error: AxiosError) => {
-    console.error(
-      "❌ Axios Error:",
-      error.response?.data,
-      "\n❌ Axios Error URL:",
-      error.response?.config.url
-    );
+    // console.error(
+    //   "❌ Axios Error:",
+    //   error.response?.data,
+    //   "\n❌ Axios Error URL:",
+    //   error.response?.config.url
+    // );
     const originalRequest = error.config as AxiosRequestConfig;
 
     if (
