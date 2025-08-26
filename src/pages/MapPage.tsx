@@ -156,11 +156,11 @@ const MapPage = () => {
         type: viewType,
         sortBy: selectedSort,
         idList: markerData.map((m) => m.id),
-        AgencyIdList: viewType === "BUILDING"
-            ? markerData
-                .filter((m) => m.type === "AGENCY")
-                .map((m) => m.id)
-            : null,
+        // AgencyIdList: viewType === "BUILDING"
+        //     ? markerData
+        //         .filter((m) => m.type === "AGENCY")
+        //         .map((m) => m.id)
+        //     : null,
         }
     : undefined;
 
@@ -353,12 +353,12 @@ const MapPage = () => {
             type: viewType,
             sortBy: selectedSort,
             idList: markerIds,
-            AgencyIdList:
-                viewType === "BUILDING"
-                    ? sameLocationMarkers
-                        .filter((m) => m.type === "AGENCY")
-                        .map((m) => m.id)
-                    : null,
+            // AgencyIdList:
+            //     viewType === "BUILDING"
+            //         ? sameLocationMarkers
+            //             .filter((m) => m.type === "AGENCY")
+            //             .map((m) => m.id)
+            //         : null,
         };
 
         setMarkerDetailParams(params);
