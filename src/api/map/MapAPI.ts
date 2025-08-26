@@ -25,6 +25,7 @@ export class MapAPI {
   // 내 주변 찐빵 조회
   static async fetchNearByMapItem(body:NearByRequest) : Promise<NearByResponse>{
     try {
+      console.log("📍 MapAPI.fetchNearByMapItem 요청 body:", body);
       const res = await api.post("/api/v1/map/markers/nearby", body, {
         useAuth: false,
       });
