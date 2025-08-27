@@ -131,6 +131,11 @@ const ReviewAdvantagePage: React.FC = () => {
   };
 
   const handleNext = () => {
+    if (selectedFilters.length < 3) {
+      alert('최소 3개의 장점을 선택해 주세요!');
+      return;
+    }
+
     const updatedReview = {
       ...review,
       pros: selectedFilters,
