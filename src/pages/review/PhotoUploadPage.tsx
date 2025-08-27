@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { imageUploadAPI } from '../../api/imageUpload';
 import styles from '../../styles/review/PhotoUpload.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import plusIcon from '../../assets/image/iconPlus.svg';
@@ -29,8 +30,10 @@ const PhotoUploadPage: React.FC = () => {
   const { housingType } = location.state;
   const locationState = location.state as LocationState;
 
-  // 업로드된 사진들의 상태 관리
+  // 업로드된 사진들의 상태 관리 (S3 URLs)
   const [photos, setPhotos] = useState<string[]>([]);
+  // 업로드 중인 상태 관리
+  const [uploading, setUploading] = useState<boolean>(false);
   // 파일 입력 참조를 위한 ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,29 +47,44 @@ const PhotoUploadPage: React.FC = () => {
 
   // 사진 추가 핸들러 - 파일 입력 요소 클릭
   const handleAddPhoto = () => {
+    if (uploading) return; // 업로드 중일 때는 비활성화
     // 파일 입력 요소 클릭 트리거
     fileInputRef.current?.click();
   };
 
-  // 파일 변경 핸들러 - 이미지 미리보기 생성
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 파일 변경 핸들러 - S3에 이미지 업로드
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    // 새 이미지 파일들을 미리보기 URL로 변환
-    const newPhotos = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
+    // 최대 20개 제한 확인
+    const remainingSlots = 20 - photos.length;
+    const filesToUpload = Array.from(files).slice(0, remainingSlots);
 
-    // 기존 사진과 새 사진을 합쳐서 최대 20개까지만 저장
-    setPhotos((prev) => {
-      const combined = [...prev, ...newPhotos];
-      return combined.slice(0, 20);
-    });
+    if (filesToUpload.length === 0) {
+      alert('최대 20장까지만 업로드할 수 있습니다.');
+      return;
+    }
 
-    // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게 함
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    try {
+      setUploading(true);
+      
+      // S3에 이미지 업로드
+      const uploadedUrls = await imageUploadAPI.uploadImages(filesToUpload);
+      
+      // 업로드된 S3 URLs를 상태에 추가
+      setPhotos((prev) => [...prev, ...uploadedUrls]);
+      
+    } catch (error) {
+      console.error('이미지 업로드 실패:', error);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setUploading(false);
+      
+      // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게 함
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -107,6 +125,9 @@ const PhotoUploadPage: React.FC = () => {
               ? "사진이 있다면 첨부해 주세요!"
               : "직접 촬영한 찐거주 사진을 올려주세요!"}
           </h1>
+          {uploading && (
+            <p className={styles.uploadingText}>이미지 업로드 중...</p>
+          )}
         </header>
 
         <div className={styles.subtitle}>
@@ -138,8 +159,12 @@ const PhotoUploadPage: React.FC = () => {
 
             {/* 사진 추가 버튼 (최대 20장까지) */}
             {photos.length < 20 && (
-              <div className={styles.addPhotoBox} onClick={handleAddPhoto}>
+              <div 
+                className={`${styles.addPhotoBox} ${uploading ? styles.uploading : ''}`} 
+                onClick={handleAddPhoto}
+              >
                 <img src={plusIcon} alt="add" className={styles.plusIcon} />
+                {uploading && <span className={styles.uploadingSpinner}>⏳</span>}
               </div>
             )}
 

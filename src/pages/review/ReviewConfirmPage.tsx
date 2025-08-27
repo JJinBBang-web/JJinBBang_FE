@@ -311,7 +311,7 @@ const ReviewConfirmPage: React.FC = () => {
             rating: rating,
             content: review.description || review.content || '',
           },
-          imageUrls: [], // Will be set after image upload
+          imageUrls: review.images || [],
           buildingRequest: {
             buildingCode: review.buildingCode || '',
             name: review.detailedAddress || '공인중개사명',
@@ -349,7 +349,7 @@ const ReviewConfirmPage: React.FC = () => {
             rating: rating,
             content: review.description || review.content || '',
           },
-          imageUrls: [], // Will be set after image upload
+          imageUrls: review.images || [],
           buildingRequest: {
             buildingCode: review.buildingCode || '',
             name: review.detailedAddress || '건물명',
@@ -365,24 +365,8 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
-      // 이미지 URL 처리 - blob URLs를 샘플 이미지 URLs로 변환
-      let processedImageUrls: string[] = [];
-      
-      if (review.images && review.images.length > 0) {
-        // blob URLs는 샘플 이미지 URLs로 교체, 실제 서버 URLs는 그대로 유지
-        processedImageUrls = review.images.map((url, index) => {
-          if (url.startsWith('blob:')) {
-            // blob URL을 샘플 이미지 URL로 변환
-            return `http://localhost:8080/image/${1000 + index}.jpg`;
-          } else {
-            // 이미 실제 서버 URL인 경우 그대로 사용
-            return url;
-          }
-        });
-      }
-
-      // 처리된 이미지 URLs를 리뷰 데이터에 설정
-      reviewData.imageUrls = processedImageUrls;
+      // 이미지 URL은 이미 S3에 업로드된 실제 URLs이므로 그대로 사용
+      reviewData.imageUrls = review.images || [];
 
       // 실제 API 호출
       await createReviewMutation.mutateAsync(reviewData);
