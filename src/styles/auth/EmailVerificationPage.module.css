@@ -9,7 +9,7 @@
 .header {
   position: sticky;
   top: 0;
-  padding: 16px;
+  padding: 1rem;
   background-color: var(--white);
   border-bottom: 1px solid var(--color-gray20);
   z-index: 10;
