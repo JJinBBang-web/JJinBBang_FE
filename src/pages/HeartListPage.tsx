@@ -98,6 +98,10 @@ const Heart: React.FC = () => {
       if (observer.current) {
         observer.current.disconnect();
       }
+      setFilterConfig((prev) => ({
+        ...prev,
+        isOpen: false,
+      }));
     };
   }, []);
 
