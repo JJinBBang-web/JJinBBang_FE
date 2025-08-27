@@ -23,6 +23,7 @@ import checkIcon from '../../assets/image/checkIconActive.svg';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import { useCreateReview } from '../../hooks/useCreateReview';
+import { imageUploadAPI } from '../../api/imageUpload';
 
 interface LocationState {
   address?: {
@@ -365,8 +366,10 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
-      // 이미지 URL은 이미 S3에 업로드된 실제 URLs이므로 그대로 사용
-      reviewData.imageUrls = review.images || [];
+      // TODO: 이미지 업로드 API가 준비되면 실제 S3 업로드 구현
+      // 현재는 임시로 빈 배열 사용 (백엔드 이미지 API 준비 대기)
+      console.log('Image upload skipped - backend API not ready. Images:', review.images?.length || 0);
+      reviewData.imageUrls = [];
 
       // 실제 API 호출
       await createReviewMutation.mutateAsync(reviewData);
