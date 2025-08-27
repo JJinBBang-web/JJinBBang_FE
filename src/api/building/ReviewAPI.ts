@@ -59,6 +59,9 @@ export class ReviewAPI {
         throw new Error('알 수 없는 리뷰 타입입니다.');
       }
 
+      // 리뷰 POST 요청 형식 출력
+      console.log(`🚀 Review POST to /api/v1/review/${reviewType}:`, JSON.stringify(reviewData, null, 2));
+
       const response = await api.post(`/api/v1/review/${reviewType}`, reviewData, {
         useAuth: true,
       });
