@@ -49,13 +49,6 @@ const PaymentTypePage: React.FC = () => {
       ...prev,
       contractType: type,
     }));
-    localStorage.setItem(
-      'reviewState',
-      JSON.stringify({
-        ...review,
-        contractType: type,
-      })
-    );
   };
 
   const handleNext = () => {

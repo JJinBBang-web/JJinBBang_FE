@@ -77,7 +77,6 @@ const WolseInputPage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
 
     const priceData = {
       deposit: Number(deposit),

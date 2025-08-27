@@ -52,7 +52,6 @@ const ReviewConfirmPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
-  console.log('ReviewConfirmPage review:', review);
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(dormitoryReviewState);
   const filters = useRecoilValue(JjinFilterState);
@@ -76,64 +75,39 @@ const ReviewConfirmPage: React.FC = () => {
   const isDormitory = review.housingType === '기숙사';
   const isAgency = review.housingType === '공인중개사';
 
-  // 컴포넌트 마운트 시 저장된 상태 로드
+  // 데이터 로딩 로직 - locationState를 사용해서 최신 데이터 반영
   useEffect(() => {
-    const savedState = localStorage.getItem('reviewState');
-    const savedDormState = localStorage.getItem('dormitoryReviewState');
-
-    if (savedState) {
-      const parsedState = JSON.parse(savedState);
-      setReview((prev) => ({ ...prev, ...parsedState }));
-    }
-
-    if (savedDormState) {
-      const parsedDormState = JSON.parse(savedDormState);
-      setDormitoryReview((prev) => ({ ...prev, ...parsedDormState }));
-    }
-  }, [setReview, setDormitoryReview]);
-
-  // 데이터 로딩 로직 - localStorage 우선, locationState 보조
-  useEffect(() => {
-    const savedState = localStorage.getItem('reviewState');
-    let mergedState = review;
-
-    if (savedState) {
-      mergedState = { ...review, ...JSON.parse(savedState) };
-    }
-
-    // locationState에서 온 최신 데이터가 있으면 덮어쓰기
     if (locationState && Object.keys(locationState).length > 0) {
-      mergedState = {
-        ...mergedState,
-        housingType: locationState.housingType || mergedState.housingType || '',
-        pros: locationState.advantages || mergedState.pros || [],
-        cons: locationState.disadvantages || mergedState.cons || [],
-        content: locationState.content || mergedState.content || '',
-        images: locationState.photos || mergedState.images || [],
+      const mergedState = {
+        ...review,
+        housingType: locationState.housingType || review.housingType || '',
+        pros: locationState.advantages || review.pros || [],
+        cons: locationState.disadvantages || review.cons || [],
+        content: locationState.content || review.content || '',
+        images: locationState.photos || review.images || [],
         address:
-          locationState.address?.roadAddress || mergedState.address || '',
+          locationState.address?.roadAddress || review.address || '',
         addressDetail:
           locationState.address?.jibunAddress ||
-          mergedState.addressDetail ||
+          review.addressDetail ||
           '',
         detailedAddress: locationState.buildingName
           ? `${locationState.buildingName}`
-          : mergedState.detailedAddress || '',
+          : review.detailedAddress || '',
         contractType:
-          locationState.paymentType || mergedState.contractType || '',
-        deposit: locationState.priceData?.deposit || mergedState.deposit || 0,
+          locationState.paymentType || review.contractType || '',
+        deposit: locationState.priceData?.deposit || review.deposit || 0,
         monthlyRent:
           locationState.priceData?.monthlyRent !== undefined
             ? locationState.priceData.monthlyRent
-            : mergedState.monthlyRent || 0,
+            : review.monthlyRent || 0,
         managementFee:
           locationState.priceData?.managementFee ||
-          mergedState.managementFee ||
+          review.managementFee ||
           0,
       };
+      setReview(mergedState);
     }
-
-    setReview(mergedState);
   }, [locationState, setReview]);
 
   // 라벨에 맞는 아이콘 찾기 - 기숙사 필터 지원
@@ -145,7 +119,6 @@ const ReviewConfirmPage: React.FC = () => {
       ? agencyFilters
       : filters;
 
-    console.log('s:', currentFilters);
 
     let iconSrc = '';
     let tagKey = '';
@@ -195,10 +168,6 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const handleItemClick = (navigationFunction: () => void) => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-    if (isDormitory) {
-      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
-    }
     navigationFunction();
   };
 
@@ -265,9 +234,6 @@ const ReviewConfirmPage: React.FC = () => {
       // 태그 텍스트를 코드로 변환
       const positiveKeywords = convertTagTextToCode(review.pros || []);
       const negativeKeywords = convertTagTextToCode(review.cons || []);
-
-      console.log('변환된 긍정 키워드:', positiveKeywords);
-      console.log('변환된 부정 키워드:', negativeKeywords);
 
       let reviewData: any;
 
@@ -403,8 +369,6 @@ const ReviewConfirmPage: React.FC = () => {
       let processedImageUrls: string[] = [];
       
       if (review.images && review.images.length > 0) {
-        console.log('🖼️ 이미지 처리 시작:', review.images.length, '장');
-        
         // blob URLs는 샘플 이미지 URLs로 교체, 실제 서버 URLs는 그대로 유지
         processedImageUrls = review.images.map((url, index) => {
           if (url.startsWith('blob:')) {
@@ -415,30 +379,13 @@ const ReviewConfirmPage: React.FC = () => {
             return url;
           }
         });
-        
-        console.log('✅ 이미지 처리 완료:', processedImageUrls.length, '장');
       }
 
       // 처리된 이미지 URLs를 리뷰 데이터에 설정
       reviewData.imageUrls = processedImageUrls;
 
-      console.log('📤 리뷰 데이터:', reviewData);
-      
-      // 기숙사 리뷰일 경우 상세 로깅
-      if (review.housingType === '기숙사') {
-        console.log('🏢 기숙사 리뷰 상세 데이터:');
-        console.log('- dormitoryReview:', JSON.stringify(reviewData.dormitoryReview, null, 2));
-        console.log('- imageUrls:', reviewData.imageUrls);
-        console.log('- buildingRequest:', JSON.stringify(reviewData.buildingRequest, null, 2));
-        console.log('- keywords:', JSON.stringify(reviewData.keywords, null, 2));
-        console.log('- condition:', JSON.stringify(reviewData.condition, null, 2));
-        console.log('- facilities:', JSON.stringify(reviewData.facilities, null, 2));
-        console.log('🔍 전체 POST 데이터:', JSON.stringify(reviewData, null, 2));
-      }
-
       // 실제 API 호출
       await createReviewMutation.mutateAsync(reviewData);
-      console.log('✅ 리뷰 작성 성공');
 
       setIsSubmitting(false);
       setShowConfirmModal(false);
@@ -446,9 +393,6 @@ const ReviewConfirmPage: React.FC = () => {
       setReview(defaultReviewState);
     } catch (error: any) {
       setIsSubmitting(false);
-      console.error('❌ 리뷰 작성 실패:', error);
-      console.error('❌ 에러 응답:', error.response?.data);
-      console.error('❌ 상태 코드:', error.response?.status);
       
       // 이미지 개수 오류에 대한 특별 처리
       const errorMessage = error.response?.data?.message;
@@ -461,8 +405,6 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToHousingType = () => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-
     navigate('/review/type', {
       state: {
         ...review,
@@ -518,10 +460,6 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToContractType = () => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-    if (isDormitory) {
-      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
-    }
     if (review.housingType === '기숙사') {
       navigate('/review/dormitory-conditions', {
         state: {
@@ -538,10 +476,6 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToContractDetails = () => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-    if (isDormitory) {
-      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
-    }
     if (review.housingType === '기숙사') {
       navigate('/review/dormitory-amenities', {
         state: {
@@ -574,10 +508,6 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToPros = () => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-    if (isDormitory) {
-      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
-    }
     navigate('/review/filter-ad', {
       state: {
         ...locationState,
@@ -592,10 +522,6 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const navigateToCons = () => {
-    localStorage.setItem('reviewState', JSON.stringify(review));
-    if (isDormitory) {
-      localStorage.setItem('dormitoryReviewState', JSON.stringify(dormitoryReview));
-    }
     navigate('/review/filter-disad', {
       state: {
         ...locationState,

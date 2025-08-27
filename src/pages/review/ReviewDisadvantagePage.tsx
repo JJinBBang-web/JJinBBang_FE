@@ -127,7 +127,6 @@ const ReviewDisadvantagePage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem("reviewState", JSON.stringify(updatedReview));
 
     if (from === "confirm") {
       navigate("/review/confirm", {
