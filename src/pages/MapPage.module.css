@@ -143,6 +143,10 @@
     overflow: scroll;
 }
 
+.contentWrap::-webkit-scrollbar{
+    display: none;
+}
+
 .contentMarker {
     width: 100%;
     height: fit-content;

@@ -83,8 +83,16 @@ const Review: React.FC = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (location.state?.from === 'update-exit') {
+      // ✅ 리뷰B(방금 replace로 온 엔트리)를 pop 해서 리뷰A로 이동
+      navigate(-1);
+    }
+  }, [location.state, navigate]);
+
   const handleBack = () => {
-    navigate(`/map`);
+    console.log("click");
+    navigate(-1);
   };
 
   if (isLoading) return <div>로딩 중...</div>;

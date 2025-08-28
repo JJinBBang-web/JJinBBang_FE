@@ -87,7 +87,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     // 뒤로가기 함수
     const handleBack = () => {
-      navigate(`/building/review/${reviewId}`);
+      navigate(`/building/review/${reviewId}`, {replace: true, state: { from: 'update-exit' }});
     };
     
     // 삭제 모달 함수
@@ -161,7 +161,7 @@ const UpdateConfirmPage: React.FC = () => {
           setTimeout(() => {
             setIsSubmitting(false);
             setShowConfirmModal(false);
-            navigate(`/mypage`);
+            navigate(`/mypage`, {replace: true, state: { from: 'update-exit' }});
             setReview(defaultReviewState);
           }, 1000);
         } catch (error) {
@@ -174,7 +174,7 @@ const UpdateConfirmPage: React.FC = () => {
     const handleDeleteSubmit = () => {
       setIsDelete(true);
       setShowDeleteMConfirmodal(false);
-      navigate('/mypage');
+      navigate('/mypage', {replace: true, state: { from: 'update-exit' }});
     }
 
     // 
@@ -765,7 +765,7 @@ const UpdateConfirmPage: React.FC = () => {
       {showDeleteConfirmModal && (
         <div
           className={styles.modalOverlay}
-          onClick={() => !isDelete && setShowDeleteMConfirmodal(false)}
+          onClick={() => !isDelete}
         >
           <div
             className={styles.modalContainer}
@@ -805,7 +805,7 @@ const UpdateConfirmPage: React.FC = () => {
       {showConfirmModal && (
         <div
           className={styles.modalOverlay}
-          onClick={() => !isSubmitting && setShowConfirmModal(false)}
+          onClick={() => !isSubmitting}
         >
           <div
             className={styles.modalContainer}
