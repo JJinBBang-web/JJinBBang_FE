@@ -1,7 +1,7 @@
 // src/components/KakaoCallback.jsx
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilState } from 'recoil';
@@ -10,6 +10,8 @@ import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
 // const url = process.env.REACT_APP_API_URL;
 // const url = '/api';
+const SITE_URL = process.env.REACT_APP_SITE_URL!;
+const loginUrl = `${SITE_URL}/login/kakao`;
 export const getSignupToken = () => localStorage.getItem('signupToken');
 export const getAccessToken = () => localStorage.getItem('accessToken');
 export const getRefreshToken = () => localStorage.getItem('refreshToken');
@@ -34,6 +36,15 @@ export const clearTokens = () => {
 };
 
 export const kakaoLogin = async (authCode: string) => {
+  const body = {
+    oauthProvider: 'kakao',
+    oauthCode: authCode,
+    redirectUri: loginUrl,
+  };
+
+  console.log("📦 Request Body:", body);               // 객체 그대로 출력
+  console.log("📦 Stringified Body:", JSON.stringify(body));
+  
   const response = await fetch('/api/v1/auth', {
     method: 'POST',
     headers: {
@@ -42,8 +53,10 @@ export const kakaoLogin = async (authCode: string) => {
     body: JSON.stringify({
       oauthProvider: 'kakao',
       oauthCode: authCode,
+      redirectUri: loginUrl,
     }),
   });
+  
   return response.json();
 };
 
