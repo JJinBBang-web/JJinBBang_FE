@@ -24,6 +24,7 @@ import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import { useCreateReview } from '../../hooks/useCreateReview';
 import { imageUploadAPI } from '../../api/imageUpload';
+import { koreanToType } from '../../util/mapping';
 
 interface LocationState {
   address?: {
@@ -354,7 +355,7 @@ const ReviewConfirmPage: React.FC = () => {
           buildingRequest: {
             buildingCode: review.buildingCode || '',
             name: review.detailedAddress || '건물명',
-            type: 'APARTMENT',
+            type: koreanToType[review.housingType] || 'APARTMENT',
             address: review.address || '',
             latitude: review.latitude || 37.5605,
             longitude: review.longitude || 127.0103,
