@@ -68,6 +68,15 @@ const WolseInputPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    // 단위 확인 alert 표시
+    const confirmed = window.confirm(
+      "단위를 맞게 기입하였나요?\n\n예시) 관리비 300,000 원 → 30 입력\n\n'확인'을 누르면 다음으로, '취소(수정)'를 누르면 수정할 수 있습니다."
+    );
+    
+    if (!confirmed) {
+      return; // 사용자가 수정을 선택하면 현재 페이지에 머무름
+    }
+
     const updatedReview = {
       ...review,
       contractType: paymentType,
@@ -77,7 +86,6 @@ const WolseInputPage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
 
     const priceData = {
       deposit: Number(deposit),

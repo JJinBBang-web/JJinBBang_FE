@@ -37,10 +37,8 @@ const AddressResultPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  // 지도 API는 아직 추가되지 않음
+  // 지도 API 아직 추가되지 않음
   React.useEffect(() => {
-    // 지도 API가 추가되면 여기에 구현
-    console.log("지도 API 추가 필요:", address.roadAddress);
   }, [address.roadAddress]);
 
   const handleNext = () => {
