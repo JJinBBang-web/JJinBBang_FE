@@ -24,6 +24,18 @@ import { useSetRecoilState } from "recoil";
 import { hideNavState } from '../recoil/util/modalState';
 import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 
+type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
+
+const splitIds = (arr: MarkerItem[]) => {
+  const buildingIds:number[] = [];
+  const agencyIds:number[] = [];
+  for (const m of arr) {
+    if (m.type === 'AGENCY') agencyIds.push(m.id);
+    else buildingIds.push(m.id);
+  }
+  return { buildingIds, agencyIds };
+};
+
 const FILTER_ATOMS = [
   filterState,
   housingTypeState,
@@ -217,18 +229,16 @@ const MapPage = () => {
         isLoading: isMarkerDetailLoading,
     } = useNearBy(markerDetailParams);
 
+    const { buildingIds: nearByBuildingIds /*, agencyIds: nearByAgencyIds */ } = splitIds(markerData as MarkerItem[]);
+
     const nearByParams: NearByRequest | undefined = mapBounds
     ? {
         num: 10,
         page: nearByCurrentPage,
         type: viewType,
         sortBy: selectedSort,
-        idList: markerData.map((m) => m.id),
-        // AgencyIdList: viewType === "BUILDING"
-        //     ? markerData
-        //         .filter((m) => m.type === "AGENCY")
-        //         .map((m) => m.id)
-        //     : null,
+        idList: nearByBuildingIds,
+        // agencyIdList: nearByAgencyIds
         }
     : undefined;
 
@@ -413,20 +423,20 @@ const MapPage = () => {
             (m) => m.latitude === clickedMarker.latitude && m.longitude === clickedMarker.longitude
         );
         
-        const markerIds = sameLocationMarkers.map((m) => m.id);
+        const { buildingIds, agencyIds } = splitIds(sameLocationMarkers as MarkerItem[]);
+
+        if (buildingIds.length === 0) {
+            // 같은 위치가 전부 AGENCY면 호출 안 함(혹은 agencyIdList만 허용되면 거기에 맞춰 호출)
+            return;
+        }
 
         const params: NearByRequest = {
-            num: markerIds.length,  // 모두 가져오기
+            num: buildingIds.length,  // 모두 가져오기
             page: 1,
             type: viewType,
             sortBy: selectedSort,
-            idList: markerIds,
-            // AgencyIdList:
-            //     viewType === "BUILDING"
-            //         ? sameLocationMarkers
-            //             .filter((m) => m.type === "AGENCY")
-            //             .map((m) => m.id)
-            //         : null,
+            idList: buildingIds,
+            // agencyIdList: agencyIds, 
         };
 
         setMarkerDetailParams(params);
