@@ -48,6 +48,7 @@ const Heart: React.FC = () => {
       QUERY_KEYS.heartListData,
       filterConfig.sortBy,
       filterConfig.type,
+      isLogin
     ],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getAPI(
@@ -137,11 +138,13 @@ const Heart: React.FC = () => {
 
   // 초기 로딩 상태
   if (isLoading) {
+    console.log(123)
     return null;
   }
 
   // 에러 상태
-  if (isError) {
+  if (isError) {    console.log(123333333);
+
     return null
   }
 
