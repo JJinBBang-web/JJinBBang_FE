@@ -1,6 +1,5 @@
 import { useRecoilState } from "recoil"
 import { depositRangeState, filterState, maintenanceCostState, monthlyRentRangeState, selectedContractState, selectedJjinFilterState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
-import { use, useState } from "react";
 import iconFilter from "../../assets/image/iconFilter.svg"
 import iconDown from "../../assets/image/downIcon.svg"
 import styles from "./FilterBar.module.css"

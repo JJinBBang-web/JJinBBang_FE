@@ -13,8 +13,8 @@ import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
 import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { filterState, housingTypeState, searchKeywordState } from '../recoil/map/mapRecoilState';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { depositRangeState, filterState, housingTypeState, maintenanceCostState, monthlyRentRangeState, searchKeywordState, selectedContractState, selectedJjinFilterState } from '../recoil/map/mapRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
 import { useSearch } from '../hooks/useSearch';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
@@ -22,9 +22,26 @@ import { campusCenterState } from '../recoil/map/universityRecoilState';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { hideNavState } from '../recoil/util/modalState';
-import { it } from 'node:test';
+import { isSheetOpenState } from '../recoil/util/utilRecoilState';
+
+const FILTER_ATOMS = [
+  filterState,
+  housingTypeState,
+  searchKeywordState,
+  selectedContractState,
+  maintenanceCostState,
+  depositRangeState,
+  monthlyRentRangeState,
+  selectedJjinFilterState,
+];
 
 const MapPage = () => {
+
+    const resetAllFilters = useRecoilCallback(({ reset }) => () => {
+        FILTER_ATOMS.forEach(reset);
+    }, []);
+    const didResetRef = useRef(false);
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -55,6 +72,37 @@ const MapPage = () => {
     const searchScrollRef = useRef<HTMLDivElement>(null);
     const nearByScrollRef = useRef<HTMLDivElement>(null);
 
+    // 바텀시트 상태 관리 추가
+    const [bottomSheet, setBottomSheet] = useRecoilState(isSheetOpenState);
+
+    // 라우트 변경 시 모달 상태 초기화 (추가 안전장치)
+    useEffect(() => {
+        setBottomSheet({ isOpenModal: false, type: null });
+    }, [location.pathname, setBottomSheet]);
+
+    // 컴포넌트 언마운트 시 모달 상태 초기화
+    useEffect(() => {
+        return () => {
+            // MapPage를 떠날 때 모든 모달 상태 초기화
+            setBottomSheet({ isOpenModal: false, type: null });
+        };
+    }, [setBottomSheet]);
+
+    // 브라우저 뒤로가기 감지 및 모달 닫기
+    useEffect(() => {
+        const handlePopState = () => {
+            if (bottomSheet.isOpenModal) {
+                setBottomSheet({ isOpenModal: false, type: null });
+                window.history.pushState(null, '', window.location.href);
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [bottomSheet.isOpenModal, setBottomSheet]);
 
     const isInitialized = useRef(false);
 
@@ -78,8 +126,8 @@ const MapPage = () => {
 
 
     // filter Recoil
-    const buildType = useRecoilValue(housingTypeState);
-    const filter = useRecoilValue(filterState);
+    const [buildType, setBuildType] = useRecoilState(housingTypeState);
+    const [filter, setFilter] = useRecoilState(filterState);
     const viewType = filter.reviewType === "후기별" ? "REVIEW" : "BUILDING";
     const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | null;
     const depositMax = 
@@ -93,6 +141,26 @@ const MapPage = () => {
         ? filter.monthlyRentMax === 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 
         : null;
 
+    useEffect(() => {
+        const fromHome = location.state?.from === 'home';
+        const hasCampusJump = !!location.state?.latitude && !!location.state?.longitude;
+
+        if ((fromHome || hasCampusJump) && !didResetRef.current) {
+            // ✅ 한 방에 초기화
+            resetAllFilters();
+
+            // 로컬 상태도 필요하면 같이 초기화
+            setSelectedSort('RCMND');
+            setSearchCurrentPage(1);
+            setNearByCurrentPage(1);
+            setHasMoreSearch(true);
+            setHasMoreNearBy(true);
+            setSearchAllItems([]);
+            setNearByAllItems([]);
+
+            didResetRef.current = true;
+        }
+    }, [location.state, setFilter]);
 
     const markerFilters = useMemo<MarkerFilter>(() => ({
         viewType: viewType,
