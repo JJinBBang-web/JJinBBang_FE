@@ -48,10 +48,8 @@ const AgencyInputPage: React.FC = () => {
       };
 
       setReview(updatedReview);
-      localStorage.setItem("reviewState", JSON.stringify(updatedReview));
 
       if (from === "confirm") {
-        console.log(buildingName);
         navigate("/review/confirm", {
           state: {
             ...location.state,

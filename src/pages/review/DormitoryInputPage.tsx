@@ -126,7 +126,6 @@ const DormitoryInputPage: React.FC = () => {
     } as unknown as ReviewState;
 
     setReview(extendedUpdatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(extendedUpdatedReview));
 
     const dormitoryData = {
       university: university,

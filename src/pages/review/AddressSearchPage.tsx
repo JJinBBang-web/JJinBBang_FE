@@ -34,7 +34,6 @@ const AddressSearchPage: React.FC = () => {
               width: '100%',
               height: '100%',
               oncomplete: (data) => {
-                console.log('Daum postcode data:', data); // 사용 가능한 필드 확인
                 const updatedReview = {
                   ...review,
                   address: data.roadAddress,
@@ -45,14 +44,9 @@ const AddressSearchPage: React.FC = () => {
                   longitude: data.x ? parseFloat(data.x) : undefined,
                 };
                 setReview(updatedReview);
-                localStorage.setItem(
-                  'reviewState',
-                  JSON.stringify(updatedReview)
-                );
 
                 // 수정 모드일 경우
                 if (locationState.from === "confirm" && data.buildingName) {
-                  console.log(data);
                   navigate("/review/confirm", {
                     state: {
                       ...locationState,
@@ -119,12 +113,10 @@ const AddressSearchPage: React.FC = () => {
                 }
               },
             }).embed(postcodeRef.current);
-          } else {
-            console.error('Daum postcode API not loaded correctly');
           }
         }, 300);
       } catch (error) {
-        console.error('Error initializing Daum postcode:', error);
+        // Handle error silently or show user-friendly message
       }
     }
   }, [isScriptLoaded, locationState, review, setReview, navigate]);

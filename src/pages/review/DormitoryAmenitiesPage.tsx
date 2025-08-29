@@ -95,7 +95,6 @@ const DormitoryAmenitiesPage: React.FC = () => {
     };
 
     setDormitoryReview(updatedReview);
-    localStorage.setItem('dormitoryReviewState', JSON.stringify(updatedReview));
 
     if (from === 'confirm') {
       navigate('/review/confirm', {

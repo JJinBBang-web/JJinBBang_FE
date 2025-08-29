@@ -30,7 +30,6 @@ export class ReviewAPI {
         throw new Error('후기 상세 조회 실패');
       }
 
-      console.log('✅ Axios Response:', response.data);
 
       return response.data.data;
     } catch (error) {
@@ -60,6 +59,9 @@ export class ReviewAPI {
         throw new Error('알 수 없는 리뷰 타입입니다.');
       }
 
+      // 리뷰 POST 요청 형식 출력
+      console.log(`🚀 Review POST to /api/v1/review/${reviewType}:`, JSON.stringify(reviewData, null, 2));
+
       const response = await api.post(`/api/v1/review/${reviewType}`, reviewData, {
         useAuth: true,
       });
@@ -68,7 +70,6 @@ export class ReviewAPI {
         throw new Error('리뷰 작성 실패');
       }
 
-      console.log('✅ 리뷰 작성 성공:', response.data);
 
       return response.data.data;
     } catch (error) {
@@ -129,7 +130,6 @@ export class ReviewAPI {
         throw new Error('사용자 리뷰 목록 조회 실패');
       }
 
-      console.log('✅ 사용자 리뷰 목록:', response.data);
       return response.data.data;
     } catch (error) {
       console.error('ReviewAPI.getUserReviews error:', error);

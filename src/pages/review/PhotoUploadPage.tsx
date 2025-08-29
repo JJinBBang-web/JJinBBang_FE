@@ -29,7 +29,7 @@ const PhotoUploadPage: React.FC = () => {
   const { housingType } = location.state;
   const locationState = location.state as LocationState;
 
-  // 업로드된 사진들의 상태 관리
+  // 업로드된 사진들의 상태 관리 (blob URLs - 임시 저장)
   const [photos, setPhotos] = useState<string[]>([]);
   // 파일 입력 참조를 위한 ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,7 +48,7 @@ const PhotoUploadPage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  // 파일 변경 핸들러 - 이미지 미리보기 생성
+  // 파일 변경 핸들러 - 이미지 미리보기 생성 (blob URLs)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
