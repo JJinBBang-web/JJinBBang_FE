@@ -23,6 +23,11 @@ import { convertToReviewState } from '../util/convertToReviewState';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useQuery } from '@tanstack/react-query';
 import { getAPI } from '../api/baseAPI';
+import Modal from "../components/review/Modal";
+import { hideNavState } from "../recoil/util/modalState";
+import iconClose from "../assets/image/iconClose.svg"
+import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
+
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +35,9 @@ const Review: React.FC = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [reviews, setReviews] = useRecoilState(ReviewInfoState);
   const setUpdateReview = useSetRecoilState(updateReviewState);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const setHideNav = useSetRecoilState(hideNavState);
+  
 
   const { reviewId } = useParams(); // /building/rv/:reviewId 형식이라면 필요
   const [searchParams] = useSearchParams();
@@ -40,6 +48,7 @@ const Review: React.FC = () => {
     reviewType
   );
   const [isLogin] = useRecoilState(isLoginState);
+
   const { data: userData } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
@@ -95,8 +104,47 @@ const Review: React.FC = () => {
     navigate(-1);
   };
 
+  const handleCloseModal = () => {
+        setHideNav(false);
+  };
+
+  const handleToAuth = () => {
+      if (!isLogin) {
+          setHideNav(false);
+          setIsModalOpen(false);
+          navigate(`/mypage`);
+      } else {
+          setHideNav(false);
+          setIsModalOpen(false);
+          navigate(`/auth/student/verify`);
+      }
+  }
+
   if (isLoading) return <div>로딩 중...</div>;
-  if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
+  if(!isLogin)
+    return <>
+        <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
+          <div className={styles.wrap2}>
+              <div className={styles.sheet_header}>
+                  <div className={styles.header_divider}></div>
+              </div>
+              <div className={styles.sheet_title_wrap}>
+                  <div className={styles.sheet_info_wrap}>
+                      <p className={styles.sheet_title}></p>
+                  </div>
+                  <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+              </div>
+              <div className={styles.sheetWrap}>
+                  <img src={verifiedCharacter}/>
+                  <p className={styles.sheetText}>학교 인증 후<br/>찐빵의 찐거주 후기들을<br/>무료 열람해보세요!</p>
+              </div>
+              <div className={styles.btnWrap}>
+                  <button className={styles.confirmBtn} onClick={handleToAuth}>학교 인증하기</button>
+              </div>      
+          </div>
+        </Modal>
+        </>
+  else if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
 
   return (
     <div
@@ -145,7 +193,10 @@ const Review: React.FC = () => {
           <TopButton />
         </div>
       )}
+      
+      
     </div>
+    
   );
 };
 

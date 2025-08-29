@@ -49,3 +49,103 @@
     flex-direction: column;
     align-items: end;
 }
+
+.wrap2 {
+    max-width: 393px;
+    padding: 0px 4px;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+}
+
+.sheet_header {
+    display: block;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    margin-bottom: 10px;
+}
+.header_divider {
+    width: 50px;
+    height: 5px;
+    border-radius: 100px;
+    background-color: var(--block-popup);
+
+}
+
+.sheet_title_wrap {
+    display: block;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+}
+
+.sheet_info_wrap {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sheet_title {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray80);
+}
+
+
+.sheetWrap {
+    width: 100%;
+    padding-top: 3rem;
+    padding-bottom: 7rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    gap:34px;
+}
+
+.sheetText {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 160%;
+    color: var(--black);
+    text-align: center;
+}
+
+.btnWrap {
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.confirmBtn {
+    width: 100%;
+    height: 54px;
+
+    border: none;
+    border-radius: 14px;
+    background-color: var(--primary-color);
+
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--white);
+}

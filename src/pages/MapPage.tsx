@@ -557,6 +557,8 @@ const MapPage = () => {
         }
     }
 
+    console.log(nearByAllItems);
+
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
