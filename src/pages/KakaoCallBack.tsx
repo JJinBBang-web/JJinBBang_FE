@@ -8,8 +8,7 @@ import { useRecoilState } from 'recoil';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
-// const url = process.env.REACT_APP_API_URL;
-// const url = '/api';
+const url = process.env.REACT_APP_API_URL;
 const SITE_URL = process.env.REACT_APP_SITE_URL!;
 const loginUrl = `${SITE_URL}/login/kakao`;
 export const getSignupToken = () => localStorage.getItem('signupToken');
