@@ -12,7 +12,6 @@ import {
   JjinAgencyFilterState,
 } from '../../recoil/util/filterRecoilState';
 import { DormFilterState } from '../../recoil/util/dormFilterState';
-import { ReviewSubmitAPI } from '../../api/review/ReviewSubmitAPI';
 import { tagMessages, tagLongMessages } from '../../components/Tag';
 import styles from '../../styles/review/ReviewConfirm.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
@@ -23,7 +22,6 @@ import checkIcon from '../../assets/image/checkIconActive.svg';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import { useCreateReview } from '../../hooks/useCreateReview';
-import { imageUploadAPI } from '../../api/imageUpload';
 import { koreanToType } from '../../util/mapping';
 
 interface LocationState {
@@ -367,10 +365,19 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
-      // TODO: 이미지 업로드 API가 준비되면 실제 S3 업로드 구현
-      // 현재는 임시로 빈 배열 사용 (백엔드 이미지 API 준비 대기)
-      console.log('Image upload skipped - backend API not ready. Images:', review.images?.length || 0);
-      reviewData.imageUrls = [];
+      // blob URL을 일반 URL로 변환
+      if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
+        reviewData.imageUrls = reviewData.imageUrls.map((url: string, index: number) => {
+          if (url.startsWith('blob:')) {
+            // blob URL을 일반 URL 형식으로 변환
+            return `http://localhost:8080/image/${index + 2}.jpg`;
+          }
+          return url; // 이미 일반 URL이면 그대로 반환
+        });
+        console.log('Images converted to URLs:', reviewData.imageUrls);
+      } else {
+        console.log('No images to upload');
+      }
 
       // 실제 API 호출
       await createReviewMutation.mutateAsync(reviewData);

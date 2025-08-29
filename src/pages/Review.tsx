@@ -121,7 +121,7 @@ const Review: React.FC = () => {
   }
 
   if (isLoading) return <div>로딩 중...</div>;
-  if(!isLogin)
+  else if(!isLogin)
     return <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
           <div className={styles.wrap2}>
@@ -144,7 +144,7 @@ const Review: React.FC = () => {
           </div>
         </Modal>
         </>
-  else if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
+  if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
 
   return (
     <div

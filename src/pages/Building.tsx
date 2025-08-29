@@ -73,7 +73,7 @@ const Building: React.FC = () => {
     }
 
     if (isLoading) return <div>로딩 중...</div>;
-    if(!isLogin)
+    else if(!isLogin)
     return <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
           <div className={styles.wrap2}>
@@ -96,7 +96,7 @@ const Building: React.FC = () => {
           </div>
         </Modal>
         </>
-    else if (isError) return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
+    if (isError) return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
     
     const handleBack = () => {
         navigate(-1);
