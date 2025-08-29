@@ -345,7 +345,7 @@ const ReviewConfirmPage: React.FC = () => {
                 : review.floorType === '옥탑층'
                 ? 'ATTIC'
                 : 'MID',
-            space: 25, // TODO: Add space field to review form
+            space: review.space || 25, // 평수 필드 사용, 기본값 25
             rating: rating,
             content: review.description || review.content || '',
           },
