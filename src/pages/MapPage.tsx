@@ -11,6 +11,9 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
+import JBMarkerNone from "../assets/image/JBMarkerNone.svg"
+import BDMarker from "../assets/image/BDMarker.svg";
+import BDMarkerNone from "../assets/image/BDMarkerNone.svg";
 import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
@@ -320,6 +323,28 @@ const MapPage = () => {
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
 
+    const noReviewBuildingIds = useMemo(() => {
+        if (viewType !== "BUILDING") return new Set<number>();
+        const s = new Set<number>();
+
+        const collect = (items?: any[]) => {
+            items?.forEach((it) => {
+            const id =
+                it.agencyBuildingInfo?.id ??
+                it.dormitoryBuildingInfo?.id ??
+                it.generalBuildingInfo?.id;
+            // reviewInfo 없으면 '리뷰 없음'으로 판단
+            if (id != null && !it.reviewInfo) s.add(id);
+            });
+        };
+
+        // 검색 결과와 주변 결과 둘 다에서 수집 (있으면 반영)
+        collect(searchData?.items);
+        collect(nearByData?.items);
+
+        return s;
+    }, [viewType, searchData?.items, nearByData?.items]);
+
     const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
 
     // 검색 데이터가 업데이트될 때 누적 처리
@@ -414,6 +439,13 @@ const MapPage = () => {
 
 
     const handleMarkerClick = (markerId: number) => {
+        if(!isLoggedIn || verificationStatus) {
+            setModalContent('login');
+            setIsModalOpen(true);
+            setHideNav(true);
+            return;
+        }
+
         // 클릭한 마커 찾기
         const clickedMarker = markersToRender.find((m) => m.id === markerId);
         if (!clickedMarker) return;
@@ -557,6 +589,8 @@ const MapPage = () => {
         }
     }
 
+    console.log(nearByAllItems);
+
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
@@ -638,14 +672,24 @@ const MapPage = () => {
                             },
                         ]}
                     >
-                        {markersToRender.map((marker) => (
+                        {markersToRender.map((marker) => {
+                            const useBdNone =
+                                viewType === "BUILDING" && noReviewBuildingIds.has(marker.id);
+
+                            const markerSrc =
+                                viewType === "BUILDING"
+                                    ? (useBdNone ? BDMarkerNone : BDMarker)
+                                    : JBMarker;
+
+                            return (
                             <MapMarker
                                 key={`${modalContent}-${marker.id}`}
                                 position={{ lat: marker.latitude, lng: marker.longitude }}
-                                image={{ src: JBMarker, size: { width: 40, height: 40 } }}
+                                image={{ src: markerSrc, size: { width: 40, height: 40 } }}
                                 onClick={() => handleMarkerClick(marker.id)}
                             />
-                        ))}
+                            )
+                        })}
                     </MarkerClusterer>
                 </Map>
             </div>
