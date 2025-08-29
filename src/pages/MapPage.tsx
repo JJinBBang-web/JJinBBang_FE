@@ -439,6 +439,13 @@ const MapPage = () => {
 
 
     const handleMarkerClick = (markerId: number) => {
+        if(!isLoggedIn || verificationStatus) {
+            setModalContent('login');
+            setIsModalOpen(true);
+            setHideNav(true);
+            return;
+        }
+
         // 클릭한 마커 찾기
         const clickedMarker = markersToRender.find((m) => m.id === markerId);
         if (!clickedMarker) return;

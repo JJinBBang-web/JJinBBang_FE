@@ -37,7 +37,8 @@ const Review: React.FC = () => {
   const setUpdateReview = useSetRecoilState(updateReviewState);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const setHideNav = useSetRecoilState(hideNavState);
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState(false);
 
   const { reviewId } = useParams(); // /building/rv/:reviewId 형식이라면 필요
   const [searchParams] = useSearchParams();
@@ -47,7 +48,20 @@ const Review: React.FC = () => {
     reviewId ?? "",
     reviewType
   );
-  const [isLogin] = useRecoilState(isLoginState);
+
+  // 토큰 여부 확인
+  useEffect(() => {
+      const token = localStorage.getItem("accessToken");
+      setIsLoggedIn(!!token);
+  }, []);
+
+  // 미인증 여부 확인
+  useEffect(() => {
+      const verification = localStorage.getItem("verificationStatus");
+      console.log("localStorage verification:", verification);
+      setVerificationStatus(verification === 'unverified');
+  }, []);
+
 
   const { data: userData } = useQuery({
     queryKey: [location.pathname],
@@ -55,7 +69,7 @@ const Review: React.FC = () => {
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
-    enabled: isLogin,
+    enabled: isLoggedIn,
     refetchOnWindowFocus: false,
   });
 
@@ -109,7 +123,7 @@ const Review: React.FC = () => {
   };
 
   const handleToAuth = () => {
-      if (!isLogin) {
+      if (!isLoggedIn) {
           setHideNav(false);
           setIsModalOpen(false);
           navigate(`/mypage`);
@@ -121,7 +135,7 @@ const Review: React.FC = () => {
   }
 
   if (isLoading) return <div>로딩 중...</div>;
-  else if(!isLogin)
+  else if(!isLoggedIn || verificationStatus)
     return <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
           <div className={styles.wrap2}>

@@ -21,12 +21,26 @@ const Building: React.FC = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(BuildingInfoState);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const setHideNav = useSetRecoilState(hideNavState);
-    const [isLogin] = useRecoilState(isLoginState);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [verificationStatus, setVerificationStatus] = useState(false);
     
     const { buildingId } = useParams(); // URL에서 buildingId 추출
     const isAgency = false; // 필요 시 로직으로 결정
 
     const { data, isLoading, isError } = useBuildingDetail(buildingId!, isAgency);
+
+    // 토큰 여부 확인
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        setIsLoggedIn(!!token);
+    }, []);
+
+    // 미인증 여부 확인
+    useEffect(() => {
+        const verification = localStorage.getItem("verificationStatus");
+        console.log("localStorage verification:", verification);
+        setVerificationStatus(verification === 'unverified');
+    }, []);
 
     useEffect(() => {
         if (!data) return;
@@ -61,7 +75,7 @@ const Building: React.FC = () => {
     };
 
     const handleToAuth = () => {
-        if (!isLogin) {
+        if (!isLoggedIn) {
             setHideNav(false);
             setIsModalOpen(false);
             navigate(`/mypage`);
@@ -73,7 +87,7 @@ const Building: React.FC = () => {
     }
 
     if (isLoading) return <div>로딩 중...</div>;
-    else if(!isLogin)
+    else if(!isLoggedIn || verificationStatus)
     return <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
           <div className={styles.wrap2}>
