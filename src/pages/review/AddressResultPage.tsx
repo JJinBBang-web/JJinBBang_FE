@@ -1,10 +1,12 @@
 // src/pages/review/AddressResultPage.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import styles from "../../styles/review/AddressResult.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
+import JBMarker from "../../assets/image/JBMarker.svg";
 
 interface LocationState {
   address: {
@@ -30,6 +32,9 @@ const AddressResultPage: React.FC = () => {
       squareFootage: "",
     };
 
+  const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.9780 }); // 기본값: 서울시청
+  const [isMapLoading, setIsMapLoading] = useState(true);
+
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -37,8 +42,20 @@ const AddressResultPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  // 지도 API 아직 추가되지 않음
-  React.useEffect(() => {
+  // Geocoder를 사용한 주소 → 좌표 변환
+  useEffect(() => {
+    if (!address.roadAddress) return;
+
+    const geoCoder = new kakao.maps.services.Geocoder();
+    
+    geoCoder.addressSearch(address.roadAddress, (result: any, status: any) => {
+      if (status === kakao.maps.services.Status.OK) {
+        const { x, y } = result[0];
+        const coords = new kakao.maps.LatLng(y, x);
+        setMapCenter({ lat: coords.getLat(), lng: coords.getLng() });
+      }
+      setIsMapLoading(false);
+    });
   }, [address.roadAddress]);
 
   const handleNext = () => {
@@ -117,9 +134,24 @@ const AddressResultPage: React.FC = () => {
           )}
         </div>
         <div id="map" className={styles.map}>
-          <div className={styles.mapPlaceholder}>
-            <p>지도가 표시될 영역입니다</p>
-          </div>
+          {isMapLoading ? (
+            <div className={styles.mapPlaceholder}>
+              <p>지도를 불러오는 중...</p>
+            </div>
+          ) : (
+            <Map
+              center={mapCenter}
+              style={{ width: '100%', height: '100%' }}
+              level={3}
+              draggable={true}
+              zoomable={true}
+            >
+              <MapMarker 
+                position={mapCenter}
+                image={{ src: JBMarker, size: { width: 40, height: 40 } }}
+              />
+            </Map>
+          )}
         </div>
       </div>
       <footer className={styles.footer}>
