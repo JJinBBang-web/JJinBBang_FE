@@ -365,18 +365,36 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
-      // blob URL을 일반 URL로 변환
+      // 이미지 URL 처리 - blob URL이 있으면 업로드, CDN URL은 그대로 사용
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
-        reviewData.imageUrls = reviewData.imageUrls.map((url: string, index: number) => {
-          if (url.startsWith('blob:')) {
-            // blob URL을 일반 URL 형식으로 변환
-            return `http://localhost:8080/image/${index + 2}.jpg`;
+        const blobUrls = reviewData.imageUrls.filter((url: string) => url.startsWith('blob:'));
+        const cdnUrls = reviewData.imageUrls.filter((url: string) => !url.startsWith('blob:'));
+        
+        if (blobUrls.length > 0) {
+          console.log('Uploading blob URLs:', blobUrls);
+          try {
+            // blob URL들을 실제 업로드
+            const { imageUploadAPI } = await import('../../api/imageUpload');
+            const uploadedUrls = await imageUploadAPI.uploadBlobUrls(blobUrls, 'review');
+            
+            // 최종 이미지 URL 목록 구성
+            reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
+            console.log('Final image URLs:', reviewData.imageUrls);
+          } catch (uploadError) {
+            console.error('Failed to upload blob URLs:', uploadError);
+            // blob URL을 임시 URL로 변환 (기존 로직)
+            reviewData.imageUrls = reviewData.imageUrls.map((url: string, index: number) => {
+              if (url.startsWith('blob:')) {
+                return `http://localhost:8080/image/${index + 1}.jpg`;
+              }
+              return url;
+            });
           }
-          return url; // 이미 일반 URL이면 그대로 반환
-        });
-        console.log('Images converted to URLs:', reviewData.imageUrls);
+        } else {
+          console.log('Using existing CDN URLs for images:', reviewData.imageUrls);
+        }
       } else {
-        console.log('No images to upload');
+        console.log('No images to submit');
       }
 
       // 실제 API 호출
