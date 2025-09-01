@@ -48,10 +48,11 @@ const UpdateContractTypePage: React.FC = () => {
                 contractType: englishType,
             })
         )
-        navigate(`/review/${reviewId}/update`, {
+        navigate(`/review/${reviewId}/update/contract-price`, {
             state: {
             ...locationState,
             contractType: englishType,
+            from: "contractType",
             },
         }); 
     };
