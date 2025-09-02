@@ -113,6 +113,7 @@ const UpdateDormitoryInputPage: React.FC = () => {
 
     if (from === 'update') {
       navigate(`/review/${reviewId}/update`, {
+        replace:true,
         state: {
           ...location.state,
           dormitoryData,
@@ -123,7 +124,7 @@ const UpdateDormitoryInputPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true});
     } else {
       navigate(-1);
     }

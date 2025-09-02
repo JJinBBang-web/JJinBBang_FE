@@ -16,6 +16,7 @@ import { defaultReviewState, ReviewState } from "../../recoil/review/reviewAtoms
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 import { deleteAPI, putAPI } from "../../api/baseAPI";
 import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
+import UpdateCancelModal from "../../components/review/UpdateCancelModal";
 
 
 type AddressPick = {
@@ -182,6 +183,7 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
 
       navigate(`/review/${reviewId}/update/type`, {
+        replace: true,
         state: {
           from: 'update',
         },
@@ -192,6 +194,7 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToAddress = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/input-address`, {
+        replace: true,
         state: { from: 'update', housingType: review?.housingType },
       });
     };
@@ -200,6 +203,7 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory`, {
+          replace: true,
           state: {
             from: "update",
             universityName : review?.universityName,
@@ -211,6 +215,7 @@ const UpdateConfirmPage: React.FC = () => {
 
       } else {
           navigate(`/review/${reviewId}/update/floor`, {
+            replace: true,
             state: {
               address: {
                 roadAddress: review?.address || '',
@@ -229,6 +234,7 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory-conditions`, {
+          replace: true,
           state: {
             from: 'update',
             facfacilities:review?.facilityConditions
@@ -236,6 +242,7 @@ const UpdateConfirmPage: React.FC = () => {
         });
       } else {
         navigate(`/review/${reviewId}/update/contract/`, {
+          replace: true,
           state: {
             from: 'update',
           },
@@ -247,6 +254,7 @@ const UpdateConfirmPage: React.FC = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory-amenities`, {
+          replace: true,
           state: {
             from: 'update',
           },
@@ -254,6 +262,7 @@ const UpdateConfirmPage: React.FC = () => {
       } else {
 
         navigate(`/review/${reviewId}/update/contract/price`, {
+          replace: true,
           state: {
             from: 'update',
           },
@@ -264,6 +273,7 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToPros = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/filter-ad`, {
+        replace: true,
         state: {
           from: "update",
           housingType: review?.housingType,
@@ -275,6 +285,7 @@ const UpdateConfirmPage: React.FC = () => {
     const navigateToCons = () => {
       localStorage.setItem('updateReviewState', JSON.stringify(review));
       navigate(`/review/${reviewId}/update/filter-disad`, {
+        replace: true,
         state: {
           from: "update",
           housingType: review?.housingType,
@@ -285,6 +296,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     const navigateToContent = () => {
       navigate(`/review/${reviewId}/update/content`, {
+        replace: true,
         state: {
           content: review?.description,
           from: 'update',
@@ -796,7 +808,7 @@ const UpdateConfirmPage: React.FC = () => {
       )}
 
       {showCancelModal && (
-        <CancelModal
+        <UpdateCancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleBack}
         />

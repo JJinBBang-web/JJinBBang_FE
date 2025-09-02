@@ -65,6 +65,7 @@ const UpdateContentPage:React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true, 
             state: {
             ...location.state,
             },
@@ -90,7 +91,12 @@ const UpdateContentPage:React.FC = () => {
         localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
 
         if (from === 'update') {
-            navigate(`/review/${reviewId}/update`);
+            navigate(`/review/${reviewId}/update`, {
+              replace:true,
+              state: {
+                updatedReview
+              }
+            });
         }
     };
 

@@ -45,6 +45,7 @@ const UpdateDisadventagePage:React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
             ...location.state,
             },
@@ -75,6 +76,7 @@ const UpdateDisadventagePage:React.FC = () => {
 
         if (from === "update") {
           navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: { ...location.state, disadvantages: selectedFilters },
           });
         }

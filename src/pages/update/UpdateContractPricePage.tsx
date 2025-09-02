@@ -52,12 +52,18 @@ const UpdateContractPriceTypePage: React.FC = () => {
     localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
 
     // 다음 단계로 이동 (예: Confirm 페이지)
-    navigate(`/review/${reviewId}/update`);
+    navigate(`/review/${reviewId}/update`, {
+      replace:true,
+      state: {
+        updatedReview
+      }
+    });
   };
 
   const handleBack = () => {
     if (locationState.from === "update") {
       navigate(`/review/${reviewId}/update`, {
+        replace:true,
         state: { ...location.state },
       });
     }
@@ -146,7 +152,7 @@ const UpdateContractPriceTypePage: React.FC = () => {
       </div>
 
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
         <button

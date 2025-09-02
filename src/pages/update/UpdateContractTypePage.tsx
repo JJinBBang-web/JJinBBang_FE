@@ -49,6 +49,7 @@ const UpdateContractTypePage: React.FC = () => {
             })
         )
         navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
             ...locationState,
             contractType: englishType,
@@ -64,6 +65,7 @@ const UpdateContractTypePage: React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true, 
             state: {
             ...location.state,
             },
