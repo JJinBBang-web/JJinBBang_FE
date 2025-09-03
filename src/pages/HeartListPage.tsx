@@ -48,6 +48,7 @@ const Heart: React.FC = () => {
       QUERY_KEYS.heartListData,
       filterConfig.sortBy,
       filterConfig.type,
+      isLogin,
     ],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getAPI(
@@ -98,6 +99,10 @@ const Heart: React.FC = () => {
       if (observer.current) {
         observer.current.disconnect();
       }
+      setFilterConfig((prev) => ({
+        ...prev,
+        isOpen: false,
+      }));
     };
   }, []);
 
@@ -138,7 +143,7 @@ const Heart: React.FC = () => {
 
   // 에러 상태
   if (isError) {
-    return null
+    return null;
   }
 
   return (

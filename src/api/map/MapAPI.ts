@@ -27,7 +27,7 @@ export class MapAPI {
     try {
       console.log("📍 MapAPI.fetchNearByMapItem 요청 body:", body);
       const res = await api.post("/api/v1/map/markers/nearby", body, {
-        useAuth: false,
+        useAuth: true,
       });
 
       if (res.data.code !== 200 || !res.data.data) {
@@ -46,7 +46,7 @@ export class MapAPI {
     try {
       console.log("📍 MapAPI.fetchSearch 요청 body:", body);
       const res = await api.post("/api/v1/map/search", body, {
-        useAuth: false,
+        useAuth: true,
       });
 
       if (res.data.code !== 200 || !res.data.data) {

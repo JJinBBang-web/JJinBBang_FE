@@ -64,8 +64,7 @@ const ReviewMapInfo:React.FC<Props> = ({review}) => {
                 {/* <ReviewMap/> */}
                 <Map center={{
                     lat: review.building.latitude,
-                    // lng: review.building.longitude
-                    lng: 128.8828
+                    lng: review.building.longitude
                     }}
                     style={{ width: '100%', height: '100%', zIndex:"0", borderRadius:"12px"}}
                     level={3} // 줌 레벨 설정
@@ -74,7 +73,7 @@ const ReviewMapInfo:React.FC<Props> = ({review}) => {
                     >
                     <MapMarker position={{
                     lat: review.building.latitude,
-                    lng: 128.8828
+                    lng: review.building.longitude
                     }}
                     image={{
                     src: RVMarker,

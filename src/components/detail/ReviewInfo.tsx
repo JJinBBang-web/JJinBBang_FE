@@ -9,6 +9,8 @@ import { tagImages, tagMessages } from "../Tag";
 import { useEffect, useState } from "react";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { postAPI } from "../../api/baseAPI";
 
 
 interface Props {
@@ -31,8 +33,28 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
     const [isLiked, setIsLiked] = useState(liked);
     const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
     
+    console.log(isLiked);
+    const mutation = useMutation({
+        mutationFn: async () => {
+        return postAPI(
+            `/api/v1/user/bookmark`,
+            {
+            type: "review",
+            id: review?.generalReviewInfo?.id ?? review?.dormitoryReviewInfo?.id ?? review?.agencyReviewInfo?.id,
+            bookmark: !isLiked,
+            },
+            true
+        );
+        },
+        onSuccess: (data) => {
+            setIsLiked(!isLiked);
+            setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+        },
+        onError: (error) => {},
+    });
+    
     useEffect(() => {
-        setIsLiked(liked);
+        setIsLiked(!!liked);
         setLikeCount(review.reviewInfo.likeCount);
     },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
@@ -74,12 +96,8 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
                     <img
                         className={styles.likeButton}
                         onClick={(event) => {
-                        event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-                        console.log(likeCount);
-                          setLikeCount((prev) => {
-                            return isLiked ? prev - 1 : prev + 1;
-                          });
-                          setIsLiked((prev) => !prev);
+                            event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
+                            mutation.mutate();
                         }}
                         src={isLiked ? heartIconOn : heartIconOff}
                         alt="heartIcon"
