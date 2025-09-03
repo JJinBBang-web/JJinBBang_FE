@@ -39,9 +39,9 @@ export const imageUploadAPI = {
       if (response.data && response.data.code === 200) {
         return response.data.data;
       } else {
-        throw new Error('Presigned URL 발급 실패');
+        throw new Error(`Presigned URL 발급 실패: ${response.data?.message || 'Unknown error'}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Presigned URL error:', error);
       throw error;
     }

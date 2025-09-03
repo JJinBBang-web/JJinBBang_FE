@@ -2,8 +2,7 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 export const api = axios.create({
-  // baseURL: process.env.REACT_APP_API_URL,
-  baseURL: "", //vercel 용
+  baseURL: process.env.REACT_APP_API_URL || "http://3.35.29.235:8080",
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
     Accept: 'application/json',

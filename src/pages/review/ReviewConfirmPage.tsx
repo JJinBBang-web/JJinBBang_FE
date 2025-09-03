@@ -14,6 +14,7 @@ import {
 import { DormFilterState } from '../../recoil/util/dormFilterState';
 import { tagMessages, tagLongMessages } from '../../components/Tag';
 import styles from '../../styles/review/ReviewConfirm.module.css';
+import { fixImageUrl } from '../../util/imageUrl';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';
@@ -379,22 +380,17 @@ const ReviewConfirmPage: React.FC = () => {
             
             // 최종 이미지 URL 목록 구성
             reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
-            console.log('Final image URLs:', reviewData.imageUrls);
           } catch (uploadError) {
             console.error('Failed to upload blob URLs:', uploadError);
             // blob URL을 임시 URL로 변환 (기존 로직)
             reviewData.imageUrls = reviewData.imageUrls.map((url: string, index: number) => {
               if (url.startsWith('blob:')) {
-                return `http://localhost:8080/image/${index + 1}.jpg`;
+                return fixImageUrl(`http://localhost:8080/image/${index + 1}.jpg`);
               }
               return url;
             });
           }
-        } else {
-          console.log('Using existing CDN URLs for images:', reviewData.imageUrls);
         }
-      } else {
-        console.log('No images to submit');
       }
 
       // 실제 API 호출

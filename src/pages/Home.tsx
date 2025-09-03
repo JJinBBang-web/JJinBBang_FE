@@ -120,14 +120,8 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  const rawReviewList = localStorage.getItem('reviewList');
-
-  const reviewList =
-    rawReviewList &&
-    rawReviewList.startsWith('[') &&
-    rawReviewList.endsWith(']')
-      ? rawReviewList.slice(1, -1)
-      : null;
+  // Recent reviews will be fetched from API instead of localStorage
+  const reviewList = null;
 
   const {
     data: reviewData,

@@ -56,16 +56,7 @@ const Review: React.FC = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    const reviewList = JSON.parse(localStorage.getItem('reviewList') || '[]');
-
-    if (!reviewList || reviewList.length >= 5) {
-      reviewList.shift(); // 첫 번째 요소 제거
-    }
-    if (!reviewList.includes(Number(reviewId))) {
-      reviewList.push(Number(reviewId));
-    }
-    localStorage.setItem('reviewList', JSON.stringify(reviewList));
-    console.log('리뷰 리스트:', reviewList);
+    // Recent review tracking removed - rely on API-based analytics instead
 
     // 초기 로드 시 한 번 실행
     handleResize();
@@ -79,7 +70,6 @@ const Review: React.FC = () => {
       const converted = convertToReviewState(data);
       console.log(data);
       setUpdateReview(converted);
-      localStorage.setItem('updateReviewState', JSON.stringify(converted));
     }
   }, [data]);
 

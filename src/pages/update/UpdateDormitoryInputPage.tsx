@@ -99,7 +99,7 @@ const UpdateDormitoryInputPage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('updateReviewData', JSON.stringify(updatedReview));
+    
 
     const dormitoryData = {
       universityName: university,

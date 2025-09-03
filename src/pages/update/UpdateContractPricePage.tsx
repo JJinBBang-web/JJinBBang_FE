@@ -63,7 +63,7 @@ const UpdateContractPriceTypePage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+    
 
     // 다음 단계로 이동 (예: Confirm 페이지)
     navigate(`/review/${reviewId}/update`);
