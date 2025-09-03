@@ -7,6 +7,8 @@ import { tagImages, tagLongMessages } from "../Tag";
 import { agencyBuildingInfo, Building, dormBuildingInfo, generalBuildingInfo } from "../../recoil/detail/BuildingRecoilState";
 import { useEffect, useState } from "react";
 import { typeToKorean } from "../../util/mapping";
+import { postAPI } from "../../api/baseAPI";
+import { useMutation } from "@tanstack/react-query";
 
 interface Props {
     building : Building;
@@ -14,13 +16,29 @@ interface Props {
 
 const BuildingInfo: React.FC<Props> = ({building}) => {
 
-    console.log(building);
     const [isLiked, setIsLiked] = useState(building.basicInfo.liked);
-
 
     useEffect(() => {
         setIsLiked(building.basicInfo.liked);
     }, [building]);
+
+    const mutation = useMutation({
+        mutationFn: async () => {
+        return postAPI(
+            `/api/v1/user/bookmark`,
+            {
+            type: "building",
+            id: building?.basicInfo.id,
+            bookmark: !isLiked,
+            },
+            true
+        );
+        },
+        onSuccess: (data) => {
+            setIsLiked(!isLiked);
+        },
+        onError: (error) => {},
+    });
 
     const renderExtraInfo = () => {
         if (building.basicInfo.type.includes("DORMITORY")) {
@@ -70,8 +88,8 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
                     <img
                         className={styles.likeButton}
                         onClick={(event) => {
-                        event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-                          setIsLiked((prev) => !prev);
+                            event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
+                            mutation.mutate();
                         }}
                         src={isLiked ? heartIconOn : heartIconOff}
                         alt="heartIcon"
