@@ -41,17 +41,12 @@ const UpdateContractTypePage: React.FC = () => {
 
         const safeReview = review ?? defaultReviewState;
 
-        localStorage.setItem(
-            'updateReviewState',
-            JSON.stringify({
-                ...safeReview,
-                contractType: englishType,
-            })
-        )
-        navigate(`/review/${reviewId}/update`, {
+        // Local storage removed - using Recoil state management
+        navigate(`/review/${reviewId}/update/contract-price`, {
             state: {
             ...locationState,
             contractType: englishType,
+            from: "contractType",
             },
         }); 
     };

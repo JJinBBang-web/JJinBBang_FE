@@ -55,6 +55,7 @@ export const defaultReviewState: ReviewState = {
   rating: 0,
   images: [],
   description: '',
+  space: 0,
   latitude: 0,
   longitude: 0,
   buildingCode: '',

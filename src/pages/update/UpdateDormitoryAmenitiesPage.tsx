@@ -177,7 +177,7 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
         facilityConditions: convertedFacilityConditions,
     };
 
-    localStorage.setItem('updateReviewState', JSON.stringify(updatedReviewForStorage));
+    
 
     if (from === 'update') {
       navigate(`/review/${reviewId}/update`, {

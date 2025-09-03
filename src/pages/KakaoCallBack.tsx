@@ -8,8 +8,7 @@ import { useRecoilState } from 'recoil';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
-// const url = process.env.REACT_APP_API_URL;
-// const url = '/api';
+const url = process.env.REACT_APP_API_URL;
 const SITE_URL = process.env.REACT_APP_SITE_URL!;
 const loginUrl = `${SITE_URL}/login/kakao`;
 export const getSignupToken = () => localStorage.getItem('signupToken');
@@ -45,7 +44,8 @@ export const kakaoLogin = async (authCode: string) => {
   console.log("📦 Request Body:", body);               // 객체 그대로 출력
   console.log("📦 Stringified Body:", JSON.stringify(body));
   
-  const response = await fetch('/api/v1/auth', {
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
+  const response = await fetch(`${apiUrl}/api/v1/auth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -56,6 +56,14 @@ export const kakaoLogin = async (authCode: string) => {
       redirectUri: loginUrl,
     }),
   });
+  
+  // Check if response is HTML (error page)
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    console.error('❌ API returned non-JSON response:', text);
+    throw new Error(`API endpoint returned HTML instead of JSON. Status: ${response.status}`);
+  }
   
   return response.json();
 };

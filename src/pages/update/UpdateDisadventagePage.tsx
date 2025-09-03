@@ -71,7 +71,6 @@ const UpdateDisadventagePage:React.FC = () => {
 
         const updatedReview = { ...review, cons: selectedFilters };
         setReview(updatedReview);
-        localStorage.setItem("updateReviewState", JSON.stringify(updatedReview));
 
         if (from === "update") {
           navigate(`/review/${reviewId}/update`, {

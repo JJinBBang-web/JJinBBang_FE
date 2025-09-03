@@ -25,7 +25,9 @@ const FloorInputPage: React.FC = () => {
   const [buildingName, setBuildingName] = useState(
     review.detailedAddress || address?.buildingName || ''
   );
-  const [squareFootage, setSquareFootage] = useState('');
+  const [squareFootage, setSquareFootage] = useState(
+    review.space ? review.space.toString() : ''
+  );
   const [selectedFloor, setSelectedFloor] = useState<string | null>(
     review.floorType.includes('층') ? review.floorType : null
   );
@@ -45,6 +47,7 @@ const FloorInputPage: React.FC = () => {
       setSelectedFloor(
         review.floorType.includes('층') ? review.floorType : null
       );
+      setSquareFootage(review.space ? review.space.toString() : '');
     }
   }, [from, review]);
 
@@ -64,6 +67,7 @@ const FloorInputPage: React.FC = () => {
         ...review,
         detailedAddress: buildingName,
         floorType: selectedFloor,
+        space: Number(squareFootage),
         description: squareFootage ? `${squareFootage}평` : review.description,
       };
 
