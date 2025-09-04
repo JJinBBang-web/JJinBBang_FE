@@ -74,7 +74,6 @@ const UpdateAdventagePage:React.FC = () => {
 
         const updatedReview = { ...review, pros: selectedFilters }; // ✅ 그대로 저장
         setReview(updatedReview);
-        localStorage.setItem("updateReviewState", JSON.stringify(updatedReview));
 
         if (from === "update") {
           navigate(`/review/${reviewId}/update`, {

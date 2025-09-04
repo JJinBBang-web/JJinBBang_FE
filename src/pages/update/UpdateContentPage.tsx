@@ -88,7 +88,7 @@ const UpdateContentPage:React.FC = () => {
         };
 
         setReview(updatedReview);
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {

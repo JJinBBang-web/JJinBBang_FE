@@ -14,6 +14,7 @@ interface LocationState {
   };
   buildingName: string;
   floor: string;
+  from?: string;
 }
 
 const PriceInputPage: React.FC = () => {
@@ -65,6 +66,19 @@ const PriceInputPage: React.FC = () => {
         priceData,
       },
     });
+  };
+
+  const handleBack = () => {
+    if (locationState?.from === 'confirm') {
+      navigate('/review/payment-type', {
+        state: {
+          ...locationState,
+          from: 'confirm',
+        },
+      });
+    } else {
+      navigate(-1);
+    }
   };
 
   const isNextEnabled =
@@ -176,7 +190,7 @@ const PriceInputPage: React.FC = () => {
       </div>
 
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
         <button

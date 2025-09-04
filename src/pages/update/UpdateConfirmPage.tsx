@@ -150,7 +150,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     // 아이템 클릭 & 이동 함수
     const handleItemClick = (navigationFunction: () => void) => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigationFunction();
     };
 
@@ -180,7 +180,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     // 
     const navigateToHousingType = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
 
       navigate(`/review/${reviewId}/update/type`, {
         replace: true,
@@ -192,7 +192,7 @@ const UpdateConfirmPage: React.FC = () => {
 
 
     const navigateToAddress = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigate(`/review/${reviewId}/update/input-address`, {
         replace: true,
         state: { from: 'update', housingType: review?.housingType },
@@ -200,7 +200,7 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToDetailedAddress = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory`, {
           replace: true,
@@ -231,7 +231,7 @@ const UpdateConfirmPage: React.FC = () => {
       }
     };
     const navigateToContractType = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory-conditions`, {
           replace: true,
@@ -251,7 +251,7 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToContractDetails = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory-amenities`, {
           replace: true,
@@ -271,7 +271,7 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToPros = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigate(`/review/${reviewId}/update/filter-ad`, {
         replace: true,
         state: {
@@ -283,7 +283,7 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToCons = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigate(`/review/${reviewId}/update/filter-disad`, {
         replace: true,
         state: {

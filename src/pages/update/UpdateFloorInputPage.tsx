@@ -79,7 +79,7 @@ const UpdateFloorInputPage: React.FC = () => {
                 detailedAddress: buildingName,
             };
         });
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {
@@ -114,7 +114,7 @@ const UpdateFloorInputPage: React.FC = () => {
                 space: spaceValue,
             };
         });
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {

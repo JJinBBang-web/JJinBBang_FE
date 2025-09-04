@@ -67,10 +67,24 @@ const WolseInputPage: React.FC = () => {
     return Number(value).toLocaleString();
   };
 
+  const validateInputs = () => {
+    if (monthlyRent.trim() === '') {
+      alert('월세를 입력해 주세요!');
+      return false;
+    }
+    if (deposit.trim() === '') {
+      alert('보증금을 입력해 주세요!');
+      return false;
+    }
+    return true;
+  };
+
   const handleNext = () => {
+    if (!validateInputs()) return;
+
     // 단위 확인 alert 표시
     const confirmed = window.confirm(
-      "단위를 맞게 기입하였나요?\n\n예시) 관리비 300,000 원 → 30 입력\n\n'확인'을 누르면 다음으로, '취소(수정)'를 누르면 수정할 수 있습니다."
+      "단위를 맞게 기입하였나요?\n\n예시) 관리비 300,000 원 → 30 입력"
     );
     
     if (!confirmed) {
@@ -189,11 +203,8 @@ const WolseInputPage: React.FC = () => {
           이전
         </button>
         <button
-          className={`${styles.nextButton} ${
-            isNextEnabled ? styles.enabled : ''
-          }`}
+          className={`${styles.nextButton} ${styles.enabled}`}
           onClick={handleNext}
-          disabled={!isNextEnabled}
         >
           다음
         </button>

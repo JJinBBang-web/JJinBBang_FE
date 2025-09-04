@@ -156,7 +156,7 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
     } as ReviewState;;
 
     setReview(updatedReview);
-    localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+    
 
     // 항상 DormitoryAmenitiesPage로 이동하도록 수정
     navigate(`/review/${reviewId}/update/`, {

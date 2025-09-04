@@ -1,5 +1,16 @@
 // src/api/imageUpload.ts
 import { api } from './api';
+import client from './client';
+
+export interface PresignedUrlResponse {
+  code: number;
+  message: string;
+  data: {
+    presignedUrl: string;
+    expiresAt: string;
+    cdnUrl: string;
+  };
+}
 
 export interface ImageUploadResponse {
   code: number;
@@ -11,11 +22,95 @@ export interface ImageUploadResponse {
 
 export const imageUploadAPI = {
   /**
-   * Upload a single image file
+   * Get presigned URL for S3 upload
+   * @param folder - Upload category ('review' | 'profile')
+   * @param fileName - Original file name with extension
+   * @returns Promise<PresignedUrlResponse['data']> - Presigned URL data
+   */
+  getPresignedUrl: async (folder: 'review' | 'profile', fileName: string): Promise<PresignedUrlResponse['data']> => {
+    try {
+      const response = await client.get('/api/v1/s3/presigned-upload', {
+        params: {
+          folder,
+          fileName,
+        },
+      });
+
+      if (response.data && response.data.code === 200) {
+        return response.data.data;
+      } else {
+        throw new Error(`Presigned URL 발급 실패: ${response.data?.message || 'Unknown error'}`);
+      }
+    } catch (error: any) {
+      console.error('Presigned URL error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Upload file to S3 using presigned URL
+   * @param presignedUrl - The presigned URL from getPresignedUrl
+   * @param file - The file to upload
+   * @returns Promise<void>
+   */
+  uploadToS3: async (presignedUrl: string, file: File): Promise<void> => {
+    try {
+      const response = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`S3 업로드 실패: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('S3 upload error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Upload a single image file using S3 presigned URL (with fallback to legacy API)
+   * @param file - The image file to upload
+   * @param folder - Upload category ('review' | 'profile')
+   * @returns Promise<string> - The CDN URL or legacy image URL of the uploaded image
+   */
+  uploadImage: async (file: File, folder: 'review' | 'profile' = 'review'): Promise<string> => {
+    try {
+      // Validate file type
+      const supportedTypes = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'heic', 'heif'];
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+      
+      if (!fileExtension || !supportedTypes.includes(fileExtension)) {
+        throw new Error(`지원되지 않는 파일 형식입니다. 지원 형식: ${supportedTypes.join(', ')}`);
+      }
+
+      try {
+        // Try S3 upload first
+        const { presignedUrl, cdnUrl } = await imageUploadAPI.getPresignedUrl(folder, file.name);
+        await imageUploadAPI.uploadToS3(presignedUrl, file);
+        return cdnUrl;
+      } catch (s3Error) {
+        console.warn('S3 upload failed, falling back to legacy upload:', s3Error);
+        
+        // Fallback to legacy upload
+        return await imageUploadAPI.uploadImageLegacy(file);
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Legacy image upload method (fallback)
    * @param file - The image file to upload
    * @returns Promise<string> - The uploaded image URL
    */
-  uploadImage: async (file: File): Promise<string> => {
+  uploadImageLegacy: async (file: File): Promise<string> => {
     try {
       const formData = new FormData();
       formData.append('image', file);
@@ -31,7 +126,7 @@ export const imageUploadAPI = {
         throw new Error('이미지 업로드 실패');
       }
     } catch (error) {
-      console.error('Image upload error:', error);
+      console.error('Legacy image upload error:', error);
       throw error;
     }
   },
@@ -39,11 +134,12 @@ export const imageUploadAPI = {
   /**
    * Upload multiple image files
    * @param files - Array of image files to upload
-   * @returns Promise<string[]> - Array of uploaded image URLs
+   * @param folder - Upload category ('review' | 'profile')
+   * @returns Promise<string[]> - Array of CDN URLs
    */
-  uploadImages: async (files: File[]): Promise<string[]> => {
+  uploadImages: async (files: File[], folder: 'review' | 'profile' = 'review'): Promise<string[]> => {
     try {
-      const uploadPromises = files.map(file => imageUploadAPI.uploadImage(file));
+      const uploadPromises = files.map(file => imageUploadAPI.uploadImage(file, folder));
       return await Promise.all(uploadPromises);
     } catch (error) {
       console.error('Multiple image upload error:', error);
@@ -69,19 +165,23 @@ export const imageUploadAPI = {
   },
 
   /**
-   * Convert multiple blob URLs to File objects and upload them
+   * Convert multiple blob URLs to File objects and upload them using S3
    * @param blobUrls - Array of blob URLs to convert and upload
-   * @returns Promise<string[]> - Array of uploaded image URLs
+   * @param folder - Upload category ('review' | 'profile')
+   * @returns Promise<string[]> - Array of CDN URLs
    */
-  uploadBlobUrls: async (blobUrls: string[]): Promise<string[]> => {
+  uploadBlobUrls: async (blobUrls: string[], folder: 'review' | 'profile' = 'review'): Promise<string[]> => {
     try {
       const files = await Promise.all(
-        blobUrls.map((blobUrl, index) => 
-          imageUploadAPI.blobToFile(blobUrl, `image_${index + 1}.jpg`)
-        )
+        blobUrls.map((blobUrl, index) => {
+          // Generate a unique filename with supported extension
+          const timestamp = Date.now();
+          const fileName = `image_${timestamp}_${index + 1}.jpg`;
+          return imageUploadAPI.blobToFile(blobUrl, fileName);
+        })
       );
       
-      return await imageUploadAPI.uploadImages(files);
+      return await imageUploadAPI.uploadImages(files, folder);
     } catch (error) {
       console.error('Blob URLs upload error:', error);
       throw error;

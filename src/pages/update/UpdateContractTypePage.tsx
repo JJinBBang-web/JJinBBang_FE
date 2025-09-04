@@ -53,6 +53,7 @@ const UpdateContractTypePage: React.FC = () => {
             state: {
             ...locationState,
             contractType: englishType,
+            from: "contractType",
             },
         }); 
     };

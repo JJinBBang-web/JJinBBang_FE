@@ -38,8 +38,22 @@ const UpdateContractPriceTypePage: React.FC = () => {
       ? deposit.trim() !== ''
       : deposit.trim() !== '' && monthlyRent.trim() !== '';
 
+  const validateInputs = () => {
+    if (contractType === 'MONTHLY_RENT' && monthlyRent.trim() === '') {
+      alert('월세를 입력해 주세요!');
+      return false;
+    }
+    if (deposit.trim() === '') {
+      alert('보증금을 입력해 주세요!');
+      return false;
+    }
+    return true;
+  };
+
   const handleNext = () => {
     if (!review) return;
+    
+    if (!validateInputs()) return;
 
     const updatedReview = {
       ...review,
@@ -49,7 +63,7 @@ const UpdateContractPriceTypePage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+    
 
     // 다음 단계로 이동 (예: Confirm 페이지)
     navigate(`/review/${reviewId}/update`, {
@@ -61,11 +75,20 @@ const UpdateContractPriceTypePage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (locationState.from === "update") {
+    if (!validateInputs()) return;
+    
+    if (locationState.from === "contractType") {
+      // 계약 형태 페이지에서 온 경우 - 뒤로 가기 (계약 형태 페이지로)
+      navigate(-1);
+    } else if (locationState.from === "update") {
+      // 수정 페이지에서 직접 온 경우 - ReviewConfirmPage로 돌아가기
       navigate(`/review/${reviewId}/update`, {
         replace:true,
         state: { ...location.state },
       });
+    } else {
+      // 기본값: 이전 페이지로 돌아가기
+      navigate(-1);
     }
   };
 
@@ -156,9 +179,8 @@ const UpdateContractPriceTypePage: React.FC = () => {
           이전
         </button>
         <button
-          className={`${styles.nextButton} ${isNextEnabled ? styles.enabled : ''}`}
+          className={`${styles.nextButton} ${styles.enabled}`}
           onClick={handleNext}
-          disabled={!isNextEnabled}
         >
           확인
         </button>
