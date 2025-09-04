@@ -2,7 +2,7 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 export const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://3.35.29.235:8080",
+  baseURL: "",
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
     Accept: 'application/json',
