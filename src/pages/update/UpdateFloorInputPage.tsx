@@ -83,6 +83,7 @@ const UpdateFloorInputPage: React.FC = () => {
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
                 ...location.state,
                 detailedAddress: buildingName,
@@ -117,6 +118,7 @@ const UpdateFloorInputPage: React.FC = () => {
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {
+            replace: true,
             state: {
                 ...location.state,
                 buildingName,
@@ -131,7 +133,7 @@ const UpdateFloorInputPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true, state:{...location.state}});
     } else {
       navigate(-1);
     }
