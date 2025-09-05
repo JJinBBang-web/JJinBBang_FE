@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/JJinBBang_FE/static/css/main.23f8cba5.css",
+    "main.css": "/JJinBBang_FE/static/css/main.716f591e.css",
     "main.js": "/JJinBBang_FE/static/js/main.bea2febd.js",
     "static/media/campusImg1.svg": "/JJinBBang_FE/static/media/campusImg1.d843d00b0fe3c580b96d9a9ff260bfe4.svg",
     "static/media/SpoqaHanSansNeo-Bold.woff2": "/JJinBBang_FE/static/media/SpoqaHanSansNeo-Bold.1db18034ccc384032a4a.woff2",
@@ -186,11 +186,11 @@
     "static/media/backIcon.svg": "/JJinBBang_FE/static/media/backIcon.5cc3798a05cd282a1a2b37529b961608.svg",
     "static/media/notSelectDot.svg": "/JJinBBang_FE/static/media/notSelectDot.b617819f5f22d0b1c65086a135eb8ffd.svg",
     "static/media/selectDot.svg": "/JJinBBang_FE/static/media/selectDot.3921dd6a5a166c7441fe8ff4af7061c5.svg",
-    "main.23f8cba5.css.map": "/JJinBBang_FE/static/css/main.23f8cba5.css.map",
+    "main.716f591e.css.map": "/JJinBBang_FE/static/css/main.716f591e.css.map",
     "main.bea2febd.js.map": "/JJinBBang_FE/static/js/main.bea2febd.js.map"
   },
   "entrypoints": [
-    "static/css/main.23f8cba5.css",
+    "static/css/main.716f591e.css",
     "static/js/main.bea2febd.js"
   ]
 }
