@@ -323,27 +323,27 @@ const MapPage = () => {
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
 
-    const noReviewBuildingIds = useMemo(() => {
-        if (viewType !== "BUILDING") return new Set<number>();
-        const s = new Set<number>();
+    // const noReviewBuildingIds = useMemo(() => {
+    //     if (viewType !== "BUILDING") return new Set<number>();
+    //     const s = new Set<number>();
 
-        const collect = (items?: any[]) => {
-            items?.forEach((it) => {
-            const id =
-                it.agencyBuildingInfo?.id ??
-                it.dormitoryBuildingInfo?.id ??
-                it.generalBuildingInfo?.id;
-            // reviewInfo 없으면 '리뷰 없음'으로 판단
-            if (id != null && !it.reviewInfo) s.add(id);
-            });
-        };
+    //     const collect = (items?: any[]) => {
+    //         items?.forEach((it) => {
+    //         const id =
+    //             it.agencyBuildingInfo?.id ??
+    //             it.dormitoryBuildingInfo?.id ??
+    //             it.generalBuildingInfo?.id;
+    //         // reviewInfo 없으면 '리뷰 없음'으로 판단
+    //         if (!it.reviewInfo.content) s.add(id);
+    //         });
+    //     };
 
-        // 검색 결과와 주변 결과 둘 다에서 수집 (있으면 반영)
-        collect(searchData?.items);
-        collect(nearByData?.items);
+    //     // 검색 결과와 주변 결과 둘 다에서 수집 (있으면 반영)
+    //     collect(searchData?.items);
+    //     collect(nearByData?.items);
 
-        return s;
-    }, [viewType, searchData?.items, nearByData?.items]);
+    //     return s;
+    // }, [viewType, searchData?.items, nearByData?.items]);
 
     const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
 
@@ -589,8 +589,6 @@ const MapPage = () => {
         }
     }
 
-    console.log(nearByAllItems);
-
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
@@ -673,14 +671,11 @@ const MapPage = () => {
                         ]}
                     >
                         {markersToRender.map((marker) => {
-                            const useBdNone =
-                                viewType === "BUILDING" && noReviewBuildingIds.has(marker.id);
 
                             const markerSrc =
                                 viewType === "BUILDING"
-                                    ? (useBdNone ? BDMarkerNone : BDMarker)
+                                    ? BDMarker
                                     : JBMarker;
-
                             return (
                             <MapMarker
                                 key={`${modalContent}-${marker.id}`}

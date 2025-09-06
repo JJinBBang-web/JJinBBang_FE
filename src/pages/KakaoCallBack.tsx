@@ -44,8 +44,8 @@ export const kakaoLogin = async (authCode: string) => {
   console.log("📦 Request Body:", body);               // 객체 그대로 출력
   console.log("📦 Stringified Body:", JSON.stringify(body));
   
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
-  const response = await fetch(`${apiUrl}/api/v1/auth`, {
+  // const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
+  const response = await fetch(`/api/v1/auth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

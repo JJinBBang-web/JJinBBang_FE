@@ -66,7 +66,12 @@ const UpdateContractPriceTypePage: React.FC = () => {
     
 
     // 다음 단계로 이동 (예: Confirm 페이지)
-    navigate(`/review/${reviewId}/update`);
+    navigate(`/review/${reviewId}/update`, {
+      replace:true,
+      state: {
+        updatedReview
+      }
+    });
   };
 
   const handleBack = () => {
@@ -78,6 +83,7 @@ const UpdateContractPriceTypePage: React.FC = () => {
     } else if (locationState.from === "update") {
       // 수정 페이지에서 직접 온 경우 - ReviewConfirmPage로 돌아가기
       navigate(`/review/${reviewId}/update`, {
+        replace:true,
         state: { ...location.state },
       });
     } else {

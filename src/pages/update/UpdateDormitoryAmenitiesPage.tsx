@@ -181,6 +181,7 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
 
     if (from === 'update') {
       navigate(`/review/${reviewId}/update`, {
+        replace:true,
         state: {
           ...location.state,
           facilityConditions: convertedFacilityConditions,
@@ -192,7 +193,7 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
   // 이전 버튼 클릭 처리
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true});
     } else {
       navigate(-1);
     }

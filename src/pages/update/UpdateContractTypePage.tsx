@@ -41,8 +41,15 @@ const UpdateContractTypePage: React.FC = () => {
 
         const safeReview = review ?? defaultReviewState;
 
-        // Local storage removed - using Recoil state management
-        navigate(`/review/${reviewId}/update/contract-price`, {
+        localStorage.setItem(
+            'updateReviewState',
+            JSON.stringify({
+                ...safeReview,
+                contractType: englishType,
+            })
+        )
+        navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
             ...locationState,
             contractType: englishType,
@@ -59,6 +66,7 @@ const UpdateContractTypePage: React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true, 
             state: {
             ...location.state,
             },
