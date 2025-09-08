@@ -29,11 +29,12 @@ export const imageUploadAPI = {
    */
   getPresignedUrl: async (folder: 'review' | 'profile', fileName: string): Promise<PresignedUrlResponse['data']> => {
     try {
-      const response = await client.get('/api/v1/s3/presigned-upload', {
+      const response = await api.get('/api/v1/s3/presigned-upload', {
         params: {
           folder,
           fileName,
         },
+        useAuth: true,
       });
 
       if (response.data && response.data.code === 200) {
