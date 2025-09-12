@@ -379,6 +379,8 @@ const ReviewConfirmPage: React.FC = () => {
 
       // 이미지 URL 처리 - blob URL이 있으면 업로드, CDN URL은 그대로 사용
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
+        console.log("Processing image URLs:", reviewData.imageUrls);
+        
         const blobUrls = reviewData.imageUrls.filter((url: string) =>
           url.startsWith("blob:")
         );
@@ -386,33 +388,44 @@ const ReviewConfirmPage: React.FC = () => {
           (url: string) => !url.startsWith("blob:")
         );
 
+        console.log("Blob URLs found:", blobUrls);
+        console.log("CDN URLs found:", cdnUrls);
+
         if (blobUrls.length > 0) {
-          console.log("Uploading blob URLs:", blobUrls);
+          console.log("Starting blob URL upload process...");
           try {
             // blob URL들을 실제 업로드
             const { imageUploadAPI } = await import("../../api/imageUpload");
+            console.log("ImageUploadAPI imported successfully");
+            
             const uploadedUrls = await imageUploadAPI.uploadBlobUrls(
               blobUrls,
               "review"
             );
+            
+            console.log("Upload completed! Uploaded URLs:", uploadedUrls);
 
             // 최종 이미지 URL 목록 구성
             reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
+            console.log("Final image URLs:", reviewData.imageUrls);
+            
           } catch (uploadError) {
             console.error("Failed to upload blob URLs:", uploadError);
-            // blob URL을 임시 URL로 변환 (기존 로직)
-            reviewData.imageUrls = reviewData.imageUrls.map(
-              (url: string, index: number) => {
-                if (url.startsWith("blob:")) {
-                  return fixImageUrl(
-                    `http://localhost:8080/image/${index + 1}.jpg`
-                  );
-                }
-                return url;
-              }
-            );
+            console.error("Upload error details:", {
+              message: uploadError instanceof Error ? uploadError.message : 'Unknown error',
+              stack: uploadError instanceof Error ? uploadError.stack : undefined
+            });
+            
+            // 업로드 실패 시 사용자에게 알림
+            alert(`이미지 업로드에 실패했습니다: ${uploadError instanceof Error ? uploadError.message : '알 수 없는 오류'}. 다시 시도해 주세요.`);
+            setIsSubmitting(false);
+            return; // 업로드 실패 시 리뷰 제출 중단
           }
+        } else {
+          console.log("No blob URLs to upload, proceeding with existing URLs");
         }
+      } else {
+        console.log("No image URLs found in reviewData");
       }
 
       // 실제 API 호출
