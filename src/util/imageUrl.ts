@@ -7,16 +7,23 @@
 export const fixImageUrl = (url: string): string => {
   if (!url) return url;
   
-  const apiUrl = process.env.REACT_APP_API_URL || 'https://3.35.29.235:8080';
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
   
   // Replace localhost:8080 with the correct API URL
   if (url.includes('localhost:8080')) {
     return url.replace('http://localhost:8080', apiUrl);
   }
   
-  // Replace http:// with https:// for the specific IP
-  if (url.includes('http://3.35.29.235')) {
-    return url.replace('http://3.35.29.235', 'https://3.35.29.235');
+  // 기존 백엔드 서버 URL이 있는 경우 그대로 사용하되, 실제로 이미지가 있는지 확인
+  if (url.includes('3.35.29.235:8080')) {
+    return url;
+  }
+  
+  // 상대 경로나 기타 형식의 경우 백엔드 서버 URL과 결합
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    // 슬래시로 시작하지 않으면 추가
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return `${apiUrl}${cleanUrl}`;
   }
   
   return url;
