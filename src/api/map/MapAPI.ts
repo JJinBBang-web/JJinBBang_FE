@@ -42,6 +42,7 @@ export class MapAPI {
   // 검색 조회
   static async fetchSearch(body:SearchRequest) : Promise<SearchResponse>{
     try {
+      console.log(body);
       const res = await api.post("/api/v1/map/search", body, {
         useAuth: true,
       });
@@ -50,6 +51,7 @@ export class MapAPI {
         throw new Error("검색 조회 실패");
       }
 
+      console.log(res.data);
       return res.data.data;
     } catch (error) {
       console.error("MapAPI.fetchSearch error:", error);
