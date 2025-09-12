@@ -100,7 +100,7 @@ export class ReviewSubmitAPI {
     }
 
     // 일반 리뷰 POST 요청 형식 출력
-    console.log('🚀 General Review POST:', JSON.stringify(requestData, null, 2));
+    // console.log('🚀 General Review POST:', JSON.stringify(requestData, null, 2));
 
     return await postAPI('/api/v1/review/GENERAL', requestData, true);
   }
@@ -118,7 +118,7 @@ export class ReviewSubmitAPI {
     };
 
     // 기숙사 리뷰 POST 요청 형식 출력
-    console.log('🚀 Dormitory Review POST:', JSON.stringify(requestData, null, 2));
+    // console.log('🚀 Dormitory Review POST:', JSON.stringify(requestData, null, 2));
 
     return await postAPI('/api/v1/review/DORMITORY', requestData, true);
   }
@@ -136,7 +136,7 @@ export class ReviewSubmitAPI {
     };
 
     // 공인중개사 리뷰 POST 요청 형식 출력
-    console.log('🚀 Agency Review POST:', JSON.stringify(requestData, null, 2));
+    // console.log('🚀 Agency Review POST:', JSON.stringify(requestData, null, 2));
 
     return await postAPI('/api/v1/review/AGENCY', requestData, true);
   }

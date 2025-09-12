@@ -6,7 +6,6 @@ export class MapAPI {
   // 마커 조회 
   static async fetchMarkers(body: MarkerRequest): Promise<MarkerResponse[]> {
     try {
-      console.log("📍 MapAPI.fetchMarkers 요청 body:", body);
       const res = await api.post("/api/v1/map/markers", body, {
         useAuth: false,
       });
@@ -25,7 +24,6 @@ export class MapAPI {
   // 내 주변 찐빵 조회
   static async fetchNearByMapItem(body:NearByRequest) : Promise<NearByResponse>{
     try {
-      console.log("📍 MapAPI.fetchNearByMapItem 요청 body:", body);
       const res = await api.post("/api/v1/map/markers/nearby", body, {
         useAuth: true,
       });
@@ -44,7 +42,6 @@ export class MapAPI {
   // 검색 조회
   static async fetchSearch(body:SearchRequest) : Promise<SearchResponse>{
     try {
-      console.log("📍 MapAPI.fetchSearch 요청 body:", body);
       const res = await api.post("/api/v1/map/search", body, {
         useAuth: true,
       });

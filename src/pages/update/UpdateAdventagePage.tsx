@@ -68,7 +68,6 @@ const UpdateAdventagePage:React.FC = () => {
         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
     
-    console.log(selectedFilters);
     const handleNext = () => {
         if (!review) return;
 

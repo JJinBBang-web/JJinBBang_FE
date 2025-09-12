@@ -128,7 +128,6 @@ const Home: React.FC = () => {
     rawReviewList.endsWith("]")
       ? rawReviewList.slice(1, -1)
       : null;
-  console.log("rawReviewList:", reviewList);
 
   const {
     data: reviewData,
@@ -159,7 +158,6 @@ const Home: React.FC = () => {
     isFetchingReviewInfo ||
     isFetchingUniversityList
   ) {
-    console.log('로딩 중...');
     return null;
   }
 

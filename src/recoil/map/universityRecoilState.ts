@@ -104,7 +104,6 @@ export const universitiesFilterState = selector({
     key : "universitiesFilterState",
     get : ({get}) => {
         const initial = get(selectedInitialState);
-        console.log(initial);
         const universities = get(universitiesState);
 
         if(!initial) return [];

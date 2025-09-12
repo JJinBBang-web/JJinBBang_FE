@@ -58,7 +58,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   } else if (activeReviewInfo?.type === "BOARDING_HOUSE") {
     type = "하숙집";
   }
-  console.log(type);
 
   const floorinfo = generalInfo ?? dormitoryInfo;
   let floor = "";
@@ -73,7 +72,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   } else if (floorinfo?.floor === "BASEMENT") {
     floor = "반지하";
   }
-  console.log(0, floorinfo);
   // const liked = review.basicInfo?.liked ?? review.dormitoryBasicInfo?.liked ?? review.agencyReviewInfo?.liked;
   // const type = review.basicInfo?.type ?? review.dormitoryBasicInfo?.type ?? review.agencyReviewInfo?.type;
   // const rating = review.basicInfo?.rating ?? review.dormitoryBasicInfo?.rating ?? review.agencyReviewInfo?.rating ?? 0;
@@ -140,7 +138,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
             className={styles.likeButton}
             onClick={(event) => {
               event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-              console.log(likeCount);
               setLikeCount((prev) => {
                 return isLiked ? prev - 1 : prev + 1;
               });

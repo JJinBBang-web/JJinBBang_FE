@@ -108,9 +108,6 @@ const UpdateDormitoryInputPage: React.FC = () => {
       floorType: koreanToFloor[selectedFloor],
     };
 
-    console.log('Dormitory data:', dormitoryData);
-    console.log('Updated review:', updatedReview);
-
     if (from === 'update') {
       navigate(`/review/${reviewId}/update`, {
         replace:true,

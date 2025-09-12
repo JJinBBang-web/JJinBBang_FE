@@ -379,7 +379,6 @@ const ReviewConfirmPage: React.FC = () => {
 
       // 이미지 URL 처리 - blob URL이 있으면 업로드, CDN URL은 그대로 사용
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
-        console.log("Processing image URLs:", reviewData.imageUrls);
         
         const blobUrls = reviewData.imageUrls.filter((url: string) =>
           url.startsWith("blob:")
@@ -388,26 +387,19 @@ const ReviewConfirmPage: React.FC = () => {
           (url: string) => !url.startsWith("blob:")
         );
 
-        console.log("Blob URLs found:", blobUrls);
-        console.log("CDN URLs found:", cdnUrls);
-
         if (blobUrls.length > 0) {
-          console.log("Starting blob URL upload process...");
           try {
             // blob URL들을 실제 업로드
             const { imageUploadAPI } = await import("../../api/imageUpload");
-            console.log("ImageUploadAPI imported successfully");
             
             const uploadedUrls = await imageUploadAPI.uploadBlobUrls(
               blobUrls,
               "review"
             );
             
-            console.log("Upload completed! Uploaded URLs:", uploadedUrls);
 
             // 최종 이미지 URL 목록 구성
             reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
-            console.log("Final image URLs:", reviewData.imageUrls);
             
           } catch (uploadError) {
             console.error("Failed to upload blob URLs:", uploadError);

@@ -41,9 +41,6 @@ export const kakaoLogin = async (authCode: string) => {
     redirectUri: loginUrl,
   };
 
-  console.log("📦 Request Body:", body);               // 객체 그대로 출력
-  console.log("📦 Stringified Body:", JSON.stringify(body));
-  
   // const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
   const response = await fetch(`/api/v1/auth`, {
     method: 'POST',
@@ -71,14 +68,13 @@ export const kakaoLogin = async (authCode: string) => {
 const kakaoLogout = async () => {
   try {
     // 브라우저에서 카카오 관련 쿠키나 세션 정리
-    console.log('카카오 로그아웃 처리');
+    // console.log('카카오 로그아웃 처리');
   } catch (error) {
     console.error('카카오 로그아웃 중 오류:', error);
   }
 };
 
 export const agreeToTerms = async () => {
-  console.log('SignupToken:', getSignupToken());
   const response = await fetch('/api/v1/auth/signup', {
     method: 'POST',
     headers: {
@@ -124,7 +120,7 @@ function KakaoCallBack() {
           const response = await kakaoLogin(code);
 
           if (response.data.accessToken) {
-            console.log('로그인 성공, 토큰 저장 완료');
+            // console.log('로그인 성공, 토큰 저장 완료');
             setTokens({
               accessToken: response.data.accessToken,
               refreshToken: response.data.refreshToken,
@@ -133,7 +129,7 @@ function KakaoCallBack() {
             setIsLoggedIn(true);
             navigate('/mypage');
           } else if (response.data.signupToken) {
-            console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
+            // console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
             setSignupToken(response.data.signupToken);
             setUserEmail(response.data.user?.email || '');
             setIsLoading(false);
@@ -196,7 +192,7 @@ function KakaoCallBack() {
       const result = await agreeToTerms();
 
       if (result.code === 200) {
-        console.log('약관 동의 성공');
+        // console.log('약관 동의 성공');
         setTokens({
           accessToken: result.data.accessToken,
           refreshToken: result.data.refreshToken,

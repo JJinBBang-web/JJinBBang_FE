@@ -42,7 +42,6 @@ const ContractFilterModal = () => {
         }
     };
 
-    console.log(selectedContract);
 
     // 보증금 값 조정
     const formatDepositValue = (value: number | null) =>
@@ -60,7 +59,7 @@ const ContractFilterModal = () => {
     const maxMonthlyRentValue = 500;
 
     // TODO : 백엔드로 넘길 때 -> format 처리
-    console.log(depositRange, monthlyRentRange);
+    // console.log(depositRange, monthlyRentRange);
  
 
     const adjustedDepositRange: [number, number] =

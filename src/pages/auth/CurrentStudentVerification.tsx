@@ -96,7 +96,6 @@ const CurrentStudentVerification: React.FC = () => {
     
     try {
       const result = await authApi.verifyEmailCode(email, verificationCode);
-      console.log('인증 결과:', result);
       
       // API 응답이 성공인 경우에만 다음 단계로 진행
       if (result.success) {

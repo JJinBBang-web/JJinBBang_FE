@@ -7,7 +7,6 @@ interface Props {
 
 const ReviewFacilitiesInfo:React.FC<Props> = ({review}) => {
     const rest = review.facilities?.lounge == true ? "유" : "무"
-    console.log(review.facilities)
     return (
         <div className={styles.content}>
             <p className={styles.title}>편의 시설</p>

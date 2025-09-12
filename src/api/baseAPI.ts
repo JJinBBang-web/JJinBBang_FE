@@ -28,8 +28,6 @@ export const postAPI = async (
       requestConfig.useAuth = true;
     }
 
-    console.log('📦 Final Request Body:', JSON.stringify(data));
-
     const response = await api.post(url, data, requestConfig);
     
     return response.data;

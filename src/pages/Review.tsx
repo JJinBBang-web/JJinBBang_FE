@@ -58,7 +58,6 @@ const Review: React.FC = () => {
   // 미인증 여부 확인
   useEffect(() => {
       const verification = localStorage.getItem("verificationStatus");
-      console.log("localStorage verification:", verification);
       setVerificationStatus(verification === 'unverified');
   }, []);
 
@@ -86,7 +85,6 @@ const Review: React.FC = () => {
       reviewList.push(Number(reviewId));
     }
     localStorage.setItem("reviewList", JSON.stringify(reviewList));
-    console.log("리뷰 리스트:", reviewList);
 
     window.addEventListener('resize', handleResize);
     // Recent review tracking removed - rely on API-based analytics instead
@@ -101,7 +99,6 @@ const Review: React.FC = () => {
     if (data) {
       setReviews(data);
       const converted = convertToReviewState(data);
-      console.log(data);
       setUpdateReview(converted);
     }
   }, [data]);
@@ -114,7 +111,6 @@ const Review: React.FC = () => {
   }, [location.state, navigate]);
 
   const handleBack = () => {
-    console.log("click");
     navigate(-1);
   };
 

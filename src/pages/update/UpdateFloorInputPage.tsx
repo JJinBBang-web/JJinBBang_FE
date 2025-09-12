@@ -65,7 +65,6 @@ const UpdateFloorInputPage: React.FC = () => {
 
 
   const handleNext = () => {
-    console.log(buildingName);
     if (isAgency) {
       const updatedReview = {
             ...review,
@@ -90,7 +89,6 @@ const UpdateFloorInputPage: React.FC = () => {
             },
             });
         } 
-        console.log(review);
     } else {
     if (buildingName && selectedFloor && squareFootage) {
         const floorCode = koreanToFloor[selectedFloor];

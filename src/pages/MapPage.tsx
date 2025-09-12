@@ -137,7 +137,6 @@ const MapPage = () => {
         }
     }, [location.state]);
 
-    console.log("🧭 location.state:", location.state);
 
 
     // filter Recoil
@@ -391,9 +390,12 @@ const MapPage = () => {
                     setMapCenter({ lat: centerLat, lng: centerLng });
                 }
             }
-        } else if (searchData && searchData.items?.length === 0 && searchCurrentPage === 1) {
-            // 검색 결과가 없는 경우
-            setSearchAllItems([]);
+        } else if (searchData) {
+            if (searchCurrentPage === 1) {
+                setSearchAllItems([]);
+            }
+            setHasMoreSearch(false);
+            setIsLoadingMore(false);
         }
     }, [searchData, searchCurrentPage]);
 
@@ -570,7 +572,6 @@ const MapPage = () => {
     // 미인증 여부 확인
     useEffect(() => {
         const verification = localStorage.getItem("verificationStatus");
-        console.log("localStorage verification:", verification);
         setVerificationStatus(verification === 'unverified');
     }, []);
 
@@ -790,7 +791,7 @@ const MapPage = () => {
                                 </div>
                                 ))
                             )}
-                            {isLoadingMore && (
+                            {isLoadingMore && hasMoreSearch && (
                                 <div style={{ padding: '20px', textAlign: 'center' }}>
                                     로딩 중...
                                 </div>

@@ -38,7 +38,6 @@ const Building: React.FC = () => {
     // 미인증 여부 확인
     useEffect(() => {
         const verification = localStorage.getItem("verificationStatus");
-        console.log("localStorage verification:", verification);
         setVerificationStatus(verification === 'unverified');
     }, []);
 

@@ -32,7 +32,6 @@ const BuildingReviewList: React.FC = () => {
   }
 }, [data]);
 
-  console.log(data?.items);
 
   if (isLoading) return <div>리뷰 불러오는 중...</div>;
   if (isError) return <div>리뷰 불러오기 실패</div>;

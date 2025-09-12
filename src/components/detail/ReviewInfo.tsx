@@ -33,7 +33,6 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
     const [isLiked, setIsLiked] = useState(liked);
     const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
     
-    console.log(isLiked);
     const mutation = useMutation({
         mutationFn: async () => {
         return postAPI(

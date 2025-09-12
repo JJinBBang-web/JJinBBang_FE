@@ -55,7 +55,6 @@ const UpdateContentPage:React.FC = () => {
         return locationState.description || review?.description || '';
     });
 
-    console.log('바보');
 
     const maxLength = 1000;
     

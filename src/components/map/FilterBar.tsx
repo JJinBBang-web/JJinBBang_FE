@@ -24,7 +24,6 @@ const FilterBar = () => {
                 {/* 찐필터 아이콘 */}
                 <button className={`${styles.filter_icon_btn} ${filters.reviewKeyword.length > 0 ? styles.filter_btn_select : ""}`} 
                 onClick={() => {
-                console.log("바텀시트 열기 클릭!"); 
                 setBottomSheet({ isOpenModal: true, type: "jjinFilter" }); }}>
                     <img src={iconFilter} className={`${filters.reviewKeyword.length > 0 ? styles.filter_icon_select : ""}`} alt="filter"/>
                 </button>

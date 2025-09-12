@@ -43,7 +43,6 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
     const renderExtraInfo = () => {
         if (building.basicInfo.type.includes("DORMITORY")) {
             const dorm = building.basicInfo as dormBuildingInfo;
-            console.log(dorm);
             return (
             <div className={styles.buildingTypeWrap}>
                 <div className={styles.buildingType}>
