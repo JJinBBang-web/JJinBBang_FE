@@ -77,6 +77,16 @@ const Review: React.FC = () => {
     const handleResize = () => {
       setWindowHeight(window.visualViewport?.height || window.innerHeight);
     };
+    const reviewList = JSON.parse(localStorage.getItem("reviewList") || "[]");
+
+    if (!reviewList || reviewList.length >= 5) {
+      reviewList.shift(); // 첫 번째 요소 제거
+    }
+    if (!reviewList.includes(Number(reviewId))) {
+      reviewList.push(Number(reviewId));
+    }
+    localStorage.setItem("reviewList", JSON.stringify(reviewList));
+    console.log("리뷰 리스트:", reviewList);
 
     window.addEventListener('resize', handleResize);
     // Recent review tracking removed - rely on API-based analytics instead
