@@ -53,6 +53,15 @@ const ReportPage: React.FC = () => {
     const maxLength = 1000;
 
     const { reviewId } = useParams();
+
+    const goBack = () => {
+    if (location.state?.from === 'review') {
+        navigate(-1); // Report를 pop → 기존 Review로 복귀
+    } else {
+    // 뒤로갈 스택이 없다면 안전하게 Review로 대체
+        navigate(`/building/review/${reviewId}`, { replace: true, state: location.state });
+    }
+    };
           
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (e.target.value.length <= maxLength) {
@@ -61,7 +70,7 @@ const ReportPage: React.FC = () => {
       };
       
     const handleButtonClick = () => {
-        navigate(`/building/review/${reviewId}`, { state: location.state });
+        goBack();
     };
 
     return (

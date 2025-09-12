@@ -18,8 +18,10 @@ const ReportButton:React.FC<Props> = ({reviewId}) => {
     const locate = useLocation();
 
     const handleButtonClick = () => {
-        navigate(`/building/review/${reviewId}/report`, { state: locate.state });
         setIsOpen(true);
+        navigate(`/building/review/${reviewId}/report`, { 
+           state: { ...(locate.state ?? {}), from: 'review' } 
+        });
       };
 
     return (
