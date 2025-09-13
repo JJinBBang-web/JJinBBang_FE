@@ -3,6 +3,7 @@ import heartIconOn from "../../assets/image/heartIconOn.svg";
 import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
+import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 import PreviewReviewContent from "../PreviewReviewContent";
 import {
   AgencyBuildingInfo,
@@ -87,7 +88,14 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
       className={styles.content}
       onClick={() => navigate(`/building/${activeReviewInfo?.id}`)}
     >
-      <img src={image} alt={name} className={styles.buildingImg} />
+      {image ? (
+        <img src={image} alt={name} className={styles.buildingImg} />
+      ) : (
+          <div className={styles.buildingImg}>
+            <img src={emptyCharacterIcon} alt="empty" className={styles.emptyIcon} />
+            <p className={styles.emptyText}>등록된 이미지가 없습니다</p>
+          </div>
+      )}
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>

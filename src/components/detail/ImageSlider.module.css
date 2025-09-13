@@ -96,3 +96,15 @@
 .active {
     background-color: var(--white);
 }
+
+.noImageContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-gray10);
+  color: var(--color-gray40);
+  gap: 20px
+}

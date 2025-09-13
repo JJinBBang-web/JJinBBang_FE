@@ -14,6 +14,7 @@ import {
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { getAPI, putAPI, deleteAPI, postAPI } from "../api/baseAPI";
 import { useNavigate } from "react-router-dom";
+import noImg from "../assets/image/noImg.svg";
 
 interface Props {
   review: ReviewPreview;
@@ -128,6 +129,13 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
     setLikeCount,
   ]);
 
+    const handleError = (e:any) => {
+      // 만약 대체 이미지도 로드에 실패할 경우, 다시 onError가 무한 호출되는 것을 방지
+      e.target.onError = null;
+      // 이미지 src를 미리 import 해둔 대체 이미지로 변경
+      e.target.src = noImg;
+    };
+
   return (
     <div
       className={styles.previewReviewContainer}
@@ -138,6 +146,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
           className={styles.buildingImg}
           src={actualImageUrl}
           alt={activeReviewInfo?.name}
+          onError={handleError}
         />
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
@@ -162,8 +171,8 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
             >
               {type}
             </div>
-            {generalInfo && (
-              generalInfo.contractType === "MONTHLY_RENT" ? (
+            {generalInfo &&
+              (generalInfo.contractType === "MONTHLY_RENT" ? (
                 <div className={styles.buildingPrice}>
                   월세 {generalInfo?.deposit}/{generalInfo?.price}
                 </div>
@@ -173,8 +182,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
                 </div>
               ) : (
                 <></>
-              )
-            )}
+              ))}
             {dormitoryInfo && (
               <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
                 {dormitoryInfo.universityName.slice(0, -2)}

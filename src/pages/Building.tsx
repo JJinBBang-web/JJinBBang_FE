@@ -113,7 +113,8 @@ const Building: React.FC = () => {
     
     const handleBack = () => {
         navigate(-1);
-    };
+  };
+  console.log(buildingInfo);
     
     return (
         <div className={styles.content}
@@ -125,7 +126,6 @@ const Building: React.FC = () => {
                 <ImageSlider building={buildingInfo} review={null}/>
                 {/* 건물 정보 및 키워드 */}
                 <BuildingInfo building={buildingInfo}/>
-                <hr/>
                 {/* 리뷰모음 */}
                 <BuildingReviewList/>
             </div>
