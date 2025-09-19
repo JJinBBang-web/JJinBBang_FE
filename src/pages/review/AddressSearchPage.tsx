@@ -67,6 +67,7 @@ const AddressSearchPage: React.FC = () => {
                           roadAddress: data.roadAddress,
                           jibunAddress: data.jibunAddress,
                           buildingName: data.buildingName,
+                          buildingCode: data.buildingCode || data.bcode || '',
                         },
                         buildingName: data.buildingName,
                       },
@@ -79,6 +80,7 @@ const AddressSearchPage: React.FC = () => {
                           roadAddress: data.roadAddress,
                           jibunAddress: data.jibunAddress,
                           buildingName: data.buildingName,
+                          buildingCode: data.buildingCode || data.bcode || '',
                         },
                         buildingName: data.buildingName,
                       },
@@ -94,6 +96,7 @@ const AddressSearchPage: React.FC = () => {
                           roadAddress: data.roadAddress,
                           jibunAddress: data.jibunAddress,
                           buildingName: data.buildingName,
+                          buildingCode: data.buildingCode || data.bcode || '',
                         },
                       },
                     });
@@ -106,6 +109,7 @@ const AddressSearchPage: React.FC = () => {
                           roadAddress: data.roadAddress,
                           jibunAddress: data.jibunAddress,
                           buildingName: data.buildingName,
+                          buildingCode: data.buildingCode || data.bcode || '',
                         },
                       },
                     });

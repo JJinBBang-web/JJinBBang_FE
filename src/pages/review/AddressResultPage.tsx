@@ -1,6 +1,9 @@
 // src/pages/review/AddressResultPage.tsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from 'recoil';
+import { reviewState } from '../../recoil/review/reviewAtoms';
+import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
@@ -13,6 +16,7 @@ interface LocationState {
     roadAddress: string;
     jibunAddress: string;
     buildingName: string;
+    buildingCode?: string;
   };
   buildingName: string;
   floor: string;
@@ -31,9 +35,33 @@ const AddressResultPage: React.FC = () => {
       floor: "",
       squareFootage: "",
     };
+  
+  const [review, setReview] = useRecoilState(reviewState);
+  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('address');
 
   const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.9780 }); // 기본값: 서울시청
   const [isMapLoading, setIsMapLoading] = useState(true);
+  
+  // 페이지 로드 시 자동 저장된 데이터 복원
+  useEffect(() => {
+    if (hasAutoSavedData()) {
+      restoreAutoSavedData();
+    }
+  }, []);
+  
+  // review state에 주소 정보 저장
+  useEffect(() => {
+    setReview(prev => ({
+      ...prev,
+      address: address.roadAddress,
+      addressDetail: address.jibunAddress,
+      detailedAddress: buildingName,
+      floorType: floor,
+      space: squareFootage ? Number(squareFootage) : 0,
+      latitude: mapCenter.lat,
+      longitude: mapCenter.lng
+    }));
+  }, [address, buildingName, floor, squareFootage, mapCenter]);
 
   const {
     showCancelModal,
@@ -59,6 +87,24 @@ const AddressResultPage: React.FC = () => {
   }, [address.roadAddress]);
 
   const handleNext = () => {
+    // review state 최종 업데이트
+    const updatedReview = {
+      ...review,
+      address: address.roadAddress,
+      addressDetail: address.jibunAddress,
+      detailedAddress: buildingName,
+      floorType: floor,
+      space: squareFootage ? Number(squareFootage) : 0,
+      latitude: mapCenter.lat,
+      longitude: mapCenter.lng,
+      buildingCode: address.buildingCode || '' // 사용자가 선택한 주소의 buildingCode 사용
+    };
+    
+    setReview(updatedReview);
+    
+    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
+    clearAutoSavedData();
+    
     if (housingType === "공인중개사") {
       navigate("/review/room-info", {
         state: {

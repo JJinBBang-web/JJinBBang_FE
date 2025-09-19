@@ -135,6 +135,7 @@
     line-height: 150%;
     color: var(--color-gray80);
     margin-bottom: 20px;
+    white-space: pre-line;
 }
 
 .dateLikeContainer {

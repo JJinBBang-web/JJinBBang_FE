@@ -5,6 +5,7 @@ import {
   CreateReviewRequest,
   ReviewCreateResponse,
 } from '../types/entity/building/ReviewCreateInterface';
+import { reviewAutoSave } from '../util/reviewAutoSave';
 
 export const useCreateReview = () => {
   const queryClient = useQueryClient();
@@ -22,6 +23,9 @@ export const useCreateReview = () => {
       queryClient.invalidateQueries({
         queryKey: ['buildingDetail'],
       });
+
+      // 리뷰 생성 성공 시 자동저장 데이터 정리
+      reviewAutoSave.clear();
     },
   });
 };

@@ -1,4 +1,5 @@
 // src/pages/review/ReviewConfirmPage.tsx
+// Fixed syntax errors in try-catch structure
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -24,6 +25,8 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useCreateReview } from "../../hooks/useCreateReview";
 import { koreanToType } from "../../util/mapping";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
+import { reviewAutoSave } from "../../util/reviewAutoSave";
 
 interface LocationState {
   address?: {
@@ -72,38 +75,110 @@ const ReviewConfirmPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  const { clearAutoSavedData } = useReviewAutoSave("confirm");
+
   // 기숙사 유형인지 체크
   const isDormitory = review.housingType === "기숙사";
   const isAgency = review.housingType === "공인중개사";
 
-  // 데이터 로딩 로직 - locationState를 사용해서 최신 데이터 반영
+  // 자동저장된 base64 이미지 데이터를 저장할 ref
+  const autoSavedBase64ImagesRef = React.useRef<{
+    reviewImages: string[];
+    dormitoryImages: string[];
+  }>({
+    reviewImages: [],
+    dormitoryImages: [],
+  });
+
+  // 페이지 로드 시 자동저장 데이터 복원 및 데이터 병합
   useEffect(() => {
-    if (locationState && Object.keys(locationState).length > 0) {
-      const mergedState = {
-        ...review,
-        housingType: locationState.housingType || review.housingType || "",
-        pros: locationState.advantages || review.pros || [],
-        cons: locationState.disadvantages || review.cons || [],
-        content: locationState.content || review.content || "",
-        images: locationState.photos || review.images || [],
-        address: locationState.address?.roadAddress || review.address || "",
+    // 자동저장된 데이터가 있는지 확인
+    const autoSavedData = reviewAutoSave.load();
+
+    if (autoSavedData) {
+      // base64 이미지 데이터 저장 (업로드용)
+      autoSavedBase64ImagesRef.current = {
+        reviewImages: autoSavedData.reviewBase64Images || [],
+        dormitoryImages: autoSavedData.dormitoryBase64Images || [],
+      };
+
+      // 자동저장 데이터 복원
+      if (autoSavedData.reviewState) {
+        setReview(autoSavedData.reviewState);
+      }
+      if (autoSavedData.dormitoryReviewState) {
+        setDormitoryReview(autoSavedData.dormitoryReviewState);
+      }
+
+      // locationState가 있으면 자동저장 데이터와 병합 (locationState 우선)
+      if (locationState && Object.keys(locationState).length > 0) {
+        const mergedState = {
+          ...autoSavedData.reviewState, // 자동저장된 데이터를 기본으로
+          // locationState에서 온 새로운 데이터로 덮어쓰기 (우선순위)
+          ...(locationState.housingType && {
+            housingType: locationState.housingType,
+          }),
+          ...(locationState.advantages && { pros: locationState.advantages }),
+          ...(locationState.disadvantages && {
+            cons: locationState.disadvantages,
+          }),
+          ...(locationState.content && { content: locationState.content }),
+          ...(locationState.photos && { images: locationState.photos }),
+          ...(locationState.address?.roadAddress && {
+            address: locationState.address.roadAddress,
+          }),
+          ...(locationState.address?.jibunAddress && {
+            addressDetail: locationState.address.jibunAddress,
+          }),
+          ...(locationState.buildingName && {
+            detailedAddress: locationState.buildingName,
+          }),
+          ...(locationState.paymentType && {
+            contractType: locationState.paymentType,
+          }),
+          ...(locationState.priceData?.deposit !== undefined && {
+            deposit: locationState.priceData.deposit,
+          }),
+          ...(locationState.priceData?.monthlyRent !== undefined && {
+            monthlyRent: locationState.priceData.monthlyRent,
+          }),
+          ...(locationState.priceData?.managementFee !== undefined && {
+            managementFee: locationState.priceData.managementFee,
+          }),
+        };
+        setReview(mergedState);
+      }
+    } else if (locationState && Object.keys(locationState).length > 0) {
+      // 자동저장 데이터가 없고 locationState만 있는 경우
+      setReview((prev) => ({
+        ...prev,
+        housingType: locationState.housingType || prev.housingType || "",
+        pros: locationState.advantages || prev.pros || [],
+        cons: locationState.disadvantages || prev.cons || [],
+        content: locationState.content || prev.content || "",
+        images: locationState.photos || prev.images || [],
+        address: locationState.address?.roadAddress || prev.address || "",
         addressDetail:
-          locationState.address?.jibunAddress || review.addressDetail || "",
+          locationState.address?.jibunAddress || prev.addressDetail || "",
         detailedAddress: locationState.buildingName
           ? `${locationState.buildingName}`
-          : review.detailedAddress || "",
-        contractType: locationState.paymentType || review.contractType || "",
-        deposit: locationState.priceData?.deposit || review.deposit || 0,
+          : prev.detailedAddress || "",
+        contractType: locationState.paymentType || prev.contractType || "",
+        deposit:
+          locationState.priceData?.deposit !== undefined
+            ? locationState.priceData.deposit
+            : prev.deposit || 0,
         monthlyRent:
           locationState.priceData?.monthlyRent !== undefined
             ? locationState.priceData.monthlyRent
-            : review.monthlyRent || 0,
+            : prev.monthlyRent || 0,
         managementFee:
-          locationState.priceData?.managementFee || review.managementFee || 0,
-      };
-      setReview(mergedState);
+          locationState.priceData?.managementFee !== undefined
+            ? locationState.priceData.managementFee
+            : prev.managementFee || 0,
+      }));
     }
-  }, [locationState, setReview]);
+  }, [locationState, setReview, setDormitoryReview]);
 
   // 라벨에 맞는 아이콘 찾기 - 기숙사 필터 지원
   const getIconFromLabel = (label: string): string => {
@@ -224,6 +299,10 @@ const ReviewConfirmPage: React.FC = () => {
 
   // handleConfirmSubmit 함수 교체
   const handleConfirmSubmit = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -377,9 +456,8 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
-      // 이미지 URL 처리 - blob URL이 있으면 업로드, CDN URL은 그대로 사용
+      // 이미지 URL 처리 - 자동저장된 base64 또는 blob URL 업로드
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
-        
         const blobUrls = reviewData.imageUrls.filter((url: string) =>
           url.startsWith("blob:")
         );
@@ -389,58 +467,105 @@ const ReviewConfirmPage: React.FC = () => {
 
         if (blobUrls.length > 0) {
           try {
-            // blob URL들을 실제 업로드
             const { imageUploadAPI } = await import("../../api/imageUpload");
-            
-            const uploadedUrls = await imageUploadAPI.uploadBlobUrls(
-              blobUrls,
-              "review"
-            );
-            
+
+            // 자동저장된 base64 이미지가 있으면 사용, 없으면 blob URL 업로드
+            const isDormitoryType = review.housingType === "기숙사";
+            const savedBase64Images = isDormitoryType
+              ? autoSavedBase64ImagesRef.current.dormitoryImages
+              : autoSavedBase64ImagesRef.current.reviewImages;
+
+            let uploadedUrls: string[];
+
+            if (savedBase64Images.length > 0) {
+              // 자동저장된 base64 이미지 업로드
+              try {
+                uploadedUrls = await imageUploadAPI.uploadBase64Images(
+                  savedBase64Images,
+                  "review"
+                );
+              } catch (base64Error: any) {
+                // 401 인증 오류인 경우
+                if (base64Error.response?.status === 401) {
+                  alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+                } else {
+                  alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
+                }
+
+                setIsSubmitting(false);
+                return;
+              }
+            } else if (blobUrls.length > 0) {
+              // base64가 없으면 blob URL로 직접 업로드 시도
+              try {
+                uploadedUrls = await imageUploadAPI.uploadBlobUrls(
+                  blobUrls,
+                  "review"
+                );
+              } catch (blobError: any) {
+                // 401 인증 오류인 경우
+                if (blobError.response?.status === 401) {
+                  alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+                } else {
+                  alert(
+                    "새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요."
+                  );
+                }
+
+                setIsSubmitting(false);
+                return;
+              }
+            } else {
+              // 업로드할 이미지가 없는 경우
+              uploadedUrls = [];
+            }
 
             // 최종 이미지 URL 목록 구성
             reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
-            
           } catch (uploadError) {
-            console.error("Failed to upload blob URLs:", uploadError);
-            console.error("Upload error details:", {
-              message: uploadError instanceof Error ? uploadError.message : 'Unknown error',
-              stack: uploadError instanceof Error ? uploadError.stack : undefined
-            });
-            
             // 업로드 실패 시 사용자에게 알림
-            alert(`이미지 업로드에 실패했습니다: ${uploadError instanceof Error ? uploadError.message : '알 수 없는 오류'}. 다시 시도해 주세요.`);
+            alert(
+              `이미지 업로드에 실패했습니다: ${
+                uploadError instanceof Error
+                  ? uploadError.message
+                  : "알 수 없는 오류"
+              }. 다시 시도해 주세요.`
+            );
             setIsSubmitting(false);
             return; // 업로드 실패 시 리뷰 제출 중단
           }
-        } else {
-          console.log("No blob URLs to upload, proceeding with existing URLs");
         }
-      } else {
-        console.log("No image URLs found in reviewData");
       }
 
       // 실제 API 호출
-      await createReviewMutation.mutateAsync(reviewData);
+      try {
+        await createReviewMutation.mutateAsync(reviewData);
 
-      setIsSubmitting(false);
-      setShowConfirmModal(false);
-      navigate("/mypage");
-      setReview(defaultReviewState);
-    } catch (error: any) {
-      setIsSubmitting(false);
+        // 리뷰 제출 성공 시 자동저장 데이터 삭제
+        clearAutoSavedData();
 
-      // 이미지 개수 오류에 대한 특별 처리
-      const errorMessage = error.response?.data?.message;
-      if (errorMessage && errorMessage.includes("이미지 개수")) {
-        alert(
-          "사진이 부족합니다. 일반 건물 및 기숙사 리뷰는 2-20장, 공인중개사 리뷰는 최대 20장의 사진이 필요합니다."
-        );
-      } else {
-        alert(
-          `리뷰 작성 중 오류가 발생했습니다: ${errorMessage || error.message}`
-        );
+        setIsSubmitting(false);
+        setShowConfirmModal(false);
+        navigate("/mypage");
+        setReview(defaultReviewState);
+      } catch (error: any) {
+        setIsSubmitting(false);
+
+        // 이미지 개수 오류에 대한 특별 처리
+        const errorMessage = error.response?.data?.message;
+        if (errorMessage && errorMessage.includes("이미지 개수")) {
+          alert(
+            "사진이 부족합니다. 일반 건물 및 기숙사 리뷰는 2-20장, 공인중개사 리뷰는 최대 20장의 사진이 필요합니다."
+          );
+        } else {
+          alert(
+            `리뷰 작성 중 오류가 발생했습니다: ${errorMessage || error.message}`
+          );
+        }
       }
+    } catch (error) {
+      setIsSubmitting(false);
+      alert("리뷰 제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
     }
   };
 

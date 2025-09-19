@@ -151,3 +151,13 @@
   letter-spacing: -0.0375rem;
   color: red;
 }
+
+/* Disabled profileButton styles */
+.profileButton.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.profileButton.disabled:hover {
+  background-color: var(--white);
+}

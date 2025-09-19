@@ -1,15 +1,15 @@
 // src/pages/auth/CurrentStudentVerification.tsx
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { authState, AuthState } from '../../recoil/auth/atoms';
-import { authApi } from '../../api/auth';
-import styles from '../../styles/auth/CurrentStudentVerification.module.css';
-import arrowIcon from '../../assets/image/arrowIcon.svg';
-import verifyCompleteIcon from '../../assets/image/verifyCompleteIcon.svg';
-import graduateCharacter from '../../assets/image/graduateCharacter.svg';
-import warningIcon from '../../assets/image/warningIcon.svg';
-import checkIconActive from '../../assets/image/checkIconActive.svg';
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
+import { authState, AuthState } from "../../recoil/auth/atoms";
+import { authApi } from "../../api/auth";
+import styles from "../../styles/auth/CurrentStudentVerification.module.css";
+import arrowIcon from "../../assets/image/arrowIcon.svg";
+import verifyCompleteIcon from "../../assets/image/verifyCompleteIcon.svg";
+import graduateCharacter from "../../assets/image/graduateCharacter.svg";
+import warningIcon from "../../assets/image/warningIcon.svg";
+import checkIconActive from "../../assets/image/checkIconActive.svg";
 
 enum VerificationStep {
   EMAIL_INPUT,
@@ -21,8 +21,8 @@ const CurrentStudentVerification: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const setAuth = useSetRecoilState(authState);
-  const [email, setEmail] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
+  const [email, setEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [step, setStep] = useState<VerificationStep>(
     location.state?.verified
       ? VerificationStep.COMPLETE
@@ -31,6 +31,7 @@ const CurrentStudentVerification: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showResendMessage, setShowResendMessage] = useState(false);
+  const [emailSendFailed, setEmailSendFailed] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -39,7 +40,7 @@ const CurrentStudentVerification: React.FC = () => {
   };
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newCode = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+    const newCode = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
     setVerificationCode(newCode);
     setError(null);
   };
@@ -51,12 +52,12 @@ const CurrentStudentVerification: React.FC = () => {
     // 기본 이메일 형식 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return '이메일 주소 형식을 확인해 주세요!';
+      return "이메일 주소 형식을 확인해 주세요!";
     }
 
     // 학교 이메일 도메인 검사
-    if (!email.endsWith('.ac.kr')) {
-      return '학교 이메일 주소만 사용 가능합니다!';
+    if (!email.endsWith(".ac.kr")) {
+      return "학교 이메일 주소만 사용 가능합니다!";
     }
 
     return null;
@@ -71,15 +72,18 @@ const CurrentStudentVerification: React.FC = () => {
     try {
       await authApi.sendVerificationEmail(email);
       setStep(VerificationStep.CODE_VERIFICATION);
+      setEmailSendFailed(false);
     } catch (error: any) {
       // 403 에러(이미 인증 완료)인 경우 바로 완료 화면으로
       if (
         error.response?.status === 403 ||
-        error.message?.includes('이미 학교 인증 완료')
+        error.message?.includes("이미 학교 인증 완료")
       ) {
         setStep(VerificationStep.COMPLETE);
       } else {
-        setError('이메일 전송에 실패했습니다.');
+        setError("이메일 전송에 실패했습니다.");
+        setEmailSendFailed(true);
+        setStep(VerificationStep.CODE_VERIFICATION);
       }
     } finally {
       setIsLoading(false);
@@ -93,19 +97,19 @@ const CurrentStudentVerification: React.FC = () => {
 
     setIsLoading(true);
     setError(null); // 이전 에러 메시지 초기화
-    
+
     try {
       const result = await authApi.verifyEmailCode(email, verificationCode);
-      
+
       // API 응답이 성공인 경우에만 다음 단계로 진행
       if (result.success) {
         setStep(VerificationStep.COMPLETE);
       } else {
-        setError(result.message || '인증번호가 일치하지 않아요!');
+        setError(result.message || "인증번호가 일치하지 않아요!");
       }
     } catch (error: any) {
-      console.error('인증 에러:', error);
-      setError(error.message || '인증번호가 일치하지 않아요!');
+      console.error("인증 에러:", error);
+      setError(error.message || "인증번호가 일치하지 않아요!");
     } finally {
       setIsLoading(false);
     }
@@ -117,9 +121,9 @@ const CurrentStudentVerification: React.FC = () => {
       ...prev,
       isAuthenticated: true,
       email: email,
-      verificationStatus: 'verified',
+      verificationStatus: "verified",
     }));
-    navigate('/mypage');
+    navigate("/mypage");
   };
 
   // 인증 코드 재발송
@@ -127,14 +131,14 @@ const CurrentStudentVerification: React.FC = () => {
     setIsLoading(true);
     try {
       await authApi.sendVerificationEmail(email); // 재발송 (자동 토큰 갱신 포함)
-      
+
       // 재발송 성공 메시지 표시
       setShowResendMessage(true);
       setTimeout(() => {
         setShowResendMessage(false);
       }, 3000); // 3초 후 메시지 숨김
     } catch (error) {
-      setError('재발송에 실패했습니다.');
+      setError("재발송에 실패했습니다.");
     } finally {
       setIsLoading(false);
     }
@@ -163,7 +167,7 @@ const CurrentStudentVerification: React.FC = () => {
             value={email}
             onChange={handleEmailChange}
             placeholder="학생용 이메일을 입력해 주세요."
-            className={`${styles.emailInput} ${error ? styles.inputError : ''}`}
+            className={`${styles.emailInput} ${error ? styles.inputError : ""}`}
           />
           {error && <p className={styles.errorText}>{error}</p>}
         </div>
@@ -175,11 +179,11 @@ const CurrentStudentVerification: React.FC = () => {
         <button
           type="submit"
           className={`${styles.submitButton} ${
-            !email || isLoading ? styles.disabled : ''
+            !email || isLoading ? styles.disabled : ""
           }`}
           disabled={!email || !!error || isLoading}
         >
-          {isLoading ? '처리 중...' : '인증'}
+          {isLoading ? "처리 중..." : "인증"}
         </button>
       </form>
     </main>
@@ -191,11 +195,19 @@ const CurrentStudentVerification: React.FC = () => {
       <h1 className={styles.title}>인증코드를 입력해 주세요.</h1>
       <span className={styles.description}>
         <p>메일이 오지 않나요?</p>
-        이메일 서비스 제공자 사정에 의해 수신까지 30분 정도가 소요될 수 있어요.
+        이메일 서비스 제공자 사정에 의해 수신까지 5분 정도가 소요될 수 있어요.
         메일 주소, 스팸함, 용량 등을 확인해보시고, [재발송]을 눌러 다시 요청해
         주세요
         <br />
         또는 수신 문제에 대해 학교 웹메일 담당자에게 문의해 주세요
+        {emailSendFailed && (
+          <>
+            <br />
+            <span className={styles.emailFailMessage}>
+              학교 웹메일이 없을 경우, 학교 웹메일 신청을 먼저 해주셔야 해요!
+            </span>
+          </>
+        )}
       </span>
       <form onSubmit={handleCodeSubmit} className={styles.form}>
         <div className={styles.inputWrapper}>
@@ -211,7 +223,7 @@ const CurrentStudentVerification: React.FC = () => {
             value={verificationCode}
             onChange={handleCodeChange}
             placeholder="인증코드를 입력해 주세요."
-            className={`${styles.emailInput} ${error ? styles.inputError : ''}`}
+            className={`${styles.emailInput} ${error ? styles.inputError : ""}`}
             maxLength={6}
           />
           {error && <p className={styles.errorText}>{error}</p>}
@@ -228,16 +240,20 @@ const CurrentStudentVerification: React.FC = () => {
           <button
             type="submit"
             className={`${styles.submitButton} ${styles.buttonGroupButton} ${
-              verificationCode.length < 6 || isLoading ? styles.disabled : ''
+              verificationCode.length < 6 || isLoading ? styles.disabled : ""
             }`}
             disabled={verificationCode.length < 6 || isLoading}
           >
-            {isLoading ? '처리 중...' : '확인'}
+            {isLoading ? "처리 중..." : "확인"}
           </button>
         </div>
         {showResendMessage && (
           <div className={styles.resendMessage}>
-            <img src={checkIconActive} alt="check" className={styles.checkIcon} />
+            <img
+              src={checkIconActive}
+              alt="check"
+              className={styles.checkIcon}
+            />
             인증코드 재발송!
           </div>
         )}
@@ -270,7 +286,7 @@ const CurrentStudentVerification: React.FC = () => {
             src={arrowIcon}
             alt="back"
             className={
-              step !== VerificationStep.COMPLETE ? styles.flippedIcon : ''
+              step !== VerificationStep.COMPLETE ? styles.flippedIcon : ""
             }
           />
         </button>

@@ -113,9 +113,10 @@ const JeonseInputPage: React.FC = () => {
     }
   };
 
+  // 각 항목이 입력되었는지만 확인 (0도 유효한 값으로 허용)
   const isNextEnabled = 
-    deposit !== '' && deposit.trim() !== '' && Number(deposit) > 0 &&
-    managementFee !== '' && managementFee.trim() !== '' && Number(managementFee) > 0;
+    deposit.trim() !== '' &&
+    managementFee.trim() !== '';
 
   return (
     <div className="content">
