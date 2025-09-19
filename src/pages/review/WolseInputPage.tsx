@@ -132,10 +132,11 @@ const WolseInputPage: React.FC = () => {
     }
   };
 
+  // 각 항목이 입력되었는지만 확인 (0도 유효한 값으로 허용)
   const isNextEnabled = 
-    deposit !== '' && deposit.trim() !== '' && Number(deposit) > 0 &&
-    monthlyRent !== '' && monthlyRent.trim() !== '' && Number(monthlyRent) > 0 && 
-    managementFee !== '' && managementFee.trim() !== '' && Number(managementFee) > 0;
+    deposit.trim() !== '' &&
+    monthlyRent.trim() !== '' && 
+    managementFee.trim() !== '';
 
   return (
     <div className="content">
@@ -203,8 +204,11 @@ const WolseInputPage: React.FC = () => {
           이전
         </button>
         <button
-          className={`${styles.nextButton} ${styles.enabled}`}
+          className={`${styles.nextButton} ${
+            isNextEnabled ? styles.enabled : ''
+          }`}
           onClick={handleNext}
+          disabled={!isNextEnabled}
         >
           다음
         </button>

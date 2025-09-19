@@ -50,7 +50,6 @@ export const imageUploadAPI = {
         );
       }
     } catch (error: any) {
-      console.error("Presigned URL error:", error);
       throw error;
     }
   },
@@ -109,7 +108,6 @@ export const imageUploadAPI = {
         throw new Error(`S3 업로드 실패: ${response.status}`);
       }
     } catch (error) {
-      console.error("S3 upload error:", error);
       throw error;
     }
   },
@@ -155,16 +153,10 @@ export const imageUploadAPI = {
         await imageUploadAPI.uploadToS3(presignedUrl, file);
         return cdnUrl;
       } catch (s3Error) {
-        console.warn(
-          "S3 upload failed, falling back to legacy upload:",
-          s3Error
-        );
-
         // Fallback to legacy upload
         return await imageUploadAPI.uploadImageLegacy(file);
       }
     } catch (error) {
-      console.error("Image upload error:", error);
       throw error;
     }
   },
@@ -190,7 +182,6 @@ export const imageUploadAPI = {
         throw new Error("이미지 업로드 실패");
       }
     } catch (error) {
-      console.error("Legacy image upload error:", error);
       throw error;
     }
   },
@@ -211,7 +202,6 @@ export const imageUploadAPI = {
       );
       return await Promise.all(uploadPromises);
     } catch (error) {
-      console.error("Multiple image upload error:", error);
       throw error;
     }
   },
@@ -231,7 +221,6 @@ export const imageUploadAPI = {
       const blob = await response.blob();
       return new File([blob], fileName, { type: blob.type });
     } catch (error) {
-      console.error("Blob to file conversion error:", error);
       throw error;
     }
   },
@@ -258,7 +247,54 @@ export const imageUploadAPI = {
 
       return await imageUploadAPI.uploadImages(files, folder);
     } catch (error) {
-      console.error("Blob URLs upload error:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Convert base64 string to File object
+   * @param base64 - The base64 string to convert
+   * @param fileName - The file name for the converted file
+   * @returns File - The converted File object
+   */
+  base64ToFile: (
+    base64: string,
+    fileName: string = "image.jpg"
+  ): File => {
+    try {
+      const byteCharacters = atob(base64.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const mimeType = base64.split(',')[0].split(':')[1].split(';')[0];
+      return new File([byteArray], fileName, { type: mimeType });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  /**
+   * Upload multiple base64 images
+   * @param base64Images - Array of base64 image strings
+   * @param folder - Upload category ('review' | 'profile')
+   * @returns Promise<string[]> - Array of CDN URLs
+   */
+  uploadBase64Images: async (
+    base64Images: string[],
+    folder: "review" | "profile" = "review"
+  ): Promise<string[]> => {
+    try {
+      const files = base64Images.map((base64, index) => {
+        // Generate a unique filename with supported extension
+        const timestamp = Date.now();
+        const fileName = `image_${timestamp}_${index + 1}.jpg`;
+        return imageUploadAPI.base64ToFile(base64, fileName);
+      });
+
+      return await imageUploadAPI.uploadImages(files, folder);
+    } catch (error) {
       throw error;
     }
   },
