@@ -75,7 +75,7 @@ const ReviewConfirmPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  const { clearAutoSavedData } = useReviewAutoSave('confirm');
+  const { clearAutoSavedData } = useReviewAutoSave("confirm");
 
   // 기숙사 유형인지 체크
   const isDormitory = review.housingType === "기숙사";
@@ -87,7 +87,7 @@ const ReviewConfirmPage: React.FC = () => {
     dormitoryImages: string[];
   }>({
     reviewImages: [],
-    dormitoryImages: []
+    dormitoryImages: [],
   });
 
   // 페이지 로드 시 자동저장 데이터 복원 및 데이터 병합
@@ -95,12 +95,11 @@ const ReviewConfirmPage: React.FC = () => {
     // 자동저장된 데이터가 있는지 확인
     const autoSavedData = reviewAutoSave.load();
 
-
     if (autoSavedData) {
       // base64 이미지 데이터 저장 (업로드용)
       autoSavedBase64ImagesRef.current = {
         reviewImages: autoSavedData.reviewBase64Images || [],
-        dormitoryImages: autoSavedData.dormitoryBase64Images || []
+        dormitoryImages: autoSavedData.dormitoryBase64Images || [],
       };
 
       // 자동저장 데이터 복원
@@ -116,24 +115,42 @@ const ReviewConfirmPage: React.FC = () => {
         const mergedState = {
           ...autoSavedData.reviewState, // 자동저장된 데이터를 기본으로
           // locationState에서 온 새로운 데이터로 덮어쓰기 (우선순위)
-          ...(locationState.housingType && { housingType: locationState.housingType }),
+          ...(locationState.housingType && {
+            housingType: locationState.housingType,
+          }),
           ...(locationState.advantages && { pros: locationState.advantages }),
-          ...(locationState.disadvantages && { cons: locationState.disadvantages }),
+          ...(locationState.disadvantages && {
+            cons: locationState.disadvantages,
+          }),
           ...(locationState.content && { content: locationState.content }),
           ...(locationState.photos && { images: locationState.photos }),
-          ...(locationState.address?.roadAddress && { address: locationState.address.roadAddress }),
-          ...(locationState.address?.jibunAddress && { addressDetail: locationState.address.jibunAddress }),
-          ...(locationState.buildingName && { detailedAddress: locationState.buildingName }),
-          ...(locationState.paymentType && { contractType: locationState.paymentType }),
-          ...(locationState.priceData?.deposit !== undefined && { deposit: locationState.priceData.deposit }),
-          ...(locationState.priceData?.monthlyRent !== undefined && { monthlyRent: locationState.priceData.monthlyRent }),
-          ...(locationState.priceData?.managementFee !== undefined && { managementFee: locationState.priceData.managementFee }),
+          ...(locationState.address?.roadAddress && {
+            address: locationState.address.roadAddress,
+          }),
+          ...(locationState.address?.jibunAddress && {
+            addressDetail: locationState.address.jibunAddress,
+          }),
+          ...(locationState.buildingName && {
+            detailedAddress: locationState.buildingName,
+          }),
+          ...(locationState.paymentType && {
+            contractType: locationState.paymentType,
+          }),
+          ...(locationState.priceData?.deposit !== undefined && {
+            deposit: locationState.priceData.deposit,
+          }),
+          ...(locationState.priceData?.monthlyRent !== undefined && {
+            monthlyRent: locationState.priceData.monthlyRent,
+          }),
+          ...(locationState.priceData?.managementFee !== undefined && {
+            managementFee: locationState.priceData.managementFee,
+          }),
         };
         setReview(mergedState);
       }
     } else if (locationState && Object.keys(locationState).length > 0) {
       // 자동저장 데이터가 없고 locationState만 있는 경우
-      setReview(prev => ({
+      setReview((prev) => ({
         ...prev,
         housingType: locationState.housingType || prev.housingType || "",
         pros: locationState.advantages || prev.pros || [],
@@ -147,9 +164,10 @@ const ReviewConfirmPage: React.FC = () => {
           ? `${locationState.buildingName}`
           : prev.detailedAddress || "",
         contractType: locationState.paymentType || prev.contractType || "",
-        deposit: locationState.priceData?.deposit !== undefined
-          ? locationState.priceData.deposit
-          : prev.deposit || 0,
+        deposit:
+          locationState.priceData?.deposit !== undefined
+            ? locationState.priceData.deposit
+            : prev.deposit || 0,
         monthlyRent:
           locationState.priceData?.monthlyRent !== undefined
             ? locationState.priceData.monthlyRent
@@ -489,7 +507,9 @@ const ReviewConfirmPage: React.FC = () => {
                 if (blobError.response?.status === 401) {
                   alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
                 } else {
-                  alert("새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요.");
+                  alert(
+                    "새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요."
+                  );
                 }
 
                 setIsSubmitting(false);
@@ -502,10 +522,15 @@ const ReviewConfirmPage: React.FC = () => {
 
             // 최종 이미지 URL 목록 구성
             reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
-
           } catch (uploadError) {
             // 업로드 실패 시 사용자에게 알림
-            alert(`이미지 업로드에 실패했습니다: ${uploadError instanceof Error ? uploadError.message : '알 수 없는 오류'}. 다시 시도해 주세요.`);
+            alert(
+              `이미지 업로드에 실패했습니다: ${
+                uploadError instanceof Error
+                  ? uploadError.message
+                  : "알 수 없는 오류"
+              }. 다시 시도해 주세요.`
+            );
             setIsSubmitting(false);
             return; // 업로드 실패 시 리뷰 제출 중단
           }
