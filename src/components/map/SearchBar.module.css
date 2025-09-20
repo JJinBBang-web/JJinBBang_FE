@@ -35,6 +35,9 @@
     line-height: 150%;
     color: var(--color-gray40);
 }
+.search_text:disabled{
+    background-color: var(--white);
+}
 
 .searchIcon {
     cursor: pointer;
