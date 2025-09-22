@@ -1,9 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "http://3.35.29.235:8080/api/:path*" },
-    {
-      "source": "/((?!api|static|assets|favicon.ico|robots.txt|manifest.json|.*\\..*).*)",
-      "destination": "/index.html"
-    }
-  ]
-}
