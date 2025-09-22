@@ -120,14 +120,10 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  const rawReviewList = localStorage.getItem("reviewList");
+  let reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
 
-  const reviewList =
-    rawReviewList &&
-    rawReviewList.startsWith("[") &&
-    rawReviewList.endsWith("]")
-      ? rawReviewList.slice(1, -1)
-      : null;
+  const reviewList = reviewDict[userData?.id] || "[]";
+
 
   const {
     data: reviewData,
@@ -145,7 +141,7 @@ const Home: React.FC = () => {
       );
       return response.data;
     },
-    enabled: isLogin && !!reviewList,
+    enabled: isLogin && !!reviewDict && !!userData,
     refetchOnWindowFocus: false,
   });
 

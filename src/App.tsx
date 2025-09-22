@@ -76,6 +76,7 @@ const AppContent: React.FC = () => {
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
+  const accessToken = localStorage.getItem("accessToken");
   
   useEffect(() => {
     TagManager.dataLayer({
@@ -91,7 +92,6 @@ const AppContent: React.FC = () => {
     setHideNav(false);
   }, [location.pathname, setHideNav]);
 
-
   const {
     data: userData,
     isFetching: isFetchingUser,
@@ -100,10 +100,10 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
+      if (!accessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
-    enabled: isLogin,
     refetchOnWindowFocus: false,
   });
 
@@ -113,7 +113,7 @@ const AppContent: React.FC = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, [isSuccessUser, location.pathname]);
+  }, [isSuccessUser]);
 
   const hiddenNavPaths = [
     "/auth/*",
