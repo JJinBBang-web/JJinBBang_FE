@@ -3,7 +3,6 @@ import topIcon from "../../assets/image/iconUp.svg"
 
 const TopButton:React.FC = () => {
     const handleScrollTop = () => {
-        console.log("버튼 클릭")
         document.documentElement.scrollTo({
             top: 0,
             behavior: "smooth",

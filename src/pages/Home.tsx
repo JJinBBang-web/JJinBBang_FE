@@ -120,12 +120,12 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  const rawReviewList = localStorage.getItem('reviewList');
+  const rawReviewList = localStorage.getItem("reviewList");
 
   const reviewList =
     rawReviewList &&
-    rawReviewList.startsWith('[') &&
-    rawReviewList.endsWith(']')
+    rawReviewList.startsWith("[") &&
+    rawReviewList.endsWith("]")
       ? rawReviewList.slice(1, -1)
       : null;
 
@@ -158,7 +158,6 @@ const Home: React.FC = () => {
     isFetchingReviewInfo ||
     isFetchingUniversityList
   ) {
-    console.log('로딩 중...');
     return null;
   }
 

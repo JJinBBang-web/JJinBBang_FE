@@ -1,16 +1,15 @@
 // src/pages/review/DormitoryInputPage.tsx
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { reviewState, ReviewState } from '../../recoil/review/reviewAtoms';
-import { selectedTypeNumState } from '../../recoil/map/mapRecoilState';
-import { universitiesState } from '../../recoil/map/universityRecoilState';
-import { isSheetOpenState } from '../../recoil/util/utilRecoilState';
-import CancelModal from '../../components/review/CancelModal';
-import UniversityCampusSelectModal from '../../components/review/UniversityCampusSelectModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/DormitoryInputPage.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { reviewState, ReviewState } from "../../recoil/review/reviewAtoms";
+import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
+import { universitiesState } from "../../recoil/map/universityRecoilState";
+import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/DormitoryInputPage.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
 
 // Extended ReviewState interface to include dormitory-specific fields
 interface ExtendedReviewState extends ReviewState {
@@ -44,16 +43,16 @@ const DormitoryInputPage: React.FC = () => {
 
   // State for form fields
   const [university, setUniversity] = useState<string>(
-    extendedReview.university || ''
+    extendedReview.university || ""
   );
   const [dormitoryName, setDormitoryName] = useState<string>(
-    extendedReview.dormitoryName || ''
+    extendedReview.dormitoryName || ""
   );
   const [roomCapacity, setRoomCapacity] = useState<string>(
-    review.roomCapacity ? review.roomCapacity.toString() : ''
+    review.roomCapacity ? review.roomCapacity.toString() : ""
   );
   const [selectedFloor, setSelectedFloor] = useState<string>(
-    review.floorType || '저층'
+    review.floorType || "저층"
   );
 
   const {
@@ -65,13 +64,13 @@ const DormitoryInputPage: React.FC = () => {
 
   useEffect(() => {
     // Restore state from review if coming from confirm page
-    if (from === 'confirm') {
-      setUniversity(extendedReview.university || '');
-      setDormitoryName(extendedReview.dormitoryName || '');
+    if (from === "confirm") {
+      setUniversity(extendedReview.university || "");
+      setDormitoryName(extendedReview.dormitoryName || "");
       setRoomCapacity(
-        review.roomCapacity ? review.roomCapacity.toString() : ''
+        review.roomCapacity ? review.roomCapacity.toString() : ""
       );
-      setSelectedFloor(review.floorType || '저층');
+      setSelectedFloor(review.floorType || "저층");
     }
   }, [from, review, extendedReview]);
 
@@ -93,7 +92,7 @@ const DormitoryInputPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
+    const value = e.target.value.replace(/[^0-9]/g, "");
     setter(value);
   };
 
@@ -126,7 +125,6 @@ const DormitoryInputPage: React.FC = () => {
     } as unknown as ReviewState;
 
     setReview(extendedUpdatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(extendedUpdatedReview));
 
     const dormitoryData = {
       university: university,
@@ -135,15 +133,15 @@ const DormitoryInputPage: React.FC = () => {
       floorType: selectedFloor,
     };
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
+    if (from === "confirm") {
+      navigate("/review/confirm", {
         state: {
           ...location.state,
           dormitoryData,
         },
       });
     } else {
-      navigate('/review/dormitory-conditions', {
+      navigate("/review/dormitory-conditions", {
         state: {
           ...location.state,
           dormitoryData,
@@ -153,8 +151,8 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
-      navigate('/review/confirm');
+    if (from === "confirm") {
+      navigate("/review/confirm");
     } else {
       navigate(-1);
     }
@@ -162,10 +160,10 @@ const DormitoryInputPage: React.FC = () => {
 
   // 수정된 조건: 기숙사비 제거, 층수 선택 추가
   const isNextEnabled =
-    university !== '' &&
-    dormitoryName !== '' &&
-    roomCapacity !== '' &&
-    selectedFloor !== '';
+    university !== "" &&
+    dormitoryName !== "" &&
+    roomCapacity !== "" &&
+    selectedFloor !== "";
 
   return (
     <div className="content">
@@ -241,11 +239,6 @@ const DormitoryInputPage: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* 하나의 모달만 사용 - UniversityCampusSelectModal */}
-      {bottomSheet.isOpenModal && bottomSheet.type === 'university' && (
-        <UniversityCampusSelectModal />
-      )}
 
       <footer className={styles.footer}>
         <button className={styles.prevButton} onClick={handleBack}>

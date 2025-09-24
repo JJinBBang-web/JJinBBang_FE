@@ -21,9 +21,6 @@ export class BuildingAPI {
         throw new Error("건물 상세 조회 실패");
       }
 
-      console.log("✅ Axios Response:", response.data);
-
-
       return response.data.data;
     } catch (error) {
       console.error("BuildingAPI.getBuildingDetail error:", error);
@@ -55,11 +52,6 @@ export class BuildingAPI {
           isAgency: options?.isAgency ?? false,
         },
         useAuth: true,
-      });
-
-      console.log("Review API 호출 파라미터", {
-        buildingId,
-        ...options
       });
 
       if (!response.data || response.data.code !== 200) {

@@ -134,8 +134,11 @@ const AccountAuthPage: React.FC = () => {
         )}
 
         <button
-          className={styles.profileButton}
-          onClick={() => navigate('/auth/student/verify')}
+          className={`${styles.profileButton} ${
+            auth.verificationStatus === 'verified' ? styles.disabled : ''
+          }`}
+          onClick={auth.verificationStatus !== 'verified' ? () => navigate('/auth/student/verify') : undefined}
+          disabled={auth.verificationStatus === 'verified'}
         >
           <div className={styles.profileInfo}>
             <p>내 계정</p>
@@ -146,7 +149,7 @@ const AccountAuthPage: React.FC = () => {
               </span>
             </div>
           </div>
-          <img src={arrowIcon} alt="forward" />
+          {auth.verificationStatus !== 'verified' && <img src={arrowIcon} alt="forward" />}
         </button>
 
         <button

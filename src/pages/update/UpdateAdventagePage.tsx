@@ -46,6 +46,7 @@ const UpdateAdventagePage:React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
             ...location.state,
             },
@@ -67,16 +68,15 @@ const UpdateAdventagePage:React.FC = () => {
         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     };
     
-    console.log(selectedFilters);
     const handleNext = () => {
         if (!review) return;
 
         const updatedReview = { ...review, pros: selectedFilters }; // ✅ 그대로 저장
         setReview(updatedReview);
-        localStorage.setItem("updateReviewState", JSON.stringify(updatedReview));
 
         if (from === "update") {
           navigate(`/review/${reviewId}/update`, {
+            replace:true, 
             state: { ...location.state, advantages: selectedFilters },
           });
         }

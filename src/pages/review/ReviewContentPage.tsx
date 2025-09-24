@@ -6,6 +6,7 @@ import styles from '../../styles/review/ReviewContent.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
 
 interface LocationState {
   photos?: string[];
@@ -62,9 +63,16 @@ const ReviewContentPage: React.FC = () => {
     (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
+  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('content');
+  
   const [content, setContent] = useState(() => {
     // 확인 페이지에서 돌아온 경우에만 이전 데이터 유지
     if (from === 'confirm') {
+      return review.description || '';
+    }
+    // 자동 저장된 데이터 복원 시도
+    if (hasAutoSavedData()) {
+      restoreAutoSavedData();
       return review.description || '';
     }
     // 그 외의 경우 빈 내용으로 시작
@@ -82,12 +90,20 @@ const ReviewContentPage: React.FC = () => {
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length <= maxLength) {
-      setContent(e.target.value);
+      const newContent = e.target.value;
+      setContent(newContent);
+      
+      // 실시간으로 review state 업데이트 (자동 저장 트리거)
+      setReview(prev => ({
+        ...prev,
+        description: newContent
+      }));
     }
   };
 
   const handleNext = () => {
-    const trimmedLength = content.trim().length;
+    const trimmedContent = content.trim();
+    const trimmedLength = trimmedContent.length;
     
     if (trimmedLength === 0) {
       alert('내용을 입력해주세요.');
@@ -99,19 +115,22 @@ const ReviewContentPage: React.FC = () => {
       return;
     }
 
+    // review state 최종 업데이트
     const updatedReview = {
       ...review,
-      description: content,
+      description: trimmedContent,
     };
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
+    
+    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
+    clearAutoSavedData();
 
     if (from === 'confirm') {
       navigate('/review/confirm', {
         state: {
           ...location.state,
-          content,
+          content: trimmedContent,
         },
       });
     } else {
@@ -121,7 +140,7 @@ const ReviewContentPage: React.FC = () => {
           photos,
           advantages,
           disadvantages,
-          content,
+          content: trimmedContent,
         },
       });
     }

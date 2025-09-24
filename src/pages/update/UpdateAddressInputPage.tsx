@@ -25,12 +25,12 @@
     } = useCancelModal();
 
     const handleSearchClick = () => {
-      navigate(`/review/${reviewId}/update/address`, {state: { from: 'update', housingType }});
+      navigate(`/review/${reviewId}/update/address`, {replace:true, state: { from: 'update', housingType }});
     };
 
 
     const handleBack = () => {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true});
     };
 
     return (
@@ -64,7 +64,7 @@
           </div>
         </div>
         <footer className={styles.footer}>
-          <button className={styles.prevButton} onClick={() => navigate(-1)}>
+          <button className={styles.prevButton} onClick={handleBack}>
             이전
           </button>
           <button className={styles.nextButton} disabled={true}>

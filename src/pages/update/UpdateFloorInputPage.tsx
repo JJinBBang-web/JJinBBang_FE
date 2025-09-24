@@ -65,7 +65,6 @@ const UpdateFloorInputPage: React.FC = () => {
 
 
   const handleNext = () => {
-    console.log(buildingName);
     if (isAgency) {
       const updatedReview = {
             ...review,
@@ -79,17 +78,17 @@ const UpdateFloorInputPage: React.FC = () => {
                 detailedAddress: buildingName,
             };
         });
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
                 ...location.state,
                 detailedAddress: buildingName,
             },
             });
         } 
-        console.log(review);
     } else {
     if (buildingName && selectedFloor && squareFootage) {
         const floorCode = koreanToFloor[selectedFloor];
@@ -113,10 +112,11 @@ const UpdateFloorInputPage: React.FC = () => {
                 space: spaceValue,
             };
         });
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        
 
         if (from === 'update') {
             navigate(`/review/${reviewId}/update`, {
+            replace: true,
             state: {
                 ...location.state,
                 buildingName,
@@ -131,7 +131,7 @@ const UpdateFloorInputPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true, state:{...location.state}});
     } else {
       navigate(-1);
     }

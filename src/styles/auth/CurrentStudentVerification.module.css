@@ -2,7 +2,7 @@
 .header {
   display: flex;
   align-items: center;
-  padding: 4.56rem 16px 1.19rem;
+  padding: 3rem 1rem 1.19rem;
 }
 
 .backButton {
@@ -216,7 +216,7 @@
 }
 
 .submitButton.buttonGroupButton.disabled {
-  background-color: #CCCCCC;
+  background-color: #cccccc;
   color: var(--white);
   cursor: not-allowed;
 }
@@ -234,9 +234,9 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: 3.875rem;
-  background: rgba(103, 103, 103, 0.80);
+  background: rgba(103, 103, 103, 0.8);
   backdrop-filter: blur(7px);
-  color: var(--gray-WHITE, #FFF);
+  color: var(--gray-WHITE, #fff);
   text-align: center;
   font-family: "Spoqa Han Sans Neo";
   font-size: 0.875rem;
@@ -270,4 +270,8 @@
 .resendMessage .checkIcon {
   width: 1.25rem;
   height: 1.25rem;
+}
+
+.emailFailMessage {
+  color: var(--primary-color);
 }

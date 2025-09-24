@@ -14,6 +14,7 @@ import {
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { getAPI, putAPI, deleteAPI, postAPI } from "../api/baseAPI";
 import { useNavigate } from "react-router-dom";
+import noImg from "../assets/image/noImg.svg";
 
 interface Props {
   review: ReviewPreview;
@@ -100,6 +101,24 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
+  // 리뷰 상세 정보 조회하여 이미지 가져오기
+  const { data: reviewDetail, isLoading: reviewLoading } = useQuery({
+    queryKey: ['reviewDetail', activeReviewInfo?.id],
+    queryFn: async () => {
+      if (!activeReviewInfo?.id) return null;
+      const response = await getAPI(`/api/v1/review/${activeReviewInfo.id}`, true);
+      return response.data;
+    },
+    enabled: !!activeReviewInfo?.id,
+    staleTime: 5 * 60 * 1000, // 5분간 캐시
+  });
+
+  // 실제 사용할 이미지 URL 계산
+  const rawImageUrl = reviewDetail?.reviewImages?.imageUrl?.[0] || reviewDetail?.imageUrls?.[0] || '';
+  const actualImageUrl = reviewLoading || !rawImageUrl || rawImageUrl.includes('localhost') 
+    ? '' 
+    : rawImageUrl;
+
   useEffect(() => {
     setIsLiked(activeReviewInfo?.liked);
     setLikeCount(review.reviewInfo.likeCount);
@@ -110,6 +129,13 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
     setLikeCount,
   ]);
 
+    const handleError = (e:any) => {
+      // 만약 대체 이미지도 로드에 실패할 경우, 다시 onError가 무한 호출되는 것을 방지
+      e.target.onError = null;
+      // 이미지 src를 미리 import 해둔 대체 이미지로 변경
+      e.target.src = noImg;
+    };
+
   return (
     <div
       className={styles.previewReviewContainer}
@@ -118,8 +144,9 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
       <div className={styles.buildingContainer}>
         <img
           className={styles.buildingImg}
-          src={review.image}
+          src={actualImageUrl}
           alt={activeReviewInfo?.name}
+          onError={handleError}
         />
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
@@ -144,8 +171,8 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
             >
               {type}
             </div>
-            {generalInfo && (
-              generalInfo.contractType === "MONTHLY_RENT" ? (
+            {generalInfo &&
+              (generalInfo.contractType === "MONTHLY_RENT" ? (
                 <div className={styles.buildingPrice}>
                   월세 {generalInfo?.deposit}/{generalInfo?.price}
                 </div>
@@ -155,8 +182,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
                 </div>
               ) : (
                 <></>
-              )
-            )}
+              ))}
             {dormitoryInfo && (
               <div className={`${styles.buildingPrice} ${styles.dormitory}`}>
                 {dormitoryInfo.universityName.slice(0, -2)}

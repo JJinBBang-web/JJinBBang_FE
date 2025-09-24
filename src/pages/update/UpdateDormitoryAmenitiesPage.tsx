@@ -30,7 +30,6 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const {reviewId} = useParams();
 
-  console.log(review?.facilityConditions);
   // 각 편의시설에 대한 선택 상태 관리 - 타입 명시
   const [selections, setSelections] = useState<FacilitySelections>({
     화장실: { 개인: false, 공용: false },
@@ -177,10 +176,11 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
         facilityConditions: convertedFacilityConditions,
     };
 
-    localStorage.setItem('updateReviewState', JSON.stringify(updatedReviewForStorage));
+    
 
     if (from === 'update') {
       navigate(`/review/${reviewId}/update`, {
+        replace:true,
         state: {
           ...location.state,
           facilityConditions: convertedFacilityConditions,
@@ -192,7 +192,7 @@ const UpdateDormitoryAmenitiesPage: React.FC = () => {
   // 이전 버튼 클릭 처리
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true});
     } else {
       navigate(-1);
     }

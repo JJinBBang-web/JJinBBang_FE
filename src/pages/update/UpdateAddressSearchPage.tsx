@@ -57,9 +57,7 @@
                 oncomplete: async (data) => {
                   const mainAddress = data.roadAddress || data.jibunAddress;
                   const { lat, lng } = await getAddressCoords(mainAddress);
-                  console.log('lat:', lat, 'lng:', lng);
                   
-                  console.log(data);
                   // 수정 모드일 경우
                   setReview(prev => {
                       const base: ReviewState = prev ?? defaultReviewState;

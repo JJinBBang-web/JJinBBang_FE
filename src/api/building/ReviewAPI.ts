@@ -30,7 +30,6 @@ export class ReviewAPI {
         throw new Error('후기 상세 조회 실패');
       }
 
-      console.log('✅ Axios Response:', response.data);
 
       return response.data.data;
     } catch (error) {
@@ -68,10 +67,9 @@ export class ReviewAPI {
         throw new Error('리뷰 작성 실패');
       }
 
-      console.log('✅ 리뷰 작성 성공:', response.data);
 
       return response.data.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('ReviewAPI.createReview error:', error);
       throw error;
     }
@@ -129,7 +127,6 @@ export class ReviewAPI {
         throw new Error('사용자 리뷰 목록 조회 실패');
       }
 
-      console.log('✅ 사용자 리뷰 목록:', response.data);
       return response.data.data;
     } catch (error) {
       console.error('ReviewAPI.getUserReviews error:', error);

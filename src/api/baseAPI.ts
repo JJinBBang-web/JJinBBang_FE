@@ -29,9 +29,11 @@ export const postAPI = async (
     }
 
     const response = await api.post(url, data, requestConfig);
+    
     return response.data;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('❌ POST API Error:', error);
+    console.error('🔍 Request Details:', { url, data });
     throw error;
   }
 };

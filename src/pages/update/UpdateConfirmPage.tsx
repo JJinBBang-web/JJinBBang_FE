@@ -16,6 +16,7 @@ import { defaultReviewState, ReviewState } from "../../recoil/review/reviewAtoms
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 import { deleteAPI, putAPI } from "../../api/baseAPI";
 import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
+import UpdateCancelModal from "../../components/review/UpdateCancelModal";
 
 
 type AddressPick = {
@@ -87,7 +88,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     // 뒤로가기 함수
     const handleBack = () => {
-      navigate(`/building/review/${reviewId}`);
+      navigate(`/building/review/${reviewId}`, {replace: true, state: { from: 'update-exit' }});
     };
     
     // 삭제 모달 함수
@@ -112,7 +113,6 @@ const UpdateConfirmPage: React.FC = () => {
           setReview((prev) => (prev ? { ...prev, rating } : prev));
 
           const body = buildUpdatePayload(review, rating);
-          console.log(body);
           // ✅ 인증 필요하면 true
           await putAPI(`/api/v1/review/${reviewId}`, body, true);
 
@@ -135,7 +135,6 @@ const UpdateConfirmPage: React.FC = () => {
 
         const response = await deleteAPI(`/api/v1/review/${reviewId}`, true);
 
-        console.log("리뷰 삭제 성공:", response);
 
         setReview(defaultReviewState);
         setShowDeleteMConfirmodal(true);
@@ -149,7 +148,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     // 아이템 클릭 & 이동 함수
     const handleItemClick = (navigationFunction: () => void) => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigationFunction();
     };
 
@@ -161,7 +160,7 @@ const UpdateConfirmPage: React.FC = () => {
           setTimeout(() => {
             setIsSubmitting(false);
             setShowConfirmModal(false);
-            navigate(`/mypage`);
+            navigate(`/mypage`, {replace: true, state: { from: 'update-exit' }});
             setReview(defaultReviewState);
           }, 1000);
         } catch (error) {
@@ -174,14 +173,15 @@ const UpdateConfirmPage: React.FC = () => {
     const handleDeleteSubmit = () => {
       setIsDelete(true);
       setShowDeleteMConfirmodal(false);
-      navigate('/mypage');
+      navigate('/mypage', {replace: true, state: { from: 'update-exit' }});
     }
 
     // 
     const navigateToHousingType = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
 
       navigate(`/review/${reviewId}/update/type`, {
+        replace: true,
         state: {
           from: 'update',
         },
@@ -190,16 +190,18 @@ const UpdateConfirmPage: React.FC = () => {
 
 
     const navigateToAddress = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigate(`/review/${reviewId}/update/input-address`, {
+        replace: true,
         state: { from: 'update', housingType: review?.housingType },
       });
     };
 
     const navigateToDetailedAddress = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory`, {
+          replace: true,
           state: {
             from: "update",
             universityName : review?.universityName,
@@ -211,6 +213,7 @@ const UpdateConfirmPage: React.FC = () => {
 
       } else {
           navigate(`/review/${reviewId}/update/floor`, {
+            replace: true,
             state: {
               address: {
                 roadAddress: review?.address || '',
@@ -226,9 +229,10 @@ const UpdateConfirmPage: React.FC = () => {
       }
     };
     const navigateToContractType = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory-conditions`, {
+          replace: true,
           state: {
             from: 'update',
             facfacilities:review?.facilityConditions
@@ -236,6 +240,7 @@ const UpdateConfirmPage: React.FC = () => {
         });
       } else {
         navigate(`/review/${reviewId}/update/contract/`, {
+          replace: true,
           state: {
             from: 'update',
           },
@@ -244,9 +249,10 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToContractDetails = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       if (review?.housingType === 'DORMITORY') {
         navigate(`/review/${reviewId}/update/dormitory-amenities`, {
+          replace: true,
           state: {
             from: 'update',
           },
@@ -254,6 +260,7 @@ const UpdateConfirmPage: React.FC = () => {
       } else {
 
         navigate(`/review/${reviewId}/update/contract/price`, {
+          replace: true,
           state: {
             from: 'update',
           },
@@ -262,8 +269,9 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToPros = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigate(`/review/${reviewId}/update/filter-ad`, {
+        replace: true,
         state: {
           from: "update",
           housingType: review?.housingType,
@@ -273,8 +281,9 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     const navigateToCons = () => {
-      localStorage.setItem('updateReviewState', JSON.stringify(review));
+      
       navigate(`/review/${reviewId}/update/filter-disad`, {
+        replace: true,
         state: {
           from: "update",
           housingType: review?.housingType,
@@ -285,6 +294,7 @@ const UpdateConfirmPage: React.FC = () => {
 
     const navigateToContent = () => {
       navigate(`/review/${reviewId}/update/content`, {
+        replace: true,
         state: {
           content: review?.description,
           from: 'update',
@@ -399,7 +409,6 @@ const UpdateConfirmPage: React.FC = () => {
       );
     };
 
-    console.log(review);
     return (
     <div className="content">
       <div className={styles.container}>
@@ -765,7 +774,7 @@ const UpdateConfirmPage: React.FC = () => {
       {showDeleteConfirmModal && (
         <div
           className={styles.modalOverlay}
-          onClick={() => !isDelete && setShowDeleteMConfirmodal(false)}
+          onClick={() => !isDelete}
         >
           <div
             className={styles.modalContainer}
@@ -796,7 +805,7 @@ const UpdateConfirmPage: React.FC = () => {
       )}
 
       {showCancelModal && (
-        <CancelModal
+        <UpdateCancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleBack}
         />
@@ -805,7 +814,7 @@ const UpdateConfirmPage: React.FC = () => {
       {showConfirmModal && (
         <div
           className={styles.modalOverlay}
-          onClick={() => !isSubmitting && setShowConfirmModal(false)}
+          onClick={() => !isSubmitting}
         >
           <div
             className={styles.modalContainer}

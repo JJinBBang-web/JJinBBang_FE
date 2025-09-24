@@ -11,10 +11,13 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
+import JBMarkerNone from "../assets/image/JBMarkerNone.svg"
+import BDMarker from "../assets/image/BDMarker.svg";
+import BDMarkerNone from "../assets/image/BDMarkerNone.svg";
 import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { filterState, housingTypeState, searchKeywordState } from '../recoil/map/mapRecoilState';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { depositRangeState, filterState, housingTypeState, maintenanceCostState, monthlyRentRangeState, searchKeywordState, selectedContractState, selectedJjinFilterState } from '../recoil/map/mapRecoilState';
 import { useNearBy } from '../hooks/useNearBy';
 import { useSearch } from '../hooks/useSearch';
 import PreviewBuildingReview from '../components/detail/PreviewBuildingReview';
@@ -22,9 +25,38 @@ import { campusCenterState } from '../recoil/map/universityRecoilState';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { hideNavState } from '../recoil/util/modalState';
-import { it } from 'node:test';
+import { isSheetOpenState } from '../recoil/util/utilRecoilState';
+
+type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
+
+const splitIds = (arr: MarkerItem[]) => {
+  const buildingIds:number[] = [];
+  const agencyIds:number[] = [];
+  for (const m of arr) {
+    if (m.type === 'AGENCY') agencyIds.push(m.id);
+    else buildingIds.push(m.id);
+  }
+  return { buildingIds, agencyIds };
+};
+
+const FILTER_ATOMS = [
+  filterState,
+  housingTypeState,
+  searchKeywordState,
+  selectedContractState,
+  maintenanceCostState,
+  depositRangeState,
+  monthlyRentRangeState,
+  selectedJjinFilterState,
+];
 
 const MapPage = () => {
+
+    const resetAllFilters = useRecoilCallback(({ reset }) => () => {
+        FILTER_ATOMS.forEach(reset);
+    }, []);
+    const didResetRef = useRef(false);
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -55,6 +87,37 @@ const MapPage = () => {
     const searchScrollRef = useRef<HTMLDivElement>(null);
     const nearByScrollRef = useRef<HTMLDivElement>(null);
 
+    // 바텀시트 상태 관리 추가
+    const [bottomSheet, setBottomSheet] = useRecoilState(isSheetOpenState);
+
+    // 라우트 변경 시 모달 상태 초기화 (추가 안전장치)
+    useEffect(() => {
+        setBottomSheet({ isOpenModal: false, type: null });
+    }, [location.pathname, setBottomSheet]);
+
+    // 컴포넌트 언마운트 시 모달 상태 초기화
+    useEffect(() => {
+        return () => {
+            // MapPage를 떠날 때 모든 모달 상태 초기화
+            setBottomSheet({ isOpenModal: false, type: null });
+        };
+    }, [setBottomSheet]);
+
+    // 브라우저 뒤로가기 감지 및 모달 닫기
+    useEffect(() => {
+        const handlePopState = () => {
+            if (bottomSheet.isOpenModal) {
+                setBottomSheet({ isOpenModal: false, type: null });
+                window.history.pushState(null, '', window.location.href);
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [bottomSheet.isOpenModal, setBottomSheet]);
 
     const isInitialized = useRef(false);
 
@@ -74,12 +137,11 @@ const MapPage = () => {
         }
     }, [location.state]);
 
-    console.log("🧭 location.state:", location.state);
 
 
     // filter Recoil
-    const buildType = useRecoilValue(housingTypeState);
-    const filter = useRecoilValue(filterState);
+    const [buildType, setBuildType] = useRecoilState(housingTypeState);
+    const [filter, setFilter] = useRecoilState(filterState);
     const viewType = filter.reviewType === "후기별" ? "REVIEW" : "BUILDING";
     const contractType = filter.contractType as "MONTHLY_RENT" | "DEPOSIT_RENT" | null;
     const depositMax = 
@@ -93,6 +155,26 @@ const MapPage = () => {
         ? filter.monthlyRentMax === 70 ? null : formatMonthlyRentValue(filter.monthlyRentMax) 
         : null;
 
+    useEffect(() => {
+        const fromHome = location.state?.from === 'home';
+        const hasCampusJump = !!location.state?.latitude && !!location.state?.longitude;
+
+        if ((fromHome || hasCampusJump) && !didResetRef.current) {
+            // ✅ 한 방에 초기화
+            resetAllFilters();
+
+            // 로컬 상태도 필요하면 같이 초기화
+            setSelectedSort('RCMND');
+            setSearchCurrentPage(1);
+            setNearByCurrentPage(1);
+            setHasMoreSearch(true);
+            setHasMoreNearBy(true);
+            setSearchAllItems([]);
+            setNearByAllItems([]);
+
+            didResetRef.current = true;
+        }
+    }, [location.state, setFilter]);
 
     const markerFilters = useMemo<MarkerFilter>(() => ({
         viewType: viewType,
@@ -149,18 +231,16 @@ const MapPage = () => {
         isLoading: isMarkerDetailLoading,
     } = useNearBy(markerDetailParams);
 
+    const { buildingIds: nearByBuildingIds /*, agencyIds: nearByAgencyIds */ } = splitIds(markerData as MarkerItem[]);
+
     const nearByParams: NearByRequest | undefined = mapBounds
     ? {
         num: 10,
         page: nearByCurrentPage,
         type: viewType,
         sortBy: selectedSort,
-        idList: markerData.map((m) => m.id),
-        AgencyIdList: viewType === "BUILDING"
-            ? markerData
-                .filter((m) => m.type === "AGENCY")
-                .map((m) => m.id)
-            : null,
+        idList: nearByBuildingIds,
+        // agencyIdList: nearByAgencyIds
         }
     : undefined;
 
@@ -242,6 +322,28 @@ const MapPage = () => {
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
 
+    // const noReviewBuildingIds = useMemo(() => {
+    //     if (viewType !== "BUILDING") return new Set<number>();
+    //     const s = new Set<number>();
+
+    //     const collect = (items?: any[]) => {
+    //         items?.forEach((it) => {
+    //         const id =
+    //             it.agencyBuildingInfo?.id ??
+    //             it.dormitoryBuildingInfo?.id ??
+    //             it.generalBuildingInfo?.id;
+    //         // reviewInfo 없으면 '리뷰 없음'으로 판단
+    //         if (!it.reviewInfo.content) s.add(id);
+    //         });
+    //     };
+
+    //     // 검색 결과와 주변 결과 둘 다에서 수집 (있으면 반영)
+    //     collect(searchData?.items);
+    //     collect(nearByData?.items);
+
+    //     return s;
+    // }, [viewType, searchData?.items, nearByData?.items]);
+
     const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
 
     // 검색 데이터가 업데이트될 때 누적 처리
@@ -288,9 +390,12 @@ const MapPage = () => {
                     setMapCenter({ lat: centerLat, lng: centerLng });
                 }
             }
-        } else if (searchData && searchData.items?.length === 0 && searchCurrentPage === 1) {
-            // 검색 결과가 없는 경우
-            setSearchAllItems([]);
+        } else if (searchData) {
+            if (searchCurrentPage === 1) {
+                setSearchAllItems([]);
+            }
+            setHasMoreSearch(false);
+            setIsLoadingMore(false);
         }
     }, [searchData, searchCurrentPage]);
 
@@ -336,6 +441,13 @@ const MapPage = () => {
 
 
     const handleMarkerClick = (markerId: number) => {
+        if(!isLoggedIn || verificationStatus) {
+            setModalContent('login');
+            setIsModalOpen(true);
+            setHideNav(true);
+            return;
+        }
+
         // 클릭한 마커 찾기
         const clickedMarker = markersToRender.find((m) => m.id === markerId);
         if (!clickedMarker) return;
@@ -345,20 +457,20 @@ const MapPage = () => {
             (m) => m.latitude === clickedMarker.latitude && m.longitude === clickedMarker.longitude
         );
         
-        const markerIds = sameLocationMarkers.map((m) => m.id);
+        const { buildingIds, agencyIds } = splitIds(sameLocationMarkers as MarkerItem[]);
+
+        if (buildingIds.length === 0) {
+            // 같은 위치가 전부 AGENCY면 호출 안 함(혹은 agencyIdList만 허용되면 거기에 맞춰 호출)
+            return;
+        }
 
         const params: NearByRequest = {
-            num: markerIds.length,  // 모두 가져오기
+            num: buildingIds.length,  // 모두 가져오기
             page: 1,
             type: viewType,
             sortBy: selectedSort,
-            idList: markerIds,
-            AgencyIdList:
-                viewType === "BUILDING"
-                    ? sameLocationMarkers
-                        .filter((m) => m.type === "AGENCY")
-                        .map((m) => m.id)
-                    : null,
+            idList: buildingIds,
+            // agencyIdList: agencyIds, 
         };
 
         setMarkerDetailParams(params);
@@ -460,7 +572,6 @@ const MapPage = () => {
     // 미인증 여부 확인
     useEffect(() => {
         const verification = localStorage.getItem("verificationStatus");
-        console.log("localStorage verification:", verification);
         setVerificationStatus(verification === 'unverified');
     }, []);
 
@@ -560,14 +671,21 @@ const MapPage = () => {
                             },
                         ]}
                     >
-                        {markersToRender.map((marker) => (
+                        {markersToRender.map((marker) => {
+
+                            const markerSrc =
+                                viewType === "BUILDING"
+                                    ? BDMarker
+                                    : JBMarker;
+                            return (
                             <MapMarker
                                 key={`${modalContent}-${marker.id}`}
                                 position={{ lat: marker.latitude, lng: marker.longitude }}
-                                image={{ src: JBMarker, size: { width: 40, height: 40 } }}
+                                image={{ src: markerSrc, size: { width: 40, height: 40 } }}
                                 onClick={() => handleMarkerClick(marker.id)}
                             />
-                        ))}
+                            )
+                        })}
                     </MarkerClusterer>
                 </Map>
             </div>
@@ -673,7 +791,7 @@ const MapPage = () => {
                                 </div>
                                 ))
                             )}
-                            {isLoadingMore && (
+                            {isLoadingMore && hasMoreSearch && (
                                 <div style={{ padding: '20px', textAlign: 'center' }}>
                                     로딩 중...
                                 </div>

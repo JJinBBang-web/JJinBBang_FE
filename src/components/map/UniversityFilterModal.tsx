@@ -167,7 +167,6 @@ const UniversityFilterModal = () => {
                             : styles.initial_btn
                         }
                         onClick={() => {
-                            console.log("초성 선택:", init, "isActive:", isActive);
                             if (isActive) setSelectedInitial(init);
                         }
                         }

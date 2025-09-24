@@ -1,6 +1,5 @@
 import { useRecoilState } from "recoil"
 import { depositRangeState, filterState, maintenanceCostState, monthlyRentRangeState, selectedContractState, selectedJjinFilterState, selectedTypeNumState, selectedTypeState } from "../../recoil/map/mapRecoilState"
-import { use, useState } from "react";
 import iconFilter from "../../assets/image/iconFilter.svg"
 import iconDown from "../../assets/image/downIcon.svg"
 import styles from "./FilterBar.module.css"
@@ -25,7 +24,6 @@ const FilterBar = () => {
                 {/* 찐필터 아이콘 */}
                 <button className={`${styles.filter_icon_btn} ${filters.reviewKeyword.length > 0 ? styles.filter_btn_select : ""}`} 
                 onClick={() => {
-                console.log("바텀시트 열기 클릭!"); 
                 setBottomSheet({ isOpenModal: true, type: "jjinFilter" }); }}>
                     <img src={iconFilter} className={`${filters.reviewKeyword.length > 0 ? styles.filter_icon_select : ""}`} alt="filter"/>
                 </button>

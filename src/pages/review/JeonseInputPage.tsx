@@ -64,6 +64,15 @@ const JeonseInputPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    // 단위 확인 alert 표시
+    const confirmed = window.confirm(
+      "단위를 맞게 기입하였나요?\n\n예시) 관리비 300,000 원 → 30 입력"
+    );
+    
+    if (!confirmed) {
+      return; // 사용자가 수정을 선택하면 현재 페이지에 머무름
+    }
+
     const updatedReview = {
       ...review,
       contractType: paymentType,
@@ -73,7 +82,6 @@ const JeonseInputPage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('reviewState', JSON.stringify(updatedReview));
 
     const priceData = {
       deposit: Number(deposit),
@@ -105,9 +113,10 @@ const JeonseInputPage: React.FC = () => {
     }
   };
 
+  // 각 항목이 입력되었는지만 확인 (0도 유효한 값으로 허용)
   const isNextEnabled = 
-    deposit !== '' && deposit.trim() !== '' && Number(deposit) > 0 &&
-    managementFee !== '' && managementFee.trim() !== '' && Number(managementFee) > 0;
+    deposit.trim() !== '' &&
+    managementFee.trim() !== '';
 
   return (
     <div className="content">

@@ -52,15 +52,6 @@ const ReviewTypePage: React.FC = () => {
         housingType: selectedType,
       }));
 
-      // 로컬 스토리지에 저장
-      localStorage.setItem(
-        "reviewState",
-        JSON.stringify({
-          ...review,
-          housingType: selectedType,
-        })
-      );
-
       if (housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
         locationState.from = null;
         navigate(location.pathname, { state: null, replace: true });

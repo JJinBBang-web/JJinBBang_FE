@@ -37,8 +37,6 @@ export const authApi = {
   ): Promise<EmailVerificationResponse> => {
     try {
       const token = localStorage.getItem('accessToken');
-      console.log('토큰 존재:', !!token);
-      console.log('토큰 일부:', token?.substring(0, 20) + '...');
 
       const response = await api.post<EmailVerificationResponse>(
         '/api/v1/auth/emailCode',
@@ -65,8 +63,6 @@ export const authApi = {
           useAuth: true, // 인증 토큰 필요
         }
       );
-
-      console.log('이메일 인증코드 검증 응답:', response.data);
       
       // HTTP 상태 코드가 200인 경우 성공으로 간주
       if (response.status === 200) {

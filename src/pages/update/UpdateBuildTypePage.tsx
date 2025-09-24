@@ -45,16 +45,10 @@ const UpdateBuildTypePage: React.FC = () => {
             };
             });
         
-            // 로컬 스토리지에 저장
-            localStorage.setItem(
-                "updateReviewState",
-                JSON.stringify({
-                ...review,
-                housingType: selectedType,
-                })
-            );
+            // Local storage removed - using Recoil state management
 
             navigate(`/review/${reviewId}/update`, {
+                replace:true, 
                 state: {
                 ...locationState,
                 housingType: selectedType,
@@ -67,6 +61,7 @@ const UpdateBuildTypePage: React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true,
             state: {
             ...location.state,
             },

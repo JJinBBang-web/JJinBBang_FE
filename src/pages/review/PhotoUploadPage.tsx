@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { imageUploadAPI } from '../../api/imageUpload';
 import styles from '../../styles/review/PhotoUpload.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import plusIcon from '../../assets/image/iconPlus.svg';
@@ -29,7 +30,7 @@ const PhotoUploadPage: React.FC = () => {
   const { housingType } = location.state;
   const locationState = location.state as LocationState;
 
-  // 업로드된 사진들의 상태 관리
+  // 선택된 사진들의 상태 관리 (blob URLs for preview)
   const [photos, setPhotos] = useState<string[]>([]);
   // 파일 입력 참조를 위한 ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,21 +49,31 @@ const PhotoUploadPage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  // 파일 변경 핸들러 - 이미지 미리보기 생성
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 파일 변경 핸들러 - 미리보기용 blob URL만 생성
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    // 새 이미지 파일들을 미리보기 URL로 변환
-    const newPhotos = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
+    // 현재 사진 개수와 새로 추가할 파일 개수 확인
+    const totalPhotos = photos.length + files.length;
+    if (totalPhotos > 20) {
+      alert('사진은 최대 20장까지 업로드할 수 있습니다.');
+      return;
+    }
 
-    // 기존 사진과 새 사진을 합쳐서 최대 20개까지만 저장
-    setPhotos((prev) => {
-      const combined = [...prev, ...newPhotos];
-      return combined.slice(0, 20);
-    });
+    try {
+      // 미리보기용 blob URL 생성
+      const newBlobUrls = Array.from(files).map((file) =>
+        URL.createObjectURL(file)
+      );
+
+      // 미리보기 URL을 photos 배열에 추가 (ReviewConfirmPage에서 실제 업로드)
+      setPhotos((prev) => [...prev, ...newBlobUrls]);
+
+    } catch (error) {
+      console.error('File processing failed:', error);
+      alert('파일 처리에 실패했습니다. 다시 시도해 주세요.');
+    }
 
     // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게 함
     if (fileInputRef.current) {
@@ -72,6 +83,11 @@ const PhotoUploadPage: React.FC = () => {
 
   // 개별 사진 제거 핸들러
   const handleRemovePhoto = (index: number) => {
+    const photoToRemove = photos[index];
+    // blob URL 정리
+    if (photoToRemove && photoToRemove.startsWith('blob:')) {
+      URL.revokeObjectURL(photoToRemove);
+    }
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -85,7 +101,7 @@ const PhotoUploadPage: React.FC = () => {
     });
   };
 
-  // 최소 2장의 사진이 있어야 다음 버튼 활성화
+  // 최소 2장의 사진이 있어야 다음 버튼 활성화 (공인중개사는 예외)
   const isNextEnabled = photos.length >= 2 || (housingType === '공인중개사');
 
 
@@ -119,12 +135,12 @@ const PhotoUploadPage: React.FC = () => {
 
         <div className={styles.scrollContainer}>
           <div className={styles.photoGrid}>
-            {/* 업로드된 사진들 렌더링 */}
+            {/* 선택된 사진들 렌더링 */}
             {photos.map((photo, index) => (
-              <div key={index} className={styles.photoItem}>
+              <div key={`photo-${index}`} className={styles.photoItem}>
                 <img
                   src={photo}
-                  alt={`uploaded ${index}`}
+                  alt={`selected ${index}`}
                   className={styles.photo}
                 />
                 <button
@@ -153,8 +169,10 @@ const PhotoUploadPage: React.FC = () => {
               style={{ display: "none" }}
             />
           </div>
-          {/* 현재 업로드된 사진 수 표시 */}
-          <div className={styles.photoCount}>{photos.length}/20장</div>
+          {/* 현재 선택된 사진 수 표시 */}
+          <div className={styles.photoCount}>
+            {photos.length}/20장
+          </div>
         </div>
       </div>
 

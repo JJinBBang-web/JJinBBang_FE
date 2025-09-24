@@ -25,7 +25,7 @@ const Campus: React.FC<CampusItem> = ({ img, univ, campus, scrollLeft, latitude,
       className={styles.campus}
       onClick={() => {
         if (typeof scrollLeft === "number" && scrollLeft % SLIDE_WIDTH === 0 && univ !== "서비스 준비중!") {
-          navigation(`/map`, { state: { campusName: campus, latitude, longitude } });
+          navigation(`/map`, { state: { from: 'home', campusName: campus, latitude, longitude } });
         }
       }}
     >

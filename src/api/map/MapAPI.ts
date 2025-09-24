@@ -6,7 +6,6 @@ export class MapAPI {
   // 마커 조회 
   static async fetchMarkers(body: MarkerRequest): Promise<MarkerResponse[]> {
     try {
-      console.log("📍 MapAPI.fetchMarkers 요청 body:", body);
       const res = await api.post("/api/v1/map/markers", body, {
         useAuth: false,
       });
@@ -26,7 +25,7 @@ export class MapAPI {
   static async fetchNearByMapItem(body:NearByRequest) : Promise<NearByResponse>{
     try {
       const res = await api.post("/api/v1/map/markers/nearby", body, {
-        useAuth: false,
+        useAuth: true,
       });
 
       if (res.data.code !== 200 || !res.data.data) {
@@ -43,15 +42,16 @@ export class MapAPI {
   // 검색 조회
   static async fetchSearch(body:SearchRequest) : Promise<SearchResponse>{
     try {
-      console.log("📍 MapAPI.fetchSearch 요청 body:", body);
+      console.log(body);
       const res = await api.post("/api/v1/map/search", body, {
-        useAuth: false,
+        useAuth: true,
       });
 
       if (res.data.code !== 200 || !res.data.data) {
         throw new Error("검색 조회 실패");
       }
 
+      console.log(res.data);
       return res.data.data;
     } catch (error) {
       console.error("MapAPI.fetchSearch error:", error);

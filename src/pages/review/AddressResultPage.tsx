@@ -1,16 +1,22 @@
 // src/pages/review/AddressResultPage.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from 'recoil';
+import { reviewState } from '../../recoil/review/reviewAtoms';
+import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import styles from "../../styles/review/AddressResult.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
+import JBMarker from "../../assets/image/JBMarker.svg";
 
 interface LocationState {
   address: {
     roadAddress: string;
     jibunAddress: string;
     buildingName: string;
+    buildingCode?: string;
   };
   buildingName: string;
   floor: string;
@@ -29,6 +35,33 @@ const AddressResultPage: React.FC = () => {
       floor: "",
       squareFootage: "",
     };
+  
+  const [review, setReview] = useRecoilState(reviewState);
+  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('address');
+
+  const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.9780 }); // 기본값: 서울시청
+  const [isMapLoading, setIsMapLoading] = useState(true);
+  
+  // 페이지 로드 시 자동 저장된 데이터 복원
+  useEffect(() => {
+    if (hasAutoSavedData()) {
+      restoreAutoSavedData();
+    }
+  }, []);
+  
+  // review state에 주소 정보 저장
+  useEffect(() => {
+    setReview(prev => ({
+      ...prev,
+      address: address.roadAddress,
+      addressDetail: address.jibunAddress,
+      detailedAddress: buildingName,
+      floorType: floor,
+      space: squareFootage ? Number(squareFootage) : 0,
+      latitude: mapCenter.lat,
+      longitude: mapCenter.lng
+    }));
+  }, [address, buildingName, floor, squareFootage, mapCenter]);
 
   const {
     showCancelModal,
@@ -37,13 +70,41 @@ const AddressResultPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  // 지도 API는 아직 추가되지 않음
-  React.useEffect(() => {
-    // 지도 API가 추가되면 여기에 구현
-    console.log("지도 API 추가 필요:", address.roadAddress);
+  // Geocoder를 사용한 주소 → 좌표 변환
+  useEffect(() => {
+    if (!address.roadAddress) return;
+
+    const geoCoder = new kakao.maps.services.Geocoder();
+    
+    geoCoder.addressSearch(address.roadAddress, (result: any, status: any) => {
+      if (status === kakao.maps.services.Status.OK) {
+        const { x, y } = result[0];
+        const coords = new kakao.maps.LatLng(y, x);
+        setMapCenter({ lat: coords.getLat(), lng: coords.getLng() });
+      }
+      setIsMapLoading(false);
+    });
   }, [address.roadAddress]);
 
   const handleNext = () => {
+    // review state 최종 업데이트
+    const updatedReview = {
+      ...review,
+      address: address.roadAddress,
+      addressDetail: address.jibunAddress,
+      detailedAddress: buildingName,
+      floorType: floor,
+      space: squareFootage ? Number(squareFootage) : 0,
+      latitude: mapCenter.lat,
+      longitude: mapCenter.lng,
+      buildingCode: address.buildingCode || '' // 사용자가 선택한 주소의 buildingCode 사용
+    };
+    
+    setReview(updatedReview);
+    
+    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
+    clearAutoSavedData();
+    
     if (housingType === "공인중개사") {
       navigate("/review/room-info", {
         state: {
@@ -119,9 +180,24 @@ const AddressResultPage: React.FC = () => {
           )}
         </div>
         <div id="map" className={styles.map}>
-          <div className={styles.mapPlaceholder}>
-            <p>지도가 표시될 영역입니다</p>
-          </div>
+          {isMapLoading ? (
+            <div className={styles.mapPlaceholder}>
+              <p>지도를 불러오는 중...</p>
+            </div>
+          ) : (
+            <Map
+              center={mapCenter}
+              style={{ width: '100%', height: '100%' }}
+              level={3}
+              draggable={true}
+              zoomable={true}
+            >
+              <MapMarker 
+                position={mapCenter}
+                image={{ src: JBMarker, size: { width: 40, height: 40 } }}
+              />
+            </Map>
+          )}
         </div>
       </div>
       <footer className={styles.footer}>

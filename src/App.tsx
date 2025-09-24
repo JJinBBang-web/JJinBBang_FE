@@ -60,6 +60,7 @@ import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 import UpdateDormitoryConditionsPage from "./pages/update/UpdateDormitoryConditionsPage";
 import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitiesPage";
 import { hideNavState } from "./recoil/util/modalState";
+import TagManager from "react-gtm-module";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,6 +77,15 @@ const AppContent: React.FC = () => {
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
   
+  useEffect(() => {
+    TagManager.dataLayer({
+      dataLayer: {
+        event: "pageview",
+        pagePath: location.pathname,
+      },
+    });
+  }, [location]);
+
   // 경로 변환 시 nav 초기화
   useEffect(() => {
     setHideNav(false);

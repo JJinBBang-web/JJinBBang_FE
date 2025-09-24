@@ -55,7 +55,6 @@ const UpdateContentPage:React.FC = () => {
         return locationState.description || review?.description || '';
     });
 
-    console.log('바보');
 
     const maxLength = 1000;
     
@@ -65,6 +64,7 @@ const UpdateContentPage:React.FC = () => {
         // 수정 모드일 경우
         if (locationState.from === "update") {
         navigate(`/review/${reviewId}/update`, {
+            replace:true, 
             state: {
             ...location.state,
             },
@@ -87,10 +87,15 @@ const UpdateContentPage:React.FC = () => {
         };
 
         setReview(updatedReview);
-        localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+        
 
         if (from === 'update') {
-            navigate(`/review/${reviewId}/update`);
+            navigate(`/review/${reviewId}/update`, {
+              replace:true,
+              state: {
+                updatedReview
+              }
+            });
         }
     };
 

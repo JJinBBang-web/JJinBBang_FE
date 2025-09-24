@@ -99,7 +99,7 @@ const UpdateDormitoryInputPage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    localStorage.setItem('updateReviewData', JSON.stringify(updatedReview));
+    
 
     const dormitoryData = {
       universityName: university,
@@ -108,11 +108,9 @@ const UpdateDormitoryInputPage: React.FC = () => {
       floorType: koreanToFloor[selectedFloor],
     };
 
-    console.log('Dormitory data:', dormitoryData);
-    console.log('Updated review:', updatedReview);
-
     if (from === 'update') {
       navigate(`/review/${reviewId}/update`, {
+        replace:true,
         state: {
           ...location.state,
           dormitoryData,
@@ -123,7 +121,7 @@ const UpdateDormitoryInputPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`);
+      navigate(`/review/${reviewId}/update`, {replace:true});
     } else {
       navigate(-1);
     }

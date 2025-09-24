@@ -23,6 +23,11 @@ import { convertToReviewState } from '../util/convertToReviewState';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useQuery } from '@tanstack/react-query';
 import { getAPI } from '../api/baseAPI';
+import Modal from "../components/review/Modal";
+import { hideNavState } from "../recoil/util/modalState";
+import iconClose from "../assets/image/iconClose.svg"
+import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
+
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +35,10 @@ const Review: React.FC = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [reviews, setReviews] = useRecoilState(ReviewInfoState);
   const setUpdateReview = useSetRecoilState(updateReviewState);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const setHideNav = useSetRecoilState(hideNavState);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState(false);
 
   const { reviewId } = useParams(); // /building/rv/:reviewId 형식이라면 필요
   const [searchParams] = useSearchParams();
@@ -39,14 +48,27 @@ const Review: React.FC = () => {
     reviewId ?? "",
     reviewType
   );
-  const [isLogin] = useRecoilState(isLoginState);
+
+  // 토큰 여부 확인
+  useEffect(() => {
+      const token = localStorage.getItem("accessToken");
+      setIsLoggedIn(!!token);
+  }, []);
+
+  // 미인증 여부 확인
+  useEffect(() => {
+      const verification = localStorage.getItem("verificationStatus");
+      setVerificationStatus(verification === 'unverified');
+  }, []);
+
+
   const { data: userData } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
-    enabled: isLogin,
+    enabled: isLoggedIn,
     refetchOnWindowFocus: false,
   });
 
@@ -54,9 +76,7 @@ const Review: React.FC = () => {
     const handleResize = () => {
       setWindowHeight(window.visualViewport?.height || window.innerHeight);
     };
-
-    window.addEventListener('resize', handleResize);
-    const reviewList = JSON.parse(localStorage.getItem('reviewList') || '[]');
+    const reviewList = JSON.parse(localStorage.getItem("reviewList") || "[]");
 
     if (!reviewList || reviewList.length >= 5) {
       reviewList.shift(); // 첫 번째 요소 제거
@@ -64,8 +84,10 @@ const Review: React.FC = () => {
     if (!reviewList.includes(Number(reviewId))) {
       reviewList.push(Number(reviewId));
     }
-    localStorage.setItem('reviewList', JSON.stringify(reviewList));
-    console.log('리뷰 리스트:', reviewList);
+    localStorage.setItem("reviewList", JSON.stringify(reviewList));
+
+    window.addEventListener('resize', handleResize);
+    // Recent review tracking removed - rely on API-based analytics instead
 
     // 초기 로드 시 한 번 실행
     handleResize();
@@ -77,17 +99,61 @@ const Review: React.FC = () => {
     if (data) {
       setReviews(data);
       const converted = convertToReviewState(data);
-      console.log(data);
       setUpdateReview(converted);
-      localStorage.setItem('updateReviewState', JSON.stringify(converted));
     }
   }, [data]);
 
+  useEffect(() => {
+    if (location.state?.from === 'update-exit') {
+      // ✅ 리뷰B(방금 replace로 온 엔트리)를 pop 해서 리뷰A로 이동
+      navigate(-1);
+    }
+  }, [location.state, navigate]);
+
   const handleBack = () => {
-    navigate(`/map`);
+    navigate(-1);
   };
 
+  const handleCloseModal = () => {
+        setHideNav(false);
+  };
+
+  const handleToAuth = () => {
+      if (!isLoggedIn) {
+          setHideNav(false);
+          setIsModalOpen(false);
+          navigate(`/mypage`);
+      } else {
+          setHideNav(false);
+          setIsModalOpen(false);
+          navigate(`/auth/student/verify`);
+      }
+  }
+
   if (isLoading) return <div>로딩 중...</div>;
+  else if(!isLoggedIn || verificationStatus)
+    return <>
+        <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
+          <div className={styles.wrap2}>
+              <div className={styles.sheet_header}>
+                  <div className={styles.header_divider}></div>
+              </div>
+              <div className={styles.sheet_title_wrap}>
+                  <div className={styles.sheet_info_wrap}>
+                      <p className={styles.sheet_title}></p>
+                  </div>
+                  <img src={iconClose} width="24px" onClick={handleCloseModal}/>
+              </div>
+              <div className={styles.sheetWrap}>
+                  <img src={verifiedCharacter}/>
+                  <p className={styles.sheetText}>학교 인증 후<br/>찐빵의 찐거주 후기들을<br/>무료 열람해보세요!</p>
+              </div>
+              <div className={styles.btnWrap}>
+                  <button className={styles.confirmBtn} onClick={handleToAuth}>학교 인증하기</button>
+              </div>      
+          </div>
+        </Modal>
+        </>
   if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
 
   return (
@@ -137,7 +203,10 @@ const Review: React.FC = () => {
           <TopButton />
         </div>
       )}
+      
+      
     </div>
+    
   );
 };
 

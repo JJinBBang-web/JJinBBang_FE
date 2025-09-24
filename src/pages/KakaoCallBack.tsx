@@ -1,7 +1,7 @@
 // src/components/KakaoCallback.jsx
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilState } from 'recoil';
@@ -9,6 +9,8 @@ import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
 const url = process.env.REACT_APP_API_URL;
+const SITE_URL = process.env.REACT_APP_SITE_URL!;
+const loginUrl = `${SITE_URL}/login/kakao`;
 export const getSignupToken = () => localStorage.getItem('signupToken');
 export const getAccessToken = () => localStorage.getItem('accessToken');
 export const getRefreshToken = () => localStorage.getItem('refreshToken');
@@ -33,7 +35,14 @@ export const clearTokens = () => {
 };
 
 export const kakaoLogin = async (authCode: string) => {
-  const response = await fetch(url + '/api/v1/auth', {
+  const body = {
+    oauthProvider: 'kakao',
+    oauthCode: authCode,
+    redirectUri: loginUrl,
+  };
+
+  // const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
+  const response = await fetch(`/api/v1/auth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,23 +50,32 @@ export const kakaoLogin = async (authCode: string) => {
     body: JSON.stringify({
       oauthProvider: 'kakao',
       oauthCode: authCode,
+      redirectUri: loginUrl,
     }),
   });
+  
+  // Check if response is HTML (error page)
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    console.error('❌ API returned non-JSON response:', text);
+    throw new Error(`API endpoint returned HTML instead of JSON. Status: ${response.status}`);
+  }
+  
   return response.json();
 };
 
 const kakaoLogout = async () => {
   try {
     // 브라우저에서 카카오 관련 쿠키나 세션 정리
-    console.log('카카오 로그아웃 처리');
+    // console.log('카카오 로그아웃 처리');
   } catch (error) {
     console.error('카카오 로그아웃 중 오류:', error);
   }
 };
 
 export const agreeToTerms = async () => {
-  console.log('SignupToken:', getSignupToken());
-  const response = await fetch(url + '/api/v1/auth/signup', {
+  const response = await fetch('/api/v1/auth/signup', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -102,7 +120,7 @@ function KakaoCallBack() {
           const response = await kakaoLogin(code);
 
           if (response.data.accessToken) {
-            console.log('로그인 성공, 토큰 저장 완료');
+            // console.log('로그인 성공, 토큰 저장 완료');
             setTokens({
               accessToken: response.data.accessToken,
               refreshToken: response.data.refreshToken,
@@ -111,7 +129,7 @@ function KakaoCallBack() {
             setIsLoggedIn(true);
             navigate('/mypage');
           } else if (response.data.signupToken) {
-            console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
+            // console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
             setSignupToken(response.data.signupToken);
             setUserEmail(response.data.user?.email || '');
             setIsLoading(false);
@@ -174,7 +192,7 @@ function KakaoCallBack() {
       const result = await agreeToTerms();
 
       if (result.code === 200) {
-        console.log('약관 동의 성공');
+        // console.log('약관 동의 성공');
         setTokens({
           accessToken: result.data.accessToken,
           refreshToken: result.data.refreshToken,

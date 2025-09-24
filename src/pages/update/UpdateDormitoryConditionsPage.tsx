@@ -156,10 +156,11 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
     } as ReviewState;;
 
     setReview(updatedReview);
-    localStorage.setItem('updateReviewState', JSON.stringify(updatedReview));
+    
 
     // 항상 DormitoryAmenitiesPage로 이동하도록 수정
     navigate(`/review/${reviewId}/update/`, {
+      replace:true,
       state: {
         ...location.state,
         dormitoryFee: parseFloat(dormitoryFee),
@@ -170,7 +171,7 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
 
   const handleBack = () => {
     if (from === 'update') {
-      navigate(`/review/${reviewId}/update`,)
+      navigate(`/review/${reviewId}/update`,{replace:true})
     } else {
       navigate(-1);
     }
