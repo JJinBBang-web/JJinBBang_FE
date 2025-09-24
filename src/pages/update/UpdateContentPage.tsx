@@ -80,6 +80,11 @@ const UpdateContentPage:React.FC = () => {
             return;
         }
 
+        if (content.trim().length  < 100) {
+          alert("최소 100자 이상 작성해야 해요!");
+          return;
+        }
+
         const updatedReview = {
         ...review,
         description: content,

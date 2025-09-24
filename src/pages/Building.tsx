@@ -114,7 +114,6 @@ const Building: React.FC = () => {
     const handleBack = () => {
         navigate(-1);
   };
-  console.log(buildingInfo);
     
     return (
         <div className={styles.content}
