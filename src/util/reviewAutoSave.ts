@@ -123,7 +123,7 @@ export const reviewAutoSave = {
       };
 
 
-      localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(saveData));
+      sessionStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(saveData));
     } catch (error) {
       console.error('Auto save failed:', error);
     }
@@ -132,14 +132,14 @@ export const reviewAutoSave = {
   // 자동 저장된 데이터 불러오기
   load: (): AutoSaveData | null => {
     try {
-      const saved = localStorage.getItem(AUTO_SAVE_KEY);
+      const saved = sessionStorage.getItem(AUTO_SAVE_KEY);
       if (!saved) return null;
 
       const data = JSON.parse(saved);
 
       // 만료 시간 체크
       if (Date.now() - data.timestamp > AUTO_SAVE_EXPIRY) {
-        localStorage.removeItem(AUTO_SAVE_KEY);
+        sessionStorage.removeItem(AUTO_SAVE_KEY);
         return null;
       }
 
@@ -164,7 +164,7 @@ export const reviewAutoSave = {
   // 자동 저장된 데이터 삭제
   clear: () => {
     try {
-      localStorage.removeItem(AUTO_SAVE_KEY);
+      sessionStorage.removeItem(AUTO_SAVE_KEY);
     } catch (error) {
       console.error('Auto save clear failed:', error);
     }
