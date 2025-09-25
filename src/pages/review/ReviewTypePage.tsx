@@ -74,6 +74,7 @@ const ReviewTypePage: React.FC = () => {
             ...locationState,
             housingType: selectedType,
           },
+          replace: false,
         });
       }
     }
@@ -86,10 +87,11 @@ const ReviewTypePage: React.FC = () => {
         state: {
           ...location.state,
         },
+        replace: true,
       });
     } else {
       // 일반 모드일 경우 MyPage로 이동
-      navigate("/mypage");
+      navigate("/mypage", { replace: true });
     }
   };
 

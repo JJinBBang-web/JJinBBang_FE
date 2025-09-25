@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/PaymentType.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/PaymentType.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
 
 interface LocationState {
   address: {
@@ -38,7 +38,7 @@ const PaymentTypePage: React.FC = () => {
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
-    if (from === 'confirm') {
+    if (from === "confirm") {
       setSelectedType(review.contractType || null);
     }
   }, [from, review]);
@@ -53,8 +53,8 @@ const PaymentTypePage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedType) {
-      if (selectedType === '전세') {
-        navigate('/review/jeonse', {
+      if (selectedType === "전세") {
+        navigate("/review/jeonse", {
           state: {
             ...location.state,
             paymentType: selectedType,
@@ -62,7 +62,7 @@ const PaymentTypePage: React.FC = () => {
           },
         });
       } else {
-        navigate('/review/wolse', {
+        navigate("/review/wolse", {
           state: {
             ...location.state,
             paymentType: selectedType,
@@ -74,10 +74,14 @@ const PaymentTypePage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
-      navigate('/review/confirm');
+    if (from === "confirm") {
+      navigate("/review/confirm", { replace: true });
     } else {
-      navigate(-1);
+      // 이전 페이지로 이동 (FloorInputPage로)
+      navigate("/review/floor", {
+        state: location.state,
+        replace: false,
+      });
     }
   };
 
@@ -99,17 +103,17 @@ const PaymentTypePage: React.FC = () => {
         <div className={styles.optionContainer}>
           <button
             className={`${styles.optionButton} ${
-              selectedType === '전세' ? styles.selected : ''
+              selectedType === "전세" ? styles.selected : ""
             }`}
-            onClick={() => handleTypeSelect('전세')}
+            onClick={() => handleTypeSelect("전세")}
           >
             전세
           </button>
           <button
             className={`${styles.optionButton} ${
-              selectedType === '월세' ? styles.selected : ''
+              selectedType === "월세" ? styles.selected : ""
             }`}
-            onClick={() => handleTypeSelect('월세')}
+            onClick={() => handleTypeSelect("월세")}
           >
             월세
           </button>
@@ -119,13 +123,13 @@ const PaymentTypePage: React.FC = () => {
         <button
           className={styles.prevButton}
           onClick={handleBack}
-          disabled={from === 'confirm'}
+          disabled={from === "confirm"}
         >
           이전
         </button>
         <button
           className={`${styles.nextButton} ${
-            selectedType ? styles.enabled : ''
+            selectedType ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={!selectedType}

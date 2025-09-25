@@ -1,13 +1,13 @@
 // src/pages/review/PhotoUploadPage.tsx
-import React, { useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import { imageUploadAPI } from '../../api/imageUpload';
-import styles from '../../styles/review/PhotoUpload.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import plusIcon from '../../assets/image/iconPlus.svg';
-import closeImageIcon from '../../assets/image/closeImageIcon.svg';
+import React, { useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import { imageUploadAPI } from "../../api/imageUpload";
+import styles from "../../styles/review/PhotoUpload.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import plusIcon from "../../assets/image/iconPlus.svg";
+import closeImageIcon from "../../assets/image/closeImageIcon.svg";
 
 // 위치 상태 인터페이스 정의 (라우팅을 통해 전달되는 데이터 구조)
 interface LocationState {
@@ -57,7 +57,7 @@ const PhotoUploadPage: React.FC = () => {
     // 현재 사진 개수와 새로 추가할 파일 개수 확인
     const totalPhotos = photos.length + files.length;
     if (totalPhotos > 20) {
-      alert('사진은 최대 20장까지 업로드할 수 있습니다.');
+      alert("사진은 최대 20장까지 업로드할 수 있습니다.");
       return;
     }
 
@@ -69,15 +69,14 @@ const PhotoUploadPage: React.FC = () => {
 
       // 미리보기 URL을 photos 배열에 추가 (ReviewConfirmPage에서 실제 업로드)
       setPhotos((prev) => [...prev, ...newBlobUrls]);
-
     } catch (error) {
-      console.error('File processing failed:', error);
-      alert('파일 처리에 실패했습니다. 다시 시도해 주세요.');
+      console.error("File processing failed:", error);
+      alert("파일 처리에 실패했습니다. 다시 시도해 주세요.");
     }
 
     // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게 함
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -85,7 +84,7 @@ const PhotoUploadPage: React.FC = () => {
   const handleRemovePhoto = (index: number) => {
     const photoToRemove = photos[index];
     // blob URL 정리
-    if (photoToRemove && photoToRemove.startsWith('blob:')) {
+    if (photoToRemove && photoToRemove.startsWith("blob:")) {
       URL.revokeObjectURL(photoToRemove);
     }
     setPhotos((prev) => prev.filter((_, i) => i !== index));
@@ -93,7 +92,7 @@ const PhotoUploadPage: React.FC = () => {
 
   // 다음 페이지로 이동 핸들러 - 현재 선택된 사진들과 함께 상태 전달
   const handleNext = () => {
-    navigate('/review/filter-ad', {
+    navigate("/review/filter-ad", {
       state: {
         ...locationState,
         photos,
@@ -102,8 +101,7 @@ const PhotoUploadPage: React.FC = () => {
   };
 
   // 최소 2장의 사진이 있어야 다음 버튼 활성화 (공인중개사는 예외)
-  const isNextEnabled = photos.length >= 2 || (housingType === '공인중개사');
-
+  const isNextEnabled = photos.length >= 2 || housingType === "공인중개사";
 
   return (
     <div className="content">
@@ -130,7 +128,9 @@ const PhotoUploadPage: React.FC = () => {
             ? "현장 사진 등 어떤 정보든 좋아요!"
             : "찐거주 사진"}
           &nbsp;
-          <span>{housingType === "공인중개사" ? "(필수 항목 아님)" : "(2장 이상)"}</span>
+          <span>
+            {housingType === "공인중개사" ? "(필수 항목 아님)" : "(2장 이상)"}
+          </span>
         </div>
 
         <div className={styles.scrollContainer}>
@@ -170,15 +170,27 @@ const PhotoUploadPage: React.FC = () => {
             />
           </div>
           {/* 현재 선택된 사진 수 표시 */}
-          <div className={styles.photoCount}>
-            {photos.length}/20장
-          </div>
+          <div className={styles.photoCount}>{photos.length}/20장</div>
         </div>
       </div>
 
       <footer className={styles.footer}>
         {/* 이전 페이지로 돌아가기 버튼 */}
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button
+          className={styles.prevButton}
+          onClick={() => {
+            // 이전 페이지로 이동 (가격 입력 페이지들 중 하나를 가정)
+            // location.state의 paymentType에 따라 다른 페이지로 이동
+            const previousPage =
+              locationState?.paymentType === "전세"
+                ? "/review/jeonse"
+                : "/review/wolse";
+            navigate(previousPage, {
+              state: location.state,
+              replace: false,
+            });
+          }}
+        >
           이전
         </button>
         {/* 다음 페이지로 이동 버튼 (최소 2장 이상 선택 시 활성화) */}

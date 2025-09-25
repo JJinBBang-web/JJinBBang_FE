@@ -241,7 +241,19 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    // 확인 페이지에서 뒤로 가기는 콘텐츠 작성 페이지로
+    navigate('/review/content', {
+      state: {
+        ...locationState,
+        from: null, // confirm에서 돌아가는 것이 아니므로 null로 설정
+        photos: review.images,
+        advantages: review.pros,
+        disadvantages: review.cons,
+        content: review.content || review.description,
+        housingType: review.housingType,
+      },
+      replace: false,
+    });
   };
 
   const handleRateReview = () => {
@@ -572,9 +584,11 @@ const ReviewConfirmPage: React.FC = () => {
   const navigateToHousingType = () => {
     navigate("/review/type", {
       state: {
-        ...review,
+        ...locationState,
+        housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -582,8 +596,10 @@ const ReviewConfirmPage: React.FC = () => {
     navigate("/review/address", {
       state: {
         ...locationState,
+        housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -683,6 +699,7 @@ const ReviewConfirmPage: React.FC = () => {
         housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -697,6 +714,7 @@ const ReviewConfirmPage: React.FC = () => {
         housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -711,6 +729,7 @@ const ReviewConfirmPage: React.FC = () => {
         housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 

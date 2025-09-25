@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/PriceInput.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/PriceInput.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
 
 interface LocationState {
   address: {
@@ -27,10 +27,10 @@ const JeonseInputPage: React.FC = () => {
   const [review, setReview] = useRecoilState(reviewState);
 
   const [deposit, setDeposit] = useState<string>(
-    review.deposit ? review.deposit.toString() : ''
+    review.deposit ? review.deposit.toString() : ""
   );
   const [managementFee, setManagementFee] = useState<string>(
-    review.managementFee ? review.managementFee.toString() : ''
+    review.managementFee ? review.managementFee.toString() : ""
   );
 
   const {
@@ -42,10 +42,10 @@ const JeonseInputPage: React.FC = () => {
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
-    if (from === 'confirm') {
-      setDeposit(review.deposit ? review.deposit.toString() : '');
+    if (from === "confirm") {
+      setDeposit(review.deposit ? review.deposit.toString() : "");
       setManagementFee(
-        review.managementFee ? review.managementFee.toString() : ''
+        review.managementFee ? review.managementFee.toString() : ""
       );
     }
   }, [from, review]);
@@ -54,12 +54,12 @@ const JeonseInputPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<string>>
   ) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
+    const value = e.target.value.replace(/[^0-9]/g, "");
     setter(value);
   };
 
   const formatNumber = (value: string) => {
-    if (!value) return '';
+    if (!value) return "";
     return Number(value).toLocaleString();
   };
 
@@ -68,7 +68,7 @@ const JeonseInputPage: React.FC = () => {
     const confirmed = window.confirm(
       "단위를 맞게 기입하였나요?\n\n예시) 관리비 300,000 원 → 30 입력"
     );
-    
+
     if (!confirmed) {
       return; // 사용자가 수정을 선택하면 현재 페이지에 머무름
     }
@@ -88,15 +88,15 @@ const JeonseInputPage: React.FC = () => {
       managementFee: Number(managementFee) || null,
     };
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
+    if (from === "confirm") {
+      navigate("/review/confirm", {
         state: {
           ...location.state,
           priceData,
         },
       });
     } else {
-      navigate('/review/room-info', {
+      navigate("/review/room-info", {
         state: {
           ...location.state,
           priceData,
@@ -106,17 +106,19 @@ const JeonseInputPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
-      navigate('/review/confirm');
+    if (from === "confirm") {
+      navigate("/review/confirm", { replace: true });
     } else {
-      navigate(-1);
+      // 이전 페이지로 이동 (PaymentTypePage로)
+      navigate("/review/price", {
+        state: location.state,
+        replace: false,
+      });
     }
   };
 
   // 각 항목이 입력되었는지만 확인 (0도 유효한 값으로 허용)
-  const isNextEnabled = 
-    deposit.trim() !== '' &&
-    managementFee.trim() !== '';
+  const isNextEnabled = deposit.trim() !== "" && managementFee.trim() !== "";
 
   return (
     <div className="content">
@@ -168,7 +170,7 @@ const JeonseInputPage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            isNextEnabled ? styles.enabled : ''
+            isNextEnabled ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={!isNextEnabled}
