@@ -1,7 +1,7 @@
 // src/pages/review/ReviewConfirmPage.tsx
 // Fixed syntax errors in try-catch structure
 import { useNavigate, useLocation } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   reviewState,
@@ -15,7 +15,6 @@ import {
 import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { tagMessages, tagLongMessages } from "../../components/Tag";
 import styles from "../../styles/review/ReviewConfirm.module.css";
-import { fixImageUrl } from "../../util/imageUrl";
 import closeIcon from "../../assets/image/iconClose.svg";
 import ArrowIcon from "../../assets/image/arrowIcon.svg";
 import starFilledIcon from "../../assets/image/starIconOnRed.svg";
@@ -53,7 +52,7 @@ interface LocationState {
 const ReviewConfirmPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = (location.state as LocationState) || {};
+  const locationState = useMemo(() => (location.state as LocationState) || {}, [location.state]);
 
   const [review, setReview] = useRecoilState(reviewState);
   const [dormitoryReview, setDormitoryReview] =
@@ -123,7 +122,10 @@ const ReviewConfirmPage: React.FC = () => {
             cons: locationState.disadvantages,
           }),
           ...(locationState.content && { content: locationState.content }),
-          ...(locationState.photos && { images: locationState.photos }),
+          // 이미지는 locationState의 photos가 없으면 자동저장된 데이터 유지
+          ...(locationState.photos && locationState.photos.length > 0 ?
+            { images: locationState.photos } :
+            autoSavedData.reviewState?.images ? { images: autoSavedData.reviewState.images } : {}),
           ...(locationState.address?.roadAddress && {
             address: locationState.address.roadAddress,
           }),
@@ -519,9 +521,15 @@ const ReviewConfirmPage: React.FC = () => {
                 if (blobError.response?.status === 401) {
                   alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
                 } else {
-                  alert(
-                    "새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요."
-                  );
+                  // 자동저장된 base64 이미지가 있는지 다시 한 번 확인
+                  if (autoSavedBase64ImagesRef.current.reviewImages.length > 0 ||
+                      autoSavedBase64ImagesRef.current.dormitoryImages.length > 0) {
+                    alert("이미지 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+                  } else {
+                    alert(
+                      "새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요."
+                    );
+                  }
                 }
 
                 setIsSubmitting(false);

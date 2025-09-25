@@ -1,6 +1,9 @@
 // src/pages/review/PhotoUploadPage.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { imageUploadAPI } from "../../api/imageUpload";
@@ -30,8 +33,20 @@ const PhotoUploadPage: React.FC = () => {
   const { housingType } = location.state;
   const locationState = location.state as LocationState;
 
-  // 선택된 사진들의 상태 관리 (blob URLs for preview)
-  const [photos, setPhotos] = useState<string[]>([]);
+  // Recoil 상태 관리
+  const [review, setReview] = useRecoilState(reviewState);
+  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('photo-upload');
+
+  // 선택된 사진들의 상태 관리 (blob URLs for preview) - 자동저장에서 복원 또는 초기화
+  const [photos, setPhotos] = useState<string[]>(() => {
+    // 자동저장된 데이터가 있으면 복원
+    if (hasAutoSavedData()) {
+      restoreAutoSavedData();
+      return review.images || [];
+    }
+    return [];
+  });
+
   // 파일 입력 참조를 위한 ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +57,14 @@ const PhotoUploadPage: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // photos 상태가 변경될 때마다 Recoil 상태에 반영 (자동저장 트리거)
+  useEffect(() => {
+    setReview(prev => ({
+      ...prev,
+      images: photos
+    }));
+  }, [photos, setReview]);
 
   // 사진 추가 핸들러 - 파일 입력 요소 클릭
   const handleAddPhoto = () => {
@@ -92,6 +115,7 @@ const PhotoUploadPage: React.FC = () => {
 
   // 다음 페이지로 이동 핸들러 - 현재 선택된 사진들과 함께 상태 전달
   const handleNext = () => {
+    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터는 유지 (장점/단점 페이지에서도 사용될 수 있음)
     navigate("/review/filter-ad", {
       state: {
         ...locationState,
