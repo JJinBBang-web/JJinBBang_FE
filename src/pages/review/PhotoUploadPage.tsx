@@ -37,15 +37,8 @@ const PhotoUploadPage: React.FC = () => {
   const [review, setReview] = useRecoilState(reviewState);
   const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('photo-upload');
 
-  // 선택된 사진들의 상태 관리 (blob URLs for preview) - 자동저장에서 복원 또는 초기화
-  const [photos, setPhotos] = useState<string[]>(() => {
-    // 자동저장된 데이터가 있으면 복원
-    if (hasAutoSavedData()) {
-      restoreAutoSavedData();
-      return review.images || [];
-    }
-    return [];
-  });
+  // 선택된 사진들의 상태 관리 (blob URLs for preview) - 새로운 리뷰 작성 시에는 빈 배열로 시작
+  const [photos, setPhotos] = useState<string[]>([]);
 
   // 파일 입력 참조를 위한 ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,7 +65,17 @@ const PhotoUploadPage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  // 파일 변경 핸들러 - 미리보기용 blob URL만 생성
+  // 파일을 base64로 변환하는 헬퍼 함수
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // 파일 변경 핸들러 - base64 변환과 미리보기용 blob URL 모두 생성
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -85,16 +88,26 @@ const PhotoUploadPage: React.FC = () => {
     }
 
     try {
-      // 미리보기용 blob URL 생성
-      const newBlobUrls = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
+      // 파일들을 base64로 변환
+      const base64Images = await Promise.all(
+        Array.from(files).map(async (file) => {
+          // 파일 크기 체크 (10MB 제한)
+          if (file.size > 10 * 1024 * 1024) {
+            throw new Error(`파일이 너무 큽니다: ${file.name} (${Math.round(file.size / 1024 / 1024)}MB)`);
+          }
+          return await fileToBase64(file);
+        })
       );
 
-      // 미리보기 URL을 photos 배열에 추가 (ReviewConfirmPage에서 실제 업로드)
-      setPhotos((prev) => [...prev, ...newBlobUrls]);
+      // Recoil 상태에 base64 이미지 직접 저장 (자동저장을 위해)
+      setPhotos((prev) => [...prev, ...base64Images]);
     } catch (error) {
       console.error("File processing failed:", error);
-      alert("파일 처리에 실패했습니다. 다시 시도해 주세요.");
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("파일 처리에 실패했습니다. 다시 시도해 주세요.");
+      }
     }
 
     // 파일 입력을 초기화해서 같은 파일을 다시 선택할 수 있게 함
@@ -106,7 +119,7 @@ const PhotoUploadPage: React.FC = () => {
   // 개별 사진 제거 핸들러
   const handleRemovePhoto = (index: number) => {
     const photoToRemove = photos[index];
-    // blob URL 정리
+    // blob URL인 경우에만 정리 (base64는 메모리에서 자동 관리됨)
     if (photoToRemove && photoToRemove.startsWith("blob:")) {
       URL.revokeObjectURL(photoToRemove);
     }

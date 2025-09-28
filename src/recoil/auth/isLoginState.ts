@@ -2,7 +2,10 @@ import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 
 
-const { persistAtom } = recoilPersist();
+const { persistAtom } = recoilPersist({
+  key: 'recoil-persist',
+  storage: sessionStorage,
+});
 
 export const isLoginState = atom<boolean>({
   key: "isLoginState",

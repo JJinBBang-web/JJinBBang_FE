@@ -10,21 +10,30 @@ export interface AutoSaveData {
 }
 
 const AUTO_SAVE_KEY = 'review_auto_save';
-const AUTO_SAVE_EXPIRY = 24 * 60 * 60 * 1000; // 24시간
+const AUTO_SAVE_EXPIRY = 8 * 60 * 60 * 1000; // 8시간 (sessionStorage는 탭 닫히면 자동 삭제)
 
 // blob URL을 base64로 변환하는 함수
-const blobUrlToBase64 = async (blobUrl: string): Promise<string> => {
+const blobUrlToBase64 = async (blobUrl: string): Promise<string | null> => {
   try {
     const response = await fetch(blobUrl);
+    if (!response.ok) {
+      return null;
+    }
     const blob = await response.blob();
+
+    // 파일 크기 체크 (너무 큰 파일은 스킵)
+    if (blob.size > 10 * 1024 * 1024) { // 10MB 제한
+      return null;
+    }
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
+      reader.onerror = () => resolve(null);
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    throw error;
+    return null;
   }
 };
 
@@ -54,13 +63,16 @@ const convertBlobUrlsToBase64 = async (images: string[]): Promise<{
 
   for (const imageUrl of images) {
     if (imageUrl.startsWith('blob:')) {
-      try {
-        const base64 = await blobUrlToBase64(imageUrl);
+      const base64 = await blobUrlToBase64(imageUrl);
+      if (base64) {
         converted.push(base64);
         base64Only.push(base64);
-      } catch (error) {
+      } else {
         converted.push(imageUrl);
       }
+    } else if (imageUrl.startsWith('data:')) {
+      converted.push(imageUrl);
+      base64Only.push(imageUrl);
     } else {
       converted.push(imageUrl);
     }
@@ -122,7 +134,6 @@ export const reviewAutoSave = {
         timestamp: Date.now()
       };
 
-
       sessionStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(saveData));
     } catch (error) {
       console.error('Auto save failed:', error);
@@ -143,15 +154,8 @@ export const reviewAutoSave = {
         return null;
       }
 
-      // reviewState의 base64 이미지들을 blob URL로 변환
-      if (data.reviewState?.images && Array.isArray(data.reviewState.images)) {
-        data.reviewState.images = convertBase64ToBlobUrls(data.reviewState.images);
-      }
-
-      // dormitoryReviewState의 base64 이미지들을 blob URL로 변환
-      if (data.dormitoryReviewState?.images && Array.isArray(data.dormitoryReviewState.images)) {
-        data.dormitoryReviewState.images = convertBase64ToBlobUrls(data.dormitoryReviewState.images);
-      }
+      // base64 이미지는 그대로 유지 (미리보기에서도 base64 사용 가능)
+      // blob URL 변환은 불필요하며 새로고침 후 무효화되는 문제를 야기함
 
 
       return data;

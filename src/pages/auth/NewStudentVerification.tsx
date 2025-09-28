@@ -31,7 +31,7 @@ const NewStudentVerification: React.FC = () => {
       // 합격증명서 인증 (신입생용)
       await authApi.verifyAdmissionCertificate(file);
       
-      // 업로드 성공 시 인증 상태를 pending으로 설정 (localStorage도 자동 업데이트)
+      // 업로드 성공 시 인증 상태를 pending으로 설정 (sessionStorage도 자동 업데이트)
       updateVerificationStatus('pending');
       
       setVerificationStatus('complete');
@@ -61,7 +61,7 @@ const NewStudentVerification: React.FC = () => {
   };
 
   const handleConfirm = () => {
-    // 인증 상태를 pending으로 설정 (localStorage도 자동 업데이트)
+    // 인증 상태를 pending으로 설정 (sessionStorage도 자동 업데이트)
     updateVerificationStatus('pending');
     navigate('/mypage');
   };

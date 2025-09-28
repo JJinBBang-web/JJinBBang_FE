@@ -36,7 +36,7 @@ export const authApi = {
     emailAddress: string
   ): Promise<EmailVerificationResponse> => {
     try {
-      const token = localStorage.getItem('accessToken');
+      const token = sessionStorage.getItem('accessToken');
 
       const response = await api.post<EmailVerificationResponse>(
         '/api/v1/auth/emailCode',
@@ -87,7 +87,7 @@ export const authApi = {
   // 액세스 토큰 갱신
   refreshAccessToken: async (): Promise<TokenRefreshResponse> => {
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = sessionStorage.getItem('refreshToken');
       if (!refreshToken) {
         throw new Error('리프레시 토큰이 없습니다.');
       }
@@ -105,15 +105,15 @@ export const authApi = {
 
       // 새로운 토큰을 로컬 스토리지에 저장
       if (response.data.data.accessToken) {
-        localStorage.setItem('accessToken', response.data.data.accessToken);
+        sessionStorage.setItem('accessToken', response.data.data.accessToken);
       }
 
       return response.data;
     } catch (error) {
       console.error('토큰 갱신 실패:', error);
       // 토큰 갱신 실패 시 로컬 스토리지 정리
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
       throw new Error('토큰 갱신에 실패했습니다.');
     }
   },
@@ -130,8 +130,8 @@ export const authApi = {
 
       // 탈퇴 성공 시 로컬 스토리지 정리
       if (response.data.code === 200) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
       }
 
       return response.data;

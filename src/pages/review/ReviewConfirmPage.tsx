@@ -101,7 +101,7 @@ const ReviewConfirmPage: React.FC = () => {
         dormitoryImages: autoSavedData.dormitoryBase64Images || [],
       };
 
-      // 자동저장 데이터 복원
+      // 먼저 자동저장 데이터를 기본으로 복원
       if (autoSavedData.reviewState) {
         setReview(autoSavedData.reviewState);
       }
@@ -470,91 +470,104 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
+      // 리뷰 제출 직전에 자동저장 데이터 재확인
+      const latestAutoSavedData = reviewAutoSave.load();
+      if (latestAutoSavedData) {
+        autoSavedBase64ImagesRef.current = {
+          reviewImages: latestAutoSavedData.reviewBase64Images || [],
+          dormitoryImages: latestAutoSavedData.dormitoryBase64Images || [],
+        };
+      }
+
+      // 자동저장된 base64 이미지 처리
+      const isDormitoryType = review.housingType === "기숙사";
+      const availableBase64Images = isDormitoryType
+        ? autoSavedBase64ImagesRef.current.dormitoryImages
+        : autoSavedBase64ImagesRef.current.reviewImages;
+
+      // 이미지 데이터 최종 확인 (자동저장 데이터 및 현재 상태 모두 확인)
+      let finalImageData: string[] = [];
+
+      // 1. 먼저 사용 가능한 base64 이미지 확인
+      if (availableBase64Images.length > 0) {
+        finalImageData = availableBase64Images;
+      }
+      // 2. base64가 없으면 현재 reviewData의 imageUrls 확인
+      else if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
+        finalImageData = reviewData.imageUrls;
+      }
+      // 3. 그래도 없으면 자동저장 데이터에서 직접 확인
+      else if (latestAutoSavedData &&
+               ((isDormitoryType && latestAutoSavedData.dormitoryBase64Images && latestAutoSavedData.dormitoryBase64Images.length > 0) ||
+                (!isDormitoryType && latestAutoSavedData.reviewBase64Images && latestAutoSavedData.reviewBase64Images.length > 0))) {
+        finalImageData = isDormitoryType
+          ? (latestAutoSavedData.dormitoryBase64Images || [])
+          : (latestAutoSavedData.reviewBase64Images || []);
+      }
+
+      // 최종 이미지 데이터 검증
+      if (finalImageData.length === 0) {
+        alert("이미지 데이터를 찾을 수 없습니다. 리뷰 작성 과정을 다시 진행해 주세요.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 최종 이미지 데이터를 reviewData에 할당
+      reviewData.imageUrls = finalImageData;
+
       // 이미지 URL 처리 - 자동저장된 base64 또는 blob URL 업로드
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
         const blobUrls = reviewData.imageUrls.filter((url: string) =>
           url.startsWith("blob:")
         );
+        const base64Urls = reviewData.imageUrls.filter((url: string) =>
+          url.startsWith("data:")
+        );
         const cdnUrls = reviewData.imageUrls.filter(
-          (url: string) => !url.startsWith("blob:")
+          (url: string) => !url.startsWith("blob:") && !url.startsWith("data:")
         );
 
-        if (blobUrls.length > 0) {
+        let uploadedUrls: string[] = [];
+
+        // base64 이미지가 있으면 업로드
+        if (base64Urls.length > 0) {
           try {
             const { imageUploadAPI } = await import("../../api/imageUpload");
-
-            // 자동저장된 base64 이미지가 있으면 사용, 없으면 blob URL 업로드
-            const isDormitoryType = review.housingType === "기숙사";
-            const savedBase64Images = isDormitoryType
-              ? autoSavedBase64ImagesRef.current.dormitoryImages
-              : autoSavedBase64ImagesRef.current.reviewImages;
-
-            let uploadedUrls: string[];
-
-            if (savedBase64Images.length > 0) {
-              // 자동저장된 base64 이미지 업로드
-              try {
-                uploadedUrls = await imageUploadAPI.uploadBase64Images(
-                  savedBase64Images,
-                  "review"
-                );
-              } catch (base64Error: any) {
-                // 401 인증 오류인 경우
-                if (base64Error.response?.status === 401) {
-                  alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
-                } else {
-                  alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
-                }
-
-                setIsSubmitting(false);
-                return;
-              }
-            } else if (blobUrls.length > 0) {
-              // base64가 없으면 blob URL로 직접 업로드 시도
-              try {
-                uploadedUrls = await imageUploadAPI.uploadBlobUrls(
-                  blobUrls,
-                  "review"
-                );
-              } catch (blobError: any) {
-                // 401 인증 오류인 경우
-                if (blobError.response?.status === 401) {
-                  alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
-                } else {
-                  // 자동저장된 base64 이미지가 있는지 다시 한 번 확인
-                  if (autoSavedBase64ImagesRef.current.reviewImages.length > 0 ||
-                      autoSavedBase64ImagesRef.current.dormitoryImages.length > 0) {
-                    alert("이미지 업로드에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-                  } else {
-                    alert(
-                      "새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요."
-                    );
-                  }
-                }
-
-                setIsSubmitting(false);
-                return;
-              }
-            } else {
-              // 업로드할 이미지가 없는 경우
-              uploadedUrls = [];
-            }
-
-            // 최종 이미지 URL 목록 구성
-            reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
-          } catch (uploadError) {
-            // 업로드 실패 시 사용자에게 알림
-            alert(
-              `이미지 업로드에 실패했습니다: ${
-                uploadError instanceof Error
-                  ? uploadError.message
-                  : "알 수 없는 오류"
-              }. 다시 시도해 주세요.`
+            uploadedUrls = await imageUploadAPI.uploadBase64Images(
+              base64Urls,
+              "review"
             );
+          } catch (base64Error: any) {
+            if (base64Error.response?.status === 401) {
+              alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            } else {
+              alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
+            }
             setIsSubmitting(false);
-            return; // 업로드 실패 시 리뷰 제출 중단
+            return;
           }
         }
+        // blob URL이 있으면 업로드
+        else if (blobUrls.length > 0) {
+          try {
+            const { imageUploadAPI } = await import("../../api/imageUpload");
+            uploadedUrls = await imageUploadAPI.uploadBlobUrls(
+              blobUrls,
+              "review"
+            );
+          } catch (blobError: any) {
+            if (blobError.response?.status === 401) {
+              alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            } else {
+              alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
+            }
+            setIsSubmitting(false);
+            return;
+          }
+        }
+
+        // 최종 이미지 URL 목록 구성
+        reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
       }
 
       // 실제 API 호출

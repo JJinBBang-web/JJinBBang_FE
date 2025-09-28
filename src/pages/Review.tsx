@@ -51,13 +51,13 @@ const Review: React.FC = () => {
 
   // 토큰 여부 확인
   useEffect(() => {
-      const token = localStorage.getItem("accessToken");
+      const token = sessionStorage.getItem("accessToken");
       setIsLoggedIn(!!token);
   }, []);
 
   // 미인증 여부 확인
   useEffect(() => {
-      const verification = localStorage.getItem("verificationStatus");
+      const verification = sessionStorage.getItem("verificationStatus");
       setVerificationStatus(verification === 'unverified');
   }, []);
 

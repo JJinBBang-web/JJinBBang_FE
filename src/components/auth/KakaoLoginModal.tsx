@@ -23,7 +23,7 @@ const KakaoLoginModal = ({ onClose }: KakaoLoginModalProps) => {
   const handleKakaoLogin = () => {
     // 로그인 성공 후 리다이렉트 시 처리를 위해
     // 로컬 스토리지에 firstLogin 플래그 저장
-    localStorage.setItem('isFirstLogin', 'true');
+    sessionStorage.setItem('isFirstLogin', 'true');
     // 카카오 로그인 페이지로 이동
     window.location.href = KAKAO_AUTH_URL;
   };

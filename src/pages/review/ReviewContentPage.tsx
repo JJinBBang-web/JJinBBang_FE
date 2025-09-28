@@ -71,12 +71,7 @@ const ReviewContentPage: React.FC = () => {
     if (from === "confirm") {
       return review.description || "";
     }
-    // 자동 저장된 데이터 복원 시도
-    if (hasAutoSavedData()) {
-      restoreAutoSavedData();
-      return review.description || "";
-    }
-    // 그 외의 경우 빈 내용으로 시작
+    // 새로운 리뷰 작성 시에는 항상 빈 내용으로 시작
     return "";
   });
 

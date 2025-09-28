@@ -18,15 +18,15 @@ export const useReviewAutoSave = (currentStep?: string) => {
       clearTimeout(timeoutRef.current);
     }
 
-    // Create a hash to detect actual changes
+    // Create a hash to detect actual changes (include image URLs for comparison)
     const currentHash = JSON.stringify({
       review: {
         ...review,
-        images: review?.images?.length || 0 // Only track image count for hash
+        images: review?.images || [] // Include actual image URLs for comparison
       },
       dormitoryReview: {
         ...dormitoryReview,
-        images: dormitoryReview?.images?.length || 0
+        images: dormitoryReview?.images || []
       },
       currentStep
     });
