@@ -16,18 +16,17 @@ import {
   useNavigate,
   useParams,
   useSearchParams,
-} from 'react-router-dom';
-import { useReviewDetail } from '../hooks/useReviewDetail';
-import { updateReviewState } from '../recoil/review/updateReviewAtoms';
-import { convertToReviewState } from '../util/convertToReviewState';
-import { isLoginState } from '../recoil/auth/isLoginState';
-import { useQuery } from '@tanstack/react-query';
-import { getAPI } from '../api/baseAPI';
+} from "react-router-dom";
+import { useReviewDetail } from "../hooks/useReviewDetail";
+import { updateReviewState } from "../recoil/review/updateReviewAtoms";
+import { convertToReviewState } from "../util/convertToReviewState";
+import { isLoginState } from "../recoil/auth/isLoginState";
+import { useQuery } from "@tanstack/react-query";
+import { getAPI } from "../api/baseAPI";
 import Modal from "../components/review/Modal";
 import { hideNavState } from "../recoil/util/modalState";
-import iconClose from "../assets/image/iconClose.svg"
-import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
-
+import iconClose from "../assets/image/iconClose.svg";
+import verifiedCharacter from "../assets/image/verifiedSheetCharacter.svg";
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -51,18 +50,17 @@ const Review: React.FC = () => {
 
   // 토큰 여부 확인
   useEffect(() => {
-      const token = localStorage.getItem("accessToken");
-      setIsLoggedIn(!!token);
+    const token = localStorage.getItem("accessToken");
+    setIsLoggedIn(!!token);
   }, []);
 
   // 미인증 여부 확인
   useEffect(() => {
-      const verification = localStorage.getItem("verificationStatus");
-      setVerificationStatus(verification === 'unverified');
+    const verification = localStorage.getItem("verificationStatus");
+    setVerificationStatus(verification === "unverified");
   }, []);
 
-
-  const { data: userData } = useQuery({
+  const { data: userData, isSuccess: isSuccessUser } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
       const response = await getAPI(`/api/v1/user`, true);
@@ -76,24 +74,33 @@ const Review: React.FC = () => {
     const handleResize = () => {
       setWindowHeight(window.visualViewport?.height || window.innerHeight);
     };
-    const reviewList = JSON.parse(localStorage.getItem("reviewList") || "[]");
 
-    if (!reviewList || reviewList.length >= 5) {
-      reviewList.shift(); // 첫 번째 요소 제거
-    }
-    if (!reviewList.includes(Number(reviewId))) {
-      reviewList.push(Number(reviewId));
-    }
-    localStorage.setItem("reviewList", JSON.stringify(reviewList));
-
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     // Recent review tracking removed - rely on API-based analytics instead
 
     // 초기 로드 시 한 번 실행
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   });
+
+  useEffect(() => {
+    if (!isSuccessUser) return;
+    const reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
+    let reviewList = reviewDict[userData.id] || [];
+
+
+    if (reviewList.includes(Number(reviewId))) {
+      reviewList = reviewList.filter((review: number) => review !== Number(reviewId));
+    }
+    if (reviewList.length >= 5) {
+      reviewList.pop();
+    }
+    reviewList.unshift(Number(reviewId));
+    reviewDict[userData.id] = reviewList;
+
+    localStorage.setItem("reviewList", JSON.stringify(reviewDict));
+  }, [isSuccessUser]);
 
   useEffect(() => {
     if (data) {
@@ -104,7 +111,7 @@ const Review: React.FC = () => {
   }, [data]);
 
   useEffect(() => {
-    if (location.state?.from === 'update-exit') {
+    if (location.state?.from === "update-exit") {
       // ✅ 리뷰B(방금 replace로 온 엔트리)를 pop 해서 리뷰A로 이동
       navigate(-1);
     }
@@ -115,45 +122,54 @@ const Review: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-        setHideNav(false);
+    setHideNav(false);
   };
 
   const handleToAuth = () => {
-      if (!isLoggedIn) {
-          setHideNav(false);
-          setIsModalOpen(false);
-          navigate(`/mypage`);
-      } else {
-          setHideNav(false);
-          setIsModalOpen(false);
-          navigate(`/auth/student/verify`);
-      }
-  }
+    if (!isLoggedIn) {
+      setHideNav(false);
+      setIsModalOpen(false);
+      navigate(`/mypage`);
+    } else {
+      setHideNav(false);
+      setIsModalOpen(false);
+      navigate(`/auth/student/verify`);
+    }
+  };
 
   if (isLoading) return <div>로딩 중...</div>;
-  else if(!isLoggedIn || verificationStatus)
-    return <>
+  else if (!isLoggedIn || verificationStatus)
+    return (
+      <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
           <div className={styles.wrap2}>
-              <div className={styles.sheet_header}>
-                  <div className={styles.header_divider}></div>
+            <div className={styles.sheet_header}>
+              <div className={styles.header_divider}></div>
+            </div>
+            <div className={styles.sheet_title_wrap}>
+              <div className={styles.sheet_info_wrap}>
+                <p className={styles.sheet_title}></p>
               </div>
-              <div className={styles.sheet_title_wrap}>
-                  <div className={styles.sheet_info_wrap}>
-                      <p className={styles.sheet_title}></p>
-                  </div>
-                  <img src={iconClose} width="24px" onClick={handleCloseModal}/>
-              </div>
-              <div className={styles.sheetWrap}>
-                  <img src={verifiedCharacter}/>
-                  <p className={styles.sheetText}>학교 인증 후<br/>찐빵의 찐거주 후기들을<br/>무료 열람해보세요!</p>
-              </div>
-              <div className={styles.btnWrap}>
-                  <button className={styles.confirmBtn} onClick={handleToAuth}>학교 인증하기</button>
-              </div>      
+              <img src={iconClose} width="24px" onClick={handleCloseModal} />
+            </div>
+            <div className={styles.sheetWrap}>
+              <img src={verifiedCharacter} />
+              <p className={styles.sheetText}>
+                학교 인증 후<br />
+                찐빵의 찐거주 후기들을
+                <br />
+                무료 열람해보세요!
+              </p>
+            </div>
+            <div className={styles.btnWrap}>
+              <button className={styles.confirmBtn} onClick={handleToAuth}>
+                학교 인증하기
+              </button>
+            </div>
           </div>
         </Modal>
-        </>
+      </>
+    );
   if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
 
   return (
@@ -161,8 +177,8 @@ const Review: React.FC = () => {
       className={styles.content}
       style={{
         minHeight: `${windowHeight}px`,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <div className={styles.container}>
@@ -172,7 +188,7 @@ const Review: React.FC = () => {
         <ImageSlider review={reviews} building={null} />
         {/* 리뷰 정보 및 키워드 */}
         <ReviewInfo review={reviews} />
-        <hr className={styles.divider} style={{ marginTop: '50px' }} />
+        <hr className={styles.divider} style={{ marginTop: "50px" }} />
         {/* 계약형태 */}
         {reviews.generalReviewInfo && (
           <>
@@ -195,7 +211,7 @@ const Review: React.FC = () => {
       {userData?.id === reviews.authorId ? (
         <div className={styles.fixedWrap}>
           <TopButton />
-          <Footer reviewId={reviewId ?? ''} />
+          <Footer reviewId={reviewId ?? ""} />
         </div>
       ) : (
         <div className={styles.fixedWrap}>
@@ -203,10 +219,7 @@ const Review: React.FC = () => {
           <TopButton />
         </div>
       )}
-      
-      
     </div>
-    
   );
 };
 
