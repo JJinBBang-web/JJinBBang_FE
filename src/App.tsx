@@ -24,7 +24,6 @@ import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
 import NewStudentVerification from "./pages/auth/NewStudentVerification";
 import CurrentStudentVerification from "./pages/auth/CurrentStudentVerification";
-import StudentEmailVerification from "./pages/auth/StudentEmailVerification";
 import ReviewTypePage from "./pages/review/ReviewTypePage";
 import AddressInputPage from "./pages/review/AddressInputPage";
 import AddressSearchPage from "./pages/review/AddressSearchPage";
@@ -76,6 +75,7 @@ const AppContent: React.FC = () => {
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
+  const accessToken = localStorage.getItem("accessToken");
   
   useEffect(() => {
     TagManager.dataLayer({
@@ -91,7 +91,6 @@ const AppContent: React.FC = () => {
     setHideNav(false);
   }, [location.pathname, setHideNav]);
 
-
   const {
     data: userData,
     isFetching: isFetchingUser,
@@ -100,10 +99,10 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
+      if (!accessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
-    enabled: isLogin,
     refetchOnWindowFocus: false,
   });
 
@@ -113,7 +112,7 @@ const AppContent: React.FC = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, [isSuccessUser, location.pathname]);
+  }, [isSuccessUser]);
 
   const hiddenNavPaths = [
     "/auth/*",
@@ -144,10 +143,6 @@ const AppContent: React.FC = () => {
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
             <Route path="current" element={<CurrentStudentVerification />} />
-            <Route
-              path="email-verification"
-              element={<StudentEmailVerification />}
-            />
           </Route>
         </Route>
         <Route path="/review">
