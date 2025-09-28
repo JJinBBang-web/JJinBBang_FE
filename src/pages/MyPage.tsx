@@ -1,8 +1,9 @@
 // src/pages/MyPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
+import { isLoginState } from '../recoil/auth/isLoginState';
 import { userApi } from '../api/user';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
@@ -29,6 +30,7 @@ const MyPage: React.FC = () => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showSignupCompleteModal, setShowSignupCompleteModal] = useState(false);
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
+  const isLogin = useRecoilValue(isLoginState);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     isLoggedIn: false,
     nickname: '익명의 찐빵이',
@@ -179,6 +181,24 @@ const MyPage: React.FC = () => {
       }
     }
   }, [auth, setAuth]);
+
+  // isLoginState와 authState 동기화
+  useEffect(() => {
+    if (!isLogin) {
+      setAuth({
+        isAuthenticated: false,
+        email: undefined,
+        verificationStatus: 'unverified',
+        isFirstLogin: false,
+      });
+      setUserProfile({
+        isLoggedIn: false,
+        nickname: '익명의 찐빵이',
+        school: '찐빵대학교',
+        isVerified: false,
+      });
+    }
+  }, [isLogin]);
 
   const handleCloseTermsModal = () => {
     setShowTermsModal(false);

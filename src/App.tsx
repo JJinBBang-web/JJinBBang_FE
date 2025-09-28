@@ -24,7 +24,6 @@ import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
 import NewStudentVerification from "./pages/auth/NewStudentVerification";
 import CurrentStudentVerification from "./pages/auth/CurrentStudentVerification";
-import StudentEmailVerification from "./pages/auth/StudentEmailVerification";
 import ReviewTypePage from "./pages/review/ReviewTypePage";
 import AddressInputPage from "./pages/review/AddressInputPage";
 import AddressSearchPage from "./pages/review/AddressSearchPage";
@@ -144,10 +143,6 @@ const AppContent: React.FC = () => {
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
             <Route path="current" element={<CurrentStudentVerification />} />
-            <Route
-              path="email-verification"
-              element={<StudentEmailVerification />}
-            />
           </Route>
         </Route>
         <Route path="/review">
