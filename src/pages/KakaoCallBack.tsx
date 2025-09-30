@@ -87,7 +87,7 @@ export const agreeToTerms = async () => {
 };
 
 export const getUserInfo = async () => {
-  const response = await fetch(url + '/api/v1/user', {
+  const response = await fetch('/api/v1/user', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
