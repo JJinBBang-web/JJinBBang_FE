@@ -1,34 +1,40 @@
-const fs = require('fs');
+const fs = require("node:fs");
+const path = require("node:path");
 
-const prettier = require('prettier');
+(async () => {
+  const prettier = await import("prettier"); // ESM 동적 import
+  const SitemapGeneratedDate = new Date().toISOString();
+  const DOMAIN = "https://jjinbbang.kr";
 
-const SitemapGeneratedDate = new Date().toISOString();
-const DOMAIN = 'https://jjinbbang.kr';
+  const pages = ["/", "/map", "/heart", "/mypage"].map((p) => DOMAIN + p);
 
-const formatting = target => prettier.format(target, { parser: 'html' });
+  const pageSitemap = pages
+    .map(
+      (page) => `
+  <url>
+    <loc>${page}</loc>
+    <lastmod>${SitemapGeneratedDate}</lastmod>
+  </url>`
+    )
+    .join("");
 
-const pages = ['/', '/map', '/heart','/mypage'].map(page => DOMAIN + page);
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+>
+  ${pageSitemap}
+</urlset>`;
 
-const pageSitemap = pages
-  .map(
-    page => `
-      <url>
-        <loc>${page}</loc>
-        <lastmod>${SitemapGeneratedDate}</lastmod>
-      </url>
-    `
-  )
-  .join('');
+  const formatted = await prettier.format(xml, { parser: "html" });
 
-const generateSiteMap = `
-      <?xml version="1.0" encoding="UTF-8"?>
-        <urlset
-          xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-          ${pageSitemap}
-        </urlset>`;
+  const outPath = path.resolve(process.cwd(), "public/seo/sitemap.xml");
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+  fs.writeFileSync(outPath, formatted, "utf8");
 
-const formattedSitemap = formatting(generateSiteMap);
-
-fs.writeFileSync('../../public/seo/sitemap.xml', formattedSitemap, 'utf8');
+  console.log(`✅ sitemap generated: ${outPath}`);
+})().catch((err) => {
+  console.error("❌ generateSitemap failed:", err);
+  process.exit(1);
+});
