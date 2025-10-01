@@ -41,13 +41,6 @@ const UpdateContractTypePage: React.FC = () => {
 
         const safeReview = review ?? defaultReviewState;
 
-        localStorage.setItem(
-            'updateReviewState',
-            JSON.stringify({
-                ...safeReview,
-                contractType: englishType,
-            })
-        )
         navigate(`/review/${reviewId}/update`, {
             replace:true,
             state: {
