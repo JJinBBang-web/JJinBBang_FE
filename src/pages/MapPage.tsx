@@ -11,9 +11,7 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
-import JBMarkerNone from "../assets/image/JBMarkerNone.svg"
 import BDMarker from "../assets/image/BDMarker.svg";
-import BDMarkerNone from "../assets/image/BDMarkerNone.svg";
 import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
@@ -27,6 +25,7 @@ import { useSetRecoilState } from "recoil";
 import { hideNavState } from '../recoil/util/modalState';
 import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import Spinner from '../components/util/Spinner';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -605,7 +604,7 @@ const MapPage = () => {
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
-            {isLoading ? <div>로딩중..</div> :
+            {isLoading ? <Spinner /> :
             <div className={styles.map}>
                 <Map
                 center={mapCenter}
@@ -765,14 +764,14 @@ const MapPage = () => {
                             )}
                             {isLoadingMore && (
                                 <div style={{ padding: '20px', textAlign: 'center' }}>
-                                    로딩 중...
+                                    <Spinner />
                                 </div>
                             )}
-                            {!hasMoreSearch && searchAllItems.length > 0 && (
+                            {/* {!hasMoreSearch && searchAllItems.length > 0 && (
                                 <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                                     모든 결과를 불러왔습니다.
                                 </div>
-                            )}
+                            )} */}
                         </div>               
                     </div>
                 )}
@@ -829,14 +828,14 @@ const MapPage = () => {
                             )}
                             {isLoadingMore && (
                                 <div style={{ padding: '20px', textAlign: 'center' }}>
-                                    로딩 중...
+                                     <Spinner />
                                 </div>
                             )}
-                            {!hasMoreNearBy && nearByAllItems.length > 0 && (
+                            {/* {!hasMoreNearBy && nearByAllItems.length > 0 && (
                                 <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                                     모든 결과를 불러왔습니다.
                                 </div>
-                            )}
+                            )} */}
                         </div>               
                     </div>
                 )}
