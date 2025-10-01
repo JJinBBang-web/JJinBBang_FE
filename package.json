@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "prebuild": "cd src/utils && node generateSiteMap.js",
+    "prebuild": "node scripts/generateSitemap.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
