@@ -139,7 +139,7 @@
 
 .contentWrap {
     width: 100%;
-    height: 56vh;
+    max-height: 56vh;
     overflow: scroll;
 }
 
@@ -208,4 +208,28 @@
   width: 100%;
   height: 100dvh; /* 모바일 대응 */
   z-index: 0;
+}
+
+/*찐빵 없음*/
+.emptyWrap {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.emptyImg {
+    width: 11.25rem;
+    height: auto;
+    margin: 20px 0px;
+}
+.emptyText {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.6px;
+    line-height: 22px;
+    color: var(--color-gray60);
+    text-align: center;
 }

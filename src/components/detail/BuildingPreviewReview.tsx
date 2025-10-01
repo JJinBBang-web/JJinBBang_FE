@@ -109,7 +109,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
         window.scrollTo(0, 0);
       }}
     >
-      <img src="" alt="" className={styles.buildingImg} />
+      <img src={review.image} alt="" className={styles.buildingImg} />
       <div className={styles.infoAndLike}>
         {generalInfo && (
           <div className={styles.buildingInfo}>

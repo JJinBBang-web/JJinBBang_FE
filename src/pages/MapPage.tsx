@@ -11,9 +11,7 @@ import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
-import JBMarkerNone from "../assets/image/JBMarkerNone.svg"
 import BDMarker from "../assets/image/BDMarker.svg";
-import BDMarkerNone from "../assets/image/BDMarkerNone.svg";
 import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
 import { useMapMarkers } from '../hooks/useMapMarker';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
@@ -26,6 +24,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { hideNavState } from '../recoil/util/modalState';
 import { isSheetOpenState } from '../recoil/util/utilRecoilState';
+import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
+import Spinner from '../components/util/Spinner';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -82,6 +82,9 @@ const MapPage = () => {
     const [hasMoreSearch, setHasMoreSearch] = useState(true);
     const [hasMoreNearBy, setHasMoreNearBy] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+    // 검색 모드 관리
+    const [isSearchMode, setIsSearchMode] = useState(false);
 
     // 스크롤 컨테이너 ref
     const searchScrollRef = useRef<HTMLDivElement>(null);
@@ -252,6 +255,7 @@ const MapPage = () => {
 
         setSearchCurrentPage(1);
         setHasMoreSearch(true);
+        setIsSearchMode(true);
 
         setSearchParams({
             keyword: searchKeyword,
@@ -321,28 +325,6 @@ const MapPage = () => {
             })
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
-
-    // const noReviewBuildingIds = useMemo(() => {
-    //     if (viewType !== "BUILDING") return new Set<number>();
-    //     const s = new Set<number>();
-
-    //     const collect = (items?: any[]) => {
-    //         items?.forEach((it) => {
-    //         const id =
-    //             it.agencyBuildingInfo?.id ??
-    //             it.dormitoryBuildingInfo?.id ??
-    //             it.generalBuildingInfo?.id;
-    //         // reviewInfo 없으면 '리뷰 없음'으로 판단
-    //         if (!it.reviewInfo.content) s.add(id);
-    //         });
-    //     };
-
-    //     // 검색 결과와 주변 결과 둘 다에서 수집 (있으면 반영)
-    //     collect(searchData?.items);
-    //     collect(nearByData?.items);
-
-    //     return s;
-    // }, [viewType, searchData?.items, nearByData?.items]);
 
     const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
 
@@ -436,7 +418,9 @@ const MapPage = () => {
             setIsLoadingMore(false);
         } else if (nearByData && nearByData.items?.length === 0 && nearByCurrentPage === 1) {
             setNearByAllItems([]);
-        }
+            setHasMoreNearBy(false);
+            setIsLoadingMore(false); 
+        } 
     }, [nearByData, nearByCurrentPage]);
 
 
@@ -590,10 +574,37 @@ const MapPage = () => {
         }
     }
 
+    const handleClearSearch = () => {
+        setSearchKeyword(''); // 키워드 클리어
+        setIsSearchMode(false); // 검색 모드 해제
+        setSearchAllItems([]); // 검색 결과 클리어
+        setSearchParams(undefined); // 검색 파라미터 클리어
+        
+        if (mapRef.current) {
+        // 초기 중심점과 레벨 설정
+        const initialCenter = campusCenter || { lat: 35.153237, lng: 128.101090 };
+        const initialLevel = 5; // 또는 더 넓게 보려면 6, 7
+        
+        mapRef.current.setCenter(new kakao.maps.LatLng(initialCenter.lat, initialCenter.lng));
+        mapRef.current.setLevel(initialLevel);
+        
+        // 더 큰 offset으로 bounds 설정
+        const offset = 0.02; // 기존 0.01에서 더 큰 값으로
+        setMapBounds({
+            neLat: initialCenter.lat + offset,
+            neLng: initialCenter.lng + offset,
+            swLat: initialCenter.lat - offset,
+            swLng: initialCenter.lng - offset,
+        });
+        setMapCenter(initialCenter);
+    }
+
+    };
+
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
-            {isLoading ? <div>로딩중..</div> :
+            {isLoading ? <Spinner /> :
             <div className={styles.map}>
                 <Map
                 center={mapCenter}
@@ -646,6 +657,8 @@ const MapPage = () => {
                         swLng: sw.getLng(),
                     };
 
+
+
                 }}
                 >
                     <MarkerClusterer
@@ -692,7 +705,7 @@ const MapPage = () => {
             }
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
-                <SearchBar onSearch={handleSearch}/>
+                <SearchBar onSearch={handleSearch} isSearchMode={isSearchMode} onClearSearch={handleClearSearch}/>
             </div>
             <FilterBar/>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
@@ -706,7 +719,7 @@ const MapPage = () => {
                         </div>
                         <div className={styles.sheet_title_wrap}>
                             <div className={styles.sheet_info_wrap}>
-                                <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum}</span>)</p>
+                                <p className={styles.sheet_title}>검색된 찐빵 (<span>{searchData?.itemNum ?? 0}</span>)</p>
                             </div>
                             <img src={iconClose} width="24px" onClick={handleCloseModal}/>
                         </div>
@@ -731,23 +744,34 @@ const MapPage = () => {
                                     </p>
                                 ))}
                             </div>
-                            {(searchAllItems.map((review, index) => (
+                            {searchAllItems.length === 0 && !isLoadingMore && !searchData ? (
+                                <div className={styles.emptyWrap}>
+                                    <div className={styles.line} />
+                                    <img src={emptyCharacterIcon} alt={"찐빵없음"} className={styles.emptyImg}/>
+                                    <p className={styles.emptyText}>앗! 이 주변엔 아직 찐빵이 없어요<br/>지도를 이동해서 다른 지역을 살펴보세요!</p>
+                                </div>
+                            )
+                            :
+                            (searchAllItems.map((review, index) => (
                                 <div key={`${review.generalBuildingInfo?.id}-${index}`}>
                                     <div className={styles.line} />
-                                    {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
+                                    {review.agencyBuildingInfo || viewType === "BUILDING" ? 
+                                        <PreviewBuildingReview review={review} /> : 
+                                        <PreviewReview review={review} />
+                                    }
                                 </div>
                                 ))
                             )}
                             {isLoadingMore && (
                                 <div style={{ padding: '20px', textAlign: 'center' }}>
-                                    로딩 중...
+                                    <Spinner />
                                 </div>
                             )}
-                            {!hasMoreSearch && searchAllItems.length > 0 && (
+                            {/* {!hasMoreSearch && searchAllItems.length > 0 && (
                                 <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                                     모든 결과를 불러왔습니다.
                                 </div>
-                            )}
+                            )} */}
                         </div>               
                     </div>
                 )}
@@ -784,23 +808,34 @@ const MapPage = () => {
                                     </p>
                                 ))}
                             </div>
-                            {(nearByAllItems.map((review, index) => (
+                            {nearByAllItems.length === 0 && !isLoadingMore && !nearByData ? (
+                                <div className={styles.emptyWrap}>
+                                    <div className={styles.line} />
+                                    <img src={emptyCharacterIcon} alt={"찐빵없음"} className={styles.emptyImg}/>
+                                    <p className={styles.emptyText}>앗! 이 주변엔 아직 찐빵이 없어요<br/>지도를 이동해서 다른 지역을 살펴보세요!</p>
+                                </div>
+                            )
+                            :
+                            (nearByAllItems.map((review, index) => (
                                 <div key={`${review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}-${index}`}>
                                     <div className={styles.line} />
-                                    {viewType === "REVIEW" ? <PreviewReview review={review} /> : <PreviewBuildingReview review={review} />}
+                                    {review.agencyBuildingInfo || viewType === "BUILDING" ? 
+                                        <PreviewBuildingReview review={review} /> : 
+                                        <PreviewReview review={review} />
+                                    }
                                 </div>
                                 ))
                             )}
-                            {isLoadingMore && hasMoreSearch && (
+                            {isLoadingMore && (
                                 <div style={{ padding: '20px', textAlign: 'center' }}>
-                                    로딩 중...
+                                     <Spinner />
                                 </div>
                             )}
-                            {!hasMoreNearBy && nearByAllItems.length > 0 && (
+                            {/* {!hasMoreNearBy && nearByAllItems.length > 0 && (
                                 <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
                                     모든 결과를 불러왔습니다.
                                 </div>
-                            )}
+                            )} */}
                         </div>               
                     </div>
                 )}

@@ -16,6 +16,7 @@ import { typeToKorean } from "../../util/mapping";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";
+import noBuildingImg from "../../assets/image/noBuildingImg.svg";
 
 interface Props {
   review: PreviewBuildingReviewInfo;
@@ -83,19 +84,33 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
     setLikeCount(review.reviewInfo.likeCount);
   }, [liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
+  // 실제 사용할 이미지 URL 계산
+  const rawImageUrl = review?.image || '';
+  const actualImageUrl = !rawImageUrl || rawImageUrl.includes('localhost') 
+    ? '' 
+    : rawImageUrl;
+
+  const handleError = (e:any) => {
+      // 만약 대체 이미지도 로드에 실패할 경우, 다시 onError가 무한 호출되는 것을 방지
+      e.target.onError = null;
+      // 이미지 src를 미리 import 해둔 대체 이미지로 변경
+      e.target.src = noBuildingImg;
+    };
+
+  const handleNavigation = () => {
+    if (review.agencyBuildingInfo) {
+      alert('공인중개사 후기는 준비중입니다.');
+    } else {
+      navigate(`/building/${activeReviewInfo?.id}`);
+    }
+  };
+
   return (
     <div
       className={styles.content}
-      onClick={() => navigate(`/building/${activeReviewInfo?.id}`)}
+      onClick={handleNavigation}
     >
-      {image ? (
-        <img src={image} alt={name} className={styles.buildingImg} />
-      ) : (
-          <div className={styles.buildingImg}>
-            <img src={emptyCharacterIcon} alt="empty" className={styles.emptyIcon} />
-            <p className={styles.emptyText}>등록된 이미지가 없습니다</p>
-          </div>
-      )}
+      <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>

@@ -83,6 +83,7 @@ export function convertToReviewState(
     latitude: data.building.latitude ?? 0,
     longitude: data.building.longitude ?? 0,
     universityName: isDorm ? data.dormitoryReviewInfo?.universityName : "",
+    space: data.generalReviewInfo?.space,
     dormitoryConditions: isDorm
       ? {
           residenceArea: data.conditions?.currentRegion ?? '',
