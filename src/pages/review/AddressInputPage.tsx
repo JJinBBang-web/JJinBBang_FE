@@ -59,7 +59,10 @@ const AddressInputPage: React.FC = () => {
         </div>
       </div>
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button className={styles.prevButton} onClick={() => navigate('/review/type', {
+          state: location.state,
+          replace: true
+        })}>
           이전
         </button>
         <button className={styles.nextButton} disabled={true}>

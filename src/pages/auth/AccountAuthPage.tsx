@@ -98,9 +98,9 @@ const AccountAuthPage: React.FC = () => {
       });
 
       // 로컬 스토리지 정리
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('signupToken');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('signupToken');
 
       // MyPage로 이동
       navigate('/mypage');

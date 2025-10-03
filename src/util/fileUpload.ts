@@ -22,7 +22,7 @@ export const uploadFile = async (file: File) => {
     const response = await fetch('/api/v1/certificates/upload', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
       },
       body: formData,
     });

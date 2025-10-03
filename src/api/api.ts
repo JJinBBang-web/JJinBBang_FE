@@ -22,7 +22,7 @@ declare module 'axios' {
 // 요청 인터셉터 (access token 자동 삽입)
 api.interceptors.request.use((config) => {
   if (config.useAuth) {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = sessionStorage.getItem('accessToken');
 
     if (typeof config.headers?.set === "function") {
       config.headers.set("Authorization", `Bearer ${accessToken}`);
@@ -88,7 +88,7 @@ api.interceptors.response.use(
       originalRequest.useAuth &&
       !originalRequest._retry
     ) {
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = sessionStorage.getItem('refreshToken');
 
       if (!refreshToken) {
         return Promise.reject(error);
@@ -129,8 +129,8 @@ api.interceptors.response.use(
         const newAccessToken = response.data.data.accessToken;
         const newRefreshToken = response.data.data.refreshToken;
         
-        localStorage.setItem("accessToken", newAccessToken);
-        localStorage.setItem("refreshToken", newRefreshToken);
+        sessionStorage.setItem("accessToken", newAccessToken);
+        sessionStorage.setItem("refreshToken", newRefreshToken);
         processQueue(null, newAccessToken);
 
         if (typeof originalRequest.headers?.set === "function") {
@@ -147,8 +147,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

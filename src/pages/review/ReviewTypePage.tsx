@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
+import { reviewAutoSave } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -33,8 +34,13 @@ const ReviewTypePage: React.FC = () => {
     // 수정 모드일 경우 기존 상태 복원
     if (locationState.from === "confirm" && review.housingType) {
       setSelectedType(review.housingType);
+    } else {
+      // 새로운 리뷰 작성 시작 시 이전 자동저장 데이터 정리
+      reviewAutoSave.clear();
+      // Recoil 상태도 초기화
+      setReview(defaultReviewState);
     }
-  }, [locationState, review]);
+  }, [locationState, review, setReview]);
 
   const handleTypeSelect = (type: string) => {
     if (type === "공인중개사") {
@@ -74,6 +80,7 @@ const ReviewTypePage: React.FC = () => {
             ...locationState,
             housingType: selectedType,
           },
+          replace: false,
         });
       }
     }
@@ -86,10 +93,11 @@ const ReviewTypePage: React.FC = () => {
         state: {
           ...location.state,
         },
+        replace: true,
       });
     } else {
       // 일반 모드일 경우 MyPage로 이동
-      navigate("/mypage");
+      navigate("/mypage", { replace: true });
     }
   };
 

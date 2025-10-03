@@ -1,19 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   JjinFilterState,
   JjinAgencyFilterState,
   FilterCategory,
   FilterItem,
-} from '../../recoil/util/filterRecoilState';
-import { DormFilterState } from '../../recoil/util/dormFilterState';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/ReviewAdvantage.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import backArrowIcon from '../../assets/image/backArrowIcon.svg';
+} from "../../recoil/util/filterRecoilState";
+import { DormFilterState } from "../../recoil/util/dormFilterState";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/ReviewAdvantage.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
 interface LocationState {
   photos?: string[];
@@ -39,7 +39,7 @@ const ReviewAdvantagePage: React.FC = () => {
   const currentHousingType = housingType || review.housingType;
 
   // 기숙사 유형인지 체크
-  const isDormitory = currentHousingType === '기숙사';
+  const isDormitory = currentHousingType === "기숙사";
 
   // 건물 유형에 따라 필터 선택
   const currentFilters = isDormitory ? dormFilters : filters;
@@ -67,7 +67,7 @@ const ReviewAdvantagePage: React.FC = () => {
     }
 
     // 수정 모드일 경우 기존 상태 복원
-    if (from === 'confirm') {
+    if (from === "confirm") {
       setSelectedFilters(review.pros || []);
     }
   }, [from, review, housingType, setReview]);
@@ -98,7 +98,7 @@ const ReviewAdvantagePage: React.FC = () => {
     "관리비가 합리적이에요": "관리비가 비싸요",
     "인터넷이 잘 돼요": "인터넷이 느려요",
     "관리가 정기적이에요": "관리가 부족해요",
-    "이사가 편했어요": "이사가 힘들었어요"
+    "이사가 편했어요": "이사가 힘들었어요",
   };
 
   const handleFilterClick = (label: string) => {
@@ -114,12 +114,12 @@ const ReviewAdvantagePage: React.FC = () => {
         // 상반된 태그가 단점에서 선택되었는지 확인
         const oppositeTag = oppositeTagMapping[label];
         const selectedDisadvantages = review.cons || [];
-        
+
         if (oppositeTag && selectedDisadvantages.includes(oppositeTag)) {
           alert("같은 항목이 단점으로 선택되었습니다!");
           return prev;
         }
-        
+
         // 최대 선택 수 미만이고 상반된 태그가 없는 경우 추가
         return [...prev, label];
       }
@@ -127,12 +127,12 @@ const ReviewAdvantagePage: React.FC = () => {
   };
 
   const scrollToTop = () => {
-    contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleNext = () => {
     if (selectedFilters.length < 3) {
-      alert('최소 3개의 장점을 선택해 주세요!');
+      alert("최소 3개의 장점을 선택해 주세요!");
       return;
     }
 
@@ -144,15 +144,15 @@ const ReviewAdvantagePage: React.FC = () => {
 
     setReview(updatedReview);
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
+    if (from === "confirm") {
+      navigate("/review/confirm", {
         state: {
           ...location.state,
           advantages: selectedFilters,
         },
       });
     } else {
-      navigate('/review/filter-disad', {
+      navigate("/review/filter-disad", {
         state: {
           ...location.state,
           advantages: selectedFilters,
@@ -167,9 +167,14 @@ const ReviewAdvantagePage: React.FC = () => {
         state: {
           ...location.state,
         },
+        replace: true,
       });
     } else {
-      navigate(-1);
+      // 이전 페이지로 이동 (사진 업로드 페이지로)
+      navigate("/review/room-info", {
+        state: location.state,
+        replace: false,
+      });
     }
   };
 
@@ -187,9 +192,9 @@ const ReviewAdvantagePage: React.FC = () => {
             <img src={closeIcon} alt="close" />
           </button>
           <h1>
-            {currentHousingType === '공인중개사'
-              ? '이 공인중개사의 장점은 무엇인가요?'
-              : '이 찐빵의 장점은 무엇인가요?'}
+            {currentHousingType === "공인중개사"
+              ? "이 공인중개사의 장점은 무엇인가요?"
+              : "이 찐빵의 장점은 무엇인가요?"}
           </h1>
           <p className={styles.sub_title}>(최대 {maxSelections}개 선택 가능)</p>
         </header>
@@ -205,7 +210,7 @@ const ReviewAdvantagePage: React.FC = () => {
                       className={`${styles.filter_btn} ${
                         selectedFilters.includes(item.label)
                           ? styles.selected
-                          : ''
+                          : ""
                       }`}
                       onClick={() => handleFilterClick(item.label)}
                     >
@@ -232,7 +237,7 @@ const ReviewAdvantagePage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            selectedFilters.length > 0 ? styles.enabled : ''
+            selectedFilters.length > 0 ? styles.enabled : ""
           }`}
           onClick={handleNext}
           disabled={selectedFilters.length === 0}
