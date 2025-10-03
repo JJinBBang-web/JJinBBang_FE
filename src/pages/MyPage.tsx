@@ -392,6 +392,9 @@ const MyPage: React.FC = () => {
           </div>
           <div className={styles.reviewContainer}>
             <h2>나의 찐빵</h2>
+            {auth.isAuthenticated && userReviews.length > 0 && (
+              <div className={styles.divider} />
+            )}
             {renderReviewSection()}
           </div>
         </div>

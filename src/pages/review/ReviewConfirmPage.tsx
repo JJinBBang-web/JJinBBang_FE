@@ -47,6 +47,7 @@ interface LocationState {
   content?: string;
   from?: string;
   housingType?: string;
+  roomData?: any;
 }
 
 const ReviewConfirmPage: React.FC = () => {
@@ -710,6 +711,30 @@ const ReviewConfirmPage: React.FC = () => {
     }
   };
 
+  const navigateToPhotos = () => {
+    navigate("/review/room-info", {
+      state: {
+        address: {
+          roadAddress: review.address || "",
+          jibunAddress: review.addressDetail || "",
+          buildingName: review.detailedAddress || "",
+        },
+        buildingName: review.detailedAddress || "",
+        floor: review.floorType || "",
+        paymentType: review.contractType || locationState?.paymentType || "",
+        priceData: {
+          deposit: review.deposit || 0,
+          monthlyRent: review.monthlyRent || 0,
+          managementFee: review.managementFee || 0,
+        },
+        roomData: locationState?.roomData,
+        housingType: review.housingType,
+        from: "confirm",
+      },
+      replace: true,
+    });
+  };
+
   const navigateToPros = () => {
     navigate("/review/filter-ad", {
       state: {
@@ -1003,6 +1028,30 @@ const ReviewConfirmPage: React.FC = () => {
                 </div>
               </>
             )}
+
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToPhotos)}
+            >
+              <span className={styles.label}>사진</span>
+              <div className={styles.value}>
+                <div className={styles.photosContainer}>
+                  {review.images && review.images.length > 0 ? (
+                    review.images.slice(0, 3).map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`사진 ${index + 1}`}
+                        className={styles.photoThumbnail}
+                      />
+                    ))
+                  ) : (
+                    <span className={styles.valueText}>사진을 추가해주세요</span>
+                  )}
+                </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
 
             <div
               className={styles.infoItem}

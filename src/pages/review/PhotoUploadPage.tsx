@@ -24,6 +24,9 @@ interface LocationState {
   paymentType: string;
   priceData: any;
   roomData: any;
+  from?: string;
+  photos?: string[];
+  housingType?: string;
 }
 
 const PhotoUploadPage: React.FC = () => {
@@ -50,6 +53,15 @@ const PhotoUploadPage: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 컴포넌트 마운트 시 기존 이미지 로드 (confirm 페이지에서 돌아온 경우)
+  useEffect(() => {
+    if (locationState?.from === 'confirm' && review.images && review.images.length > 0) {
+      setPhotos(review.images);
+    } else if (locationState?.photos && locationState.photos.length > 0) {
+      setPhotos(locationState.photos);
+    }
+  }, []);
 
   // photos 상태가 변경될 때마다 Recoil 상태에 반영 (자동저장 트리거)
   useEffect(() => {
@@ -128,13 +140,24 @@ const PhotoUploadPage: React.FC = () => {
 
   // 다음 페이지로 이동 핸들러 - 현재 선택된 사진들과 함께 상태 전달
   const handleNext = () => {
-    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터는 유지 (장점/단점 페이지에서도 사용될 수 있음)
-    navigate("/review/filter-ad", {
-      state: {
-        ...locationState,
-        photos,
-      },
-    });
+    // confirm 페이지에서 온 경우 다시 confirm 페이지로 돌아가기
+    if (locationState?.from === 'confirm') {
+      navigate("/review/confirm", {
+        state: {
+          ...locationState,
+          photos,
+          from: null,
+        },
+      });
+    } else {
+      // 일반적인 플로우에서는 장점/단점 페이지로 이동
+      navigate("/review/filter-ad", {
+        state: {
+          ...locationState,
+          photos,
+        },
+      });
+    }
   };
 
   // 사진 업로드는 선택사항 (항상 다음 버튼 활성화)
