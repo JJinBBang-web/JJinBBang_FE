@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = sessionStorage.getItem("accessToken");
   
   useEffect(() => {
     TagManager.dataLayer({

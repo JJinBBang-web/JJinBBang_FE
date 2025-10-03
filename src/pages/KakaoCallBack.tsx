@@ -11,9 +11,9 @@ import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 const url = process.env.REACT_APP_API_URL;
 const SITE_URL = process.env.REACT_APP_SITE_URL!;
 const loginUrl = `${SITE_URL}/login/kakao`;
-export const getSignupToken = () => localStorage.getItem('signupToken');
-export const getAccessToken = () => localStorage.getItem('accessToken');
-export const getRefreshToken = () => localStorage.getItem('refreshToken');
+export const getSignupToken = () => sessionStorage.getItem('signupToken');
+export const getAccessToken = () => sessionStorage.getItem('accessToken');
+export const getRefreshToken = () => sessionStorage.getItem('refreshToken');
 
 interface Tokens {
   accessToken: string;
@@ -21,17 +21,17 @@ interface Tokens {
 }
 
 export const setSignupToken = (signupToken: string) => {
-  localStorage.setItem('signupToken', signupToken);
+  sessionStorage.setItem('signupToken', signupToken);
 };
 
 export const setTokens = ({ accessToken, refreshToken }: Tokens) => {
-  localStorage.setItem('accessToken', accessToken);
-  localStorage.setItem('refreshToken', refreshToken);
+  sessionStorage.setItem('accessToken', accessToken);
+  sessionStorage.setItem('refreshToken', refreshToken);
 };
 
 export const clearTokens = () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  sessionStorage.removeItem('accessToken');
+  sessionStorage.removeItem('refreshToken');
 };
 
 export const kakaoLogin = async (authCode: string) => {
@@ -199,8 +199,8 @@ function KakaoCallBack() {
         });
 
         // 사용자 정보 저장
-        localStorage.setItem('email', userEmail);
-        localStorage.setItem('verificationStatus', 'unverified');
+        sessionStorage.setItem('email', userEmail);
+        sessionStorage.setItem('verificationStatus', 'unverified');
         setIsLoggedIn(true);
         setShowTerms(false);
         setShowComplete(true);
