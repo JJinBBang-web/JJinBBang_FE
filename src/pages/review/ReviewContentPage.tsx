@@ -1,12 +1,12 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import styles from '../../styles/review/ReviewContent.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
+import React, { useState, useRef, useLayoutEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import styles from "../../styles/review/ReviewContent.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 
 interface LocationState {
   photos?: string[];
@@ -63,20 +63,16 @@ const ReviewContentPage: React.FC = () => {
     (location.state as LocationState) || {};
 
   const [review, setReview] = useRecoilState(reviewState);
-  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('content');
-  
+  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } =
+    useReviewAutoSave("content");
+
   const [content, setContent] = useState(() => {
     // 확인 페이지에서 돌아온 경우에만 이전 데이터 유지
-    if (from === 'confirm') {
-      return review.description || '';
+    if (from === "confirm") {
+      return review.description || "";
     }
-    // 자동 저장된 데이터 복원 시도
-    if (hasAutoSavedData()) {
-      restoreAutoSavedData();
-      return review.description || '';
-    }
-    // 그 외의 경우 빈 내용으로 시작
-    return '';
+    // 새로운 리뷰 작성 시에는 항상 빈 내용으로 시작
+    return "";
   });
 
   const {
@@ -92,11 +88,11 @@ const ReviewContentPage: React.FC = () => {
     if (e.target.value.length <= maxLength) {
       const newContent = e.target.value;
       setContent(newContent);
-      
+
       // 실시간으로 review state 업데이트 (자동 저장 트리거)
-      setReview(prev => ({
+      setReview((prev) => ({
         ...prev,
-        description: newContent
+        description: newContent,
       }));
     }
   };
@@ -104,14 +100,14 @@ const ReviewContentPage: React.FC = () => {
   const handleNext = () => {
     const trimmedContent = content.trim();
     const trimmedLength = trimmedContent.length;
-    
+
     if (trimmedLength === 0) {
-      alert('내용을 입력해주세요.');
+      alert("내용을 입력해주세요.");
       return;
     }
-    
-    if (trimmedLength < 100) {
-      alert("최소 100자 이상 작성해야 해요!");
+
+    if (trimmedLength < 50) {
+      alert("최소 50자 이상 작성해야 해요!");
       return;
     }
 
@@ -122,19 +118,19 @@ const ReviewContentPage: React.FC = () => {
     };
 
     setReview(updatedReview);
-    
+
     // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
     clearAutoSavedData();
 
-    if (from === 'confirm') {
-      navigate('/review/confirm', {
+    if (from === "confirm") {
+      navigate("/review/confirm", {
         state: {
           ...location.state,
           content: trimmedContent,
         },
       });
     } else {
-      navigate('/review/confirm', {
+      navigate("/review/confirm", {
         state: {
           housingType,
           photos,
@@ -147,14 +143,19 @@ const ReviewContentPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === 'confirm') {
+    if (from === "confirm") {
       navigate("/review/confirm", {
         state: {
           ...location.state,
         },
+        replace: true,
       });
     } else {
-      navigate(-1);
+      // 이전 페이지로 이동 (단점 페이지를 가정)
+      navigate("/review/filter-disad", {
+        state: location.state,
+        replace: false,
+      });
     }
   };
 
@@ -199,7 +200,7 @@ const ReviewContentPage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            content.trim().length >= 100 ? styles.enabled : ""
+            content.trim().length >= 50 ? styles.enabled : ""
           }`}
           onClick={handleNext}
         >

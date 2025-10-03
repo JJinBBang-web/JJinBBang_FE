@@ -139,7 +139,9 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
   return (
     <div
       className={styles.previewReviewContainer}
-      onClick={() => navigate(`/building/review/${activeReviewInfo?.id}`)}
+      onClick={() => navigate(`/building/review/${activeReviewInfo?.id}`, {
+        state: { from: 'mypage' }
+      })}
     >
       <div className={styles.buildingContainer}>
         <img

@@ -8,10 +8,10 @@ export const useAuth = () => {
 
   // ✅ 초기 실행 시 localStorage → recoil 상태 복원
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    const email = localStorage.getItem('email') ?? '';
+    const accessToken = sessionStorage.getItem('accessToken');
+    const email = sessionStorage.getItem('email') ?? '';
     const verificationStatus =
-      (localStorage.getItem(
+      (sessionStorage.getItem(
         'verificationStatus'
       ) as AuthState['verificationStatus']) || 'none';
 
@@ -32,8 +32,8 @@ export const useAuth = () => {
       ...prev,
       verificationStatus: status,
     }));
-    // localStorage에도 상태 저장 (새로고침 시 상태 유지)
-    localStorage.setItem('verificationStatus', status);
+    // sessionStorage에도 상태 저장 (새로고침 시 상태 유지)
+    sessionStorage.setItem('verificationStatus', status);
   };
 
   const setEmail = (email: string) => {

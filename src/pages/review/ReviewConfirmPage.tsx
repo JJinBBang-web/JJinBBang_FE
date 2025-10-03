@@ -1,7 +1,7 @@
 // src/pages/review/ReviewConfirmPage.tsx
 // Fixed syntax errors in try-catch structure
 import { useNavigate, useLocation } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   reviewState,
@@ -15,7 +15,6 @@ import {
 import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { tagMessages, tagLongMessages } from "../../components/Tag";
 import styles from "../../styles/review/ReviewConfirm.module.css";
-import { fixImageUrl } from "../../util/imageUrl";
 import closeIcon from "../../assets/image/iconClose.svg";
 import ArrowIcon from "../../assets/image/arrowIcon.svg";
 import starFilledIcon from "../../assets/image/starIconOnRed.svg";
@@ -48,12 +47,13 @@ interface LocationState {
   content?: string;
   from?: string;
   housingType?: string;
+  roomData?: any;
 }
 
 const ReviewConfirmPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = (location.state as LocationState) || {};
+  const locationState = useMemo(() => (location.state as LocationState) || {}, [location.state]);
 
   const [review, setReview] = useRecoilState(reviewState);
   const [dormitoryReview, setDormitoryReview] =
@@ -102,7 +102,7 @@ const ReviewConfirmPage: React.FC = () => {
         dormitoryImages: autoSavedData.dormitoryBase64Images || [],
       };
 
-      // 자동저장 데이터 복원
+      // 먼저 자동저장 데이터를 기본으로 복원
       if (autoSavedData.reviewState) {
         setReview(autoSavedData.reviewState);
       }
@@ -123,7 +123,10 @@ const ReviewConfirmPage: React.FC = () => {
             cons: locationState.disadvantages,
           }),
           ...(locationState.content && { content: locationState.content }),
-          ...(locationState.photos && { images: locationState.photos }),
+          // 이미지는 locationState의 photos가 없으면 자동저장된 데이터 유지
+          ...(locationState.photos && locationState.photos.length > 0 ?
+            { images: locationState.photos } :
+            autoSavedData.reviewState?.images ? { images: autoSavedData.reviewState.images } : {}),
           ...(locationState.address?.roadAddress && {
             address: locationState.address.roadAddress,
           }),
@@ -241,7 +244,19 @@ const ReviewConfirmPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    // 확인 페이지에서 뒤로 가기는 콘텐츠 작성 페이지로
+    navigate('/review/content', {
+      state: {
+        ...locationState,
+        from: null, // confirm에서 돌아가는 것이 아니므로 null로 설정
+        photos: review.images,
+        advantages: review.pros,
+        disadvantages: review.cons,
+        content: review.content || review.description,
+        housingType: review.housingType,
+      },
+      replace: false,
+    });
   };
 
   const handleRateReview = () => {
@@ -456,85 +471,102 @@ const ReviewConfirmPage: React.FC = () => {
         };
       }
 
+      // 리뷰 제출 직전에 자동저장 데이터 재확인
+      const latestAutoSavedData = reviewAutoSave.load();
+      if (latestAutoSavedData) {
+        autoSavedBase64ImagesRef.current = {
+          reviewImages: latestAutoSavedData.reviewBase64Images || [],
+          dormitoryImages: latestAutoSavedData.dormitoryBase64Images || [],
+        };
+      }
+
+      // 자동저장된 base64 이미지 처리
+      const isDormitoryType = review.housingType === "기숙사";
+      const availableBase64Images = isDormitoryType
+        ? autoSavedBase64ImagesRef.current.dormitoryImages
+        : autoSavedBase64ImagesRef.current.reviewImages;
+
+      // 이미지 데이터 최종 확인 (자동저장 데이터 및 현재 상태 모두 확인)
+      let finalImageData: string[] = [];
+
+      // 1. 먼저 사용 가능한 base64 이미지 확인
+      if (availableBase64Images.length > 0) {
+        finalImageData = availableBase64Images;
+      }
+      // 2. base64가 없으면 현재 reviewData의 imageUrls 확인
+      else if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
+        finalImageData = reviewData.imageUrls;
+      }
+      // 3. 그래도 없으면 자동저장 데이터에서 직접 확인
+      else if (latestAutoSavedData &&
+               ((isDormitoryType && latestAutoSavedData.dormitoryBase64Images && latestAutoSavedData.dormitoryBase64Images.length > 0) ||
+                (!isDormitoryType && latestAutoSavedData.reviewBase64Images && latestAutoSavedData.reviewBase64Images.length > 0))) {
+        finalImageData = isDormitoryType
+          ? (latestAutoSavedData.dormitoryBase64Images || [])
+          : (latestAutoSavedData.reviewBase64Images || []);
+      }
+
+      // 최종 이미지 데이터를 reviewData에 할당
+      reviewData.imageUrls = finalImageData;
+
+      // 이미지가 없는 경우 빈 배열로 설정 (공인중개사는 이미지 없이 가능)
+      if (!reviewData.imageUrls || reviewData.imageUrls.length === 0) {
+        reviewData.imageUrls = [];
+      }
+
       // 이미지 URL 처리 - 자동저장된 base64 또는 blob URL 업로드
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
         const blobUrls = reviewData.imageUrls.filter((url: string) =>
           url.startsWith("blob:")
         );
+        const base64Urls = reviewData.imageUrls.filter((url: string) =>
+          url.startsWith("data:")
+        );
         const cdnUrls = reviewData.imageUrls.filter(
-          (url: string) => !url.startsWith("blob:")
+          (url: string) => !url.startsWith("blob:") && !url.startsWith("data:")
         );
 
-        if (blobUrls.length > 0) {
+        let uploadedUrls: string[] = [];
+
+        // base64 이미지가 있으면 업로드
+        if (base64Urls.length > 0) {
           try {
             const { imageUploadAPI } = await import("../../api/imageUpload");
-
-            // 자동저장된 base64 이미지가 있으면 사용, 없으면 blob URL 업로드
-            const isDormitoryType = review.housingType === "기숙사";
-            const savedBase64Images = isDormitoryType
-              ? autoSavedBase64ImagesRef.current.dormitoryImages
-              : autoSavedBase64ImagesRef.current.reviewImages;
-
-            let uploadedUrls: string[];
-
-            if (savedBase64Images.length > 0) {
-              // 자동저장된 base64 이미지 업로드
-              try {
-                uploadedUrls = await imageUploadAPI.uploadBase64Images(
-                  savedBase64Images,
-                  "review"
-                );
-              } catch (base64Error: any) {
-                // 401 인증 오류인 경우
-                if (base64Error.response?.status === 401) {
-                  alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
-                } else {
-                  alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
-                }
-
-                setIsSubmitting(false);
-                return;
-              }
-            } else if (blobUrls.length > 0) {
-              // base64가 없으면 blob URL로 직접 업로드 시도
-              try {
-                uploadedUrls = await imageUploadAPI.uploadBlobUrls(
-                  blobUrls,
-                  "review"
-                );
-              } catch (blobError: any) {
-                // 401 인증 오류인 경우
-                if (blobError.response?.status === 401) {
-                  alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
-                } else {
-                  alert(
-                    "새로고침으로 인해 이미지 데이터가 손실되었습니다. 이미지를 다시 선택해 주세요."
-                  );
-                }
-
-                setIsSubmitting(false);
-                return;
-              }
-            } else {
-              // 업로드할 이미지가 없는 경우
-              uploadedUrls = [];
-            }
-
-            // 최종 이미지 URL 목록 구성
-            reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
-          } catch (uploadError) {
-            // 업로드 실패 시 사용자에게 알림
-            alert(
-              `이미지 업로드에 실패했습니다: ${
-                uploadError instanceof Error
-                  ? uploadError.message
-                  : "알 수 없는 오류"
-              }. 다시 시도해 주세요.`
+            uploadedUrls = await imageUploadAPI.uploadBase64Images(
+              base64Urls,
+              "review"
             );
+          } catch (base64Error: any) {
+            if (base64Error.response?.status === 401) {
+              alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            } else {
+              alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
+            }
             setIsSubmitting(false);
-            return; // 업로드 실패 시 리뷰 제출 중단
+            return;
           }
         }
+        // blob URL이 있으면 업로드
+        else if (blobUrls.length > 0) {
+          try {
+            const { imageUploadAPI } = await import("../../api/imageUpload");
+            uploadedUrls = await imageUploadAPI.uploadBlobUrls(
+              blobUrls,
+              "review"
+            );
+          } catch (blobError: any) {
+            if (blobError.response?.status === 401) {
+              alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            } else {
+              alert("이미지 업로드에 실패했습니다. 다시 시도해 주세요.");
+            }
+            setIsSubmitting(false);
+            return;
+          }
+        }
+
+        // 최종 이미지 URL 목록 구성
+        reviewData.imageUrls = [...cdnUrls, ...uploadedUrls];
       }
 
       // 실제 API 호출
@@ -551,11 +583,14 @@ const ReviewConfirmPage: React.FC = () => {
       } catch (error: any) {
         setIsSubmitting(false);
 
-        // 이미지 개수 오류에 대한 특별 처리
+        // 에러 메시지 처리
         const errorMessage = error.response?.data?.message;
+
+        // 이미지 개수 관련 에러인 경우 무시하고 빈 배열로 재시도하지 않음
         if (errorMessage && errorMessage.includes("이미지 개수")) {
+          // 백엔드에서 이미지 필수 정책이 있는 경우에 대한 안내
           alert(
-            "사진이 부족합니다. 일반 건물 및 기숙사 리뷰는 2-20장, 공인중개사 리뷰는 최대 20장의 사진이 필요합니다."
+            "현재 백엔드 정책상 이미지 업로드가 필수입니다. 사진을 추가해주세요."
           );
         } else {
           alert(
@@ -572,9 +607,11 @@ const ReviewConfirmPage: React.FC = () => {
   const navigateToHousingType = () => {
     navigate("/review/type", {
       state: {
-        ...review,
+        ...locationState,
+        housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -582,8 +619,10 @@ const ReviewConfirmPage: React.FC = () => {
     navigate("/review/address", {
       state: {
         ...locationState,
+        housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -672,6 +711,30 @@ const ReviewConfirmPage: React.FC = () => {
     }
   };
 
+  const navigateToPhotos = () => {
+    navigate("/review/room-info", {
+      state: {
+        address: {
+          roadAddress: review.address || "",
+          jibunAddress: review.addressDetail || "",
+          buildingName: review.detailedAddress || "",
+        },
+        buildingName: review.detailedAddress || "",
+        floor: review.floorType || "",
+        paymentType: review.contractType || locationState?.paymentType || "",
+        priceData: {
+          deposit: review.deposit || 0,
+          monthlyRent: review.monthlyRent || 0,
+          managementFee: review.managementFee || 0,
+        },
+        roomData: locationState?.roomData,
+        housingType: review.housingType,
+        from: "confirm",
+      },
+      replace: true,
+    });
+  };
+
   const navigateToPros = () => {
     navigate("/review/filter-ad", {
       state: {
@@ -683,6 +746,7 @@ const ReviewConfirmPage: React.FC = () => {
         housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -697,6 +761,7 @@ const ReviewConfirmPage: React.FC = () => {
         housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -711,6 +776,7 @@ const ReviewConfirmPage: React.FC = () => {
         housingType: review.housingType,
         from: "confirm",
       },
+      replace: true,
     });
   };
 
@@ -962,6 +1028,30 @@ const ReviewConfirmPage: React.FC = () => {
                 </div>
               </>
             )}
+
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToPhotos)}
+            >
+              <span className={styles.label}>사진</span>
+              <div className={styles.value}>
+                <div className={styles.photosContainer}>
+                  {review.images && review.images.length > 0 ? (
+                    review.images.slice(0, 3).map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`사진 ${index + 1}`}
+                        className={styles.photoThumbnail}
+                      />
+                    ))
+                  ) : (
+                    <span className={styles.valueText}>사진을 추가해주세요</span>
+                  )}
+                </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
 
             <div
               className={styles.infoItem}

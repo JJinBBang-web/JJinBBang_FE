@@ -50,14 +50,14 @@ const Review: React.FC = () => {
 
   // 토큰 여부 확인
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    setIsLoggedIn(!!token);
+      const token = sessionStorage.getItem("accessToken");
+      setIsLoggedIn(!!token);
   }, []);
 
   // 미인증 여부 확인
   useEffect(() => {
-    const verification = localStorage.getItem("verificationStatus");
-    setVerificationStatus(verification === "unverified");
+      const verification = sessionStorage.getItem("verificationStatus");
+      setVerificationStatus(verification === 'unverified');
   }, []);
 
   const { data: userData, isSuccess: isSuccessUser } = useQuery({
@@ -118,7 +118,14 @@ const Review: React.FC = () => {
   }, [location.state, navigate]);
 
   const handleBack = () => {
-    navigate(-1);
+    // location.state에서 from 정보 확인
+    if (location.state?.from === 'mypage') {
+      navigate('/mypage');
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
   };
 
   const handleCloseModal = () => {

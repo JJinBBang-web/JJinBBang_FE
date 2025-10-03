@@ -6,15 +6,15 @@ import {
   JjinAgencyFilterState,
   FilterCategory,
   FilterItem,
-} from '../../recoil/util/filterRecoilState';
+} from "../../recoil/util/filterRecoilState";
 // 기숙사 필터 import 추가
-import { DormFilterState } from '../../recoil/util/dormFilterState';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import CancelModal from '../../components/review/CancelModal';
-import { useCancelModal } from '../../util/useCancelModal';
-import styles from '../../styles/review/ReviewAdvantage.module.css';
-import closeIcon from '../../assets/image/iconClose.svg';
-import backArrowIcon from '../../assets/image/backArrowIcon.svg';
+import { DormFilterState } from "../../recoil/util/dormFilterState";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import CancelModal from "../../components/review/CancelModal";
+import { useCancelModal } from "../../util/useCancelModal";
+import styles from "../../styles/review/ReviewAdvantage.module.css";
+import closeIcon from "../../assets/image/iconClose.svg";
+import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
 interface LocationState {
   photos?: string[];
@@ -37,7 +37,7 @@ const ReviewDisadvantagePage: React.FC = () => {
   const [review, setReview] = useRecoilState(reviewState);
 
   // 기숙사 유형인지 체크
-  const isDormitory = review.housingType === '기숙사';
+  const isDormitory = review.housingType === "기숙사";
 
   // 건물 유형에 따라 필터 선택
   const currentFilters = isDormitory ? dormFilters : filters;
@@ -88,7 +88,7 @@ const ReviewDisadvantagePage: React.FC = () => {
     "관리비가 비싸요": "관리비가 합리적이에요",
     "인터넷이 느려요": "인터넷이 잘 돼요",
     "관리가 부족해요": "관리가 정기적이에요",
-    "이사가 힘들었어요": "이사가 편했어요"
+    "이사가 힘들었어요": "이사가 편했어요",
   };
 
   const handleFilterClick = (label: string) => {
@@ -104,12 +104,12 @@ const ReviewDisadvantagePage: React.FC = () => {
         // 상반된 태그가 장점에서 선택되었는지 확인
         const oppositeTag = oppositeTagMapping[label];
         const selectedAdvantages = advantages || review.pros || [];
-        
+
         if (oppositeTag && selectedAdvantages.includes(oppositeTag)) {
           alert("같은 항목이 장점으로 선택되었습니다!");
           return prev;
         }
-        
+
         // 최대 선택 수 미만이고 상반된 태그가 없는 경우 추가
         return [...prev, label];
       }
@@ -122,7 +122,7 @@ const ReviewDisadvantagePage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedFilters.length < 3) {
-      alert('최소 3개의 장점을 선택해 주세요!');
+      alert("최소 3개의 장점을 선택해 주세요!");
       return;
     }
 
@@ -156,9 +156,14 @@ const ReviewDisadvantagePage: React.FC = () => {
         state: {
           ...location.state,
         },
+        replace: true,
       });
     } else {
-      navigate(-1);
+      // 이전 페이지로 이동 (장점 페이지로)
+      navigate("/review/filter-ad", {
+        state: location.state,
+        replace: false,
+      });
     }
   };
 

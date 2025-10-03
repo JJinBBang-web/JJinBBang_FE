@@ -59,7 +59,7 @@ const MyPage: React.FC = () => {
             : 'unverified';
 
         // 로컬 상태 확인 (사용자가 방금 인증서를 업로드했을 수 있음)
-        const localStatus = localStorage.getItem('verificationStatus');
+        const localStatus = sessionStorage.getItem('verificationStatus');
         
         // 로컬에 'pending'이 있고 API가 아직 '미인증'을 반환하면 로컬 상태 유지
         const finalVerificationStatus = 
@@ -81,16 +81,16 @@ const MyPage: React.FC = () => {
           isVerified: finalVerificationStatus === 'verified',
         }));
 
-        if (email) localStorage.setItem('email', email);
-        if (university) localStorage.setItem('university', university);
-        // localStorage 상태도 최종 결정된 상태로 업데이트
-        localStorage.setItem('verificationStatus', finalVerificationStatus);
+        if (email) sessionStorage.setItem('email', email);
+        if (university) sessionStorage.setItem('university', university);
+        // sessionStorage 상태도 최종 결정된 상태로 업데이트
+        sessionStorage.setItem('verificationStatus', finalVerificationStatus);
       }
     } catch (error: any) {
       console.error('유저 정보 조회 실패:', error);
       if (error.response?.status === 401) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
         setAuth({
           isAuthenticated: false,
           email: undefined,
@@ -135,11 +135,11 @@ const MyPage: React.FC = () => {
     }
   };
 
-  // localStorage에서 인증 상태 복원
+  // sessionStorage에서 인증 상태 복원
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    const email = localStorage.getItem('email');
-    const verificationStatus = localStorage.getItem('verificationStatus') as
+    const accessToken = sessionStorage.getItem('accessToken');
+    const email = sessionStorage.getItem('email');
+    const verificationStatus = sessionStorage.getItem('verificationStatus') as
       | 'verified'
       | 'unverified'
       | 'pending';
@@ -392,6 +392,9 @@ const MyPage: React.FC = () => {
           </div>
           <div className={styles.reviewContainer}>
             <h2>나의 찐빵</h2>
+            {auth.isAuthenticated && userReviews.length > 0 && (
+              <div className={styles.divider} />
+            )}
             {renderReviewSection()}
           </div>
         </div>
