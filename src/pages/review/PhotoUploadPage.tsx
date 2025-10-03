@@ -137,8 +137,8 @@ const PhotoUploadPage: React.FC = () => {
     });
   };
 
-  // 최소 2장의 사진이 있어야 다음 버튼 활성화 (공인중개사는 예외)
-  const isNextEnabled = photos.length >= 2 || housingType === "공인중개사";
+  // 사진 업로드는 선택사항 (항상 다음 버튼 활성화)
+  const isNextEnabled = true;
 
   return (
     <div className="content">
@@ -165,9 +165,7 @@ const PhotoUploadPage: React.FC = () => {
             ? "현장 사진 등 어떤 정보든 좋아요!"
             : "찐거주 사진"}
           &nbsp;
-          <span>
-            {housingType === "공인중개사" ? "(필수 항목 아님)" : "(2장 이상)"}
-          </span>
+          <span>(필수 항목 아님)</span>
         </div>
 
         <div className={styles.scrollContainer}>

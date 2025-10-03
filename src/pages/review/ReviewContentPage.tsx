@@ -106,8 +106,8 @@ const ReviewContentPage: React.FC = () => {
       return;
     }
 
-    if (trimmedLength < 100) {
-      alert("최소 100자 이상 작성해야 해요!");
+    if (trimmedLength < 50) {
+      alert("최소 50자 이상 작성해야 해요!");
       return;
     }
 
@@ -200,7 +200,7 @@ const ReviewContentPage: React.FC = () => {
         </button>
         <button
           className={`${styles.nextButton} ${
-            content.trim().length >= 100 ? styles.enabled : ""
+            content.trim().length >= 50 ? styles.enabled : ""
           }`}
           onClick={handleNext}
         >

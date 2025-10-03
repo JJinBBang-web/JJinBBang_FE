@@ -505,15 +505,13 @@ const ReviewConfirmPage: React.FC = () => {
           : (latestAutoSavedData.reviewBase64Images || []);
       }
 
-      // 최종 이미지 데이터 검증
-      if (finalImageData.length === 0) {
-        alert("이미지 데이터를 찾을 수 없습니다. 리뷰 작성 과정을 다시 진행해 주세요.");
-        setIsSubmitting(false);
-        return;
-      }
-
       // 최종 이미지 데이터를 reviewData에 할당
       reviewData.imageUrls = finalImageData;
+
+      // 이미지가 없는 경우 빈 배열로 설정 (공인중개사는 이미지 없이 가능)
+      if (!reviewData.imageUrls || reviewData.imageUrls.length === 0) {
+        reviewData.imageUrls = [];
+      }
 
       // 이미지 URL 처리 - 자동저장된 base64 또는 blob URL 업로드
       if (reviewData.imageUrls && reviewData.imageUrls.length > 0) {
@@ -584,11 +582,14 @@ const ReviewConfirmPage: React.FC = () => {
       } catch (error: any) {
         setIsSubmitting(false);
 
-        // 이미지 개수 오류에 대한 특별 처리
+        // 에러 메시지 처리
         const errorMessage = error.response?.data?.message;
+
+        // 이미지 개수 관련 에러인 경우 무시하고 빈 배열로 재시도하지 않음
         if (errorMessage && errorMessage.includes("이미지 개수")) {
+          // 백엔드에서 이미지 필수 정책이 있는 경우에 대한 안내
           alert(
-            "사진이 부족합니다. 일반 건물 및 기숙사 리뷰는 2-20장, 공인중개사 리뷰는 최대 20장의 사진이 필요합니다."
+            "현재 백엔드 정책상 이미지 업로드가 필수입니다. 사진을 추가해주세요."
           );
         } else {
           alert(
