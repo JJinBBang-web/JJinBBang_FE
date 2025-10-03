@@ -1,7 +1,6 @@
 // src/util/kakaoAuth.ts
 const KAKAO_CLIENT_ID = process.env.REACT_APP_KAKAO_CLIENT_ID || '';
-// const REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI || '';
-const REST_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
+
 const REDIRECT_URI =
   process.env.REACT_APP_KAKAO_REDIRECT_URI || `${window.location.origin}/login/kakao`;
 

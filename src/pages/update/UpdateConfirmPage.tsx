@@ -302,6 +302,18 @@ const UpdateConfirmPage: React.FC = () => {
       });
     };
 
+    const truncateReviewText = (text: string): string => {
+      if (!text) return "후기를 작성해주세요";
+
+      const maxChars = 68;
+
+      if (text.length > maxChars) {
+        return text.slice(0, maxChars) + "...";
+      }
+
+      return text;
+    };
+
     // Request 매핑 함수
     const buildUpdatePayload = (r : ReviewState, finalRating: number) : UpdateReviewRequest => {
       // 이미지 처리
@@ -669,8 +681,9 @@ const UpdateConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div className={styles.reviewTextContainer}>
                   <span className={styles.reviewText}>
-                    {review?.content ||
-                      review?.description}
+                      {truncateReviewText(
+                        review?.content || review?.description || ""
+                      )}
                   </span>
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />

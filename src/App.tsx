@@ -59,6 +59,7 @@ import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 import UpdateDormitoryConditionsPage from "./pages/update/UpdateDormitoryConditionsPage";
 import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitiesPage";
 import { hideNavState } from "./recoil/util/modalState";
+import TagManager from "react-gtm-module";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,12 +75,21 @@ const AppContent: React.FC = () => {
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
+  const accessToken = localStorage.getItem("accessToken");
   
+  useEffect(() => {
+    TagManager.dataLayer({
+      dataLayer: {
+        event: "pageview",
+        pagePath: location.pathname,
+      },
+    });
+  }, [location]);
+
   // 경로 변환 시 nav 초기화
   useEffect(() => {
     setHideNav(false);
   }, [location.pathname, setHideNav]);
-
 
   const {
     data: userData,
@@ -89,10 +99,10 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
+      if (!accessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
-    enabled: isLogin,
     refetchOnWindowFocus: false,
   });
 
@@ -102,7 +112,7 @@ const AppContent: React.FC = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, [isSuccessUser, location.pathname]);
+  }, [isSuccessUser]);
 
   const hiddenNavPaths = [
     "/auth/*",
