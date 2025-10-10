@@ -32,7 +32,6 @@ export const useReport = () => {
         opinion,
       };
 
-      console.log(body);
       const res = await postAPI(REPORT_ENDPOINT, body, true);
       return res;
     },

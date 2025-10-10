@@ -493,8 +493,6 @@ const UpdateConfirmPage: React.FC = () => {
       );
     };
 
-    console.log(review);
-
     return (
     <div className="content">
       <div className={styles.container}>

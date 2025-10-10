@@ -110,8 +110,6 @@ const Review: React.FC = () => {
     }
   }, [data]);
 
-  console.log(location.state?.from);
-
   useEffect(() => {
     if (location.state?.from === "update-exit") {
       // ✅ 리뷰B(방금 replace로 온 엔트리)를 pop 해서 리뷰A로 이동
