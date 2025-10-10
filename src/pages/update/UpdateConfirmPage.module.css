@@ -404,6 +404,23 @@
   cursor: pointer;
 }
 
+/* 사진 섹션 스타일 */
+.photosContainer {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  align-items: center;
+}
+
+.photoThumbnail {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+
 /* 스크롤바 스타일링 */
 .pageContent::-webkit-scrollbar {
   width: 4px;
