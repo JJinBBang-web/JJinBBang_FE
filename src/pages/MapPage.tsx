@@ -604,7 +604,6 @@ const MapPage = () => {
     return (
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
-            {isLoading ? <Spinner /> :
             <div className={styles.map}>
                 <Map
                 center={mapCenter}
@@ -661,6 +660,16 @@ const MapPage = () => {
 
                 }}
                 >
+                    {isLoading ? (
+                        <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            }}>
+                            <Spinner />
+                        </div>
+                    ) : (
                     <MarkerClusterer
                         averageCenter={true}
                         minLevel={3}
@@ -700,9 +709,9 @@ const MapPage = () => {
                             )
                         })}
                     </MarkerClusterer>
+                    )}
                 </Map>
             </div>
-            }
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
                 <SearchBar onSearch={handleSearch} isSearchMode={isSearchMode} onClearSearch={handleClearSearch}/>
