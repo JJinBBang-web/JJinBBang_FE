@@ -110,6 +110,8 @@ const Review: React.FC = () => {
     }
   }, [data]);
 
+  console.log(location.state?.from);
+
   useEffect(() => {
     if (location.state?.from === "update-exit") {
       // ✅ 리뷰B(방금 replace로 온 엔트리)를 pop 해서 리뷰A로 이동
@@ -119,9 +121,7 @@ const Review: React.FC = () => {
 
   const handleBack = () => {
     // location.state에서 from 정보 확인
-    if (location.state?.from === 'mypage') {
-      navigate('/mypage');
-    } else if (window.history.length > 1) {
+    if (window.history.length > 1) {
       navigate(-1);
     } else {
       navigate('/');
