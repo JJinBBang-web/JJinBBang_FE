@@ -11,6 +11,7 @@ import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import styles from "../../styles/review/ReviewAdvantage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -56,6 +57,9 @@ const ReviewAdvantagePage: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 자동 저장 기능 추가
+  useReviewAutoSave('filter-ad');
 
   useEffect(() => {
     // housingType이 location.state에서 왔다면 review 상태에 반영

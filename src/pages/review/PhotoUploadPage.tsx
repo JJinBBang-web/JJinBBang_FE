@@ -38,7 +38,7 @@ const PhotoUploadPage: React.FC = () => {
 
   // Recoil 상태 관리
   const [review, setReview] = useRecoilState(reviewState);
-  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('photo-upload');
+  const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('room-info');
 
   // 선택된 사진들의 상태 관리 (blob URLs for preview) - 새로운 리뷰 작성 시에는 빈 배열로 시작
   const [photos, setPhotos] = useState<string[]>([]);

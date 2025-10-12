@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
+import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
 import { reviewAutoSave } from "../../util/reviewAutoSave";
+import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -12,9 +14,15 @@ const ReviewTypePage: React.FC = () => {
   const locationState = location.state || {};
   const { housingType } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
+  const [, setDormitoryReview] = useRecoilState(dormitoryReviewState);
   const [selectedType, setSelectedType] = useState<string | null>(
     review.housingType || null
   );
+  const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
+
+  // 자동 저장 기능 - type 페이지에서는 자동 저장하지 않음
+  // 이유: 빈 상태가 저장되는 것을 방지하기 위해
+  // 다음 페이지부터 자동 저장이 시작됨
 
   const housingTypeNum = (type: string) => {
     if (
@@ -34,13 +42,22 @@ const ReviewTypePage: React.FC = () => {
     // 수정 모드일 경우 기존 상태 복원
     if (locationState.from === "confirm" && review.housingType) {
       setSelectedType(review.housingType);
+    } else if (locationState.from === "autosave") {
+      // 자동 저장 복원에서 온 경우 - 아무것도 하지 않음
+      if (review.housingType) {
+        setSelectedType(review.housingType);
+      }
     } else {
-      // 새로운 리뷰 작성 시작 시 이전 자동저장 데이터 정리
-      reviewAutoSave.clear();
-      // Recoil 상태도 초기화
-      setReview(defaultReviewState);
+      // 새로운 리뷰 작성 시작 - 자동저장 데이터가 있는지 확인
+      const hasAutoSave = reviewAutoSave.hasData();
+      if (hasAutoSave) {
+        // 자동 저장 데이터가 있으면 바텀 시트 표시
+        setShowAutoSaveSheet(true);
+      }
+      // 자동저장 데이터가 없어도 초기화하지 않음
+      // 이유: 초기화된 빈 상태가 자동 저장되는 것을 방지
     }
-  }, [locationState, review, setReview]);
+  }, [locationState.from]);
 
   const handleTypeSelect = (type: string) => {
     if (type === "공인중개사") {
@@ -101,9 +118,57 @@ const ReviewTypePage: React.FC = () => {
     }
   };
 
+  // 자동 저장 복원 - 이어서 작성
+  const handleContinueFromAutoSave = () => {
+    const savedData = reviewAutoSave.load();
+    if (savedData) {
+      // Recoil 상태 복원
+      if (savedData.reviewState) {
+        setReview(savedData.reviewState);
+      }
+      if (savedData.dormitoryReviewState) {
+        setDormitoryReview(savedData.dormitoryReviewState);
+      }
+
+      // 마지막 작성 페이지로 이동
+      const lastPage = reviewAutoSave.getLastEditedPage();
+      if (lastPage) {
+        setShowAutoSaveSheet(false);
+        navigate(lastPage.path, { state: lastPage.state });
+      } else {
+        // 페이지를 찾을 수 없으면 현재 페이지에서 계속
+        setShowAutoSaveSheet(false);
+      }
+    } else {
+      setShowAutoSaveSheet(false);
+    }
+  };
+
+  // 자동 저장 복원 - 새롭게 작성
+  const handleNewStartFromAutoSave = () => {
+    // 자동 저장 데이터 삭제
+    reviewAutoSave.clear();
+    // Recoil 상태 초기화
+    setReview(defaultReviewState);
+    // 바텀 시트 닫기
+    setShowAutoSaveSheet(false);
+  };
+
+  // 자동 저장 복원 - 닫기
+  const handleCloseAutoSaveSheet = () => {
+    setShowAutoSaveSheet(false);
+  };
+
   return (
-    <div className="content" style={{ backgroundColor: "var(--white)" }}>
-      <div className={styles.container}>
+    <>
+      <AutoSaveRestoreSheet
+        isOpen={showAutoSaveSheet}
+        onClose={handleCloseAutoSaveSheet}
+        onContinue={handleContinueFromAutoSave}
+        onNewStart={handleNewStartFromAutoSave}
+      />
+      <div className="content" style={{ backgroundColor: "var(--white)" }}>
+        <div className={styles.container}>
         <header className={styles.header}>
           <button className={styles.backButton} onClick={handleBack}>
             <img src={backArrowIcon} alt="back" />
@@ -161,6 +226,7 @@ const ReviewTypePage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

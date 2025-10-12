@@ -12,6 +12,7 @@ import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import styles from "../../styles/review/ReviewAdvantage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -54,6 +55,9 @@ const ReviewDisadvantagePage: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 자동 저장 기능 추가
+  useReviewAutoSave('filter-disad');
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
