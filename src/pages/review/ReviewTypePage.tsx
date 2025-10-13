@@ -69,16 +69,20 @@ const ReviewTypePage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedType) {
-      // Recoil 상태 업데이트
-      setReview((prev) => ({
-        ...prev,
-        housingType: selectedType,
-      }));
-
-      if (housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
+      // housingType 변경 시 전체 리셋이 필요한 경우 체크
+      if (housingType && housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
+        // 유형 카테고리가 변경되면 초기화 후 새로운 housingType 설정
+        setReview({
+          ...defaultReviewState,
+          housingType: selectedType,
+        });
         locationState.from = null;
-        navigate(location.pathname, { state: null, replace: true });
-        setReview(defaultReviewState)
+      } else {
+        // 일반적인 경우: 기존 데이터 유지하면서 housingType만 업데이트
+        setReview((prev) => ({
+          ...prev,
+          housingType: selectedType,
+        }));
       }
 
       // 수정 모드인지 확인
