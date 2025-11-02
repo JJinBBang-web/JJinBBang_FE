@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAPI } from '../api/baseAPI';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilValue } from 'recoil';
+import MetaTag from '../util/SEOMetaTag';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -158,6 +159,14 @@ const Home: React.FC = () => {
   }
 
   return (
+    <>
+    <MetaTag
+        title="찐빵 | 자취 후기 공유 플랫폼"
+        description="대학교 주변 원룸, 기숙사, 부동산 리뷰를 한눈에!"
+        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산"
+        imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
+        url="https://jjinbbang.kr/"
+      />
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.status_bar} />
@@ -224,6 +233,7 @@ const Home: React.FC = () => {
       </div>
       <div />
     </div>
+    </>
   );
 };
 
