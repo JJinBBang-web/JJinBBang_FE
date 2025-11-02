@@ -22,6 +22,7 @@ import {
 } from "@tanstack/react-query";
 import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
+import MetaTag from "../util/SEOMetaTag";
 
 const QUERY_KEYS = {
   heartListData: "heartListData",
@@ -148,6 +149,13 @@ const Heart: React.FC = () => {
 
   return (
     <>
+    <MetaTag
+        title="찐빵 | 관심 목록"
+        description="내가 찜한 원룸, 기숙사, 부동산 리뷰를 한눈에 확인해보세요!"
+        keywords="찐빵, 관심목록, 북마크, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산"
+        imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
+        url="https://jjinbbang.kr/heart"
+    />
       <div className={styles.container}>
         <div className={styles.header} />
         <Banner />
