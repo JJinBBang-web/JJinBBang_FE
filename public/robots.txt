@@ -2,9 +2,6 @@
 # *
 User-agent: *
 Disallow: /404
-
-# *
-User-agent: *
 Allow: /
 
 # Host
