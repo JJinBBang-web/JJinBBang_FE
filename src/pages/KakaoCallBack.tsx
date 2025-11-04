@@ -1,4 +1,4 @@
-// src/pages/KakaoCallback.tsx
+// src/components/KakaoCallback.jsx
 
 import React, { useEffect, useState } from "react";
 import { redirect, useNavigate } from "react-router-dom";
@@ -58,6 +58,7 @@ export const kakaoLogin = async (authCode: string) => {
   const contentType = response.headers.get("content-type");
   if (!contentType || !contentType.includes("application/json")) {
     const text = await response.text();
+    console.error("❌ API returned non-JSON response:", text);
     throw new Error(
       `API endpoint returned HTML instead of JSON. Status: ${response.status}`
     );
@@ -98,6 +99,10 @@ export const getUserInfo = async () => {
   return response.json();
 };
 
+/**
+ * 카카오 로그인 후, 리다이렉트되는 페이지
+ * URL 예: http://localhost:3000/kakao/callback?code=xxxx
+ */
 function KakaoCallBack() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -117,6 +122,7 @@ function KakaoCallBack() {
           const response = await kakaoLogin(code);
 
           if (response.data.accessToken) {
+            // console.log('로그인 성공, 토큰 저장 완료');
             setTokens({
               accessToken: response.data.accessToken,
               refreshToken: response.data.refreshToken,
@@ -125,15 +131,36 @@ function KakaoCallBack() {
             setIsLoggedIn(true);
             navigate("/mypage");
           } else if (response.data.signupToken) {
+            // console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
             setSignupToken(response.data.signupToken);
             setUserEmail(response.data.user?.email || "");
             setIsLoading(false);
             setShowTerms(true);
+            // try {
+            //   const { code: agreeCode, message, data } = await agreeToTerms();
+            //   console.log("약관 동의 응답:", agreeCode, message, data);
+
+            //   if (agreeCode === 200) {
+            //     setTokens({
+            //       accessToken: data.accessToken,
+            //       refreshToken: data.refreshToken,
+            //     });
+            //     console.log("약관 동의 및 토큰 설정 완료");
+            //     setIsLoggedIn(true);
+            //     navigate("/mypage");
+            //   } else {
+            //     console.error("약관 동의 실패:", message);
+            //   }
+            // } catch (err) {
+            //   console.error("약관 동의 요청 중 에러:", err);
+            // }
           } else {
+            console.error("❌ 예상하지 못한 응답 구조:", response.data);
             setIsLoading(false);
             navigate("/mypage");
           }
         } catch (err) {
+          console.error("로그인 요청 중 에러:", err);
           setIsLoading(false);
           navigate("/mypage");
         }
@@ -154,6 +181,7 @@ function KakaoCallBack() {
       setShowTerms(false);
       navigate("/mypage");
     } catch (error) {
+      console.error("로그인 취소 처리 중 오류:", error);
       clearTokens();
       setShowTerms(false);
       navigate("/mypage");
@@ -166,6 +194,7 @@ function KakaoCallBack() {
       const result = await agreeToTerms();
 
       if (result.code === 200) {
+        // console.log('약관 동의 성공');
         setTokens({
           accessToken: result.data.accessToken,
           refreshToken: result.data.refreshToken,
@@ -178,9 +207,11 @@ function KakaoCallBack() {
         setShowTerms(false);
         setShowComplete(true);
       } else {
+        console.error("약관 동의 실패:", result.message);
         await handleTermsClose();
       }
     } catch (err) {
+      console.error("약관 동의 요청 중 에러:", err);
       await handleTermsClose();
     }
   };
