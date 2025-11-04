@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
 import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
-import { reviewAutoSave } from "../../util/reviewAutoSave";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -90,6 +90,14 @@ const ReviewTypePage: React.FC = () => {
           },
         });
       } else {
+        // "다음" 버튼 클릭 시:
+        // 1. 현재 페이지 데이터를 즉시 저장 (다음 step으로)
+        reviewAutoSave.save({
+          reviewState: review,
+          dormitoryReviewState: null,
+          currentStep: REVIEW_STEPS.ADDRESS_INPUT  // 다음 페이지
+        });
+
         // 모든 타입에 대해 주소 입력 페이지로 이동 (기숙사 포함)
         navigate('/review/input-address', {
           state: {

@@ -13,6 +13,7 @@ import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/ReviewAdvantage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -145,6 +146,13 @@ const ReviewDisadvantagePage: React.FC = () => {
         },
       });
     } else {
+      // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.CONTENT
+      });
+
       navigate("/review/content", {
         state: {
           ...location.state,

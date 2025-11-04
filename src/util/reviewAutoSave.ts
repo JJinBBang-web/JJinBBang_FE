@@ -29,6 +29,27 @@ export const REVIEW_STEPS = {
   CONFIRM: 'confirm',
 };
 
+// 단계별 다음 페이지 매핑
+// 주의: 일부 단계는 housingType이나 contractType에 따라 다음 단계가 달라질 수 있음
+// 이 경우 각 페이지에서 조건부로 nextStep을 결정해야 함
+export const STEP_FLOW: { [key: string]: string } = {
+  'type': 'input-address',
+  'input-address': 'floor', // 일반적인 경우
+  'floor': 'price', // 기본값, 실제로는 housingType에 따라 달라짐
+  'dormitory': 'dormitory-conditions',
+  'dormitory-conditions': 'dormitory-amenities',
+  'dormitory-amenities': 'room-info',
+  'agency': 'room-info',
+  'price': 'room-info', // 일반 주거의 경우
+  'jeonse': 'room-info',
+  'wolse': 'room-info',
+  'room-info': 'filter-ad',
+  'filter-ad': 'filter-disad',
+  'filter-disad': 'content',
+  'content': 'confirm',
+  'confirm': 'confirm', // 마지막 단계
+};
+
 const AUTO_SAVE_KEY = 'review_auto_save';
 const AUTO_SAVE_EXPIRY = 24 * 60 * 60 * 1000; // 24시간
 
@@ -443,145 +464,186 @@ export const reviewAutoSave = {
     const isAgency = review.housingType === '공인중개사';
     const currentStep = data.currentStep;
 
+    // 현재 단계에 해당하는 페이지 맵 정의
+    const currentPageMap: { [key: string]: { path: string; state: any } } = {
+      'type': {
+        path: '/review/type',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'input-address': {
+        path: '/review/input-address',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'address': {
+        path: '/review/input-address',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'floor': {
+        path: '/review/floor',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          from: 'autosave',
+        }
+      },
+      'dormitory': {
+        path: '/review/dormitory',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          from: 'autosave',
+        }
+      },
+      'dormitory-conditions': {
+        path: '/review/dormitory-conditions',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'dormitory-amenities': {
+        path: '/review/dormitory-amenities',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'agency': {
+        path: '/review/agency',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'price': {
+        path: '/review/price',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          from: 'autosave',
+        }
+      },
+      'jeonse': {
+        path: '/review/jeonse',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          paymentType: review.contractType || '',
+          from: 'autosave',
+        }
+      },
+      'wolse': {
+        path: '/review/wolse',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          paymentType: review.contractType || '',
+          from: 'autosave',
+        }
+      },
+      'room-info': {
+        path: '/review/room-info',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          paymentType: review.contractType || '',
+          priceData: {
+            deposit: review.deposit || 0,
+            monthlyRent: review.monthlyRent || 0,
+            managementFee: review.managementFee || 0,
+          },
+          from: 'autosave',
+        }
+      },
+      'filter-ad': {
+        path: '/review/filter-ad',
+        state: {
+          housingType: review.housingType,
+          photos: review.images || [],
+          advantages: review.pros || [],
+          from: 'autosave',
+        }
+      },
+      'filter-disad': {
+        path: '/review/filter-disad',
+        state: {
+          housingType: review.housingType,
+          photos: review.images || [],
+          advantages: review.pros || [],
+          disadvantages: review.cons || [],
+          from: 'autosave',
+        }
+      },
+      'content': {
+        path: '/review/content',
+        state: {
+          housingType: review.housingType,
+          photos: review.images || [],
+          advantages: review.pros || [],
+          disadvantages: review.cons || [],
+          content: review.content || review.description || '',
+          from: 'autosave',
+        }
+      },
+      'confirm': {
+        path: '/review/confirm',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+    };
+
     // currentStep이 있을 때
     if (currentStep) {
-      // 해당 단계가 완료되었는지 확인
-      const isCompleted = reviewAutoSave.isStepCompleted(currentStep, review, dormitory);
-
-      if (isCompleted) {
-        // 완료되었으면 다음 단계로 이동
-        const nextPage = reviewAutoSave.getNextStep(currentStep, review, dormitory);
-        if (nextPage) return nextPage;
-      } else {
-        // 완료되지 않았으면 현재 단계로 이동
-        // 현재 단계의 상태 정보를 포함하여 반환
-        const currentPageMap: { [key: string]: { path: string; state: any } } = {
-          'input-address': {
-            path: '/review/input-address',
-            state: {
-              housingType: review.housingType,
-              from: 'autosave',
-            }
-          },
-          'address': {
-            path: '/review/input-address',
-            state: {
-              housingType: review.housingType,
-              from: 'autosave',
-            }
-          },
-          'floor': {
-            path: '/review/floor',
-            state: {
-              housingType: review.housingType,
-              address: {
-                roadAddress: review.address || '',
-                jibunAddress: review.addressDetail || '',
-                buildingName: review.detailedAddress || '',
-              },
-              buildingName: review.detailedAddress || '',
-              from: 'autosave',
-            }
-          },
-          'price': {
-            path: '/review/price',
-            state: {
-              housingType: review.housingType,
-              address: {
-                roadAddress: review.address || '',
-                jibunAddress: review.addressDetail || '',
-                buildingName: review.detailedAddress || '',
-              },
-              buildingName: review.detailedAddress || '',
-              floor: review.floorType || '',
-              from: 'autosave',
-            }
-          },
-          'jeonse': {
-            path: '/review/jeonse',
-            state: {
-              housingType: review.housingType,
-              address: {
-                roadAddress: review.address || '',
-                jibunAddress: review.addressDetail || '',
-                buildingName: review.detailedAddress || '',
-              },
-              buildingName: review.detailedAddress || '',
-              floor: review.floorType || '',
-              paymentType: review.contractType || '',
-              from: 'autosave',
-            }
-          },
-          'wolse': {
-            path: '/review/wolse',
-            state: {
-              housingType: review.housingType,
-              address: {
-                roadAddress: review.address || '',
-                jibunAddress: review.addressDetail || '',
-                buildingName: review.detailedAddress || '',
-              },
-              buildingName: review.detailedAddress || '',
-              floor: review.floorType || '',
-              paymentType: review.contractType || '',
-              from: 'autosave',
-            }
-          },
-          'room-info': {
-            path: '/review/room-info',
-            state: {
-              housingType: review.housingType,
-              address: {
-                roadAddress: review.address || '',
-                jibunAddress: review.addressDetail || '',
-                buildingName: review.detailedAddress || '',
-              },
-              buildingName: review.detailedAddress || '',
-              floor: review.floorType || '',
-              paymentType: review.contractType || '',
-              priceData: {
-                deposit: review.deposit || 0,
-                monthlyRent: review.monthlyRent || 0,
-                managementFee: review.managementFee || 0,
-              },
-              from: 'autosave',
-            }
-          },
-          'filter-ad': {
-            path: '/review/filter-ad',
-            state: {
-              housingType: review.housingType,
-              photos: review.images || [],
-              advantages: review.pros || [],
-              from: 'autosave',
-            }
-          },
-          'filter-disad': {
-            path: '/review/filter-disad',
-            state: {
-              housingType: review.housingType,
-              photos: review.images || [],
-              advantages: review.pros || [],
-              disadvantages: review.cons || [],
-              from: 'autosave',
-            }
-          },
-          'content': {
-            path: '/review/content',
-            state: {
-              housingType: review.housingType,
-              photos: review.images || [],
-              advantages: review.pros || [],
-              disadvantages: review.cons || [],
-              content: review.content || review.description || '',
-              from: 'autosave',
-            }
-          },
-        };
-
-        const currentPage = currentPageMap[currentStep];
-        if (currentPage) return currentPage;
-      }
+      // "다음" 버튼을 클릭하지 않았다면 현재 페이지에 머물러야 함
+      // 완료 여부와 관계없이 현재 단계로 이동
+      const currentPage = currentPageMap[currentStep];
+      if (currentPage) return currentPage;
     }
 
     // currentStep이 없는 경우 데이터를 기반으로 추론 (하위 호환성)
@@ -787,5 +849,37 @@ export const reviewAutoSave = {
         from: 'autosave',
       },
     };
+  },
+
+  /**
+   * "다음" 버튼 클릭 시 currentStep을 다음 단계로 업데이트하는 함수
+   * 이어서 작성할 때 다음 페이지로 이동하도록 함
+   */
+  updateCurrentStepOnNext: (nextStep: string): void => {
+    try {
+      const autoSaveData = sessionStorage.getItem(AUTO_SAVE_KEY);
+
+      if (autoSaveData) {
+        // 기존 자동저장 데이터가 있으면 currentStep만 업데이트
+        const parsed = JSON.parse(autoSaveData);
+        parsed.currentStep = nextStep;
+        parsed.timestamp = Date.now();
+        sessionStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(parsed));
+        console.log(`[AutoSave] Updated currentStep to: ${nextStep}`);
+      } else {
+        // 자동저장 데이터가 없으면 최소한의 데이터로 생성
+        // 이는 다음 페이지로 이동했을 때를 대비한 것
+        const minimalData = {
+          currentStep: nextStep,
+          timestamp: Date.now(),
+          reviewState: null,
+          dormitoryReviewState: null
+        };
+        sessionStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(minimalData));
+        console.log(`[AutoSave] Created new auto-save with currentStep: ${nextStep}`);
+      }
+    } catch (error) {
+      console.error('Failed to update currentStep:', error);
+    }
   }
 };

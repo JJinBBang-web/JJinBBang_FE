@@ -5,6 +5,7 @@ import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/PriceInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 
@@ -107,6 +108,13 @@ const JeonseInputPage: React.FC = () => {
         },
       });
     } else {
+      // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.ROOM_INFO
+      });
+
       navigate("/review/room-info", {
         state: {
           ...location.state,
