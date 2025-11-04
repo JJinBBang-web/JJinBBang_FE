@@ -254,6 +254,7 @@ const ReviewAdvantagePage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="filter-ad"
         />
       )}
     </div>

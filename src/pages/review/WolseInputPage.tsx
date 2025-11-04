@@ -60,10 +60,17 @@ const WolseInputPage: React.FC = () => {
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<string>>
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    field: 'deposit' | 'monthlyRent' | 'managementFee'
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     setter(value);
+
+    // 실시간으로 review state 업데이트 (자동 저장 트리거)
+    setReview((prev) => ({
+      ...prev,
+      [field]: value === '' ? null : Number(value),
+    }));
   };
 
   const formatNumber = (value: string) => {
@@ -170,7 +177,7 @@ const WolseInputPage: React.FC = () => {
                 type="text"
                 className={styles.input}
                 value={formatNumber(deposit)}
-                onChange={(e) => handleInputChange(e, setDeposit)}
+                onChange={(e) => handleInputChange(e, setDeposit, 'deposit')}
                 placeholder="0"
               />
               <span className={styles.unit}>만원</span>
@@ -184,7 +191,7 @@ const WolseInputPage: React.FC = () => {
                 type="text"
                 className={styles.input}
                 value={formatNumber(monthlyRent)}
-                onChange={(e) => handleInputChange(e, setMonthlyRent)}
+                onChange={(e) => handleInputChange(e, setMonthlyRent, 'monthlyRent')}
                 placeholder="0"
               />
               <span className={styles.unit}>만원</span>
@@ -198,7 +205,7 @@ const WolseInputPage: React.FC = () => {
                 type="text"
                 className={styles.input}
                 value={formatNumber(managementFee)}
-                onChange={(e) => handleInputChange(e, setManagementFee)}
+                onChange={(e) => handleInputChange(e, setManagementFee, 'managementFee')}
                 placeholder="0"
               />
               <span className={styles.unit}>만원</span>
@@ -226,6 +233,7 @@ const WolseInputPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="wolse"
         />
       )}
     </div>

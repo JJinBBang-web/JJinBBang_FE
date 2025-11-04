@@ -216,76 +216,116 @@ export const reviewAutoSave = {
     return hasMeaningfulData;
   },
 
-  // 자동 저장된 데이터를 기반으로 마지막 작성 페이지 경로 반환
-  getLastEditedPage: (): { path: string; state: any } | null => {
-    const data = reviewAutoSave.load();
-    if (!data || !data.reviewState) return null;
-
-    const review = data.reviewState;
-    const dormitory = data.dormitoryReviewState;
+  // 단계별 다음 페이지 결정 헬퍼 함수
+  getNextStep: (currentStep: string, review: any, dormitory: any): { path: string; state: any } | null => {
     const isDormitory = review.housingType === '기숙사';
     const isAgency = review.housingType === '공인중개사';
-    const currentStep = data.currentStep;
 
-    // currentStep을 우선적으로 사용하여 페이지 결정
-    // currentStep이 있으면 해당 단계로 이동, 없으면 데이터 기반으로 추론
-
-    // 확인 페이지
-    if (currentStep === REVIEW_STEPS.CONFIRM) {
-      return {
-        path: '/review/confirm',
+    // 각 단계에서 다음으로 이동할 페이지를 결정
+    const stepFlow: { [key: string]: () => { path: string; state: any } | null } = {
+      'type': () => ({
+        path: '/review/input-address',
+        state: { housingType: review.housingType, from: 'autosave' }
+      }),
+      'input-address': () => ({
+        path: '/review/floor',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          from: 'autosave'
+        }
+      }),
+      'address': () => stepFlow['input-address'](),
+      'floor': () => {
+        if (isDormitory) {
+          return {
+            path: '/review/dormitory',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              from: 'autosave',
+            },
+          };
+        } else if (isAgency) {
+          return {
+            path: '/review/agency',
+            state: { housingType: review.housingType, from: 'autosave' },
+          };
+        } else {
+          return {
+            path: '/review/price',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              from: 'autosave',
+            },
+          };
+        }
+      },
+      'dormitory': () => ({
+        path: '/review/dormitory-conditions',
+        state: { housingType: review.housingType, from: 'autosave' }
+      }),
+      'dormitory-conditions': () => ({
+        path: '/review/dormitory-amenities',
+        state: { housingType: review.housingType, from: 'autosave' }
+      }),
+      'dormitory-amenities': () => ({
+        path: '/review/room-info',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          from: 'autosave',
+        }
+      }),
+      'agency': () => ({
+        path: '/review/room-info',
         state: {
           housingType: review.housingType,
           from: 'autosave',
-        },
-      };
-    }
-
-    // 콘텐츠 작성 페이지
-    if (currentStep === REVIEW_STEPS.CONTENT) {
-      return {
-        path: '/review/content',
-        state: {
-          housingType: review.housingType,
-          photos: review.images || [],
-          advantages: review.pros || [],
-          disadvantages: review.cons || [],
-          content: review.content || review.description || '',
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 단점 선택 페이지
-    if (currentStep === REVIEW_STEPS.FILTER_DISAD) {
-      return {
-        path: '/review/filter-disad',
-        state: {
-          housingType: review.housingType,
-          photos: review.images || [],
-          advantages: review.pros || [],
-          disadvantages: review.cons || [],
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 장점 선택 페이지
-    if (currentStep === REVIEW_STEPS.FILTER_AD) {
-      return {
-        path: '/review/filter-ad',
-        state: {
-          housingType: review.housingType,
-          photos: review.images || [],
-          advantages: review.pros || [],
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 사진 업로드 페이지 (방 정보)
-    if (currentStep === REVIEW_STEPS.ROOM_INFO) {
-      return {
+        }
+      }),
+      'price': () => {
+        const nextPath = review.contractType === '전세' ? '/review/jeonse' : '/review/wolse';
+        return {
+          path: nextPath,
+          state: {
+            housingType: review.housingType,
+            address: {
+              roadAddress: review.address || '',
+              jibunAddress: review.addressDetail || '',
+              buildingName: review.detailedAddress || '',
+            },
+            buildingName: review.detailedAddress || '',
+            floor: review.floorType || '',
+            paymentType: review.contractType || '',
+            from: 'autosave',
+          },
+        };
+      },
+      'jeonse': () => ({
         path: '/review/room-info',
         state: {
           housingType: review.housingType,
@@ -303,164 +343,245 @@ export const reviewAutoSave = {
             managementFee: review.managementFee || 0,
           },
           from: 'autosave',
-        },
-      };
-    }
-
-    // 월세 입력 페이지
-    if (currentStep === REVIEW_STEPS.WOLSE) {
-      return {
-        path: '/review/wolse',
+        }
+      }),
+      'wolse': () => stepFlow['jeonse'](),
+      'room-info': () => ({
+        path: '/review/filter-ad',
         state: {
           housingType: review.housingType,
-          address: {
-            roadAddress: review.address || '',
-            jibunAddress: review.addressDetail || '',
-            buildingName: review.detailedAddress || '',
+          photos: review.images || [],
+          from: 'autosave',
+        }
+      }),
+      'filter-ad': () => ({
+        path: '/review/filter-disad',
+        state: {
+          housingType: review.housingType,
+          photos: review.images || [],
+          advantages: review.pros || [],
+          from: 'autosave',
+        }
+      }),
+      'filter-disad': () => ({
+        path: '/review/content',
+        state: {
+          housingType: review.housingType,
+          photos: review.images || [],
+          advantages: review.pros || [],
+          disadvantages: review.cons || [],
+          from: 'autosave',
+        }
+      }),
+      'content': () => ({
+        path: '/review/confirm',
+        state: {
+          housingType: review.housingType,
+          photos: review.images || [],
+          advantages: review.pros || [],
+          disadvantages: review.cons || [],
+          content: review.content || review.description || '',
+          from: 'autosave',
+        }
+      }),
+      'confirm': () => ({
+        path: '/review/confirm',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      }),
+    };
+
+    const nextStepFn = stepFlow[currentStep];
+    return nextStepFn ? nextStepFn() : null;
+  },
+
+  // 현재 단계가 완료되었는지 확인하는 헬퍼 함수
+  isStepCompleted: (currentStep: string, review: any, dormitory: any): boolean => {
+    const stepValidation: { [key: string]: () => boolean } = {
+      'type': () => !!(review.housingType && review.housingType !== ''),
+      'input-address': () => !!(review.address && review.address !== ''),
+      'address': () => !!(review.address && review.address !== ''),
+      'floor': () => !!(review.floorType && review.floorType !== ''),
+      'dormitory': () => !!(review.detailedAddress && review.detailedAddress !== ''),
+      'dormitory-conditions': () => !!review.dormitoryConditions,
+      'dormitory-amenities': () => !!dormitory?.facilityConditions,
+      'agency': () => !!(review.detailedAddress && review.detailedAddress !== ''),
+      'price': () => !!(review.contractType && review.contractType !== ''),
+      'jeonse': () => (
+        review.deposit !== null && review.deposit !== undefined &&
+        review.managementFee !== null && review.managementFee !== undefined
+      ),
+      'wolse': () => (
+        review.deposit !== null && review.deposit !== undefined &&
+        review.monthlyRent !== null && review.monthlyRent !== undefined &&
+        review.managementFee !== null && review.managementFee !== undefined
+      ),
+      'room-info': () => !!(review.images && review.images.length > 0),
+      'filter-ad': () => !!(review.pros && review.pros.length >= 3), // 최소 3개
+      'filter-disad': () => !!(review.cons && review.cons.length >= 3), // 최소 3개
+      'content': () => {
+        const content = review.content || review.description || '';
+        return content.trim().length >= 50; // 최소 50자
+      },
+      'confirm': () => true, // 확인 페이지는 항상 완료로 간주
+    };
+
+    const validator = stepValidation[currentStep];
+    return validator ? validator() : false;
+  },
+
+  // 자동 저장된 데이터를 기반으로 마지막 작성 페이지 경로 반환
+  getLastEditedPage: (): { path: string; state: any } | null => {
+    const data = reviewAutoSave.load();
+    if (!data || !data.reviewState) return null;
+
+    const review = data.reviewState;
+    const dormitory = data.dormitoryReviewState;
+    const isDormitory = review.housingType === '기숙사';
+    const isAgency = review.housingType === '공인중개사';
+    const currentStep = data.currentStep;
+
+    // currentStep이 있을 때
+    if (currentStep) {
+      // 해당 단계가 완료되었는지 확인
+      const isCompleted = reviewAutoSave.isStepCompleted(currentStep, review, dormitory);
+
+      if (isCompleted) {
+        // 완료되었으면 다음 단계로 이동
+        const nextPage = reviewAutoSave.getNextStep(currentStep, review, dormitory);
+        if (nextPage) return nextPage;
+      } else {
+        // 완료되지 않았으면 현재 단계로 이동
+        // 현재 단계의 상태 정보를 포함하여 반환
+        const currentPageMap: { [key: string]: { path: string; state: any } } = {
+          'input-address': {
+            path: '/review/input-address',
+            state: {
+              housingType: review.housingType,
+              from: 'autosave',
+            }
           },
-          buildingName: review.detailedAddress || '',
-          floor: review.floorType || '',
-          paymentType: review.contractType || '',
-          priceData: {
-            deposit: review.deposit || 0,
-            monthlyRent: review.monthlyRent || 0,
-            managementFee: review.managementFee || 0,
+          'address': {
+            path: '/review/input-address',
+            state: {
+              housingType: review.housingType,
+              from: 'autosave',
+            }
           },
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 전세 입력 페이지
-    if (currentStep === REVIEW_STEPS.JEONSE) {
-      return {
-        path: '/review/jeonse',
-        state: {
-          housingType: review.housingType,
-          address: {
-            roadAddress: review.address || '',
-            jibunAddress: review.addressDetail || '',
-            buildingName: review.detailedAddress || '',
+          'floor': {
+            path: '/review/floor',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              from: 'autosave',
+            }
           },
-          buildingName: review.detailedAddress || '',
-          floor: review.floorType || '',
-          paymentType: review.contractType || '',
-          priceData: {
-            deposit: review.deposit || 0,
-            monthlyRent: review.monthlyRent || 0,
-            managementFee: review.managementFee || 0,
+          'price': {
+            path: '/review/price',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              from: 'autosave',
+            }
           },
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 계약 형태 선택 페이지
-    if (currentStep === REVIEW_STEPS.PRICE) {
-      return {
-        path: '/review/price',
-        state: {
-          housingType: review.housingType,
-          address: {
-            roadAddress: review.address || '',
-            jibunAddress: review.addressDetail || '',
-            buildingName: review.detailedAddress || '',
+          'jeonse': {
+            path: '/review/jeonse',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              paymentType: review.contractType || '',
+              from: 'autosave',
+            }
           },
-          buildingName: review.detailedAddress || '',
-          floor: review.floorType || '',
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 공인중개사 정보 입력 페이지
-    if (currentStep === REVIEW_STEPS.AGENCY) {
-      return {
-        path: '/review/agency',
-        state: {
-          housingType: review.housingType,
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 기숙사 편의시설 페이지
-    if (currentStep === REVIEW_STEPS.DORMITORY_AMENITIES) {
-      return {
-        path: '/review/dormitory-amenities',
-        state: {
-          housingType: review.housingType,
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 기숙사 입주 조건 페이지
-    if (currentStep === REVIEW_STEPS.DORMITORY_CONDITIONS) {
-      return {
-        path: '/review/dormitory-conditions',
-        state: {
-          housingType: review.housingType,
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 기숙사 정보 입력 페이지
-    if (currentStep === REVIEW_STEPS.DORMITORY) {
-      return {
-        path: '/review/dormitory',
-        state: {
-          housingType: review.housingType,
-          address: {
-            roadAddress: review.address || '',
-            jibunAddress: review.addressDetail || '',
-            buildingName: review.detailedAddress || '',
+          'wolse': {
+            path: '/review/wolse',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              paymentType: review.contractType || '',
+              from: 'autosave',
+            }
           },
-          buildingName: review.detailedAddress || '',
-          floor: review.floorType || '',
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 층수 입력 페이지
-    if (currentStep === REVIEW_STEPS.FLOOR) {
-      return {
-        path: '/review/floor',
-        state: {
-          housingType: review.housingType,
-          address: {
-            roadAddress: review.address || '',
-            jibunAddress: review.addressDetail || '',
-            buildingName: review.detailedAddress || '',
+          'room-info': {
+            path: '/review/room-info',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              paymentType: review.contractType || '',
+              priceData: {
+                deposit: review.deposit || 0,
+                monthlyRent: review.monthlyRent || 0,
+                managementFee: review.managementFee || 0,
+              },
+              from: 'autosave',
+            }
           },
-          buildingName: review.detailedAddress || '',
-          from: 'autosave',
-        },
-      };
-    }
+          'filter-ad': {
+            path: '/review/filter-ad',
+            state: {
+              housingType: review.housingType,
+              photos: review.images || [],
+              advantages: review.pros || [],
+              from: 'autosave',
+            }
+          },
+          'filter-disad': {
+            path: '/review/filter-disad',
+            state: {
+              housingType: review.housingType,
+              photos: review.images || [],
+              advantages: review.pros || [],
+              disadvantages: review.cons || [],
+              from: 'autosave',
+            }
+          },
+          'content': {
+            path: '/review/content',
+            state: {
+              housingType: review.housingType,
+              photos: review.images || [],
+              advantages: review.pros || [],
+              disadvantages: review.cons || [],
+              content: review.content || review.description || '',
+              from: 'autosave',
+            }
+          },
+        };
 
-    // 주소 입력 페이지
-    if (currentStep === REVIEW_STEPS.ADDRESS_INPUT || currentStep === REVIEW_STEPS.ADDRESS) {
-      return {
-        path: '/review/input-address',
-        state: {
-          housingType: review.housingType,
-          from: 'autosave',
-        },
-      };
-    }
-
-    // 찐빵 유형 선택 페이지
-    if (currentStep === REVIEW_STEPS.TYPE) {
-      return {
-        path: '/review/type',
-        state: {
-          housingType: review.housingType,
-          from: 'autosave',
-        },
-      };
+        const currentPage = currentPageMap[currentStep];
+        if (currentPage) return currentPage;
+      }
     }
 
     // currentStep이 없는 경우 데이터를 기반으로 추론 (하위 호환성)

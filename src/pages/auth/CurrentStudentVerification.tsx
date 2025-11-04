@@ -31,7 +31,6 @@ const CurrentStudentVerification: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showResendMessage, setShowResendMessage] = useState(false);
-  const [emailSendFailed, setEmailSendFailed] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -75,13 +74,6 @@ const CurrentStudentVerification: React.FC = () => {
       console.log('응답 success 필드:', result.success);
 
       setStep(VerificationStep.CODE_VERIFICATION);
-
-      // API 응답에서 success 필드를 확인하여 실패 처리
-      if (result.success === false) {
-        setEmailSendFailed(true);
-      } else {
-        setEmailSendFailed(false);
-      }
     } catch (error: any) {
       console.log('이메일 전송 에러:', error);
       console.log('응답 상태 코드:', error.response?.status);

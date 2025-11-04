@@ -15,9 +15,7 @@ const ReviewTypePage: React.FC = () => {
   const { housingType } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
   const [, setDormitoryReview] = useRecoilState(dormitoryReviewState);
-  const [selectedType, setSelectedType] = useState<string | null>(
-    review.housingType || null
-  );
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
 
   // 자동 저장 기능 - type 페이지에서는 자동 저장하지 않음
@@ -42,11 +40,6 @@ const ReviewTypePage: React.FC = () => {
     // 수정 모드일 경우 기존 상태 복원
     if (locationState.from === "confirm" && review.housingType) {
       setSelectedType(review.housingType);
-    } else if (locationState.from === "autosave") {
-      // 자동 저장 복원에서 온 경우 - 아무것도 하지 않음
-      if (review.housingType) {
-        setSelectedType(review.housingType);
-      }
     } else {
       // 새로운 리뷰 작성 시작 - 자동저장 데이터가 있는지 확인
       const hasAutoSave = reviewAutoSave.hasData();
@@ -54,8 +47,10 @@ const ReviewTypePage: React.FC = () => {
         // 자동 저장 데이터가 있으면 바텀 시트 표시
         setShowAutoSaveSheet(true);
       }
-      // 자동저장 데이터가 없어도 초기화하지 않음
-      // 이유: 초기화된 빈 상태가 자동 저장되는 것을 방지
+      // 건물 유형 선택을 초기화 (자동 저장된 데이터가 있어도)
+      // 사용자가 '이어서 작성'을 선택하면 해당 페이지로 직접 이동하므로
+      // type 페이지에서는 항상 선택되지 않은 상태로 시작
+      setSelectedType(null);
     }
   }, [locationState.from]);
 

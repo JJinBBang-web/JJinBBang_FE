@@ -258,6 +258,7 @@ const PriceInputPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="price"
         />
       )}
     </div>

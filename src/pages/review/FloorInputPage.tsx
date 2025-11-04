@@ -180,6 +180,7 @@ const FloorInputPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="floor"
         />
       )}
     </div>

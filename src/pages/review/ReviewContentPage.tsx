@@ -212,6 +212,7 @@ const ReviewContentPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="content"
         />
       )}
     </div>

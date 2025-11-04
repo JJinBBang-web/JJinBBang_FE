@@ -244,6 +244,7 @@ const ReviewDisadvantagePage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="filter-disad"
         />
       )}
     </div>
