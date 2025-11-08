@@ -24,7 +24,6 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useCreateReview } from "../../hooks/useCreateReview";
 import { koreanToType } from "../../util/mapping";
-import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import { reviewAutoSave } from "../../util/reviewAutoSave";
 
 interface LocationState {
@@ -53,7 +52,10 @@ interface LocationState {
 const ReviewConfirmPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = useMemo(() => (location.state as LocationState) || {}, [location.state]);
+  const locationState = useMemo(
+    () => (location.state as LocationState) || {},
+    [location.state]
+  );
 
   const [review, setReview] = useRecoilState(reviewState);
   const [dormitoryReview, setDormitoryReview] =
@@ -75,7 +77,8 @@ const ReviewConfirmPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  const { clearAutoSavedData } = useReviewAutoSave("confirm");
+  // ReviewConfirmPage에서는 실시간 자동저장 불필요
+  // 리뷰 제출 시에만 자동저장 데이터 삭제
 
   // 기숙사 유형인지 체크
   const isDormitory = review.housingType === "기숙사";
@@ -124,9 +127,11 @@ const ReviewConfirmPage: React.FC = () => {
           }),
           ...(locationState.content && { content: locationState.content }),
           // 이미지는 locationState의 photos가 없으면 자동저장된 데이터 유지
-          ...(locationState.photos && locationState.photos.length > 0 ?
-            { images: locationState.photos } :
-            autoSavedData.reviewState?.images ? { images: autoSavedData.reviewState.images } : {}),
+          ...(locationState.photos && locationState.photos.length > 0
+            ? { images: locationState.photos }
+            : autoSavedData.reviewState?.images
+              ? { images: autoSavedData.reviewState.images }
+              : {}),
           ...(locationState.address?.roadAddress && {
             address: locationState.address.roadAddress,
           }),
@@ -189,8 +194,8 @@ const ReviewConfirmPage: React.FC = () => {
     const currentFilters = isDormitory
       ? dormFilters
       : isAgency
-      ? agencyFilters
-      : filters;
+        ? agencyFilters
+        : filters;
 
     let iconSrc = "";
     let tagKey = "";
@@ -245,7 +250,7 @@ const ReviewConfirmPage: React.FC = () => {
 
   const handleBack = () => {
     // 확인 페이지에서 뒤로 가기는 콘텐츠 작성 페이지로
-    navigate('/review/content', {
+    navigate("/review/content", {
       state: {
         ...locationState,
         from: null, // confirm에서 돌아가는 것이 아니므로 null로 설정
@@ -282,8 +287,8 @@ const ReviewConfirmPage: React.FC = () => {
       const currentFilters = isDormitory
         ? dormFilters
         : isAgency
-        ? agencyFilters
-        : filters;
+          ? agencyFilters
+          : filters;
 
       // 필터에서 텍스트 매칭으로 코드 찾기
       let found = false;
@@ -368,14 +373,14 @@ const ReviewConfirmPage: React.FC = () => {
               review.floorType === "지하층"
                 ? "BASEMENT"
                 : review.floorType === "저층"
-                ? "LOW"
-                : review.floorType === "중층"
-                ? "MID"
-                : review.floorType === "고층"
-                ? "HIGH"
-                : review.floorType === "옥탑층"
-                ? "ATTIC"
-                : "MID",
+                  ? "LOW"
+                  : review.floorType === "중층"
+                    ? "MID"
+                    : review.floorType === "고층"
+                      ? "HIGH"
+                      : review.floorType === "옥탑층"
+                        ? "ATTIC"
+                        : "MID",
             rating: rating,
             content:
               review.description ||
@@ -385,7 +390,7 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || dormitoryReview.images || [],
           buildingRequest: {
-            buildingCode: review.buildingCode || "",
+            ...(review.buildingCode && { buildingCode: review.buildingCode }),
             name:
               (review as any).dormitoryName ||
               review.detailedAddress ||
@@ -418,7 +423,7 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || [],
           buildingRequest: {
-            buildingCode: review.buildingCode || "",
+            ...(review.buildingCode && { buildingCode: review.buildingCode }),
             name: review.detailedAddress || "공인중개사명",
             type: "AGENCY",
             address: review.address || "",
@@ -443,21 +448,21 @@ const ReviewConfirmPage: React.FC = () => {
               review.floorType === "지하층"
                 ? "BASEMENT"
                 : review.floorType === "저층"
-                ? "LOW"
-                : review.floorType === "중층"
-                ? "MID"
-                : review.floorType === "고층"
-                ? "HIGH"
-                : review.floorType === "옥탑층"
-                ? "ATTIC"
-                : "MID",
+                  ? "LOW"
+                  : review.floorType === "중층"
+                    ? "MID"
+                    : review.floorType === "고층"
+                      ? "HIGH"
+                      : review.floorType === "옥탑층"
+                        ? "ATTIC"
+                        : "MID",
             space: review.space || 25, // 평수 필드 사용, 기본값 25
             rating: rating,
             content: review.description || review.content || "",
           },
           imageUrls: review.images || [],
           buildingRequest: {
-            buildingCode: review.buildingCode || "",
+            ...(review.buildingCode && { buildingCode: review.buildingCode }),
             name: review.detailedAddress || "건물명",
             type: koreanToType[review.housingType] || "APARTMENT",
             address: review.address || "",
@@ -498,20 +503,23 @@ const ReviewConfirmPage: React.FC = () => {
         finalImageData = reviewData.imageUrls;
       }
       // 3. 그래도 없으면 자동저장 데이터에서 직접 확인
-      else if (latestAutoSavedData &&
-               ((isDormitoryType && latestAutoSavedData.dormitoryBase64Images && latestAutoSavedData.dormitoryBase64Images.length > 0) ||
-                (!isDormitoryType && latestAutoSavedData.reviewBase64Images && latestAutoSavedData.reviewBase64Images.length > 0))) {
+      else if (
+        latestAutoSavedData &&
+        ((isDormitoryType &&
+          latestAutoSavedData.dormitoryBase64Images &&
+          latestAutoSavedData.dormitoryBase64Images.length > 0) ||
+          (!isDormitoryType &&
+            latestAutoSavedData.reviewBase64Images &&
+            latestAutoSavedData.reviewBase64Images.length > 0))
+      ) {
         finalImageData = isDormitoryType
-          ? (latestAutoSavedData.dormitoryBase64Images || [])
-          : (latestAutoSavedData.reviewBase64Images || []);
+          ? latestAutoSavedData.dormitoryBase64Images || []
+          : latestAutoSavedData.reviewBase64Images || [];
       }
 
-      // 최종 이미지 데이터를 reviewData에 할당
-      reviewData.imageUrls = finalImageData;
-
-      // 이미지가 없는 경우 빈 배열로 설정 (공인중개사는 이미지 없이 가능)
-      if (!reviewData.imageUrls || reviewData.imageUrls.length === 0) {
-        reviewData.imageUrls = [];
+      // 이미지가 있을 때만 업데이트
+      if (finalImageData && finalImageData.length > 0) {
+        reviewData.imageUrls = finalImageData;
       }
 
       // 이미지 URL 처리 - 자동저장된 base64 또는 blob URL 업로드
@@ -574,7 +582,7 @@ const ReviewConfirmPage: React.FC = () => {
         await createReviewMutation.mutateAsync(reviewData);
 
         // 리뷰 제출 성공 시 자동저장 데이터 삭제
-        clearAutoSavedData();
+        reviewAutoSave.clear();
 
         setIsSubmitting(false);
         setShowConfirmModal(false);
@@ -586,17 +594,9 @@ const ReviewConfirmPage: React.FC = () => {
         // 에러 메시지 처리
         const errorMessage = error.response?.data?.message;
 
-        // 이미지 개수 관련 에러인 경우 무시하고 빈 배열로 재시도하지 않음
-        if (errorMessage && errorMessage.includes("이미지 개수")) {
-          // 백엔드에서 이미지 필수 정책이 있는 경우에 대한 안내
-          alert(
-            "현재 백엔드 정책상 이미지 업로드가 필수입니다. 사진을 추가해주세요."
-          );
-        } else {
-          alert(
-            `리뷰 작성 중 오류가 발생했습니다: ${errorMessage || error.message}`
-          );
-        }
+        alert(
+          `리뷰 작성 중 오류가 발생했습니다: ${errorMessage || error.message}`
+        );
       }
     } catch (error) {
       setIsSubmitting(false);
@@ -1037,16 +1037,20 @@ const ReviewConfirmPage: React.FC = () => {
               <div className={styles.value}>
                 <div className={styles.photosContainer}>
                   {review.images && review.images.length > 0 ? (
-                    review.images.slice(0, 3).map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`사진 ${index + 1}`}
-                        className={styles.photoThumbnail}
-                      />
-                    ))
+                    review.images
+                      .slice(0, 3)
+                      .map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`사진 ${index + 1}`}
+                          className={styles.photoThumbnail}
+                        />
+                      ))
                   ) : (
-                    <span className={styles.valueText}>사진을 추가해주세요</span>
+                    <span className={styles.valueText}>
+                      사진을 추가해주세요.
+                    </span>
                   )}
                 </div>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />

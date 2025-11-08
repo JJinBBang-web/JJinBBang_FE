@@ -12,6 +12,7 @@ export const useReviewAutoSave = (currentStep?: string) => {
   const lastSaveRef = useRef<string>('');
 
   // 자동 저장 (500ms 디바운스 + 중복 실행 방지)
+  // 중요: currentStep은 여기서 업데이트하지 않음 (다음 버튼 클릭 시에만 업데이트)
   useEffect(() => {
     // Clear existing timeout
     if (timeoutRef.current) {
@@ -27,18 +28,21 @@ export const useReviewAutoSave = (currentStep?: string) => {
       dormitoryReview: {
         ...dormitoryReview,
         images: dormitoryReview?.images || []
-      },
-      currentStep
+      }
     });
 
     // Only save if data actually changed
     if (currentHash !== lastSaveRef.current) {
       timeoutRef.current = setTimeout(async () => {
         try {
+          // 기존 자동저장 데이터 로드
+          const existingData = reviewAutoSave.load();
+
+          // 내용만 업데이트하고 currentStep은 기존 값 유지
           await reviewAutoSave.save({
             reviewState: review,
             dormitoryReviewState: dormitoryReview,
-            currentStep
+            currentStep: existingData?.currentStep || currentStep
           });
           lastSaveRef.current = currentHash;
         } catch (error) {
@@ -52,7 +56,7 @@ export const useReviewAutoSave = (currentStep?: string) => {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [review, dormitoryReview, currentStep]);
+  }, [review, dormitoryReview]);
 
   // 페이지 로드 시 자동 저장된 데이터 복원
   const restoreAutoSavedData = () => {

@@ -59,10 +59,11 @@ const AddressResultPage: React.FC = () => {
       detailedAddress: buildingName,
       floorType: floor,
       space: squareFootage ? Number(squareFootage) : 0,
+      buildingCode: address.buildingCode || '',
       latitude: mapCenter.lat,
       longitude: mapCenter.lng
     }));
-  }, [address, buildingName, floor, squareFootage, mapCenter]);
+  }, [address, buildingName, floor, squareFootage, mapCenter, setReview]);
 
   const {
     showCancelModal,
@@ -102,9 +103,6 @@ const AddressResultPage: React.FC = () => {
     };
     
     setReview(updatedReview);
-
-    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
-    clearAutoSavedData();
 
     // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
     if (housingType === "공인중개사") {

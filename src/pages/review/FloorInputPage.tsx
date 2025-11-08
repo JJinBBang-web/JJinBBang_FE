@@ -14,15 +14,17 @@ interface LocationState {
     roadAddress: string;
     jibunAddress: string;
     buildingName: string;
+    buildingCode?: string;
   };
   from?: string;
+  housingType?: string;
 }
 
 const FloorInputPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [review, setReview] = useRecoilState(reviewState);
-  const { address, from } = (location.state as LocationState) || {};
+  const { address, from, housingType } = (location.state as LocationState) || {};
 
   const [buildingName, setBuildingName] = useState(
     review.detailedAddress || address?.buildingName || ''
@@ -30,10 +32,10 @@ const FloorInputPage: React.FC = () => {
   const [squareFootage, setSquareFootage] = useState(
     review.space ? review.space.toString() : ''
   );
-  const [selectedFloor, setSelectedFloor] = useState<string | null>(
-    review.floorType.includes('층') ? review.floorType : null
-  );
   const floors = ['반지하', '저층', '중층', '고층', '옥탑'];
+  const [selectedFloor, setSelectedFloor] = useState<string | null>(
+    review.floorType && floors.includes(review.floorType) ? review.floorType : null
+  );
 
   // buildingName 변경 시 실시간 업데이트
   const handleBuildingNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,18 +64,25 @@ const FloorInputPage: React.FC = () => {
   } = useCancelModal();
 
   // 자동 저장 기능 추가
-  useReviewAutoSave('floor');
+  const { restoreAutoSavedData, hasAutoSavedData } = useReviewAutoSave('floor');
+
+  // 페이지 로드 시 자동 저장된 데이터 복원
+  useEffect(() => {
+    if (from === 'autosave' && hasAutoSavedData()) {
+      restoreAutoSavedData();
+    }
+  }, []);
 
   useEffect(() => {
-    // 수정 모드일 경우 기존 상태 복원
-    if (from === 'confirm') {
-      setBuildingName(review.detailedAddress || '');
+    // 자동 저장에서 복원된 데이터나 수정 모드일 경우 로컬 상태 업데이트
+    if (from === 'autosave' || from === 'confirm') {
+      setBuildingName(review.detailedAddress || address?.buildingName || '');
       setSelectedFloor(
-        review.floorType.includes('층') ? review.floorType : null
+        review.floorType && floors.includes(review.floorType) ? review.floorType : null
       );
       setSquareFootage(review.space ? review.space.toString() : '');
     }
-  }, [from, review]);
+  }, [from]);
 
   const handleSquareFootageChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -116,15 +125,20 @@ const FloorInputPage: React.FC = () => {
         reviewAutoSave.save({
           reviewState: updatedReview,
           dormitoryReviewState: null,
-          currentStep: REVIEW_STEPS.PRICE
+          currentStep: REVIEW_STEPS.ADDRESS_RESULT
         });
 
         navigate('/review/result', {
           state: {
             ...location.state,
+            address: {
+              ...address,
+              buildingCode: address?.buildingCode || review.buildingCode || '',
+            },
             buildingName,
             floor: selectedFloor,
             squareFootage: squareFootage,
+            housingType: housingType || review.housingType,
           },
         });
       }

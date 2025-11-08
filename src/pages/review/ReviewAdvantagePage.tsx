@@ -108,9 +108,11 @@ const ReviewAdvantagePage: React.FC = () => {
 
   const handleFilterClick = (label: string) => {
     setSelectedFilters((prev) => {
+      let newFilters: string[];
+
       if (prev.includes(label)) {
         // 이미 선택된 태그를 클릭한 경우 제거
-        return prev.filter((item) => item !== label);
+        newFilters = prev.filter((item) => item !== label);
       } else if (prev.length >= maxSelections) {
         // 최대 선택 수에 도달한 경우 알림 표시
         alert("최대 5개까지 선택할 수 있습니다!");
@@ -126,8 +128,16 @@ const ReviewAdvantagePage: React.FC = () => {
         }
 
         // 최대 선택 수 미만이고 상반된 태그가 없는 경우 추가
-        return [...prev, label];
+        newFilters = [...prev, label];
       }
+
+      // 실시간으로 review state 업데이트 (자동 저장 트리거)
+      setReview((prevReview) => ({
+        ...prevReview,
+        pros: newFilters,
+      }));
+
+      return newFilters;
     });
   };
 

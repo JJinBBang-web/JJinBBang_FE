@@ -15,6 +15,7 @@ export const REVIEW_STEPS = {
   ADDRESS: 'address',
   ADDRESS_INPUT: 'input-address',
   FLOOR: 'floor',
+  ADDRESS_RESULT: 'address-result',
   DORMITORY: 'dormitory',
   DORMITORY_CONDITIONS: 'dormitory-conditions',
   DORMITORY_AMENITIES: 'dormitory-amenities',
@@ -283,6 +284,43 @@ export const reviewAutoSave = {
             state: { housingType: review.housingType, from: 'autosave' },
           };
         } else {
+          // 일반 주거의 경우 AddressResultPage로 이동 (PRICE가 아님)
+          return {
+            path: '/review/result',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+                buildingCode: review.buildingCode || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              squareFootage: review.space ? review.space.toString() : '',
+              from: 'autosave',
+            },
+          };
+        }
+      },
+      'address-result': () => {
+        if (isAgency) {
+          return {
+            path: '/review/room-info',
+            state: {
+              housingType: review.housingType,
+              address: {
+                roadAddress: review.address || '',
+                jibunAddress: review.addressDetail || '',
+                buildingName: review.detailedAddress || '',
+                buildingCode: review.buildingCode || '',
+              },
+              buildingName: review.detailedAddress || '',
+              floor: review.floorType || '',
+              from: 'autosave',
+            }
+          };
+        } else {
           return {
             path: '/review/price',
             state: {
@@ -291,9 +329,11 @@ export const reviewAutoSave = {
                 roadAddress: review.address || '',
                 jibunAddress: review.addressDetail || '',
                 buildingName: review.detailedAddress || '',
+                buildingCode: review.buildingCode || '',
               },
               buildingName: review.detailedAddress || '',
               floor: review.floorType || '',
+              squareFootage: review.space ? review.space.toString() : '',
               from: 'autosave',
             },
           };
@@ -495,8 +535,25 @@ export const reviewAutoSave = {
             roadAddress: review.address || '',
             jibunAddress: review.addressDetail || '',
             buildingName: review.detailedAddress || '',
+            buildingCode: review.buildingCode || '',
           },
           buildingName: review.detailedAddress || '',
+          from: 'autosave',
+        }
+      },
+      'address-result': {
+        path: '/review/result',
+        state: {
+          housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+            buildingCode: review.buildingCode || '',
+          },
+          buildingName: review.detailedAddress || '',
+          floor: review.floorType || '',
+          squareFootage: review.space ? review.space.toString() : '',
           from: 'autosave',
         }
       },

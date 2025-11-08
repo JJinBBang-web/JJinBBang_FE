@@ -103,9 +103,6 @@ const PriceInputPage: React.FC = () => {
     
     setReview(updatedReview);
 
-    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
-    clearAutoSavedData();
-
     // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
     reviewAutoSave.save({
       reviewState: updatedReview,
