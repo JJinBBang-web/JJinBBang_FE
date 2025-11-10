@@ -1,19 +1,19 @@
 // src/components/KakaoCallback.jsx
 
-import React, { useEffect, useState } from 'react';
-import { redirect, useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import { isLoginState } from '../recoil/auth/isLoginState';
-import { useRecoilState } from 'recoil';
-import TermsAgreementModal from '../components/auth/TermsAgreementModal';
-import SignupCompleteModal from '../components/auth/SignupCompleteModal';
+import React, { useEffect, useState } from "react";
+import { redirect, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { isLoginState } from "../recoil/auth/isLoginState";
+import { useRecoilState } from "recoil";
+import TermsAgreementModal from "../components/auth/TermsAgreementModal";
+import SignupCompleteModal from "../components/auth/SignupCompleteModal";
 
 const url = process.env.REACT_APP_API_URL;
 const SITE_URL = process.env.REACT_APP_SITE_URL!;
 const loginUrl = `${SITE_URL}/login/kakao`;
-export const getSignupToken = () => sessionStorage.getItem('signupToken');
-export const getAccessToken = () => sessionStorage.getItem('accessToken');
-export const getRefreshToken = () => sessionStorage.getItem('refreshToken');
+export const getSignupToken = () => sessionStorage.getItem("signupToken");
+export const getAccessToken = () => sessionStorage.getItem("accessToken");
+export const getRefreshToken = () => sessionStorage.getItem("refreshToken");
 
 interface Tokens {
   accessToken: string;
@@ -21,47 +21,49 @@ interface Tokens {
 }
 
 export const setSignupToken = (signupToken: string) => {
-  sessionStorage.setItem('signupToken', signupToken);
+  sessionStorage.setItem("signupToken", signupToken);
 };
 
 export const setTokens = ({ accessToken, refreshToken }: Tokens) => {
-  sessionStorage.setItem('accessToken', accessToken);
-  sessionStorage.setItem('refreshToken', refreshToken);
+  sessionStorage.setItem("accessToken", accessToken);
+  sessionStorage.setItem("refreshToken", refreshToken);
 };
 
 export const clearTokens = () => {
-  sessionStorage.removeItem('accessToken');
-  sessionStorage.removeItem('refreshToken');
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
 };
 
 export const kakaoLogin = async (authCode: string) => {
   const body = {
-    oauthProvider: 'kakao',
+    oauthProvider: "kakao",
     oauthCode: authCode,
     redirectUri: loginUrl,
   };
 
   // const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
   const response = await fetch(`/api/v1/auth`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      oauthProvider: 'kakao',
+      oauthProvider: "kakao",
       oauthCode: authCode,
       redirectUri: loginUrl,
     }),
   });
-  
+
   // Check if response is HTML (error page)
-  const contentType = response.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/json')) {
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
     const text = await response.text();
-    console.error('❌ API returned non-JSON response:', text);
-    throw new Error(`API endpoint returned HTML instead of JSON. Status: ${response.status}`);
+    console.error("❌ API returned non-JSON response:", text);
+    throw new Error(
+      `API endpoint returned HTML instead of JSON. Status: ${response.status}`
+    );
   }
-  
+
   return response.json();
 };
 
@@ -70,15 +72,15 @@ const kakaoLogout = async () => {
     // 브라우저에서 카카오 관련 쿠키나 세션 정리
     // console.log('카카오 로그아웃 처리');
   } catch (error) {
-    console.error('카카오 로그아웃 중 오류:', error);
+    console.error("카카오 로그아웃 중 오류:", error);
   }
 };
 
 export const agreeToTerms = async () => {
-  const response = await fetch('/api/v1/auth/signup', {
-    method: 'POST',
+  const response = await fetch("/api/v1/auth/signup", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${getSignupToken()}`,
     },
     body: null,
@@ -87,10 +89,10 @@ export const agreeToTerms = async () => {
 };
 
 export const getUserInfo = async () => {
-  const response = await fetch('/api/v1/user', {
-    method: 'GET',
+  const response = await fetch("/api/v1/user", {
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${getAccessToken()}`,
     },
   });
@@ -108,12 +110,12 @@ function KakaoCallBack() {
   const [showTerms, setShowTerms] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [userEmail, setUserEmail] = useState('');
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
     const handleLogin = async () => {
       const searchParams = new URLSearchParams(location.search);
-      const code = searchParams.get('code');
+      const code = searchParams.get("code");
 
       if (code) {
         try {
@@ -127,11 +129,11 @@ function KakaoCallBack() {
             });
             setIsLoading(false);
             setIsLoggedIn(true);
-            navigate('/mypage');
+            navigate("/mypage");
           } else if (response.data.signupToken) {
             // console.log('✅ 신규 사용자 감지 - 약관 동의 필요');
             setSignupToken(response.data.signupToken);
-            setUserEmail(response.data.user?.email || '');
+            setUserEmail(response.data.user?.email || "");
             setIsLoading(false);
             setShowTerms(true);
             // try {
@@ -153,18 +155,18 @@ function KakaoCallBack() {
             //   console.error("약관 동의 요청 중 에러:", err);
             // }
           } else {
-            console.error('❌ 예상하지 못한 응답 구조:', response.data);
+            console.error("❌ 예상하지 못한 응답 구조:", response.data);
             setIsLoading(false);
-            navigate('/mypage');
+            navigate("/mypage");
           }
         } catch (err) {
-          console.error('로그인 요청 중 에러:', err);
+          console.error("로그인 요청 중 에러:", err);
           setIsLoading(false);
-          navigate('/mypage');
+          navigate("/mypage");
         }
       } else {
         setIsLoading(false);
-        navigate('/mypage');
+        navigate("/mypage");
       }
     };
 
@@ -177,12 +179,12 @@ function KakaoCallBack() {
       await kakaoLogout();
       clearTokens();
       setShowTerms(false);
-      navigate('/mypage');
+      navigate("/mypage");
     } catch (error) {
-      console.error('로그인 취소 처리 중 오류:', error);
+      console.error("로그인 취소 처리 중 오류:", error);
       clearTokens();
       setShowTerms(false);
-      navigate('/mypage');
+      navigate("/mypage");
     }
   };
 
@@ -199,17 +201,17 @@ function KakaoCallBack() {
         });
 
         // 사용자 정보 저장
-        sessionStorage.setItem('email', userEmail);
-        sessionStorage.setItem('verificationStatus', 'unverified');
+        sessionStorage.setItem("email", userEmail);
+        sessionStorage.setItem("verificationStatus", "unverified");
         setIsLoggedIn(true);
         setShowTerms(false);
         setShowComplete(true);
       } else {
-        console.error('약관 동의 실패:', result.message);
+        console.error("약관 동의 실패:", result.message);
         await handleTermsClose();
       }
     } catch (err) {
-      console.error('약관 동의 요청 중 에러:', err);
+      console.error("약관 동의 요청 중 에러:", err);
       await handleTermsClose();
     }
   };
@@ -217,13 +219,13 @@ function KakaoCallBack() {
   // 가입 완료 모달 확인
   const handleSignupConfirm = () => {
     setShowComplete(false);
-    navigate('/mypage');
+    navigate("/mypage");
   };
 
   // 가입 완료 모달 인증하기
   const handleSignupVerify = () => {
     setShowComplete(false);
-    navigate('/auth/student/verify');
+    navigate("/auth/student/verify");
   };
 
   if (isLoading) {
@@ -231,18 +233,18 @@ function KakaoCallBack() {
       <div className="content">
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            gap: '16px',
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            gap: "16px",
           }}
         >
           <img
             src="/assets/image/loading.gif"
             alt="loading"
-            style={{ width: '48px', height: '48px' }}
+            style={{ width: "48px", height: "48px" }}
           />
           <p>로그인 처리 중입니다...</p>
         </div>
@@ -252,7 +254,7 @@ function KakaoCallBack() {
 
   return (
     <div className="content">
-      <div style={{ height: '100vh', background: '#f5f5f5' }}>{/* 배경 */}</div>
+      <div style={{ height: "100vh", background: "#f5f5f5" }}>{/* 배경 */}</div>
 
       {/* 약관 동의 모달 */}
       {showTerms && (

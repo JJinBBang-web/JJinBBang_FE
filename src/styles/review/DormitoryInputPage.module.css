@@ -74,7 +74,7 @@
   font-size: 1.125rem;
   line-height: 150%;
   letter-spacing: -0.0375rem;
-  color: var(--color-gray40);
+  color: var(--color-gray80);
   box-sizing: border-box;
   margin-bottom: 1.25rem;
   display: flex;
@@ -82,9 +82,13 @@
   cursor: pointer;
 }
 
+.buildingInput.empty {
+  color: var(--color-gray40);
+}
+
 .buildingInput:focus {
   outline: none;
-  border-color: #ff6b35;
+  border-color: var(--primary-color);
 }
 
 .buildingInput::placeholder {
@@ -107,7 +111,7 @@
   border: 1px solid #e5e8eb;
   border-radius: 16px;
   font-size: 1rem;
-  color: #333333;
+  color: var(--color-gray80);
   box-sizing: border-box;
   margin-bottom: 1.25rem;
 }

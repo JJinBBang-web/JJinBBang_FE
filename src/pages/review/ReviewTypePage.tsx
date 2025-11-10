@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
-import { reviewAutoSave } from "../../util/reviewAutoSave";
+import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -12,9 +14,13 @@ const ReviewTypePage: React.FC = () => {
   const locationState = location.state || {};
   const { housingType } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
-  const [selectedType, setSelectedType] = useState<string | null>(
-    review.housingType || null
-  );
+  const [, setDormitoryReview] = useRecoilState(dormitoryReviewState);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
+
+  // 자동 저장 기능 - type 페이지에서는 자동 저장하지 않음
+  // 이유: 빈 상태가 저장되는 것을 방지하기 위해
+  // 다음 페이지부터 자동 저장이 시작됨
 
   const housingTypeNum = (type: string) => {
     if (
@@ -35,12 +41,18 @@ const ReviewTypePage: React.FC = () => {
     if (locationState.from === "confirm" && review.housingType) {
       setSelectedType(review.housingType);
     } else {
-      // 새로운 리뷰 작성 시작 시 이전 자동저장 데이터 정리
-      reviewAutoSave.clear();
-      // Recoil 상태도 초기화
-      setReview(defaultReviewState);
+      // 새로운 리뷰 작성 시작 - 자동저장 데이터가 있는지 확인
+      const hasAutoSave = reviewAutoSave.hasData();
+      if (hasAutoSave) {
+        // 자동 저장 데이터가 있으면 바텀 시트 표시
+        setShowAutoSaveSheet(true);
+      }
+      // 건물 유형 선택을 초기화 (자동 저장된 데이터가 있어도)
+      // 사용자가 '이어서 작성'을 선택하면 해당 페이지로 직접 이동하므로
+      // type 페이지에서는 항상 선택되지 않은 상태로 시작
+      setSelectedType(null);
     }
-  }, [locationState, review, setReview]);
+  }, [locationState.from]);
 
   const handleTypeSelect = (type: string) => {
     if (type === "공인중개사") {
@@ -52,16 +64,20 @@ const ReviewTypePage: React.FC = () => {
 
   const handleNext = () => {
     if (selectedType) {
-      // Recoil 상태 업데이트
-      setReview((prev) => ({
-        ...prev,
-        housingType: selectedType,
-      }));
-
-      if (housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
+      // housingType 변경 시 전체 리셋이 필요한 경우 체크
+      if (housingType && housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
+        // 유형 카테고리가 변경되면 초기화 후 새로운 housingType 설정
+        setReview({
+          ...defaultReviewState,
+          housingType: selectedType,
+        });
         locationState.from = null;
-        navigate(location.pathname, { state: null, replace: true });
-        setReview(defaultReviewState)
+      } else {
+        // 일반적인 경우: 기존 데이터 유지하면서 housingType만 업데이트
+        setReview((prev) => ({
+          ...prev,
+          housingType: selectedType,
+        }));
       }
 
       // 수정 모드인지 확인
@@ -74,6 +90,14 @@ const ReviewTypePage: React.FC = () => {
           },
         });
       } else {
+        // "다음" 버튼 클릭 시:
+        // 1. 현재 페이지 데이터를 즉시 저장 (다음 step으로)
+        reviewAutoSave.save({
+          reviewState: review,
+          dormitoryReviewState: null,
+          currentStep: REVIEW_STEPS.ADDRESS_INPUT  // 다음 페이지
+        });
+
         // 모든 타입에 대해 주소 입력 페이지로 이동 (기숙사 포함)
         navigate('/review/input-address', {
           state: {
@@ -101,9 +125,57 @@ const ReviewTypePage: React.FC = () => {
     }
   };
 
+  // 자동 저장 복원 - 이어서 작성
+  const handleContinueFromAutoSave = () => {
+    const savedData = reviewAutoSave.load();
+    if (savedData) {
+      // Recoil 상태 복원
+      if (savedData.reviewState) {
+        setReview(savedData.reviewState);
+      }
+      if (savedData.dormitoryReviewState) {
+        setDormitoryReview(savedData.dormitoryReviewState);
+      }
+
+      // 마지막 작성 페이지로 이동
+      const lastPage = reviewAutoSave.getLastEditedPage();
+      if (lastPage) {
+        setShowAutoSaveSheet(false);
+        navigate(lastPage.path, { state: lastPage.state });
+      } else {
+        // 페이지를 찾을 수 없으면 현재 페이지에서 계속
+        setShowAutoSaveSheet(false);
+      }
+    } else {
+      setShowAutoSaveSheet(false);
+    }
+  };
+
+  // 자동 저장 복원 - 새롭게 작성
+  const handleNewStartFromAutoSave = () => {
+    // 자동 저장 데이터 삭제
+    reviewAutoSave.clear();
+    // Recoil 상태 초기화
+    setReview(defaultReviewState);
+    // 바텀 시트 닫기
+    setShowAutoSaveSheet(false);
+  };
+
+  // 자동 저장 복원 - 닫기
+  const handleCloseAutoSaveSheet = () => {
+    setShowAutoSaveSheet(false);
+  };
+
   return (
-    <div className="content" style={{ backgroundColor: "var(--white)" }}>
-      <div className={styles.container}>
+    <>
+      <AutoSaveRestoreSheet
+        isOpen={showAutoSaveSheet}
+        onClose={handleCloseAutoSaveSheet}
+        onContinue={handleContinueFromAutoSave}
+        onNewStart={handleNewStartFromAutoSave}
+      />
+      <div className="content" style={{ backgroundColor: "var(--white)" }}>
+        <div className={styles.container}>
         <header className={styles.header}>
           <button className={styles.backButton} onClick={handleBack}>
             <img src={backArrowIcon} alt="back" />
@@ -161,6 +233,7 @@ const ReviewTypePage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

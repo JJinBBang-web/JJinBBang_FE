@@ -11,6 +11,14 @@ import { useCancelModal } from "../../util/useCancelModal";
 import styles from "../../styles/review/DormitoryInputPage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
+
+const { kakao } = window;
+
 // Extended ReviewState interface to include dormitory-specific fields
 interface ExtendedReviewState extends ReviewState {
   university?: string;
@@ -31,7 +39,8 @@ interface LocationState {
 const DormitoryInputPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { from } = (location.state as LocationState) || {};
+  const locationState = (location.state as LocationState) || {};
+  const { from, address } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
   const selectedTypeNum = useRecoilValue(selectedTypeNumState);
   const universities = useRecoilValue(universitiesState);
@@ -62,6 +71,32 @@ const DormitoryInputPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  // Geocoder를 사용하여 주소를 좌표로 변환
+  useEffect(() => {
+    if (!address?.roadAddress) return;
+
+    // 이미 좌표가 있으면 변환하지 않음
+    if (review.latitude && review.longitude) {
+      return;
+    }
+
+    const geoCoder = new kakao.maps.services.Geocoder();
+
+    geoCoder.addressSearch(address.roadAddress, (result: any, status: any) => {
+      if (status === kakao.maps.services.Status.OK) {
+        const { x, y } = result[0];
+        const lat = parseFloat(y);
+        const lng = parseFloat(x);
+
+        setReview((prev) => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng,
+        }));
+      }
+    });
+  }, [address?.roadAddress, review.latitude, review.longitude, setReview]);
+
   useEffect(() => {
     // Restore state from review if coming from confirm page
     if (from === "confirm") {
@@ -76,7 +111,8 @@ const DormitoryInputPage: React.FC = () => {
 
   // Update university name when selectedTypeNum changes
   useEffect(() => {
-    if (selectedTypeNum) {
+    // 바텀시트가 닫힐 때만 대학교 정보를 업데이트
+    if (selectedTypeNum && !bottomSheet.isOpenModal && bottomSheet.type === "university") {
       const selectedUniversity = universities.find(
         (uni) => uni.id === selectedTypeNum
       );
@@ -86,7 +122,7 @@ const DormitoryInputPage: React.FC = () => {
         );
       }
     }
-  }, [selectedTypeNum, universities]);
+  }, [selectedTypeNum, universities, bottomSheet]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -183,14 +219,17 @@ const DormitoryInputPage: React.FC = () => {
 
         <div className={styles.inputSection}>
           <label className={styles.label}>대학교</label>
-          <div className={styles.buildingInput} onClick={handleUniversityClick}>
+          <div
+            className={`${styles.buildingInput} ${!university ? styles.empty : ''}`}
+            onClick={handleUniversityClick}
+          >
             {university || "예) 찐빵대학교"}
           </div>
 
           <label className={styles.label}>기숙사명</label>
           <input
             type="text"
-            className={styles.buildingInput}
+            className={`${styles.buildingInput} ${!dormitoryName ? styles.empty : ''}`}
             value={dormitoryName}
             onChange={handleDormitoryNameChange}
             placeholder="예) 찐빵관"

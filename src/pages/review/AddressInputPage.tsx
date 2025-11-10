@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
 import styles from '../../styles/review/AddressInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import searchIcon from '../../assets/image/iconSearch.svg';
@@ -18,6 +19,9 @@ const AddressInputPage: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 자동 저장 기능 추가
+  useReviewAutoSave('input-address');
 
   const handleSearchClick = () => {
     navigate('/review/address', { state: location.state });

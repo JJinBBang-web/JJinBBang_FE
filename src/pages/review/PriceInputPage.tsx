@@ -6,6 +6,7 @@ import { reviewState } from '../../recoil/review/reviewAtoms';
 import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { reviewAutoSave, REVIEW_STEPS } from '../../util/reviewAutoSave';
 import styles from '../../styles/review/PriceInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 
@@ -101,9 +102,13 @@ const PriceInputPage: React.FC = () => {
     };
     
     setReview(updatedReview);
-    
-    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
-    clearAutoSavedData();
+
+    // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
+    reviewAutoSave.save({
+      reviewState: updatedReview,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.ROOM_INFO
+    });
 
     navigate('/review/room-info', {
       state: {
@@ -258,6 +263,7 @@ const PriceInputPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="price"
         />
       )}
     </div>

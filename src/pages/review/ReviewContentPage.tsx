@@ -7,6 +7,7 @@ import closeIcon from "../../assets/image/iconClose.svg";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 
 interface LocationState {
   photos?: string[];
@@ -66,10 +67,20 @@ const ReviewContentPage: React.FC = () => {
   const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } =
     useReviewAutoSave("content");
 
+  const isNavigatingRef = useRef(false);
+
   const [content, setContent] = useState(() => {
-    // 확인 페이지에서 돌아온 경우에만 이전 데이터 유지
-    if (from === "confirm") {
-      return review.description || "";
+    // 확인 페이지에서 돌아온 경우 location state의 content 우선
+    if (from === "confirm" && (location.state as any)?.content) {
+      return (location.state as any).content;
+    }
+    // 자동저장에서 복원된 경우 review state의 description 사용
+    if (from === "autosave" && review.description) {
+      return review.description;
+    }
+    // 확인 페이지에서 돌아온 경우 review state의 description 사용
+    if (from === "confirm" && review.description) {
+      return review.description;
     }
     // 새로운 리뷰 작성 시에는 항상 빈 내용으로 시작
     return "";
@@ -85,11 +96,12 @@ const ReviewContentPage: React.FC = () => {
   const maxLength = 1000;
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (e.target.value.length <= maxLength) {
+    if (e.target.value.length <= maxLength && !isNavigatingRef.current) {
       const newContent = e.target.value;
       setContent(newContent);
 
       // 실시간으로 review state 업데이트 (자동 저장 트리거)
+      // "다음" 버튼 클릭 후에는 업데이트하지 않음
       setReview((prev) => ({
         ...prev,
         description: newContent,
@@ -97,7 +109,7 @@ const ReviewContentPage: React.FC = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const trimmedContent = content.trim();
     const trimmedLength = trimmedContent.length;
 
@@ -111,16 +123,13 @@ const ReviewContentPage: React.FC = () => {
       return;
     }
 
-    // review state 최종 업데이트
+    // review state 최종 업데이트 및 currentStep을 'confirm'으로 설정
     const updatedReview = {
       ...review,
       description: trimmedContent,
     };
 
     setReview(updatedReview);
-
-    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
-    clearAutoSavedData();
 
     if (from === "confirm") {
       navigate("/review/confirm", {
@@ -130,6 +139,16 @@ const ReviewContentPage: React.FC = () => {
         },
       });
     } else {
+      // "다음" 버튼 클릭 플래그 설정 (실시간 자동저장 방지)
+      isNavigatingRef.current = true;
+
+      // "다음" 버튼 클릭 시 자동저장에 confirm 단계로 기록
+      await reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.CONFIRM
+      });
+
       navigate("/review/confirm", {
         state: {
           housingType,
@@ -212,6 +231,7 @@ const ReviewContentPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="content"
         />
       )}
     </div>

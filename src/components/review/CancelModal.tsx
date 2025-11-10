@@ -7,14 +7,35 @@ import {
   reviewState,
   defaultReviewState,
 } from "../../recoil/review/reviewAtoms";
+import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
+import { reviewAutoSave } from "../../util/reviewAutoSave";
 
 interface CancelModalProps {
   onClose: () => void;
   onConfirm: () => void;
+  currentStep?: string; // 현재 페이지의 단계 정보
 }
 
-const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm }) => {
-  const [review, setReview] = useRecoilState(reviewState);
+const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm, currentStep }) => {
+  const [review] = useRecoilState(reviewState);
+  const [dormitoryReview] = useRecoilState(dormitoryReviewState);
+
+  const handleCancel = async () => {
+    // 작성 중단 시 현재까지 작성한 내용을 자동 저장
+    try {
+      await reviewAutoSave.save({
+        reviewState: review,
+        dormitoryReviewState: dormitoryReview,
+        currentStep: currentStep,
+      });
+      console.log('리뷰 내용이 자동 저장되었습니다.');
+    } catch (error) {
+      console.error('자동 저장 실패:', error);
+    }
+
+    // 저장 후 페이지 이동
+    onConfirm();
+  };
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -27,7 +48,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm }) => {
           <h2 className={styles.modalTitle}>작성을 중단할까요?</h2>
           <p className={styles.modalSubtitle}>
             지금까지 작성해 주신 내용은
-            <br /> 저장되지 않아요!
+            <br /> 임시 저장됩니다!
           </p>
           <img
             src={emptyCharacterIcon}
@@ -40,10 +61,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm }) => {
             </button>
             <button
               className={styles.cm_confirmButton}
-              onClick={() => {
-                setReview(defaultReviewState);
-                onConfirm(); 
-              }}
+              onClick={handleCancel}
             >
               중단
             </button>
