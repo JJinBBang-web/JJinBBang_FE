@@ -323,6 +323,20 @@ const ReviewConfirmPage: React.FC = () => {
       return;
     }
 
+    // 좌표 검증 - 필수값
+    console.log('=== 리뷰 제출 전 좌표 확인 ===');
+    console.log('리뷰 타입:', review.housingType);
+    console.log('주소:', review.address);
+    console.log('위도(latitude):', review.latitude);
+    console.log('경도(longitude):', review.longitude);
+    console.log('============================');
+
+    if (!review.latitude || !review.longitude) {
+      alert("주소 정보를 불러오는 중 오류가 발생했습니다. 주소를 다시 선택해주세요.");
+      setShowConfirmModal(false);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -397,8 +411,8 @@ const ReviewConfirmPage: React.FC = () => {
               "기숙사명",
             type: "DORMITORY",
             address: review.address || "",
-            latitude: review.latitude || 37.5605,
-            longitude: review.longitude || 127.0103,
+            latitude: review.latitude!,
+            longitude: review.longitude!,
           },
           keywords: {
             positive: positiveKeywords,
@@ -427,8 +441,8 @@ const ReviewConfirmPage: React.FC = () => {
             name: review.detailedAddress || "공인중개사명",
             type: "AGENCY",
             address: review.address || "",
-            latitude: review.latitude || 37.5605,
-            longitude: review.longitude || 127.0103,
+            latitude: review.latitude!,
+            longitude: review.longitude!,
           },
           keywords: {
             positive: positiveKeywords,
@@ -466,8 +480,8 @@ const ReviewConfirmPage: React.FC = () => {
             name: review.detailedAddress || "건물명",
             type: koreanToType[review.housingType] || "APARTMENT",
             address: review.address || "",
-            latitude: review.latitude || 37.5605,
-            longitude: review.longitude || 127.0103,
+            latitude: review.latitude!,
+            longitude: review.longitude!,
           },
           keywords: {
             positive: positiveKeywords,
