@@ -121,7 +121,7 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  let reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
+  const reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
 
   const reviewList = reviewDict[userData?.id] || "[]";
 

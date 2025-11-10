@@ -59,7 +59,7 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
       setIsLiked(!isLiked);
       setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
     },
-    onError: (error) => {},
+    onError: (error) => {console.log(error)},
   });
 
   const rawRating = activeReviewInfo?.rating;

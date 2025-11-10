@@ -37,7 +37,7 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
         onSuccess: (data) => {
             setIsLiked(!isLiked);
         },
-        onError: (error) => {},
+        onError: (error) => {console.log(error)},
     });
 
     const renderExtraInfo = () => {

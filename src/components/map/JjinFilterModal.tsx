@@ -27,7 +27,7 @@ const JjinFilterModal = () => {
     );
 
     // 스크롤 상태 관리
-    const [scrolled, setScrolled] = useState<{[key:number]:Boolean}>({});
+    const [scrolled, setScrolled] = useState<{[key:number]:boolean}>({});
     const filterContentRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     // 아래로 스크롤 (한 번에 250px 이동)

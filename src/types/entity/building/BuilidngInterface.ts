@@ -20,9 +20,9 @@ interface CommonBuildingInfo {
   reviewCount: number;
 }
 
-export interface GeneralBuildingInfo extends CommonBuildingInfo {}
+export type GeneralBuildingInfo = CommonBuildingInfo
 
-export interface AgencyBuildingInfo extends CommonBuildingInfo {}
+export type AgencyBuildingInfo = CommonBuildingInfo
 
 export interface DormitoryBuildingInfo extends Omit<CommonBuildingInfo, 'address'> {
   campus: string;
