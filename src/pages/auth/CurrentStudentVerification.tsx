@@ -31,7 +31,6 @@ const CurrentStudentVerification: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showResendMessage, setShowResendMessage] = useState(false);
-  const [emailSendFailed, setEmailSendFailed] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -71,21 +70,14 @@ const CurrentStudentVerification: React.FC = () => {
     setIsLoading(true);
     try {
       const result = await authApi.sendVerificationEmail(email);
-      console.log('이메일 전송 성공 응답:', result);
-      console.log('응답 success 필드:', result.success);
+      console.log("이메일 전송 성공 응답:", result);
+      console.log("응답 success 필드:", result.success);
 
       setStep(VerificationStep.CODE_VERIFICATION);
-
-      // API 응답에서 success 필드를 확인하여 실패 처리
-      if (result.success === false) {
-        setEmailSendFailed(true);
-      } else {
-        setEmailSendFailed(false);
-      }
     } catch (error: any) {
-      console.log('이메일 전송 에러:', error);
-      console.log('응답 상태 코드:', error.response?.status);
-      console.log('에러 메시지:', error.message);
+      console.log("이메일 전송 에러:", error);
+      console.log("응답 상태 코드:", error.response?.status);
+      console.log("에러 메시지:", error.message);
 
       // 403 에러(이미 인증 완료)인 경우 바로 완료 화면으로
       if (
@@ -96,11 +88,9 @@ const CurrentStudentVerification: React.FC = () => {
       } else if (error.response?.status === 404) {
         // 404 에러(존재하지 않는 웹메일)인 경우 웹메일 신청 안내
         setError("이메일 전송에 실패했습니다.");
-        setEmailSendFailed(true);
         setStep(VerificationStep.CODE_VERIFICATION);
       } else {
         setError("이메일 전송에 실패했습니다.");
-        setEmailSendFailed(true);
         setStep(VerificationStep.CODE_VERIFICATION);
       }
     } finally {
@@ -170,6 +160,16 @@ const CurrentStudentVerification: React.FC = () => {
         새로운 계정으로 인증할 경우, 기존 인증은 해제돼요.
         <br />
         인증 후, 동일한 이메일로 30일 동안은 인증할 수 없어요.
+        <br />
+        학교 웹메일이 없을 경우,{" "}
+        <a
+          href="https://zm908.mailplug.com/member/login?host_domain=gnu.ac.kr&t=1758267300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          웹메일 신청
+        </a>
+        을 먼저 해주세요!
       </p>
       <form onSubmit={handleEmailSubmit} className={styles.form}>
         <div className={styles.inputWrapper}>
@@ -218,14 +218,7 @@ const CurrentStudentVerification: React.FC = () => {
         주세요
         <br />
         또는 수신 문제에 대해 학교 웹메일 담당자에게 문의해 주세요
-        {emailSendFailed && (
-          <>
-            <br />
-            <span className={styles.emailFailMessage}>
-              학교 웹메일이 없을 경우, <a href="https://zm908.mailplug.com/member/login?host_domain=gnu.ac.kr&t=1758267300" target="_blank" rel="noopener noreferrer">웹메일 신청</a>을 먼저 해주셔야 해요!
-            </span>
-          </>
-        )}
+        <br />
       </span>
       <form onSubmit={handleCodeSubmit} className={styles.form}>
         <div className={styles.inputWrapper}>

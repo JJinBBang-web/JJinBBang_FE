@@ -44,6 +44,11 @@
   margin-bottom: 1rem;
 }
 
+.description a {
+  color: var(--color-gray60);
+  text-decoration: underline;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -270,8 +275,4 @@
 .resendMessage .checkIcon {
   width: 1.25rem;
   height: 1.25rem;
-}
-
-.emailFailMessage {
-  color: var(--primary-color);
 }

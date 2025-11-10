@@ -7,6 +7,7 @@ import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/AddressResult.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import JBMarker from "../../assets/image/JBMarker.svg";
@@ -58,10 +59,11 @@ const AddressResultPage: React.FC = () => {
       detailedAddress: buildingName,
       floorType: floor,
       space: squareFootage ? Number(squareFootage) : 0,
+      buildingCode: address.buildingCode || '',
       latitude: mapCenter.lat,
       longitude: mapCenter.lng
     }));
-  }, [address, buildingName, floor, squareFootage, mapCenter]);
+  }, [address, buildingName, floor, squareFootage, mapCenter, setReview]);
 
   const {
     showCancelModal,
@@ -101,17 +103,25 @@ const AddressResultPage: React.FC = () => {
     };
     
     setReview(updatedReview);
-    
-    // 성공적으로 다음 단계로 넘어갈 때 자동 저장 데이터 정리
-    clearAutoSavedData();
-    
+
+    // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
     if (housingType === "공인중개사") {
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.ROOM_INFO
+      });
       navigate("/review/room-info", {
         state: {
           ...location.state,
         },
       });
     } else {
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.PRICE
+      });
       navigate("/review/price", {
         state: {
           ...location.state,

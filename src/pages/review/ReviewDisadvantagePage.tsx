@@ -12,6 +12,8 @@ import { DormFilterState } from "../../recoil/util/dormFilterState";
 import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/ReviewAdvantage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -55,6 +57,9 @@ const ReviewDisadvantagePage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  // 자동 저장 기능 추가
+  useReviewAutoSave('filter-disad');
+
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
     if (from === "confirm") {
@@ -93,9 +98,11 @@ const ReviewDisadvantagePage: React.FC = () => {
 
   const handleFilterClick = (label: string) => {
     setSelectedFilters((prev) => {
+      let newFilters: string[];
+
       if (prev.includes(label)) {
         // 이미 선택된 태그를 클릭한 경우 제거
-        return prev.filter((item) => item !== label);
+        newFilters = prev.filter((item) => item !== label);
       } else if (prev.length >= maxSelections) {
         // 최대 선택 수에 도달한 경우 알림 표시
         alert("최대 5개까지 선택할 수 있습니다!");
@@ -111,8 +118,16 @@ const ReviewDisadvantagePage: React.FC = () => {
         }
 
         // 최대 선택 수 미만이고 상반된 태그가 없는 경우 추가
-        return [...prev, label];
+        newFilters = [...prev, label];
       }
+
+      // 실시간으로 review state 업데이트 (자동 저장 트리거)
+      setReview((prevReview) => ({
+        ...prevReview,
+        cons: newFilters,
+      }));
+
+      return newFilters;
     });
   };
 
@@ -141,6 +156,13 @@ const ReviewDisadvantagePage: React.FC = () => {
         },
       });
     } else {
+      // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.CONTENT
+      });
+
       navigate("/review/content", {
         state: {
           ...location.state,
@@ -240,6 +262,7 @@ const ReviewDisadvantagePage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="filter-disad"
         />
       )}
     </div>

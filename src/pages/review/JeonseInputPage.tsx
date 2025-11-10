@@ -4,6 +4,8 @@ import { useRecoilState } from "recoil";
 import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/PriceInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 
@@ -40,6 +42,9 @@ const JeonseInputPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  // 자동 저장 기능 추가
+  useReviewAutoSave('jeonse');
+
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
     if (from === "confirm") {
@@ -52,10 +57,17 @@ const JeonseInputPage: React.FC = () => {
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<string>>
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    field: 'deposit' | 'managementFee'
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     setter(value);
+
+    // 실시간으로 review state 업데이트 (자동 저장 트리거)
+    setReview((prev) => ({
+      ...prev,
+      [field]: value === '' ? null : Number(value),
+    }));
   };
 
   const formatNumber = (value: string) => {
@@ -96,6 +108,13 @@ const JeonseInputPage: React.FC = () => {
         },
       });
     } else {
+      // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.ROOM_INFO
+      });
+
       navigate("/review/room-info", {
         state: {
           ...location.state,
@@ -143,7 +162,7 @@ const JeonseInputPage: React.FC = () => {
                 type="text"
                 className={styles.input}
                 value={formatNumber(deposit)}
-                onChange={(e) => handleInputChange(e, setDeposit)}
+                onChange={(e) => handleInputChange(e, setDeposit, 'deposit')}
                 placeholder="0"
               />
               <span className={styles.unit}>만원</span>
@@ -156,7 +175,7 @@ const JeonseInputPage: React.FC = () => {
                 type="text"
                 className={styles.input}
                 value={formatNumber(managementFee)}
-                onChange={(e) => handleInputChange(e, setManagementFee)}
+                onChange={(e) => handleInputChange(e, setManagementFee, 'managementFee')}
                 placeholder="0"
               />
               <span className={styles.unit}>만원</span>
@@ -183,6 +202,7 @@ const JeonseInputPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="jeonse"
         />
       )}
     </div>
