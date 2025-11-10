@@ -26,6 +26,7 @@ import { hideNavState } from '../recoil/util/modalState';
 import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import Spinner from '../components/util/Spinner';
+import MetaTag from '../util/SEOMetaTag';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -602,9 +603,16 @@ const MapPage = () => {
     };
 
     return (
+        <>
+        <MetaTag
+            title="찐빵 | 자취 후기 지도 보기"
+            description="대학가 근처 자취방, 기숙사 후기 위치를 한눈에 볼 수 있다!"
+            keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 지도"
+            imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
+            url="https://jjinbbang.kr/map"
+        />
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
-            {isLoading ? <Spinner /> :
             <div className={styles.map}>
                 <Map
                 center={mapCenter}
@@ -661,6 +669,16 @@ const MapPage = () => {
 
                 }}
                 >
+                    {isLoading ? (
+                        <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            }}>
+                            <Spinner />
+                        </div>
+                    ) : (
                     <MarkerClusterer
                         averageCenter={true}
                         minLevel={3}
@@ -700,9 +718,9 @@ const MapPage = () => {
                             )
                         })}
                     </MarkerClusterer>
+                    )}
                 </Map>
             </div>
-            }
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
                 <SearchBar onSearch={handleSearch} isSearchMode={isSearchMode} onClearSearch={handleClearSearch}/>
@@ -886,6 +904,7 @@ const MapPage = () => {
                 </Modal>
             )}
         </div>
+        </>
     )
 }
 

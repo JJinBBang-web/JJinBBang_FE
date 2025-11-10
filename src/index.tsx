@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TagManager from "react-gtm-module";
+import { HelmetProvider } from 'react-helmet-async';
+
 
 const tagManagerArgs = {
   gtmId: "GTM-N8P58RSN",
@@ -18,7 +20,10 @@ const queryClient = new QueryClient(); //캐시와 훅을 쓸수있게 정의
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <App />
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+
   </QueryClientProvider>
 );
 

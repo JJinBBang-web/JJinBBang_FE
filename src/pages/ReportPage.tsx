@@ -5,6 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import Modal from "../components/review/Modal";
 import reportModalIcon from "../assets/image/ReportModalIcon.svg"
 import verifyCompleteIcon from "../assets/image/verifyCompleteIcon.svg"
+import { useReport } from "../hooks/useReport";
 
 const AutoHeightTextarea: React.FC<{
     value: string;
@@ -52,14 +53,17 @@ const ReportPage: React.FC = () => {
 
     const maxLength = 1000;
 
-    const { reviewId } = useParams();
+    const { reviewId, buildingId } = useParams();
+
+    const from: 'review' | 'building' = location.state?.from ?? 'review';
+    
+    const { report, isLoading, isError, error } = useReport();
 
     const goBack = () => {
     if (location.state?.from === 'review') {
-        navigate(-1); // Report를 pop → 기존 Review로 복귀
-    } else {
-    // 뒤로갈 스택이 없다면 안전하게 Review로 대체
         navigate(`/building/review/${reviewId}`, { replace: true, state: location.state });
+    } else {
+        navigate(`/building/${buildingId}`, { replace: true, state: location.state });
     }
     };
           
@@ -72,6 +76,34 @@ const ReportPage: React.FC = () => {
     const handleButtonClick = () => {
         goBack();
     };
+
+    const handleReportSubmit = () => {
+        const targetId = from === 'review' ? reviewId : buildingId;
+
+        if (!targetId) {
+            console.error('신고 대상 ID가 없습니다.');
+            // 필요시 사용자 피드백 UI 추가
+            return;
+        }
+
+        report(
+        {
+            from,
+            targetId,
+            opinion: content.trim(),
+        },
+        {
+            onSuccess: () => {
+            setIsReported(true); // 모달을 "신고완료" 화면으로 전환
+            },
+            onError: () => {
+                // 필요 시 에러 토스트/문구 표시
+            alert('신고 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+            },
+        }
+        );
+
+    }
 
     return (
         <div className="content">
@@ -153,7 +185,7 @@ const ReportPage: React.FC = () => {
                                 </div>
                                 <div className={styles.btnWrap}>
                                     <button className={styles.prevBtn} onClick={()=> setIsOpen(false)}>이전</button>
-                                    <button className={styles.reportBtn} onClick={()=> setIsReported(true)}>신고</button>
+                                    <button className={styles.reportBtn} onClick={handleReportSubmit}>신고</button>
                                 </div>
                             </>
                         )

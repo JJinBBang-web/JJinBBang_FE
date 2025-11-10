@@ -17,6 +17,8 @@ import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 import { deleteAPI, putAPI } from "../../api/baseAPI";
 import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
 import UpdateCancelModal from "../../components/review/UpdateCancelModal";
+import { imageUploadAPI } from "../../api/imageUpload";
+
 
 
 type AddressPick = {
@@ -109,10 +111,12 @@ const UpdateConfirmPage: React.FC = () => {
       try {
           setIsSubmitting(true);
 
+          const finalImageUrls = await ensureCdnImages(review.images as any);
           // UI 반영 (선반영)
-          setReview((prev) => (prev ? { ...prev, rating } : prev));
+          setReview((prev) => (prev ? { ...prev, rating, images: finalImageUrls } : prev));
 
-          const body = buildUpdatePayload(review, rating);
+          const body = buildUpdatePayload(review, rating, finalImageUrls);
+          
           // ✅ 인증 필요하면 true
           await putAPI(`/api/v1/review/${reviewId}`, body, true);
 
@@ -292,6 +296,16 @@ const UpdateConfirmPage: React.FC = () => {
       });
     };
 
+    const navigateToPhotos = () => {
+      navigate(`/review/${reviewId}/update/photo-upload`, {
+        replace: true,
+        state: {
+          housingType: review?.housingType,
+          from: "update",
+        },
+      });
+    };
+
     const navigateToContent = () => {
       navigate(`/review/${reviewId}/update/content`, {
         replace: true,
@@ -315,10 +329,7 @@ const UpdateConfirmPage: React.FC = () => {
     };
 
     // Request 매핑 함수
-    const buildUpdatePayload = (r : ReviewState, finalRating: number) : UpdateReviewRequest => {
-      // 이미지 처리
-      const imageUrls = Array.isArray(r.images) ? r.images.filter(Boolean) : [];
-
+    const buildUpdatePayload = (r : ReviewState, finalRating: number, imageUrls: string[]) : UpdateReviewRequest => {
       // 공통 키워드 처리
       const keywords = {
           positive: r.pros ?? [],
@@ -398,6 +409,67 @@ const UpdateConfirmPage: React.FC = () => {
         };
       }
     }
+
+    const isRemoteUrl = (url: string) => {
+      if (!url) return false;
+      // blob:, data: 로 시작하면 로컬
+      if (url.startsWith("blob:") || url.startsWith("data:")) return false;
+      // http(s) 이면 일단 원격으로 간주 (필요하면 도메인 화이트리스트 추가)
+      return /^https?:\/\//i.test(url);
+    };
+    const ensureCdnImages = async (
+      images: Array<string | File> | undefined
+    ): Promise<string[]> => {
+      if (!images || images.length === 0) return [];
+
+      const remoteUrls: string[] = [];
+      const blobUrls: string[] = [];
+      const base64s: string[] = [];
+      const files: File[] = [];
+
+      for (const img of images) {
+        if (img instanceof File) {
+          files.push(img);
+          continue;
+        }
+        if (img.startsWith("blob:")) {
+          blobUrls.push(img);
+          continue;
+        }
+        if (img.startsWith("data:")) {
+          base64s.push(img);
+          continue;
+        }
+        if (isRemoteUrl(img)) {
+          remoteUrls.push(img);
+          continue;
+        }
+        // 혹시 모르는 케이스는 원격으로 간주 (원한다면 더 엄격히 필터링)
+        remoteUrls.push(img);
+      }
+
+      const [uploadedFromBlob, uploadedFromBase64, uploadedFromFiles] =
+        await Promise.all([
+          blobUrls.length
+            ? imageUploadAPI.uploadBlobUrls(blobUrls, "review")
+            : Promise.resolve<string[]>([]),
+          base64s.length
+            ? imageUploadAPI.uploadBase64Images(base64s, "review")
+            : Promise.resolve<string[]>([]),
+          files.length
+            ? imageUploadAPI.uploadImages(files, "review")
+            : Promise.resolve<string[]>([]),
+        ]);
+
+      return [
+        ...remoteUrls,
+        ...uploadedFromBlob,
+        ...uploadedFromBase64,
+        ...uploadedFromFiles,
+      ];
+    };
+
+
 
     const renderTags = (tags: string[]) => {
       if (!tags || tags.length === 0) return null;
@@ -646,6 +718,29 @@ const UpdateConfirmPage: React.FC = () => {
                 </div>
               </>
             )}
+            <div
+              className={styles.infoItem}
+              onClick={() => handleItemClick(navigateToPhotos)}
+            >
+              <span className={styles.label}>사진</span>
+              <div className={styles.value}>
+                <div className={styles.photosContainer}>
+                  {review?.images && review.images.length > 0 ? (
+                    review.images.slice(0, 3).map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`사진 ${index + 1}`}
+                        className={styles.photoThumbnail}
+                      />
+                    ))
+                  ) : (
+                    <span className={styles.valueText}>사진을 추가해주세요</span>
+                  )}
+                </div>
+                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+              </div>
+            </div>
 
             <div
               className={styles.infoItem}

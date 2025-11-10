@@ -119,9 +119,7 @@ const Review: React.FC = () => {
 
   const handleBack = () => {
     // location.state에서 from 정보 확인
-    if (location.state?.from === 'mypage') {
-      navigate('/mypage');
-    } else if (window.history.length > 1) {
+    if (window.history.length > 1) {
       navigate(-1);
     } else {
       navigate('/');
