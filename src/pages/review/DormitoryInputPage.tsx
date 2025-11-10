@@ -77,10 +77,6 @@ const DormitoryInputPage: React.FC = () => {
 
     // 이미 좌표가 있으면 변환하지 않음
     if (review.latitude && review.longitude) {
-      console.log('=== 기숙사 - 기존 좌표 사용 ===');
-      console.log('위도(latitude):', review.latitude);
-      console.log('경도(longitude):', review.longitude);
-      console.log('==========================');
       return;
     }
 
@@ -92,12 +88,6 @@ const DormitoryInputPage: React.FC = () => {
         const lat = parseFloat(y);
         const lng = parseFloat(x);
 
-        console.log('=== 기숙사 - Geocoder로 좌표 변환 ===');
-        console.log('도로명 주소:', address.roadAddress);
-        console.log('위도(latitude):', lat);
-        console.log('경도(longitude):', lng);
-        console.log('===================================');
-
         setReview((prev) => ({
           ...prev,
           latitude: lat,
@@ -105,7 +95,7 @@ const DormitoryInputPage: React.FC = () => {
         }));
       }
     });
-  }, [address?.roadAddress]);
+  }, [address?.roadAddress, review.latitude, review.longitude, setReview]);
 
   useEffect(() => {
     // Restore state from review if coming from confirm page
@@ -121,7 +111,8 @@ const DormitoryInputPage: React.FC = () => {
 
   // Update university name when selectedTypeNum changes
   useEffect(() => {
-    if (selectedTypeNum) {
+    // 바텀시트가 닫힐 때만 대학교 정보를 업데이트
+    if (selectedTypeNum && !bottomSheet.isOpenModal && bottomSheet.type === "university") {
       const selectedUniversity = universities.find(
         (uni) => uni.id === selectedTypeNum
       );
@@ -131,7 +122,7 @@ const DormitoryInputPage: React.FC = () => {
         );
       }
     }
-  }, [selectedTypeNum, universities]);
+  }, [selectedTypeNum, universities, bottomSheet]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -228,14 +219,17 @@ const DormitoryInputPage: React.FC = () => {
 
         <div className={styles.inputSection}>
           <label className={styles.label}>대학교</label>
-          <div className={styles.buildingInput} onClick={handleUniversityClick}>
+          <div
+            className={`${styles.buildingInput} ${!university ? styles.empty : ''}`}
+            onClick={handleUniversityClick}
+          >
             {university || "예) 찐빵대학교"}
           </div>
 
           <label className={styles.label}>기숙사명</label>
           <input
             type="text"
-            className={styles.buildingInput}
+            className={`${styles.buildingInput} ${!dormitoryName ? styles.empty : ''}`}
             value={dormitoryName}
             onChange={handleDormitoryNameChange}
             placeholder="예) 찐빵관"

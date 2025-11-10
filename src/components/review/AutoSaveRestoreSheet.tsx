@@ -16,15 +16,6 @@ const AutoSaveRestoreSheet: React.FC<AutoSaveRestoreSheetProps> = ({
   onContinue,
   onNewStart,
 }) => {
-  console.log("AutoSaveRestoreSheet render - isOpen:", isOpen);
-
-  if (!isOpen) {
-    console.log("AutoSaveRestoreSheet returning null");
-    return null;
-  }
-
-  console.log("AutoSaveRestoreSheet rendering sheet");
-
   return (
     <div className={styles.overlay}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
