@@ -58,10 +58,6 @@ const ReviewTypePage: React.FC = () => {
   }, [locationState.from]);
 
   const handleTypeSelect = (type: string) => {
-    if (type === "공인중개사") {
-      alert("업데이트 준비 중이에요!");
-      return;
-    }
     setSelectedType(type);
   };
 
