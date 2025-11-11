@@ -163,7 +163,7 @@ const Home: React.FC = () => {
     <MetaTag
         title="찐빵 | 자취 후기 공유 플랫폼"
         description="대학교 주변 원룸, 기숙사, 부동산 리뷰를 한눈에!"
-        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산"
+        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 자취, 후기, 추천"
         imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
         url="https://jjinbbang.kr/"
       />

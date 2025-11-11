@@ -607,7 +607,7 @@ const MapPage = () => {
         <MetaTag
             title="찐빵 | 자취 후기 지도 보기"
             description="대학가 근처 자취방, 기숙사 후기 위치를 한눈에 볼 수 있다!"
-            keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 지도"
+            keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 지도, 자취, 후기, 추천"
             imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
             url="https://jjinbbang.kr/map"
         />
