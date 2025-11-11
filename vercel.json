@@ -1,11 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "https://www.jjinbbang.kr/:path*",
-      "destination": "https://jjinbbang.kr/:path*",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "http://3.35.29.235:8080/api/:path*" },
     {
