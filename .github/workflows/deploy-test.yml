@@ -48,15 +48,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1 # Amplify 앱이 있는 리전
 
-      # 8. 🚀 AWS Amplify로 배포 (이것이 최종입니다)
-      # (Amplify CLI를 직접 사용하는 가장 확실한 공식 액션입니다.)
+# 8. 🚀 AWS Amplify로 배포 (GPT가 알려준 CLI 방식)
+      # (이것이 build 폴더를 수동 배포하는 가장 확실한 방법입니다.)
       - name: Deploy to AWS Amplify
-        # 🚨 (최종 수정) 이 액션 이름을 사용해야 합니다.
-        uses: aws-amplify/amplify-cli-action@v1
-        with:
-          # GitHub Secrets에서 가져온 Amplify 앱 ID
-          app-id: ${{ secrets.AMPLIFY_APP_ID }} 
-          env-name: test
-          build-path: build # React 빌드 결과물 폴더
-        # (이전 단계에서 AWS 자격 증명이 이미 설정되었으므로 
-        #  별도의 env: 블록이 필요 없습니다.)
+        run: |
+          aws amplify start-deployment \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name test \
+            --source-url build
