@@ -23,7 +23,6 @@ jobs:
       # 3. .env 파일 생성
       - name: .env setting
         run: |
-          echo "PUBLIC_URL=${{ secrets.PUBLIC_URL }}" >> .env
           echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
           echo "REACT_APP_KAKAO_CLIENT_ID=${{ secrets.REACT_APP_KAKAO_CLIENT_ID }}" >> .env
           echo "REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.REACT_APP_KAKAO_REDIRECT_URI }}" >> .env
