@@ -47,12 +47,37 @@ jobs:
           aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1 # Amplify 앱이 있는 리전
-
-# 8. 🚀 AWS Amplify로 배포 (GPT가 알려준 CLI 방식)
-      # (이것이 build 폴더를 수동 배포하는 가장 확실한 방법입니다.)
+          
+# 8. 🚀 (수정됨) AWS Amplify로 수동 배포 (CLI 3단계)
       - name: Deploy to AWS Amplify
         run: |
+          # (1/4) zip, jq 설치
+          sudo apt-get update && sudo apt-get install -y zip jq
+
+          # (2/4) 빌드 폴더를 zip 파일로 압축
+          echo "Zipping build folder..."
+          zip -r build.zip ./build
+
+          # (3/4) Amplify에 배포 슬롯 생성 (업로드 URL과 Job ID 받기)
+          echo "Creating deployment slot..."
+          DEPLOY_DATA=$(aws amplify create-deployment \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name test)
+          
+          # JSON에서 Job ID와 업로드 URL 추출
+          JOB_ID=$(echo $DEPLOY_DATA | jq -r .jobId)
+          UPLOAD_URL=$(echo $DEPLOY_DATA | jq -r .zipUploadUrl)
+
+          echo "JOB_ID: $JOB_ID"
+
+          # (4/4) zip 파일을 S3 업로드 URL로 전송 (curl 사용)
+          echo "Uploading zip file..."
+          curl -X PUT -H "Content-Type: application/zip" \
+            --upload-file build.zip "$UPLOAD_URL"
+
+          # (5/4) Amplify 배포 시작 (업로드 완료)
+          echo "Starting deployment..."
           aws amplify start-deployment \
             --app-id ${{ secrets.AMPLIFY_APP_ID }} \
             --branch-name test \
-            --source-url build
+            --job-id $JOB_ID
