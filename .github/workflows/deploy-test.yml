@@ -1,14 +1,14 @@
 # .github/workflows/deploy-test.yml
-# 'test' 브랜치를 AWS Amplify로 배포하기 위한 파일
+# 'test' 브랜치를 AWS Amplify로 배포하기 위한 파일 (표준 자격증명 방식)
 
 name: Deploy TEST Branch to Amplify
 
 # 1. 언제 실행할까?
 on:
   push:
-    branches: ["test"]  # 'test' 브랜치에 푸시될 때만 실행
+    branches: ["test"]
   pull_request:
-    branches: ["test"]  # 'test' 브랜치로 PR이 열리거나 업데이트될 때
+    branches: ["test"]
 
 jobs:
   build:
@@ -20,39 +20,40 @@ jobs:
       - name: checkout Github Action
         uses: actions/checkout@v3
 
-      # 3. .env 파일 생성 (기존 방식 활용)
-      # 🚨 (중요!) GitHub Secrets에 'test' 서버용 변수들을 모두 등록해야 합니다.
+      # 3. .env 파일 생성
       - name: .env setting
         run: |
           echo "PUBLIC_URL=${{ secrets.PUBLIC_URL }}" >> .env
           echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
           echo "REACT_APP_KAKAO_CLIENT_ID=${{ secrets.REACT_APP_KAKAO_CLIENT_ID }}" >> .env
           echo "REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.REACT_APP_KAKAO_REDIRECT_URI }}" >> .env
-          # .env에 필요한 다른 모든 변수들도 여기에 추가해 주세요.
  
-      # 4. 의존성 설치 (npm ci 사용)
+      # 4. 의존성 설치
       - name: Install dependencies
         run: npm ci
       
-      # 5. 린트 실행 (선택 사항)
+      # 5. 린트 실행
       - name: Run Lint
         run: npm run lint
 
-      # 6. React 앱 빌드 (CI=false 포함)
+      # 6. React 앱 빌드
       - name: Build
         run: CI=false npm run build
 
-      # 7. 🚀 AWS Amplify로 배포 (이 부분이 핵심)
-      # (기존 'Deploy to GitHub Pages'를 이 단계로 교체했습니다.)
+      # 7. 🚀 AWS 자격 증명 설정 (수정된 표준 방식)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Amplify 앱이 있는 리전
+
+      # 8. 🚀 AWS Amplify로 배포
+      # (이전 단계에서 자격 증명이 이미 설정되었으므로 env: 부분이 필요 없습니다.)
       - name: Deploy to AWS Amplify
         uses: aws-actions/amplify-hosting-deploy@v1
         with:
-          # GitHub Secrets에서 가져온 Amplify 앱 ID
           app-id: ${{ secrets.AMPLIFY_APP_ID }} 
-          aws-region: us-east-1 # Amplify 앱이 있는 리전
-          branch: test # Amplify에서 이 배포를 식별할 브랜치 이름
-          build-path: build # 빌드 결과물 폴더
-        env:
-          # 사용자님이 지정한 이름의 AWS Secrets 사용
-          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+          env-name: test 
+          app-build-path: build 
+          region: us-east-1
