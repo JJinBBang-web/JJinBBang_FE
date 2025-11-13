@@ -45,7 +45,7 @@ jobs:
       # 7. 🚀 AWS Amplify로 배포 (이 부분이 핵심)
       # (기존 'Deploy to GitHub Pages'를 이 단계로 교체했습니다.)
       - name: Deploy to AWS Amplify
-        uses: aws-amplify/amplify-cli-action@v1
+        uses: aws-actions/amplify-hosting-deploy@v1
         with:
           # GitHub Secrets에서 가져온 Amplify 앱 ID
           app-id: ${{ secrets.AMPLIFY_APP_ID }} 
