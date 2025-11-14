@@ -41,18 +41,6 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=<%= process.env.REACT_APP_KAKAO_MAP_KEY%>&libraries=services,clusterer"
     ></script>
-    <script>
-      // EJS가 처리할 환경 변수 값을 JavaScript 변수에 할당
-      const kakaoAppKey = "<%= process.env.REACT_APP_KAKAO_MAP_KEY %>";
-
-      // 1. 환경 변수 값 출력
-      console.log("🔑 카카오 API 키 (환경 변수):", kakaoAppKey);
-
-      // 2. 최종 src 문자열 조합 및 출력
-      const finalSrc = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoAppKey}&libraries=services,clusterer`;
-
-      console.log("🔗 최종 SDK 로드 SRC:", finalSrc);
-    </script>
     <script
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5337915514363166"
