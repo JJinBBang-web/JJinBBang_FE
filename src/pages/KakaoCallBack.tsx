@@ -54,6 +54,7 @@ export const kakaoLogin = async (authCode: string) => {
       redirectUri: loginUrl,
     }),
   });
+  console.log("Kakao Login Response:", response);
 
   // Check if response is HTML (error page)
   const contentType = response.headers.get("content-type");
