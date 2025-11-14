@@ -9,6 +9,7 @@ export const api = axios.create({
     Accept: 'application/json',
   },
 });
+console.log("API URL:", process.env.REACT_APP_API_URL);
 
 // AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
 declare module 'axios' {
