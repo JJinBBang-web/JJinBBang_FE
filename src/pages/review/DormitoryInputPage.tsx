@@ -205,6 +205,7 @@ const DormitoryInputPage: React.FC = () => {
       ...updatedReview,
       university: university,
       dormitoryName: dormitoryName,
+      campusId: selectedTypeNum, // 선택한 캠퍼스의 ID 저장
     } as unknown as ReviewState;
 
     setReview(extendedUpdatedReview);

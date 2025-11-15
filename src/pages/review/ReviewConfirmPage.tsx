@@ -1,5 +1,4 @@
 // src/pages/review/ReviewConfirmPage.tsx
-// Fixed syntax errors in try-catch structure
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -376,9 +375,13 @@ const ReviewConfirmPage: React.FC = () => {
           );
         }
 
+        // DormitoryInputPage에서 저장된 campusId 사용
+        // selectedTypeNum (대학교 ID)가 campusId로 저장되어 있음
+        const campusId = (review as any).campusId;
+
         reviewData = {
           dormitoryReview: {
-            campusId: 2, // 임시값, 실제로는 캠퍼스 ID를 받아와야 함
+            campusId: campusId,
             capacity:
               review.roomCapacity || dormitoryReview.roomType === "1인실"
                 ? 1
