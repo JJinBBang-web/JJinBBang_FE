@@ -138,9 +138,12 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.address?.jibunAddress && {
             addressDetail: locationState.address.jibunAddress,
           }),
-          ...(locationState.buildingName && {
-            detailedAddress: locationState.buildingName,
-          }),
+          // 공인중개사가 아닌 경우에만 buildingName으로 detailedAddress 업데이트
+          ...(locationState.buildingName &&
+            locationState.housingType !== "공인중개사" &&
+            autoSavedData.reviewState?.housingType !== "공인중개사" && {
+              detailedAddress: locationState.buildingName,
+            }),
           ...(locationState.paymentType && {
             contractType: locationState.paymentType,
           }),
@@ -168,9 +171,13 @@ const ReviewConfirmPage: React.FC = () => {
         address: locationState.address?.roadAddress || prev.address || "",
         addressDetail:
           locationState.address?.jibunAddress || prev.addressDetail || "",
-        detailedAddress: locationState.buildingName
-          ? `${locationState.buildingName}`
-          : prev.detailedAddress || "",
+        // 공인중개사인 경우 prev.detailedAddress 유지 (상호명), 그 외는 buildingName 사용
+        detailedAddress:
+          prev.housingType === "공인중개사"
+            ? prev.detailedAddress || ""
+            : locationState.buildingName
+              ? `${locationState.buildingName}`
+              : prev.detailedAddress || "",
         contractType: locationState.paymentType || prev.contractType || "",
         deposit:
           locationState.priceData?.deposit !== undefined
@@ -470,7 +477,11 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || [],
           buildingRequest: {
-            ...(review.buildingCode && { buildingCode: review.buildingCode }),
+            // 공인중개사가 아닌 경우에만 buildingCode 포함
+            ...(review.buildingCode &&
+              review.housingType !== "공인중개사" && {
+                buildingCode: review.buildingCode,
+              }),
             name: review.detailedAddress || "건물명",
             type: koreanToType[review.housingType] || "APARTMENT",
             address: review.address || "",
@@ -636,9 +647,17 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToDetailedAddress = () => {
     if (review.housingType === "공인중개사") {
-      navigate("/review/agency", {
+      navigate("/review/result", {
         state: {
           ...locationState,
+          address: {
+            roadAddress: review.address || "",
+            jibunAddress: review.addressDetail || "",
+            buildingName: review.detailedAddress || "",
+            buildingCode: review.buildingCode || "",
+          },
+          buildingName: review.detailedAddress || "",
+          housingType: review.housingType,
           from: "confirm",
         },
       });
@@ -890,7 +909,13 @@ const ReviewConfirmPage: React.FC = () => {
               className={styles.infoItem}
               onClick={() => handleItemClick(navigateToDetailedAddress)}
             >
-              <span className={styles.label}>상세 주소</span>
+              <span className={styles.label}>
+                {review.housingType === "공인중개사"
+                  ? "상호명"
+                  : isDormitory
+                    ? "대학교/기숙사"
+                    : "상세 주소"}
+              </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
                   {isDormitory ? (
@@ -900,11 +925,13 @@ const ReviewConfirmPage: React.FC = () => {
                       {(review as any).dormitoryName ||
                         "기숙사명을 입력해주세요"}
                     </>
+                  ) : review.housingType === "공인중개사" ? (
+                    review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"
                   )}
                   <br />
-                  {review.floorType || ""}
+                  {review.housingType !== "공인중개사" && review.floorType}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -1171,6 +1198,7 @@ const ReviewConfirmPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="confirm"
         />
       )}
 

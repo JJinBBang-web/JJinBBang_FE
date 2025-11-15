@@ -65,14 +65,6 @@ const AddressSearchPage: React.FC = () => {
                 };
 
                 getCoordinates((lat, lng) => {
-                  console.log('=== 주소 검색 결과 ===');
-                  console.log('도로명 주소:', data.roadAddress);
-                  console.log('지번 주소:', data.jibunAddress);
-                  console.log('건물명:', data.buildingName);
-                  console.log('위도(latitude):', lat);
-                  console.log('경도(longitude):', lng);
-                  console.log('=====================');
-
                   const updatedReview = {
                     ...review,
                     address: data.roadAddress,
@@ -128,17 +120,37 @@ const AddressSearchPage: React.FC = () => {
                   } else {
                     // 기숙사 타입인 경우 DormitoryInputPage로 이동
                     if (locationState.housingType === '기숙사') {
-                      navigate('/review/dormitory', {
-                        state: {
-                          ...locationState,
-                          address: {
-                            roadAddress: data.roadAddress,
-                            jibunAddress: data.jibunAddress,
-                            buildingName: data.buildingName,
-                            buildingCode: data.buildingCode || data.bcode || '',
+                      // Kakao 키워드 검색 API를 사용하여 장소 ID 가져오기
+                      // (JavaScript SDK의 Places 서비스를 통해 접근)
+                      const searchQuery = data.buildingName || data.roadAddress;
+                      const ps = new kakao.maps.services.Places();
+
+                      // 검색 옵션: 좌표 기준으로 정확도 높이기
+                      const searchOptions = {
+                        location: new kakao.maps.LatLng(lat, lng),
+                        radius: 1000, // 1km 반경 내 검색
+                        size: 5, // 최대 5개 결과
+                      };
+
+                      ps.keywordSearch(searchQuery, (result: any, status: any) => {
+                        let finalBuildingCode = '';
+
+                        if (status === kakao.maps.services.Status.OK && result.length > 0) {
+                          finalBuildingCode = result[0].id; // Kakao 장소 ID
+                        }
+
+                        navigate('/review/dormitory', {
+                          state: {
+                            ...locationState,
+                            address: {
+                              roadAddress: data.roadAddress,
+                              jibunAddress: data.jibunAddress,
+                              buildingName: data.buildingName,
+                              buildingCode: finalBuildingCode, // Kakao 장소 ID
+                            },
                           },
-                        },
-                      });
+                        });
+                      }, searchOptions);
                     } else {
                       // 일반 주거 타입인 경우 FloorInputPage로 이동
                       navigate('/review/floor', {

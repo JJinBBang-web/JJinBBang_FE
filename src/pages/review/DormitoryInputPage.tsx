@@ -112,7 +112,11 @@ const DormitoryInputPage: React.FC = () => {
   // Update university name when selectedTypeNum changes
   useEffect(() => {
     // 바텀시트가 닫힐 때만 대학교 정보를 업데이트
-    if (selectedTypeNum && !bottomSheet.isOpenModal && bottomSheet.type === "university") {
+    if (
+      selectedTypeNum &&
+      !bottomSheet.isOpenModal &&
+      bottomSheet.type === "university"
+    ) {
       const selectedUniversity = universities.find(
         (uni) => uni.id === selectedTypeNum
       );
@@ -147,11 +151,54 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    // 기숙사명으로 정확한 장소 ID 조회
+    let finalBuildingCode = review.buildingCode || "";
+
+    // 키워드 검색을 통해 장소 ID 업데이트 시도
+    if (
+      dormitoryName &&
+      address?.roadAddress &&
+      review.latitude &&
+      review.longitude
+    ) {
+      // "도로명주소 + 기숙사명"으로 키워드 검색
+      const searchQuery = `${address.roadAddress} ${dormitoryName}`;
+
+      // Kakao Places 서비스 (키워드 검색 API를 JavaScript SDK로 접근)
+      const ps = new kakao.maps.services.Places();
+
+      // 검색 옵션: 좌표 기준으로 정확도 높이기
+      const searchOptions = {
+        location: new kakao.maps.LatLng(review.latitude, review.longitude),
+        radius: 2000, // 2km 반경 내 검색
+        size: 5,
+      };
+
+      ps.keywordSearch(
+        searchQuery,
+        (result: any, status: any) => {
+          if (status === kakao.maps.services.Status.OK && result.length > 0) {
+            finalBuildingCode = result[0].id; // Kakao 장소 ID
+          }
+
+          // 검색 완료 후 다음 단계로 진행
+          proceedToNextStep(finalBuildingCode);
+        },
+        searchOptions
+      );
+    } else {
+      proceedToNextStep(finalBuildingCode);
+    }
+  };
+
+  // 다음 단계로 진행하는 함수 (키워드 검색 완료 후 호출)
+  const proceedToNextStep = (finalBuildingCode: string) => {
     const updatedReview = {
       ...review,
       roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
       dormitoryFee: 0, // 기숙사비 제거, 기본값 설정
+      buildingCode: finalBuildingCode, // Kakao 장소 ID를 buildingCode로 업데이트
     };
 
     const extendedUpdatedReview = {
@@ -220,7 +267,7 @@ const DormitoryInputPage: React.FC = () => {
         <div className={styles.inputSection}>
           <label className={styles.label}>대학교</label>
           <div
-            className={`${styles.buildingInput} ${!university ? styles.empty : ''}`}
+            className={`${styles.buildingInput} ${!university ? styles.empty : ""}`}
             onClick={handleUniversityClick}
           >
             {university || "예) 찐빵대학교"}
@@ -229,7 +276,7 @@ const DormitoryInputPage: React.FC = () => {
           <label className={styles.label}>기숙사명</label>
           <input
             type="text"
-            className={`${styles.buildingInput} ${!dormitoryName ? styles.empty : ''}`}
+            className={`${styles.buildingInput} ${!dormitoryName ? styles.empty : ""}`}
             value={dormitoryName}
             onChange={handleDormitoryNameChange}
             placeholder="예) 찐빵관"
