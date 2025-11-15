@@ -379,6 +379,18 @@ const ReviewConfirmPage: React.FC = () => {
         // selectedTypeNum (대학교 ID)가 campusId로 저장되어 있음
         const campusId = (review as any).campusId;
 
+        if (!campusId) {
+          alert('대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요.');
+          navigate('/review/dormitory');
+          return;
+        }
+
+        if (!review.buildingCode) {
+          alert('기숙사 위치 정보를 찾을 수 없습니다. 주소를 다시 입력해주세요.');
+          navigate('/review/address');
+          return;
+        }
+
         reviewData = {
           dormitoryReview: {
             campusId: campusId,
@@ -408,7 +420,9 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || dormitoryReview.images || [],
           buildingRequest: {
-            ...(review.buildingCode && { buildingCode: review.buildingCode }),
+            // 기숙사는 buildingCode에 Kakao 장소 ID를 저장
+            // DormitoryInputPage에서 키워드 검색 API로 얻은 장소 ID 사용
+            buildingCode: review.buildingCode,
             name:
               (review as any).dormitoryName ||
               review.detailedAddress ||
@@ -1019,6 +1033,7 @@ const ReviewConfirmPage: React.FC = () => {
                               const selectedOption = Object.entries(
                                 options as Record<string, boolean>
                               ).find(([_, selected]) => selected)?.[0];
+                              // 선택된 옵션이 있으면 항상 표시 ("없음" 포함)
                               return selectedOption ? (
                                 <span
                                   key={facility}

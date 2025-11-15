@@ -42,7 +42,7 @@ const DormitoryInputPage: React.FC = () => {
   const locationState = (location.state as LocationState) || {};
   const { from, address } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
-  const selectedTypeNum = useRecoilValue(selectedTypeNumState);
+  const [selectedTypeNum, setSelectedTypeNum] = useRecoilState(selectedTypeNumState);
   const universities = useRecoilValue(universitiesState);
   const setBottomSheet = useSetRecoilState(isSheetOpenState);
   const bottomSheet = useRecoilValue(isSheetOpenState);
@@ -75,8 +75,11 @@ const DormitoryInputPage: React.FC = () => {
   useEffect(() => {
     if (!address?.roadAddress) return;
 
-    // 이미 좌표가 있으면 변환하지 않음
-    if (review.latitude && review.longitude) {
+    // 주소가 변경되었는지 확인 - review.address와 다르면 재변환
+    const needsUpdate = review.address !== address.roadAddress;
+
+    // 이미 좌표가 있고 주소가 동일하면 변환하지 않음
+    if (review.latitude && review.longitude && !needsUpdate) {
       return;
     }
 
@@ -90,12 +93,13 @@ const DormitoryInputPage: React.FC = () => {
 
         setReview((prev) => ({
           ...prev,
+          address: address.roadAddress,
           latitude: lat,
           longitude: lng,
         }));
       }
     });
-  }, [address?.roadAddress, review.latitude, review.longitude, setReview]);
+  }, [address?.roadAddress, review.address, review.latitude, review.longitude, setReview]);
 
   useEffect(() => {
     // Restore state from review if coming from confirm page
@@ -106,8 +110,13 @@ const DormitoryInputPage: React.FC = () => {
         review.roomCapacity ? review.roomCapacity.toString() : ""
       );
       setSelectedFloor(review.floorType || "저층");
+    } else {
+      // 처음 진입할 때는 대학교 선택 초기화
+      setSelectedTypeNum(null);
+      setUniversity("");
     }
-  }, [from, review, extendedReview]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from]);
 
   // Update university name when selectedTypeNum changes
   useEffect(() => {
@@ -151,6 +160,12 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    // campusId 검증
+    if (!selectedTypeNum) {
+      alert("대학교를 선택해주세요.");
+      return;
+    }
+
     // 기숙사명으로 정확한 장소 ID 조회
     let finalBuildingCode = review.buildingCode || "";
 
@@ -177,12 +192,18 @@ const DormitoryInputPage: React.FC = () => {
       ps.keywordSearch(
         searchQuery,
         (result: any, status: any) => {
+          let updatedLat = review.latitude || undefined;
+          let updatedLng = review.longitude || undefined;
+
           if (status === kakao.maps.services.Status.OK && result.length > 0) {
             finalBuildingCode = result[0].id; // Kakao 장소 ID
+            // 키워드 검색 결과의 좌표 사용 (더 정확함)
+            updatedLat = parseFloat(result[0].y);
+            updatedLng = parseFloat(result[0].x);
           }
 
-          // 검색 완료 후 다음 단계로 진행
-          proceedToNextStep(finalBuildingCode);
+          // 검색 완료 후 다음 단계로 진행 (좌표도 함께 전달)
+          proceedToNextStep(finalBuildingCode, updatedLat, updatedLng);
         },
         searchOptions
       );
@@ -192,13 +213,22 @@ const DormitoryInputPage: React.FC = () => {
   };
 
   // 다음 단계로 진행하는 함수 (키워드 검색 완료 후 호출)
-  const proceedToNextStep = (finalBuildingCode: string) => {
+  const proceedToNextStep = (
+    finalBuildingCode: string,
+    updatedLat?: number,
+    updatedLng?: number
+  ) => {
     const updatedReview = {
       ...review,
       roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
       dormitoryFee: 0, // 기숙사비 제거, 기본값 설정
       buildingCode: finalBuildingCode, // Kakao 장소 ID를 buildingCode로 업데이트
+      // 키워드 검색으로 얻은 좌표가 있으면 업데이트
+      ...(updatedLat && updatedLng && {
+        latitude: updatedLat,
+        longitude: updatedLng,
+      }),
     };
 
     const extendedUpdatedReview = {

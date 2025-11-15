@@ -134,10 +134,23 @@ const AddressSearchPage: React.FC = () => {
 
                       ps.keywordSearch(searchQuery, (result: any, status: any) => {
                         let finalBuildingCode = '';
+                        let finalLat = lat;
+                        let finalLng = lng;
 
                         if (status === kakao.maps.services.Status.OK && result.length > 0) {
                           finalBuildingCode = result[0].id; // Kakao 장소 ID
+                          // 키워드 검색 결과의 좌표 사용 (더 정확함)
+                          finalLat = parseFloat(result[0].y);
+                          finalLng = parseFloat(result[0].x);
                         }
+
+                        // 키워드 검색 결과의 좌표로 review 업데이트
+                        setReview((prev) => ({
+                          ...prev,
+                          latitude: finalLat,
+                          longitude: finalLng,
+                          buildingCode: finalBuildingCode,
+                        }));
 
                         navigate('/review/dormitory', {
                           state: {

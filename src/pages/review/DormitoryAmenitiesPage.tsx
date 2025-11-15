@@ -49,13 +49,16 @@ const DormitoryAmenitiesPage: React.FC = () => {
   } = useCancelModal();
 
   useEffect(() => {
-    // 이전 페이지에서 넘어온 경우, 시설 데이터에 따라 선택 상태 업데이트
-    if (facilities) {
+    // confirm 페이지에서 돌아온 경우 기존 selections 복원
+    if (from === 'confirm' && dormitoryReview.facilityConditions) {
+      setSelections(dormitoryReview.facilityConditions);
+    } else if (facilities) {
+      // 이전 페이지에서 넘어온 경우, 시설 데이터에 따라 선택 상태 업데이트
       const newSelections = { ...selections };
       // 시설 데이터를 선택 상태에 적용
       setSelections(newSelections);
     }
-  }, [facilities]);
+  }, [facilities, from, dormitoryReview.facilityConditions]);
 
   // 옵션 선택 처리 함수 수정
   const handleOptionSelect = (facility: string, option: string) => {
