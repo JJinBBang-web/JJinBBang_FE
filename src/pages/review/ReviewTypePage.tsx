@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
 import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
+import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
 import styles from "../../styles/review/ReviewType.module.css";
@@ -15,6 +16,7 @@ const ReviewTypePage: React.FC = () => {
   const { housingType } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
   const [, setDormitoryReview] = useRecoilState(dormitoryReviewState);
+  const setSelectedTypeNum = useSetRecoilState(selectedTypeNumState);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
 
@@ -60,6 +62,11 @@ const ReviewTypePage: React.FC = () => {
       return;
     }
     setSelectedType(type);
+
+    // 기숙사 선택 시 캠퍼스 선택 상태 즉시 초기화 (수정 모드가 아닐 때만)
+    if (type === "기숙사" && locationState.from !== "confirm") {
+      setSelectedTypeNum(null);
+    }
   };
 
   const handleNext = () => {
