@@ -672,7 +672,7 @@ const MapPage = () => {
                         swLng: sw.getLng(),
                     };
 
-                    setMapBounds(extractedBounds);
+                    // setMapBounds(extractedBounds);
 
                 }}
                 >
