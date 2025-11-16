@@ -6,6 +6,8 @@ import { reviewState, ReviewState } from "../../recoil/review/reviewAtoms";
 import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
 import { universitiesState } from "../../recoil/map/universityRecoilState";
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
+import { UnivAPI } from "../../api/user/UnivAPI";
+import { UnivCampusInterface } from "../../types/entity/user/UnivInterface";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import styles from "../../styles/review/DormitoryInputPage.module.css";
@@ -47,6 +49,12 @@ const DormitoryInputPage: React.FC = () => {
   const setBottomSheet = useSetRecoilState(isSheetOpenState);
   const bottomSheet = useRecoilValue(isSheetOpenState);
 
+  // 확장된 캠퍼스 인터페이스 (universityName 포함)
+  interface ExtendedCampusInterface extends UnivCampusInterface {
+    universityName: string;
+  }
+  const [campusList, setCampusList] = useState<ExtendedCampusInterface[]>([]);
+
   // Cast to ExtendedReviewState to work with our additional properties
   const extendedReview = review as unknown as ExtendedReviewState;
 
@@ -70,6 +78,28 @@ const DormitoryInputPage: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // API에서 캠퍼스 목록 가져오기
+  useEffect(() => {
+    const fetchCampusList = async () => {
+      try {
+        const response = await UnivAPI.getUnivCampusList();
+        // 모든 캠퍼스를 평탄화하여 하나의 배열로 만들기
+        const allCampuses = response.flatMap((univ) =>
+          univ.campuses.map((campus) => ({
+            ...campus,
+            logoImageUrl: campus.logoImageUrl || univ.universityLogo,
+            universityName: univ.universityName, // 대학교 이름 추가
+          }))
+        );
+        setCampusList(allCampuses);
+      } catch (error) {
+        console.error("캠퍼스 목록 로드 실패:", error);
+      }
+    };
+
+    fetchCampusList();
+  }, []);
 
   // Geocoder를 사용하여 주소를 좌표로 변환
   useEffect(() => {
@@ -120,22 +150,31 @@ const DormitoryInputPage: React.FC = () => {
 
   // Update university name when selectedTypeNum changes
   useEffect(() => {
-    // 바텀시트가 닫힐 때만 대학교 정보를 업데이트
-    if (
-      selectedTypeNum &&
-      !bottomSheet.isOpenModal &&
-      bottomSheet.type === "university"
-    ) {
-      const selectedUniversity = universities.find(
-        (uni) => uni.id === selectedTypeNum
+    // selectedTypeNum이 변경될 때마다 대학교 정보를 업데이트
+    // confirm 페이지에서 돌아온 경우는 제외 (이미 university가 설정되어 있음)
+    if (selectedTypeNum && from !== "confirm" && campusList.length > 0) {
+      // API에서 가져온 캠퍼스 목록에서 선택된 캠퍼스 찾기
+      const selectedCampus = campusList.find(
+        (campus) => campus.id === selectedTypeNum
       );
-      if (selectedUniversity) {
+
+      if (selectedCampus) {
         setUniversity(
-          `${selectedUniversity.universityName} ${selectedUniversity.campus}`
+          `${selectedCampus.universityName} ${selectedCampus.campusName}`
         );
+      } else {
+        // 폴백: 하드코딩된 데이터에서 찾기
+        const selectedUniversity = universities.find(
+          (uni) => uni.id === selectedTypeNum
+        );
+        if (selectedUniversity) {
+          setUniversity(
+            `${selectedUniversity.universityName} ${selectedUniversity.campus}`
+          );
+        }
       }
     }
-  }, [selectedTypeNum, universities, bottomSheet]);
+  }, [selectedTypeNum, campusList, universities, from]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,

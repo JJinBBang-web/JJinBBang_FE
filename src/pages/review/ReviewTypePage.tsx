@@ -62,6 +62,11 @@ const ReviewTypePage: React.FC = () => {
       return;
     }
     setSelectedType(type);
+
+    // 기숙사 선택 시 캠퍼스 선택 상태 즉시 초기화 (수정 모드가 아닐 때만)
+    if (type === "기숙사" && locationState.from !== "confirm") {
+      setSelectedTypeNum(null);
+    }
   };
 
   const handleNext = () => {
@@ -92,11 +97,6 @@ const ReviewTypePage: React.FC = () => {
           },
         });
       } else {
-        // 기숙사 리뷰 작성 시작 시 캠퍼스 선택 초기화
-        if (selectedType === "기숙사") {
-          setSelectedTypeNum(null);
-        }
-
         // "다음" 버튼 클릭 시:
         // 1. 현재 페이지 데이터를 즉시 저장 (다음 step으로)
         reviewAutoSave.save({
