@@ -2,10 +2,9 @@
 # *
 User-agent: *
 Disallow: /404
-Allow: /
 
 # Host
-Host: https://jjinbbang.kr/
+Host: jjinbbang.kr
 
 
 # Sitemap

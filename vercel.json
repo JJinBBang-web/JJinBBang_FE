@@ -1,8 +1,23 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "http://3.35.29.235:8080/api/:path*" },
     {
-      "source": "/((?!api|static|assets|favicon.ico|robots.txt|manifest.json|.*\\..*).*)",
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/seo/sitemap.xml"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "http://3.35.29.235:8080/api/:path*"
+    },
+    {
+      "source": "/((?!api|static|assets|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
