@@ -245,12 +245,16 @@ const PhotoUploadPage: React.FC = () => {
         <button
           className={styles.prevButton}
           onClick={() => {
-            // 이전 페이지로 이동 (가격 입력 페이지들 중 하나를 가정)
-            // location.state의 paymentType에 따라 다른 페이지로 이동
-            const previousPage =
-              locationState?.paymentType === "전세"
-                ? "/review/jeonse"
-                : "/review/wolse";
+            // 공인중개사인 경우 주소 확인 페이지로, 그 외에는 가격 입력 페이지로 이동
+            let previousPage;
+            if (housingType === "공인중개사") {
+              previousPage = "/review/result";
+            } else {
+              previousPage =
+                locationState?.paymentType === "전세"
+                  ? "/review/jeonse"
+                  : "/review/wolse";
+            }
             navigate(previousPage, {
               state: location.state,
               replace: false,

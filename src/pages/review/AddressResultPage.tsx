@@ -213,7 +213,20 @@ const AddressResultPage: React.FC = () => {
         </div>
       </div>
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button
+          className={styles.prevButton}
+          onClick={() => {
+            if (housingType === "공인중개사") {
+              navigate("/review/agency", {
+                state: locationState,
+              });
+            } else {
+              navigate("/review/address", {
+                state: locationState,
+              });
+            }
+          }}
+        >
           이전
         </button>
         <button className={styles.nextButton} onClick={handleNext}>

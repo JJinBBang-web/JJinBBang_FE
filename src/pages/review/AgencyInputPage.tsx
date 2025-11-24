@@ -166,7 +166,12 @@ const AgencyInputPage: React.FC = () => {
         },
       });
     } else {
-      navigate(-1);
+      // 공인중개사 리뷰 플로우: 유형 선택 페이지로 이동
+      navigate("/review/type", {
+        state: {
+          ...location.state,
+        },
+      });
     }
   };
 
