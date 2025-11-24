@@ -149,18 +149,20 @@ const AddressResultPage: React.FC = () => {
             {housingType === "공인중개사"
               ? "정확한 정보가 맞나요?"
               : "정확한 주소가 맞나요?"}
-            <button
-              className={styles.searchButton}
-              onClick={() =>
-                navigate("/review/address", {
-                  state: {
-                    ...locationState,
-                  },
-                })
-              }
-            >
-              주소 재검색
-            </button>
+            {housingType !== "공인중개사" && (
+              <button
+                className={styles.searchButton}
+                onClick={() =>
+                  navigate("/review/address", {
+                    state: {
+                      ...locationState,
+                    },
+                  })
+                }
+              >
+                주소 재검색
+              </button>
+            )}
           </span>
         </div>
         <div className={styles.addressInfo}>

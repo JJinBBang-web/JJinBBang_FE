@@ -890,7 +890,9 @@ const ReviewConfirmPage: React.FC = () => {
               className={styles.infoItem}
               onClick={() => handleItemClick(navigateToDetailedAddress)}
             >
-              <span className={styles.label}>상세 주소</span>
+              <span className={styles.label}>
+                {isAgency ? "상호명" : "상세 주소"}
+              </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
                   {isDormitory ? (
@@ -900,11 +902,13 @@ const ReviewConfirmPage: React.FC = () => {
                       {(review as any).dormitoryName ||
                         "기숙사명을 입력해주세요"}
                     </>
+                  ) : isAgency ? (
+                    review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"
                   )}
                   <br />
-                  {review.floorType || ""}
+                  {!isAgency && review.floorType}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>

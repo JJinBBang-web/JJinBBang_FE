@@ -100,14 +100,25 @@ const ReviewTypePage: React.FC = () => {
           currentStep: REVIEW_STEPS.ADDRESS_INPUT, // 다음 페이지
         });
 
-        // 모든 타입에 대해 주소 입력 페이지로 이동 (기숙사 포함)
-        navigate("/review/input-address", {
-          state: {
-            ...locationState,
-            housingType: selectedType,
-          },
-          replace: false,
-        });
+        // 공인중개사는 주소 검색 없이 바로 상호명 입력 페이지로 이동
+        if (selectedType === "공인중개사") {
+          navigate("/review/agency", {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+            replace: false,
+          });
+        } else {
+          // 기타 타입(기숙사, 원룸 등)은 주소 입력 페이지로 이동
+          navigate("/review/input-address", {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+            replace: false,
+          });
+        }
       }
     }
   };
