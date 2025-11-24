@@ -32,6 +32,7 @@ const AgencyInputPage: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [selectedAgency, setSelectedAgency] = useState<AgencyInfo | null>(null);
 
   const ITEMS_PER_PAGE = 4;
 
@@ -44,8 +45,19 @@ const AgencyInputPage: React.FC = () => {
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
-    if (from === "confirm") {
-      setBuildingName(review.detailedAddress || "");
+    if (from === "confirm" && review.detailedAddress) {
+      setBuildingName(review.detailedAddress);
+      // 기존 리뷰 정보로부터 selectedAgency 복원
+      const restoredAgency: AgencyInfo = {
+        registerNumber: review.buildingCode || "",
+        companyName: review.detailedAddress,
+        brokerName: "",
+        roadAddress: review.address || "",
+        jibunAddress: review.addressDetail || "",
+        latitude: review.latitude || 0,
+        longitude: review.longitude || 0,
+      };
+      setSelectedAgency(restoredAgency);
     }
   }, [from, review]);
 
@@ -122,36 +134,56 @@ const AgencyInputPage: React.FC = () => {
     return pages;
   };
 
-  // 공인중개사 선택 함수
+  // 공인중개사 선택 함수 (드롭다운에서 선택 시)
   const handleSelectAgency = (agency: AgencyInfo) => {
+    setSelectedAgency(agency);
+    setBuildingName(agency.companyName);
+    setSearchResults([]); // 드롭다운 닫기
+    setHasSearched(false);
+  };
+
+  // 다음 버튼 클릭 시 실행되는 함수
+  const handleNext = () => {
+    if (!selectedAgency) return;
+
     const updatedReview = {
       ...review,
-      detailedAddress: agency.companyName, // 상호명
-      address: agency.roadAddress,
-      addressDetail: agency.jibunAddress,
-      buildingCode: agency.registerNumber, // 개설등록번호를 buildingCode로 사용
-      latitude: agency.latitude,
-      longitude: agency.longitude,
+      detailedAddress: selectedAgency.companyName, // 상호명
+      address: selectedAgency.roadAddress,
+      addressDetail: selectedAgency.jibunAddress,
+      buildingCode: selectedAgency.registerNumber, // 개설등록번호를 buildingCode로 사용
+      latitude: selectedAgency.latitude,
+      longitude: selectedAgency.longitude,
     };
 
+    // Recoil state 업데이트
     setReview(updatedReview);
 
     if (from === "confirm") {
+      // 수정 모드: 업데이트된 정보와 함께 confirm 페이지로 복귀
       navigate("/review/confirm", {
         state: {
           ...location.state,
+          buildingName: selectedAgency.companyName,
+          address: {
+            roadAddress: selectedAgency.roadAddress,
+            jibunAddress: selectedAgency.jibunAddress,
+            buildingName: selectedAgency.companyName,
+            buildingCode: selectedAgency.registerNumber,
+          },
         },
+        replace: true, // 히스토리 스택 교체
       });
     } else {
       navigate("/review/result", {
         state: {
           ...location.state,
-          buildingName: agency.companyName,
+          buildingName: selectedAgency.companyName,
           address: {
-            roadAddress: agency.roadAddress,
-            jibunAddress: agency.jibunAddress,
-            buildingName: agency.companyName,
-            buildingCode: agency.registerNumber,
+            roadAddress: selectedAgency.roadAddress,
+            jibunAddress: selectedAgency.jibunAddress,
+            buildingName: selectedAgency.companyName,
+            buildingCode: selectedAgency.registerNumber,
           },
         },
       });
@@ -341,28 +373,11 @@ const AgencyInputPage: React.FC = () => {
         <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
-        {/* 검색 결과가 있으면 다음 버튼 숨김 (리스트에서 직접 선택) */}
-        {!(hasSearched && searchResults.length > 0) && (
+        {/* 공인중개사를 선택했을 때만 다음 버튼 표시 */}
+        {selectedAgency && (
           <button
-            className={`${styles.nextButton} ${
-              isSearchEnabled ? styles.enabled : ""
-            }`}
-            onClick={() => {
-              // 검색 결과가 없으면 수동으로 입력한 상호명으로 진행
-              if (buildingName.trim()) {
-                const manualAgency: AgencyInfo = {
-                  registerNumber: "MANUAL",
-                  companyName: buildingName.trim(),
-                  brokerName: "",
-                  roadAddress: "",
-                  jibunAddress: "",
-                  latitude: 0,
-                  longitude: 0,
-                };
-                handleSelectAgency(manualAgency);
-              }
-            }}
-            disabled={!isSearchEnabled}
+            className={`${styles.nextButton} ${styles.enabled}`}
+            onClick={handleNext}
           >
             다음
           </button>

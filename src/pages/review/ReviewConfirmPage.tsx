@@ -31,6 +31,7 @@ interface LocationState {
     roadAddress: string;
     jibunAddress: string;
     buildingName: string;
+    buildingCode?: string;
   };
   buildingName?: string;
   floor?: string;
@@ -141,6 +142,9 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.buildingName && {
             detailedAddress: locationState.buildingName,
           }),
+          ...(locationState.address?.buildingCode && {
+            buildingCode: locationState.address.buildingCode,
+          }),
           ...(locationState.paymentType && {
             contractType: locationState.paymentType,
           }),
@@ -171,6 +175,8 @@ const ReviewConfirmPage: React.FC = () => {
         detailedAddress: locationState.buildingName
           ? `${locationState.buildingName}`
           : prev.detailedAddress || "",
+        buildingCode:
+          locationState.address?.buildingCode || prev.buildingCode || "",
         contractType: locationState.paymentType || prev.contractType || "",
         deposit:
           locationState.priceData?.deposit !== undefined
