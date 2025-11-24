@@ -6,6 +6,7 @@ import { AgencyAPI } from "../../api/agency/AgencyAPI";
 import { AgencyInfo } from "../../types/entity/agency/AgencyInterface";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/FloorInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 
@@ -165,7 +166,13 @@ const AgencyInputPage: React.FC = () => {
         replace: true, // 히스토리 스택 교체
       });
     } else {
-      // 일반 모드: 다음 페이지(result)로 이동
+      // 일반 모드: 자동저장에 다음 단계 기록 후 다음 페이지(result)로 이동
+      reviewAutoSave.save({
+        reviewState: updatedReview,
+        dormitoryReviewState: null,
+        currentStep: REVIEW_STEPS.ADDRESS_RESULT
+      });
+
       navigate("/review/result", {
         state: {
           ...location.state,
