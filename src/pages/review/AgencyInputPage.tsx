@@ -134,26 +134,16 @@ const AgencyInputPage: React.FC = () => {
     return pages;
   };
 
-  // 공인중개사 선택 함수 (드롭다운에서 선택 시)
+  // 공인중개사 선택 함수 (드롭다운에서 선택 시) - 선택 시 바로 다음 페이지로 이동
   const handleSelectAgency = (agency: AgencyInfo) => {
-    setSelectedAgency(agency);
-    setBuildingName(agency.companyName);
-    setSearchResults([]); // 드롭다운 닫기
-    setHasSearched(false);
-  };
-
-  // 다음 버튼 클릭 시 실행되는 함수
-  const handleNext = () => {
-    if (!selectedAgency) return;
-
     const updatedReview = {
       ...review,
-      detailedAddress: selectedAgency.companyName, // 상호명
-      address: selectedAgency.roadAddress,
-      addressDetail: selectedAgency.jibunAddress,
-      buildingCode: selectedAgency.registerNumber, // 개설등록번호를 buildingCode로 사용
-      latitude: selectedAgency.latitude,
-      longitude: selectedAgency.longitude,
+      detailedAddress: agency.companyName, // 상호명
+      address: agency.roadAddress,
+      addressDetail: agency.jibunAddress,
+      buildingCode: agency.registerNumber, // 개설등록번호를 buildingCode로 사용
+      latitude: agency.latitude,
+      longitude: agency.longitude,
     };
 
     // Recoil state 업데이트
@@ -164,26 +154,27 @@ const AgencyInputPage: React.FC = () => {
       navigate("/review/confirm", {
         state: {
           ...location.state,
-          buildingName: selectedAgency.companyName,
+          buildingName: agency.companyName,
           address: {
-            roadAddress: selectedAgency.roadAddress,
-            jibunAddress: selectedAgency.jibunAddress,
-            buildingName: selectedAgency.companyName,
-            buildingCode: selectedAgency.registerNumber,
+            roadAddress: agency.roadAddress,
+            jibunAddress: agency.jibunAddress,
+            buildingName: agency.companyName,
+            buildingCode: agency.registerNumber,
           },
         },
         replace: true, // 히스토리 스택 교체
       });
     } else {
+      // 일반 모드: 다음 페이지(result)로 이동
       navigate("/review/result", {
         state: {
           ...location.state,
-          buildingName: selectedAgency.companyName,
+          buildingName: agency.companyName,
           address: {
-            roadAddress: selectedAgency.roadAddress,
-            jibunAddress: selectedAgency.jibunAddress,
-            buildingName: selectedAgency.companyName,
-            buildingCode: selectedAgency.registerNumber,
+            roadAddress: agency.roadAddress,
+            jibunAddress: agency.jibunAddress,
+            buildingName: agency.companyName,
+            buildingCode: agency.registerNumber,
           },
         },
       });
@@ -373,15 +364,6 @@ const AgencyInputPage: React.FC = () => {
         <button className={styles.prevButton} onClick={handleBack}>
           이전
         </button>
-        {/* 공인중개사를 선택했을 때만 다음 버튼 표시 */}
-        {selectedAgency && (
-          <button
-            className={`${styles.nextButton} ${styles.enabled}`}
-            onClick={handleNext}
-          >
-            다음
-          </button>
-        )}
       </footer>
       {showCancelModal && (
         <CancelModal
