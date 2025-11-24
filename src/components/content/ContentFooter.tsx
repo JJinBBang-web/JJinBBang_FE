@@ -1,13 +1,17 @@
 import React from "react";
 import styles from "./ContentFooter.module.css";
 import heartIcon from '../../assets/image/heartIcon.svg';
+import ListIcon from '../../assets/image/content/List.svg';
+import ShareIcon from '../../assets/image/content/Share.svg';
+
 
 interface Props {
   likes: number;
   views: number;
+  onClick?:()=> void;
 }
 
-const ContentFooter: React.FC<Props> = ({ likes, views }) => {
+const ContentFooter: React.FC<Props> = ({ likes, views, onClick }) => {
   return (
     <div className={styles.footerContainer}>
       <div className={styles.leftBox}>
@@ -17,14 +21,14 @@ const ContentFooter: React.FC<Props> = ({ likes, views }) => {
         </div>
 
         <div className={styles.iconWrap}>
-          <img className={styles.icon} />
+          <img className={styles.icon} src={ShareIcon}/>
           <span className={styles.count}>{views}</span>
         </div>
       </div>
 
-      <button className={styles.moreBtn}>
-        <img className={styles.icon} />
-        <span className={styles.count}>목록으로</span>
+      <button className={styles.moreBtn} onClick={onClick}>
+        <img className={styles.icon} src={ListIcon}/>
+        <span className={styles.count} >목록으로</span>
       </button>
     </div>
   );

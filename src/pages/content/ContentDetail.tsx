@@ -46,7 +46,7 @@ const ContentDetail: React.FC = () => {
                         <img className={styles.contentImg} src={sample}/>
                     </div>
                 </div>
-                <ContentFooter likes={3200} views={3200} />
+                <ContentFooter likes={3200} views={3200} onClick={handleBack}/>
             </div>
         </div>
     );
