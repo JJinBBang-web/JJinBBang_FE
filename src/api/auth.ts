@@ -63,16 +63,23 @@ export const authApi = {
           useAuth: true, // 인증 토큰 필요
         }
       );
-      
-      // HTTP 상태 코드가 200인 경우 성공으로 간주
-      if (response.status === 200) {
-        return { success: true, message: response.data.message || '인증이 완료되었습니다.' };
+
+      // API 응답 구조에 따라 처리
+      // 1. 응답 데이터에 success 필드가 있는 경우: 해당 값 사용
+      if (response.data && typeof response.data.success === 'boolean') {
+        return response.data;
       }
-      
-      throw new Error(response.data.message || '인증코드가 일치하지 않습니다.');
+
+      // 2. HTTP 상태 코드만 있는 경우: 200이면 성공
+      if (response.status === 200) {
+        return { success: true, message: response.data?.message || '인증이 완료되었습니다.' };
+      }
+
+      // 3. 그 외의 경우 실패 처리
+      return { success: false, message: response.data?.message || '인증코드가 일치하지 않습니다.' };
     } catch (error: any) {
       console.error('이메일 인증코드 검증 실패:', error);
-      
+
       // API 에러 응답에서 메시지 추출
       if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
