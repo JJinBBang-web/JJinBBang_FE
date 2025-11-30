@@ -42,7 +42,7 @@ export const kakaoLogin = async (authCode: string) => {
   };
 
   // const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
-  const response = await fetch(`/api/v1/auth`, {
+  const response = await fetch(`${url}/api/v1/auth`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

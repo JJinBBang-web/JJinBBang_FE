@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./ContentCard.module.css";
 import { useNavigate, useParams } from "react-router-dom";
+import heartIcon from '../../assets/image/heartIcon.svg';
 
 interface Props {
   category: string;
@@ -38,11 +39,11 @@ const ContentCard: React.FC<Props> = ({
             <p className={styles.date}>{date}</p>
 
             <div className={styles.meta}>
-                <span>
-                    <img className={styles.icon} /> {likes / 1000}K
+                <span className={styles.iconWrap}>
+                    <img className={styles.icon} src={heartIcon} />{likes}
                 </span>
-                <span>
-                    <img  className={styles.icon} /> {views / 1000}K
+                <span className={styles.iconWrap}>
+                    <img  className={styles.icon} /> {views}
                 </span>
             </div>
         </div>

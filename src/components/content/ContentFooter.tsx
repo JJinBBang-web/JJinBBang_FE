@@ -1,28 +1,31 @@
 import React from "react";
 import styles from "./ContentFooter.module.css";
-import heartIcon from '../../assets/image/heartIcon.svg';
 import ListIcon from '../../assets/image/content/List.svg';
 import ShareIcon from '../../assets/image/content/Share.svg';
-
+import hartIconOn from "../../assets/image/heartIconOn.svg";
+import hartIconOff from "../../assets/image/heartIconOff.svg";
 
 interface Props {
   likes: number;
-  views: number;
-  onClick?:()=> void;
+  shares: number;
+  isLiked?: boolean;
+  onToggleLike?: () => void;
+  onClick?: () => void;
 }
 
-const ContentFooter: React.FC<Props> = ({ likes, views, onClick }) => {
+
+const ContentFooter: React.FC<Props> = ({ likes, shares, onToggleLike, onClick, isLiked}) => {
   return (
     <div className={styles.footerContainer}>
       <div className={styles.leftBox}>
-        <div className={styles.iconWrap}>
-          <img className={styles.icon} src={heartIcon} />
+        <div className={styles.iconWrap} onClick={onToggleLike}>
+          <img className={styles.icon} src={isLiked ? hartIconOn : hartIconOff} />
           <span className={styles.count}>{likes}</span>
         </div>
 
         <div className={styles.iconWrap}>
           <img className={styles.icon} src={ShareIcon}/>
-          <span className={styles.count}>{views}</span>
+          <span className={styles.count}>{shares}</span>
         </div>
       </div>
 

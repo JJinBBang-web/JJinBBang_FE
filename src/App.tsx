@@ -124,7 +124,7 @@ const AppContent: React.FC = () => {
     "/building/:buildingId",
     "/building/review/:reviewId",
     "/building/review/:reviewId/report",
-    "/content/:postId",
+    "/content/:reportId",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -193,7 +193,7 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/dormitory-amenities" element={<UpdateDormitoryAmenitiesPage />} />
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
       <Route path="/content" element={<ContentPage/>}/>
-      <Route path="/content/:postId" element={<ContentDetail/>} />
+      <Route path="/content/:reportId" element={<ContentDetail/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

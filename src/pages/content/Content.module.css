@@ -35,6 +35,8 @@
     flex-direction: column;
     gap: 4px;
     margin-bottom: 100px;
+    position: relative;
+    height: 100vh;
 }
 
 .categoryInfo {
