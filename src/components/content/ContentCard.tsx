@@ -29,7 +29,7 @@ const ContentCard: React.FC<Props> = ({
   }
   return (
     <div className={styles.card} onClick={handleClick}>
-      <div className={styles.thumbnail}></div>
+      <img className={styles.thumbnail} src={img}/>
 
       <div className={styles.right}>
         <div className={styles.category}>{category}</div>

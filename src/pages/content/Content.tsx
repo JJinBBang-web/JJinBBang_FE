@@ -70,6 +70,7 @@ const ContentPage: React.FC = () => {
                           <ContentCard
                             key={item.id}
                             id={item.id}
+                            img={item.coverImage}
                             category={CATEGORY_TO_KOR[item.category]}
                             title={item.title}
                             date={item.createdAt}

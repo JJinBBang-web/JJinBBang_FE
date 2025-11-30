@@ -9,8 +9,8 @@ interface HeaderProps {
 
 const Header:React.FC<HeaderProps> = ({type, onClick, title}) => {
     return (
-        <div className={styles.content} onClick={onClick}>
-            <img src={backIcon} alt="백버튼"/>
+        <div className={styles.content} >
+            <img src={backIcon} alt="백버튼" onClick={onClick}/>
             {type === 'title'
             ? 
             <>
