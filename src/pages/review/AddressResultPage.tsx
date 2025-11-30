@@ -149,18 +149,20 @@ const AddressResultPage: React.FC = () => {
             {housingType === "공인중개사"
               ? "정확한 정보가 맞나요?"
               : "정확한 주소가 맞나요?"}
-            <button
-              className={styles.searchButton}
-              onClick={() =>
-                navigate("/review/address", {
-                  state: {
-                    ...locationState,
-                  },
-                })
-              }
-            >
-              주소 재검색
-            </button>
+            {housingType !== "공인중개사" && (
+              <button
+                className={styles.searchButton}
+                onClick={() =>
+                  navigate("/review/address", {
+                    state: {
+                      ...locationState,
+                    },
+                  })
+                }
+              >
+                주소 재검색
+              </button>
+            )}
           </span>
         </div>
         <div className={styles.addressInfo}>
@@ -211,7 +213,20 @@ const AddressResultPage: React.FC = () => {
         </div>
       </div>
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button
+          className={styles.prevButton}
+          onClick={() => {
+            if (housingType === "공인중개사") {
+              navigate("/review/agency", {
+                state: locationState,
+              });
+            } else {
+              navigate("/review/address", {
+                state: locationState,
+              });
+            }
+          }}
+        >
           이전
         </button>
         <button className={styles.nextButton} onClick={handleNext}>
