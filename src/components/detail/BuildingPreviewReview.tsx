@@ -14,6 +14,8 @@ import {
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { postAPI } from "../../api/baseAPI";
 
 interface Props {
   review: ReviewPreview;
@@ -41,6 +43,24 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   const rawRating = activeReviewInfo?.rating;
   const numericRating = Number(rawRating) || 0;
   const rating = Math.round(numericRating);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return postAPI(
+        `/api/v1/user/bookmark`,
+        {
+          type: "review",
+          id: activeReviewInfo?.id,
+          bookmark: !isLiked,
+        },
+        true
+      );
+    },
+    onSuccess: (data) => {
+      setIsLiked(!isLiked);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    },
+  });
 
   let type;
   if (activeReviewInfo?.type === "ROOM") {
@@ -83,6 +103,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
+  console.log(activeReviewInfo);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -138,10 +159,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
             className={styles.likeButton}
             onClick={(event) => {
               event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-              setLikeCount((prev) => {
-                return isLiked ? prev - 1 : prev + 1;
-              });
-              setIsLiked((prev) => !prev);
+              mutation.mutate();
             }}
             src={isLiked ? heartIconOn : heartIconOff}
             alt="heartIcon"
