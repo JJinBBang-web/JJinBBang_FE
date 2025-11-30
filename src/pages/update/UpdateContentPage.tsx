@@ -44,123 +44,117 @@ const AutoHeightTextarea: React.FC<{
   );
 };
 
+const UpdateContentPage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state || {};
+  const { housingType, from } = locationState;
+  const [review, setReview] = useRecoilState(updateReviewState);
+  const [content, setContent] = useState(() => {
+    return locationState.description || review?.description || "";
+  });
 
-const UpdateContentPage:React.FC = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const locationState = location.state || {};
-    const { housingType, from,} = locationState;
-    const [review,setReview] = useRecoilState(updateReviewState);
-    const [content, setContent] = useState(() => {
-        return locationState.description || review?.description || '';
-    });
+  const maxLength = 1000;
 
+  const { reviewId } = useParams();
 
-    const maxLength = 1000;
-    
-    const { reviewId } = useParams();
+  const handleBack = () => {
+    // 수정 모드일 경우
+    if (locationState.from === "update") {
+      navigate(`/review/${reviewId}/update`, {
+        replace: true,
+        state: {
+          ...location.state,
+        },
+      });
+    }
+  };
 
-    const handleBack = () => {
-        // 수정 모드일 경우
-        if (locationState.from === "update") {
-        navigate(`/review/${reviewId}/update`, {
-            replace:true, 
-            state: {
-            ...location.state,
-            },
-        });
-        }
+  const handleNext = () => {
+    if (!review) return;
+
+    if (content.trim().length === 0) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+
+    if (content.trim().length < 100) {
+      alert("최소 50자 이상 작성해야 해요!");
+      return;
+    }
+
+    const updatedReview = {
+      ...review,
+      description: content,
+      content: content,
     };
 
-    const handleNext = () => {
-        if (!review) return;
+    setReview(updatedReview);
 
-        if (content.trim().length === 0) {
-            alert('내용을 입력해주세요.');
-            return;
-        }
+    if (from === "update") {
+      navigate(`/review/${reviewId}/update`, {
+        replace: true,
+        state: {
+          updatedReview,
+        },
+      });
+    }
+  };
 
-        if (content.trim().length  < 100) {
-          alert("최소 100자 이상 작성해야 해요!");
-          return;
-        }
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length <= maxLength) {
+      setContent(e.target.value);
+    }
+  };
 
-        const updatedReview = {
-        ...review,
-        description: content,
-        content: content,
-        };
+  return (
+    <div className="content">
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill}></div>
+          </div>
+          <button className={styles.closeButton} onClick={handleBack}>
+            <img src={backArrowIcon} alt="close" />
+          </button>
+          <h1>
+            {housingType === "공인중개사"
+              ? "마지막으로 이 공인중개사에 대해"
+              : "마지막으로 이 찐빵에 대해"}
+            <br></br>좀 더 자세하게 알려줄 수 있나요?
+          </h1>
+        </header>
 
-        setReview(updatedReview);
-        
-
-        if (from === 'update') {
-            navigate(`/review/${reviewId}/update`, {
-              replace:true,
-              state: {
-                updatedReview
-              }
-            });
-        }
-    };
-
-    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        if (e.target.value.length <= maxLength) {
-          setContent(e.target.value);
-        }
-      };
-
-    return (
-        <div className="content">
-        <div className={styles.container}>
-            <header className={styles.header}>
-            <div className={styles.progressBar}>
-                <div className={styles.progressFill}></div>
-            </div>
-            <button
-                className={styles.closeButton}
-                onClick={handleBack}
-            >
-                <img src={backArrowIcon} alt="close" />
-            </button>
-            <h1>
-                {housingType === "공인중개사"
-                ? "마지막으로 이 공인중개사에 대해"
-                : "마지막으로 이 찐빵에 대해"}
-                <br></br>좀 더 자세하게 알려줄 수 있나요?
-            </h1>
-            </header>
-
-            <div className={styles.textareaContainer}>
-            <AutoHeightTextarea
-                value={content}
-                onChange={handleContentChange}
-                placeholder=""
-                maxLength={maxLength}
-                housingType={housingType}
-            />
-            <div className={styles.charCount}>
-                <span>{content.length}</span>
-                <span>/{maxLength}</span>
-            </div>
-            </div>
+        <div className={styles.textareaContainer}>
+          <AutoHeightTextarea
+            value={content}
+            onChange={handleContentChange}
+            placeholder=""
+            maxLength={maxLength}
+            housingType={housingType}
+          />
+          <div className={styles.charCount}>
+            <span>{content.length}</span>
+            <span>/{maxLength}</span>
+          </div>
         </div>
-        <footer className={styles.footer}>
-            <button className={styles.prevButton} onClick={handleBack}>
-            이전
-            </button>
-            <button
-            className={`${styles.nextButton} ${
-                content.trim().length > 0 ? styles.enabled : ""
-            }`}
-            onClick={handleNext}
-            disabled={content.trim().length === 0}
-            >
-            확인
-            </button>
-        </footer>
-        </div>
-    );
+      </div>
+      <footer className={styles.footer}>
+        <button className={styles.prevButton} onClick={handleBack}>
+          이전
+        </button>
+        <button
+          className={`${styles.nextButton} ${
+            content.trim().length > 0 ? styles.enabled : ""
+          }`}
+          onClick={handleNext}
+          disabled={content.trim().length === 0}
+        >
+          확인
+        </button>
+      </footer>
+    </div>
+  );
 };
 
 export default UpdateContentPage;

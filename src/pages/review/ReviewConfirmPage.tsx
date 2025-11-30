@@ -30,6 +30,7 @@ interface LocationState {
     roadAddress: string;
     jibunAddress: string;
     buildingName: string;
+    buildingCode?: string;
   };
   buildingName?: string;
   floor?: string;
@@ -137,12 +138,12 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.address?.jibunAddress && {
             addressDetail: locationState.address.jibunAddress,
           }),
-          // 공인중개사가 아닌 경우에만 buildingName으로 detailedAddress 업데이트
-          ...(locationState.buildingName &&
-            locationState.housingType !== "공인중개사" &&
-            autoSavedData.reviewState?.housingType !== "공인중개사" && {
-              detailedAddress: locationState.buildingName,
-            }),
+          ...(locationState.buildingName && {
+            detailedAddress: locationState.buildingName,
+          }),
+          ...(locationState.address?.buildingCode && {
+            buildingCode: locationState.address.buildingCode,
+          }),
           ...(locationState.paymentType && {
             contractType: locationState.paymentType,
           }),
@@ -170,13 +171,11 @@ const ReviewConfirmPage: React.FC = () => {
         address: locationState.address?.roadAddress || prev.address || "",
         addressDetail:
           locationState.address?.jibunAddress || prev.addressDetail || "",
-        // 공인중개사인 경우 prev.detailedAddress 유지 (상호명), 그 외는 buildingName 사용
-        detailedAddress:
-          prev.housingType === "공인중개사"
-            ? prev.detailedAddress || ""
-            : locationState.buildingName
-              ? `${locationState.buildingName}`
-              : prev.detailedAddress || "",
+        detailedAddress: locationState.buildingName
+          ? `${locationState.buildingName}`
+          : prev.detailedAddress || "",
+        buildingCode:
+          locationState.address?.buildingCode || prev.buildingCode || "",
         contractType: locationState.paymentType || prev.contractType || "",
         deposit:
           locationState.priceData?.deposit !== undefined
@@ -380,14 +379,18 @@ const ReviewConfirmPage: React.FC = () => {
         const campusId = (review as any).campusId;
 
         if (!campusId) {
-          alert('대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요.');
-          navigate('/review/dormitory');
+          alert(
+            "대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요."
+          );
+          navigate("/review/dormitory");
           return;
         }
 
         if (!review.buildingCode) {
-          alert('기숙사 위치 정보를 찾을 수 없습니다. 주소를 다시 입력해주세요.');
-          navigate('/review/address');
+          alert(
+            "기숙사 위치 정보를 찾을 수 없습니다. 주소를 다시 입력해주세요."
+          );
+          navigate("/review/address");
           return;
         }
 
@@ -927,11 +930,7 @@ const ReviewConfirmPage: React.FC = () => {
               onClick={() => handleItemClick(navigateToDetailedAddress)}
             >
               <span className={styles.label}>
-                {review.housingType === "공인중개사"
-                  ? "상호명"
-                  : isDormitory
-                    ? "대학교/기숙사"
-                    : "상세 주소"}
+                {isAgency ? "상호명" : "상세 주소"}
               </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
@@ -942,13 +941,13 @@ const ReviewConfirmPage: React.FC = () => {
                       {(review as any).dormitoryName ||
                         "기숙사명을 입력해주세요"}
                     </>
-                  ) : review.housingType === "공인중개사" ? (
+                  ) : isAgency ? (
                     review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"
                   )}
                   <br />
-                  {review.housingType !== "공인중개사" && review.floorType}
+                  {!isAgency && review.floorType}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>

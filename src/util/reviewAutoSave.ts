@@ -362,9 +362,15 @@ export const reviewAutoSave = {
         }
       }),
       'agency': () => ({
-        path: '/review/room-info',
+        path: '/review/agency',
         state: {
           housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+            buildingCode: review.buildingCode || '',
+          },
           from: 'autosave',
         }
       }),
@@ -813,11 +819,20 @@ export const reviewAutoSave = {
     }
 
     // 공인중개사 - 상세 정보까지 완료
+    // 주의: 공인중개사는 agency 선택 후 바로 result 페이지로 가므로,
+    // detailedAddress만 있다면 result 페이지로 보내야 함
     if (isAgency && review.detailedAddress) {
       return {
-        path: '/review/agency',
+        path: '/review/result',
         state: {
           housingType: review.housingType,
+          address: {
+            roadAddress: review.address || '',
+            jibunAddress: review.addressDetail || '',
+            buildingName: review.detailedAddress || '',
+            buildingCode: review.buildingCode || '',
+          },
+          buildingName: review.detailedAddress || '',
           from: 'autosave',
         },
       };
