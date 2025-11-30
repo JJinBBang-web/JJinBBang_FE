@@ -12,6 +12,7 @@ import {
   useAddReportLike,
   useRemoveReportLike,
 } from "../../hooks/useReportLike";
+import { formatDate } from "../../util/formatDate";
 
 const ContentDetail: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -93,7 +94,7 @@ const ContentDetail: React.FC = () => {
                     <div className={styles.category}>{category}</div>
                     <div className={styles.titleWrap}>
                         <p className={styles.title}>{data.title}</p>
-                        <p className={styles.date}>{data.createdAt}</p>
+                        <p className={styles.date}>{formatDate(data.createdAt)}</p>
                     </div>
                    <div
                         className={styles.contentWrap}

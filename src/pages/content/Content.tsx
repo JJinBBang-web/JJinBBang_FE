@@ -8,6 +8,7 @@ import { KOR_TO_CATEGORY, CATEGORY_TO_KOR } from "../../util/mapping";
 import { useReportList } from "../../hooks/useReportList";
 import Spinner from '../../components/util/Spinner';
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
+import { formatDate } from "../../util/formatDate";
 
 
 const ContentPage: React.FC = () => {
@@ -73,7 +74,7 @@ const ContentPage: React.FC = () => {
                             img={item.coverImage}
                             category={CATEGORY_TO_KOR[item.category]}
                             title={item.title}
-                            date={item.createdAt}
+                            date={formatDate(item.createdAt)}
                             likes={item.likeCount}
                             views={item.viewCount}
                           />
