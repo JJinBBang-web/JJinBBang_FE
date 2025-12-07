@@ -384,6 +384,7 @@ const MyPage: React.FC = () => {
                 auth.verificationStatus !== 'verified' ? styles.disabled : ''
               }`}
               onClick={handleWriteReview}
+              id="btn-write-review"
             >
               <img
                 src={pencilIcon}

@@ -123,6 +123,10 @@
   letter-spacing: -0.0375rem;
 }
 
+.writeItem > * {
+  pointer-events: none;
+}
+
 /* Character icon styles */
 .menuItem > img:first-child {
   width: 3.5rem;
