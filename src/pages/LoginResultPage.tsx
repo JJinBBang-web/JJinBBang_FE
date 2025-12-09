@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { authApi } from '../api/auth';
-import { api } from '../api/api';
+import { api, tokenStore } from '../api/api';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
 
@@ -52,8 +52,8 @@ function LoginResultPage() {
 
           case 'success':
             // 소셜 로그인 성공 (리프레시 쿠키는 이미 발급됨)
-            // 스토리지에 액세스 토큰이 없으면 재발급받기
-            const existingAccessToken = sessionStorage.getItem('accessToken');
+            // 메모리에 액세스 토큰이 없으면 재발급받기
+            const existingAccessToken = tokenStore.getAccessToken();
             if (!existingAccessToken) {
               try {
                 await authApi.refreshAccessToken();

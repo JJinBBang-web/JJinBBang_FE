@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../../recoil/auth/atoms';
 import { authApi } from '../../api/auth';
+import { tokenStore } from '../../api/api';
 import styles from '../../styles/auth/AccountAuthPage.module.css';
 import questionIcon from '../../assets/image/questionIcon.svg';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
@@ -97,10 +98,10 @@ const AccountAuthPage: React.FC = () => {
         isFirstLogin: false,
       });
 
-      // 로컬 스토리지 정리
-      sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('refreshToken');
-      sessionStorage.removeItem('signupToken');
+      // 메모리 토큰 정리 (쿠키는 서버에서 관리)
+      tokenStore.clearAccessToken();
+      sessionStorage.removeItem('email');
+      sessionStorage.removeItem('verificationStatus');
 
       // MyPage로 이동
       navigate('/mypage');

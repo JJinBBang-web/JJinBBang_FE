@@ -46,6 +46,8 @@ import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/baseAPI";
 import { useQuery } from "@tanstack/react-query";
 import ModalBottomSheet from "./components/util/ModalBottomSheet";
+import { tokenStore } from "./api/api";
+import { authApi } from "./api/auth";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
 import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
 import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";
@@ -75,7 +77,7 @@ const AppContent: React.FC = () => {
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
-  const accessToken = sessionStorage.getItem("accessToken");
+  const [isInitializing, setIsInitializing] = React.useState(true);
   
   useEffect(() => {
     TagManager.dataLayer({
@@ -85,6 +87,23 @@ const AppContent: React.FC = () => {
       },
     });
   }, [location]);
+
+  // 앱 초기화 시 토큰 갱신 (race condition 방지)
+  useEffect(() => {
+    const initializeAuth = async () => {
+      // 메모리에 액세스 토큰이 없으면 리프레시 토큰으로 갱신 시도
+      if (!tokenStore.getAccessToken()) {
+        try {
+          await authApi.refreshAccessToken();
+        } catch (error) {
+          // 리프레시 토큰도 없거나 만료됨 (정상 동작)
+        }
+      }
+      setIsInitializing(false);
+    };
+
+    initializeAuth();
+  }, []);
 
   // 경로 변환 시 nav 초기화
   useEffect(() => {
@@ -99,11 +118,13 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
-      if (!accessToken) throw new Error();
+      const currentAccessToken = tokenStore.getAccessToken();
+      if (!currentAccessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
     refetchOnWindowFocus: false,
+    enabled: !isInitializing, // 초기화가 완료될 때까지 쿼리 실행 안함
   });
 
   useEffect(() => {

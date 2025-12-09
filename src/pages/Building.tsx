@@ -14,6 +14,7 @@ import { hideNavState } from "../recoil/util/modalState";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import iconClose from "../assets/image/iconClose.svg"
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
+import { tokenStore } from "../api/api";
 
 const Building: React.FC = () => {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Building: React.FC = () => {
 
     // 토큰 여부 확인
     useEffect(() => {
-        const token = sessionStorage.getItem("accessToken");
+        const token = tokenStore.getAccessToken();
         setIsLoggedIn(!!token);
     }, []);
 

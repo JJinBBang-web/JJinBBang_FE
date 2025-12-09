@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { userApi } from '../api/user';
+import { tokenStore } from '../api/api';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
@@ -90,8 +91,7 @@ const MyPage: React.FC = () => {
     } catch (error: any) {
       console.error('유저 정보 조회 실패:', error);
       if (error.response?.status === 401) {
-        sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
+        tokenStore.clearAccessToken();
         setAuth({
           isAuthenticated: false,
           email: undefined,
@@ -136,9 +136,9 @@ const MyPage: React.FC = () => {
     }
   };
 
-  // sessionStorage에서 인증 상태 복원
+  // 메모리에서 인증 상태 복원
   useEffect(() => {
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = tokenStore.getAccessToken();
     const email = sessionStorage.getItem('email');
     const verificationStatus = sessionStorage.getItem('verificationStatus') as
       | 'verified'

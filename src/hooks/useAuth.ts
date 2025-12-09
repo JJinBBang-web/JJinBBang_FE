@@ -2,13 +2,14 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
+import { tokenStore } from '../api/api';
 
 export const useAuth = () => {
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
 
-  // ✅ 초기 실행 시 localStorage → recoil 상태 복원
+  // ✅ 초기 실행 시 sessionStorage에서 상태 복원 (토큰은 메모리 기반)
   useEffect(() => {
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = tokenStore.getAccessToken();
     const email = sessionStorage.getItem('email') ?? '';
     const verificationStatus =
       (sessionStorage.getItem(

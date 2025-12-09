@@ -1,5 +1,5 @@
 // src/api/auth.ts
-import { api, getApiBaseURL } from './api';
+import { api, getApiBaseURL, tokenStore, refreshToken } from './api';
 
 export interface EmailVerificationResponse {
   success: boolean;
@@ -42,8 +42,6 @@ export const authApi = {
     emailAddress: string
   ): Promise<EmailVerificationResponse> => {
     try {
-      const token = sessionStorage.getItem('accessToken');
-
       const response = await api.post<EmailVerificationResponse>(
         '/api/v1/auth/emailCode',
         { emailAddress },
@@ -114,25 +112,17 @@ export const authApi = {
   // 액세스 토큰 갱신 (쿠키 기반 - 리프레시 토큰은 쿠키에 자동 포함)
   refreshAccessToken: async (): Promise<TokenRefreshResponse> => {
     try {
-      const response = await api.put<TokenRefreshResponse>(
-        '/api/v1/auth/tokenRefresh',
-        {},
-        {
-          useAuth: false, // 쿠키에 리프레시 토큰이 포함되어 있으므로 별도 헤더 불필요
-          withCredentials: true, // 쿠키 전송을 위해 필요
-        }
-      );
-
-      // 새로운 액세스 토큰을 sessionStorage에 저장
-      if (response.data.data.accessToken) {
-        sessionStorage.setItem('accessToken', response.data.data.accessToken);
-      }
-
-      return response.data;
+      const newAccessToken = await refreshToken();
+      return {
+        code: 200,
+        message: '토큰 갱신 성공',
+        data: {
+          accessToken: newAccessToken,
+        },
+      };
     } catch (error) {
       console.error('토큰 갱신 실패:', error);
-      // 토큰 갱신 실패 시 로컬 스토리지 정리
-      sessionStorage.removeItem('accessToken');
+      tokenStore.clearAccessToken();
       throw new Error('토큰 갱신에 실패했습니다.');
     }
   },
@@ -147,9 +137,9 @@ export const authApi = {
         }
       );
 
-      // 탈퇴 성공 시 로컬 스토리지 정리
+      // 탈퇴 성공 시 메모리 정리
       if (response.data.code === 200) {
-        sessionStorage.removeItem('accessToken');
+        tokenStore.clearAccessToken();
         // 리프레시 토큰은 쿠키에 있으므로 별도 삭제 불필요
       }
 
