@@ -1,5 +1,5 @@
 // src/api/auth.ts
-import { api } from './api';
+import { api, getApiBaseURL } from './api';
 
 export interface EmailVerificationResponse {
   success: boolean;
@@ -16,6 +16,12 @@ export interface TokenRefreshResponse {
   data: {
     accessToken: string;
   };
+}
+
+export type SocialProvider = 'kakao' | 'google' | 'naver';
+
+export interface SocialLoginStatus {
+  status: 'oauth_failed' | 'terms_pending' | 'success';
 }
 
 export interface UserDeleteResponse {
@@ -91,26 +97,33 @@ export const authApi = {
     }
   },
 
-  // 액세스 토큰 갱신
+  // 소셜 로그인 시작
+  startSocialLogin: (provider: SocialProvider, redirectUrl: string): void => {
+    // redirectUrl을 Base64 URL-safe로 인코딩 (백엔드의 Base64.getUrlDecoder()와 호환)
+    // 일반 Base64 인코딩 후 URL-safe 형식으로 변환
+    const base64 = btoa(redirectUrl);
+    const encodedUrl = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    // SSOT: api.ts에서 baseURL 가져오기
+    const apiUrl = getApiBaseURL();
+    // 백엔드로 리다이렉트 (GET 요청이므로 window.location 사용)
+    // apiUrl이 빈 문자열이면 상대 경로 사용 (프록시 활용), 아니면 절대 경로 사용
+    const url = `${apiUrl}/api/v1/auth/signIn/${provider}?redirect=${encodedUrl}`
+    window.location.href = url;
+  },
+
+  // 액세스 토큰 갱신 (쿠키 기반 - 리프레시 토큰은 쿠키에 자동 포함)
   refreshAccessToken: async (): Promise<TokenRefreshResponse> => {
     try {
-      const refreshToken = sessionStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        throw new Error('리프레시 토큰이 없습니다.');
-      }
-
       const response = await api.put<TokenRefreshResponse>(
         '/api/v1/auth/tokenRefresh',
         {},
         {
-          headers: {
-            Authorization: `Bearer ${refreshToken}`,
-          },
-          useAuth: false, // 리프레시 토큰을 직접 사용하므로 자동 인증 비활성화
+          useAuth: false, // 쿠키에 리프레시 토큰이 포함되어 있으므로 별도 헤더 불필요
+          withCredentials: true, // 쿠키 전송을 위해 필요
         }
       );
 
-      // 새로운 토큰을 로컬 스토리지에 저장
+      // 새로운 액세스 토큰을 sessionStorage에 저장
       if (response.data.data.accessToken) {
         sessionStorage.setItem('accessToken', response.data.data.accessToken);
       }
@@ -120,7 +133,6 @@ export const authApi = {
       console.error('토큰 갱신 실패:', error);
       // 토큰 갱신 실패 시 로컬 스토리지 정리
       sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('refreshToken');
       throw new Error('토큰 갱신에 실패했습니다.');
     }
   },
@@ -138,7 +150,7 @@ export const authApi = {
       // 탈퇴 성공 시 로컬 스토리지 정리
       if (response.data.code === 200) {
         sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
+        // 리프레시 토큰은 쿠키에 있으므로 별도 삭제 불필요
       }
 
       return response.data;

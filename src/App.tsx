@@ -18,8 +18,7 @@ import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
 import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
 import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
-import KakaoCallBack from "./pages/KakaoCallBack";
-import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
+import LoginResultPage from "./pages/LoginResultPage";
 import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
 import NewStudentVerification from "./pages/auth/NewStudentVerification";
@@ -132,14 +131,13 @@ const AppContent: React.FC = () => {
     <>
       {showHeaderAndNav}
       <Routes>
-        <Route path="/login/kakao" element={<KakaoCallBack />} />
+        <Route path="/login/result" element={<LoginResultPage />} />
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myaccount" element={<AccountAuthPage />} />
         <Route path="/auth">
-          <Route path="kakao" element={<KakaoAuthPage />} />
           <Route path="student">
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />

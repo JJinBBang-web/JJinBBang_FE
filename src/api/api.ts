@@ -1,13 +1,18 @@
 // src/api/api.ts
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
+// SSOT: API 서버 주소는 여기서만 관리
+export const getApiBaseURL = (): string => {
+  return process.env.REACT_APP_API_URL || '';
+};
+
 export const api = axios.create({
-  baseURL: "",
-  // baseURL: process.env.REACT_APP_API_URL,
+  baseURL: getApiBaseURL(),
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
     Accept: 'application/json',
   },
+  withCredentials: true, // 쿠키 전송을 위해 기본값 설정
 });
 
 // AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
@@ -88,11 +93,6 @@ api.interceptors.response.use(
       originalRequest.useAuth &&
       !originalRequest._retry
     ) {
-      const refreshToken = sessionStorage.getItem('refreshToken');
-
-      if (!refreshToken) {
-        return Promise.reject(error);
-      }
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -120,17 +120,13 @@ api.interceptors.response.use(
           `${process.env.REACT_APP_API_URL}/api/v1/auth/tokenRefresh`,
           {},
           {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
+            withCredentials: true, // 쿠키에 리프레시 토큰이 포함되어 있음
           }
         );
 
         const newAccessToken = response.data.data.accessToken;
-        const newRefreshToken = response.data.data.refreshToken;
         
         sessionStorage.setItem("accessToken", newAccessToken);
-        sessionStorage.setItem("refreshToken", newRefreshToken);
         processQueue(null, newAccessToken);
 
         if (typeof originalRequest.headers?.set === "function") {
@@ -148,7 +144,6 @@ api.interceptors.response.use(
       } catch (err) {
         processQueue(err, null);
         sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
