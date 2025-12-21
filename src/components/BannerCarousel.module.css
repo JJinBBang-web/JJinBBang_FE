@@ -1,0 +1,55 @@
+.banner {
+  position: relative;
+  width: 394px;
+  height: 100px;
+  flex-shrink: 0;
+  background-color: var(--primary-color);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.slide {
+  cursor: pointer;
+}
+
+.img {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.banner :global(.slick-dots) {
+  bottom: 16px !important;
+}
+
+.banner :global(.slick-dots li) {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.banner :global(.slick-dots li button) {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.banner :global(.slick-dots li.slick-active button:before) {
+  color: var(--white) !important;
+  opacity: 1 !important;
+  font-size: 8px !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.banner :global(.slick-dots li button:before) {
+  color: var(--white) !important;
+  opacity: 0.5 !important;
+  font-size: 8px !important;
+  width: 12px !important;
+  height: 12px !important;
+}

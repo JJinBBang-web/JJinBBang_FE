@@ -80,7 +80,7 @@ html {
     "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
-.slick-dots {
+/* .slick-dots {
   bottom: -32px !important;
 }
 
@@ -104,7 +104,7 @@ html {
   color: #e8e8e8 !important;
   opacity: 1 !important;
   font-size: 8px !important;
-}
+} */
 
 /* iPhone 파란색 텍스트만 수정 - 기존 디자인 보존 */
 a {
