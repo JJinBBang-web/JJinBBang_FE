@@ -4,6 +4,7 @@ import ListIcon from '../../assets/image/content/List.svg';
 import ShareIcon from '../../assets/image/content/Share.svg';
 import hartIconOn from "../../assets/image/heartIconOn.svg";
 import hartIconOff from "../../assets/image/heartIconOff.svg";
+import '../../styles/global.css'
 
 interface Props {
   likes: number;

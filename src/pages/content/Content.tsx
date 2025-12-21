@@ -9,7 +9,7 @@ import { useReportList } from "../../hooks/useReportList";
 import Spinner from '../../components/util/Spinner';
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
 import { formatDate } from "../../util/formatDate";
-
+import '../../styles/global.css'
 
 const ContentPage: React.FC = () => {
     const navigation = useNavigate();
@@ -59,12 +59,11 @@ const ContentPage: React.FC = () => {
                                       <Spinner />
                                   </div>
                                             }
-                    {isError && <div>오류 발생!</div>}
-
                     <div className={styles.categoryInfo}>
                         <p className={styles.infoTitle}>{title}</p>
                         <p className={styles.infoSub}>{sub}</p>
                     </div>
+                    {isError && <div>로그인이 필요합니다.</div>}
                     {!isLoading && !isError && (
                       <div className={styles.contentWrap}>
                         {reportList.map(item => (

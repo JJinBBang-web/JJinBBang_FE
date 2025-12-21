@@ -2,6 +2,8 @@ import React from "react";
 import styles from "./ContentCard.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import heartIcon from '../../assets/image/heartIcon.svg';
+import viewIcon from '../../assets/image/content/View.svg';
+import '../../styles/global.css'
 
 interface Props {
   category: string;
@@ -43,7 +45,7 @@ const ContentCard: React.FC<Props> = ({
                     <img className={styles.icon} src={heartIcon} />{likes}
                 </span>
                 <span className={styles.iconWrap}>
-                    <img  className={styles.icon} /> {views}
+                    <img  className={styles.icon} src={viewIcon}/> {views}
                 </span>
             </div>
         </div>
