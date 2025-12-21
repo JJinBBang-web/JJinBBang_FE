@@ -130,7 +130,10 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
         window.scrollTo(0, 0);
       }}
     >
-      <img src={review.image} alt="" className={styles.buildingImg} />
+      <div className={styles.imgWrap}>
+          <img src={review.image} alt="" className={styles.buildingImg} />
+          {/* <div className={styles.imgNum}><p className={styles.count}>20</p></div> */}
+      </div>
       <div className={styles.infoAndLike}>
         {generalInfo && (
           <div className={styles.buildingInfo}>
