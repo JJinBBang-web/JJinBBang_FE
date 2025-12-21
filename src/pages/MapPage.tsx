@@ -203,6 +203,7 @@ const MapPage = () => {
         filter.inMaintenanceCost,
         filter.reviewKeyword
     ]);
+    
 
 
     // 검색 관련
@@ -219,6 +220,7 @@ const MapPage = () => {
     const {
         data: markerData = [],
         isLoading,
+        isFetching: isMarkersFetching,
         isError,
     } = useMapMarkers(
         mapBounds
@@ -248,6 +250,11 @@ const MapPage = () => {
     : undefined;
 
     const { data: nearByData } = useNearBy(nearByParams);
+
+    const markerDataForRender = useMemo(() => {
+        if (isMarkersFetching) return [];
+        return markerData;
+    }, [isMarkersFetching, markerData]);
 
     // 검색 핸들러
     const handleSearch = () => {
@@ -328,8 +335,8 @@ const MapPage = () => {
 
     const markersToRender = useMemo(() => {
         if (modalContent === 'search') return searchMarkers;
-        return markerData && markerData.length > 0 ? markerData : null;
-        }, [modalContent, searchMarkers, markerData]);
+        return markerDataForRender; // 이거 하나로 끝
+    }, [modalContent, searchMarkers, markerDataForRender]);
 
     // 검색 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
@@ -605,8 +612,12 @@ const MapPage = () => {
     };
 
     const clustererKey = useMemo(() => {
-        return `${modalContent}-${JSON.stringify(markerFilters)}-${JSON.stringify(mapBounds)}-${JSON.stringify(markersToRender)}`;
-    }, [modalContent, markerFilters, mapBounds, markersToRender]);
+        const b = mapBounds
+            ? `${mapBounds.neLat},${mapBounds.neLng},${mapBounds.swLat},${mapBounds.swLng}`
+            : 'no-bounds';
+        const f = JSON.stringify(markerFilters);
+        return `${modalContent}-${viewType}-${b}-${f}`;
+    }, [modalContent, viewType, mapBounds, markerFilters]);
 
 
     return (
@@ -672,7 +683,7 @@ const MapPage = () => {
                         swLng: sw.getLng(),
                     };
 
-                    // setMapBounds(extractedBounds);
+                    setMapBounds(extractedBounds);
 
                 }}
                 >
