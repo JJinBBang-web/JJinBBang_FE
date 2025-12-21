@@ -122,3 +122,28 @@ button {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 }
+
+.jb-cluster {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  border: 0.95px solid var(--white) !important;
+  background: var(--primary-color80) !important;
+  color: var(--white) !important;
+  text-align: center !important;
+  letter-spacing: -0.6px !important;
+  line-height: 150% !important;
+  font-family: "Spoqa Han Sans Neo" !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  /* 클릭 감도 */
+  cursor: pointer !important;
+
+  /* 지도 위에서 살짝 떠보이게(원하면) */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+}
