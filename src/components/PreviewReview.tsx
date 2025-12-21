@@ -25,7 +25,6 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
 
   const queryClient = useQueryClient();
 
-  console.log(review);
 
   let activeReviewInfo:
     | GeneralReviewInfo
