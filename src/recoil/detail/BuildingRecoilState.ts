@@ -37,7 +37,7 @@ export interface dormBuildingInfo{
     type: string;
     name: string;
     universityName: string;
-    address: String;
+    address: string;
     rating: number;
     reviewCount: number;
 }

@@ -14,6 +14,9 @@ export class MapAPI {
         throw new Error("마커 조회 실패");
       }
 
+      console.log(body);
+      console.log(res.data.data);
+
       return res.data.data;
     } catch (error) {
       console.error("MapAPI.fetchMarkers error:", error);

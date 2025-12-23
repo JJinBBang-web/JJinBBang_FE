@@ -41,7 +41,7 @@ const UpdatePhotoUploadPage: React.FC = () => {
     } else if (photo && photo.length > 0) {
       setPhotos(photo);
     }
-  }, []);
+  }, [from, photo, review?.images]);
 
   // 사진 추가 핸들러 - 파일 입력 요소 클릭
   const handleAddPhoto = () => {
@@ -124,7 +124,7 @@ const UpdatePhotoUploadPage: React.FC = () => {
           photos,
         },
       });
-    };
+    }
   };
 
   const handleBack = () => {

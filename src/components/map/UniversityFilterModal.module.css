@@ -152,11 +152,28 @@
 
 }
 
-.slick-dots{
-    bottom: -30px !important;
+.univModalSlickScope :global(.slick-dots) {
+  bottom: -32px !important;
 }
 
-.slick-dotx :global(li.slick-active) button::before {
-    opacity: .75;
-    color: #000 !important;
-  }
+.univModalSlickScope :global(.slick-dots li) {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.univModalSlickScope :global(.slick-dots li button) {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.univModalSlickScope :global(.slick-dots li.slick-active button:before) {
+  color: #b5b5b5 !important;
+  opacity: 1 !important;
+  font-size: 8px !important;
+}
+
+.univModalSlickScope :global(.slick-dots li button:before) {
+  color: #e8e8e8 !important;
+  opacity: 1 !important;
+  font-size: 8px !important;
+}

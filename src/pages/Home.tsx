@@ -14,6 +14,7 @@ import { getAPI } from '../api/baseAPI';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilValue } from 'recoil';
 import MetaTag from '../util/SEOMetaTag';
+import BannerCarousel from '../components/BannerCarousel';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -121,7 +122,7 @@ const Home: React.FC = () => {
     ? isFetchingCampusLogin
     : isFetchingCampusGuest;
 
-  let reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
+  const reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
 
   const reviewList = reviewDict[userData?.id] || "[]";
 
@@ -163,7 +164,7 @@ const Home: React.FC = () => {
     <MetaTag
         title="찐빵 | 자취 후기 공유 플랫폼"
         description="대학교 주변 원룸, 기숙사, 부동산 리뷰를 한눈에!"
-        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산"
+        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 자취, 후기, 추천"
         imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
         url="https://jjinbbang.kr/"
       />
@@ -174,7 +175,8 @@ const Home: React.FC = () => {
           <img src={home_logo} alt="home_logo" />
         </div>
       </div>
-      <Banner />
+      {/* <Banner /> */}
+      <BannerCarousel/>
       <div className={styles.campus_container}>
         <div className={styles.campus_header}>
           <div className={styles.campus_icon}>

@@ -531,10 +531,10 @@ const UpdateConfirmPage: React.FC = () => {
             <div
               className={styles.infoItem}
               onClick={() => 
-                review?.housingType !== "AGENCY" 
-                ? review?.housingType !== "DORMITORY" ?
+                // review?.housingType !== "AGENCY" ?
+                review?.housingType !== "DORMITORY" ?
                 handleItemClick(navigateToAddress)
-                : undefined : undefined
+                : undefined
               }
             >
               <span className={styles.label}>주소</span>

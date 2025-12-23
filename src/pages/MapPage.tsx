@@ -202,7 +202,7 @@ const MapPage = () => {
         monthlyRentMax,
         filter.inMaintenanceCost,
         filter.reviewKeyword
-        ]);
+    ]);
 
 
     // 검색 관련
@@ -228,7 +228,6 @@ const MapPage = () => {
             }
             : undefined
     );
-
     // 마커 하나 선택시
     const {
         data: markerDetailData,
@@ -302,7 +301,7 @@ const MapPage = () => {
     // 검색 결과 → 마커 배열 변환
     const searchMarkers = useMemo(() => {
         if (!searchData?.items?.length) return [];
-
+        
         return searchData.items
             .map((item) => {
             const id =
@@ -327,7 +326,10 @@ const MapPage = () => {
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
 
-    const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
+    const markersToRender = useMemo(() => {
+        if (modalContent === 'search') return searchMarkers;
+        return markerData && markerData.length > 0 ? markerData : null;
+        }, [modalContent, searchMarkers, markerData]);
 
     // 검색 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
@@ -434,11 +436,11 @@ const MapPage = () => {
         }
 
         // 클릭한 마커 찾기
-        const clickedMarker = markersToRender.find((m) => m.id === markerId);
+        const clickedMarker = markersToRender?.find((m) => m.id === markerId);
         if (!clickedMarker) return;
 
         // 같은 위치의 마커 모두 찾기
-        const sameLocationMarkers = markersToRender.filter(
+        const sameLocationMarkers = markersToRender?.filter(
             (m) => m.latitude === clickedMarker.latitude && m.longitude === clickedMarker.longitude
         );
         
@@ -602,12 +604,17 @@ const MapPage = () => {
 
     };
 
+    const clustererKey = useMemo(() => {
+        return `${modalContent}-${JSON.stringify(markerFilters)}-${JSON.stringify(mapBounds)}-${JSON.stringify(markersToRender)}`;
+    }, [modalContent, markerFilters, mapBounds, markersToRender]);
+
+
     return (
         <>
         <MetaTag
             title="찐빵 | 자취 후기 지도 보기"
             description="대학가 근처 자취방, 기숙사 후기 위치를 한눈에 볼 수 있다!"
-            keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 지도"
+            keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 지도, 자취, 후기, 추천"
             imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
             url="https://jjinbbang.kr/map"
         />
@@ -665,7 +672,7 @@ const MapPage = () => {
                         swLng: sw.getLng(),
                     };
 
-
+                    // setMapBounds(extractedBounds);
 
                 }}
                 >
@@ -678,8 +685,9 @@ const MapPage = () => {
                             }}>
                             <Spinner />
                         </div>
-                    ) : (
-                    <MarkerClusterer
+                    ) : ( markersToRender && markersToRender.length > 0 ?
+                     ( <MarkerClusterer
+                        key={clustererKey}
                         averageCenter={true}
                         minLevel={3}
                         styles={[
@@ -710,7 +718,7 @@ const MapPage = () => {
                                     : JBMarker;
                             return (
                             <MapMarker
-                                key={`${modalContent}-${marker.id}`}
+                                key={`${modalContent}-${marker.id}-${marker.latitude}-${marker.longitude}`}
                                 position={{ lat: marker.latitude, lng: marker.longitude }}
                                 image={{ src: markerSrc, size: { width: 40, height: 40 } }}
                                 onClick={() => handleMarkerClick(marker.id)}
@@ -718,7 +726,9 @@ const MapPage = () => {
                             )
                         })}
                     </MarkerClusterer>
-                    )}
+                    ) : (
+                        null
+                    ))}
                 </Map>
             </div>
             <div className={`${styles.container} ${styles.header_bar}`}>

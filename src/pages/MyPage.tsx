@@ -359,7 +359,7 @@ const MyPage: React.FC = () => {
     <MetaTag
         title="찐빵 | 마이페이지"
         description="내가 남긴 후기, 관심 등록을 한눈에 관리하세요"
-        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 가입, 로그인, 후기"
+        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 가입, 로그인, 후기, 자취, 추천"
         imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
         url="https://jjinbbang.kr/mypage"
     />

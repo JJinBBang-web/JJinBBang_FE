@@ -22,18 +22,18 @@ const ImageSlider: React.FC<Props> = ({ building, review }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      if (currentIndex < images?.length! - 1) {
-        setCurrentIndex(currentIndex + 1);
-      }
-    },
-    onSwipedRight: () => {
-      if (currentIndex > 0) {
-        setCurrentIndex(currentIndex - 1);
-      }
-    },
-    trackMouse: true, // 마우스 드래그도 가능하게
-  });
+  onSwipedLeft: () => {
+    if (currentIndex < (images?.length ?? 0) - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  },
+  onSwipedRight: () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  },
+  trackMouse: true,
+});
 
   // if (!images || images.length === 0) return null;
 
@@ -51,7 +51,7 @@ const ImageSlider: React.FC<Props> = ({ building, review }) => {
     } else {
       // 현재 index를 기준으로 보이는 범위 계산
       let start = Math.max(0, currentIndex - Math.floor(maxDots / 2));
-      let end = Math.min(total - 1, start + maxDots - 1);
+      const end = Math.min(total - 1, start + maxDots - 1);
 
       // 범위 조정 (end가 maxDots보다 작을 때)
       if (end - start < maxDots - 1) {

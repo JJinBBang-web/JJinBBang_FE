@@ -1,7 +1,7 @@
 // src/api/baseAPI.ts
 import { api } from './api';
 
-export const getAPI = async (url: string, useAuthOption: boolean = false) => {
+export const getAPI = async (url: string, useAuthOption = false) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
     if (useAuthOption) {
@@ -19,7 +19,7 @@ export const getAPI = async (url: string, useAuthOption: boolean = false) => {
 export const postAPI = async (
   url: string,
   data?: any,
-  useAuthOption: boolean = false
+  useAuthOption = false
 ) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
@@ -41,7 +41,7 @@ export const postAPI = async (
 export const putAPI = async (
   url: string,
   data?: any,
-  useAuthOption: boolean = false
+  useAuthOption = false
 ) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
@@ -60,7 +60,7 @@ export const putAPI = async (
 
 export const deleteAPI = async (
   url: string,
-  useAuthOption: boolean = false
+  useAuthOption = false
 ) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
