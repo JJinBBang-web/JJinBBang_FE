@@ -61,6 +61,8 @@ import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitie
 import { hideNavState } from "./recoil/util/modalState";
 import TagManager from "react-gtm-module";
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
+import ContentPage from "./pages/content/Content";
+import ContentDetail from "./pages/content/ContentDetail";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -122,6 +124,7 @@ const AppContent: React.FC = () => {
     "/building/:buildingId",
     "/building/review/:reviewId",
     "/building/review/:reviewId/report",
+    "/content/:reportId",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -189,6 +192,8 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/dormitory-conditions" element={<UpdateDormitoryConditionsPage />} />
       <Route path="/review/:reviewId/update/dormitory-amenities" element={<UpdateDormitoryAmenitiesPage />} />
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
+      <Route path="/content" element={<ContentPage/>}/>
+      <Route path="/content/:reportId" element={<ContentDetail/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
