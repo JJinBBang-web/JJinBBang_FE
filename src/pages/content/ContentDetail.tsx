@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
 import styles from "./ContentDetail.module.css"
 import Header from "../../components/Header";
 import sample from "../../assets/image/content/sample.png"
@@ -126,9 +129,16 @@ const ContentDetail: React.FC = () => {
             // ex) ContentAPI.increaseShareCount(id)
 
         } catch (e) {
-            // 사용자가 공유 창을 닫는 경우(AbortError)도 여기로 올 수 있음
-            // 너무 공격적으로 에러 띄우기보단 복사 fallback 권장
-            await copyToClipboard(url);
+            // ✅ 사용자가 공유창 닫음: fallback 복사하지 말기
+            if (e === "AbortError") return;
+
+            // ✅ 진짜 공유 실패일 때만 복사 시도
+            try {
+                await copyToClipboard(url);
+                
+            } catch (copyErr) {
+                // 복사도 막히면 최후 fallback
+            }
         }
     };
 
@@ -160,10 +170,40 @@ const ContentDetail: React.FC = () => {
                         <p className={styles.title}>{data.title}</p>
                         <p className={styles.date}>{formatDate(data.createdAt)}</p>
                     </div>
-                   <div
-                        className={styles.contentWrap}
-                        dangerouslySetInnerHTML={{ __html: data.content }}
-                    ></div>
+                   <div className={styles.contentWrap}>
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeSanitize]}
+                            components={{
+                            img: ({ ...props }) => (
+                                <img
+                                {...props}
+                                style={{
+                                    maxWidth: "100%",
+                                    height: "auto",
+                                    borderRadius: 12,
+                                    margin: "16px 0",
+                                }}
+                                />
+                            ),
+                            p: ({ children }) => (
+                                <p style={{ lineHeight: 1.7,}}>{children}</p>
+                            ),
+                            ul: ({ children }) => (
+                                <ul style={{ paddingLeft: 20 }}>{children}</ul>
+                            ),
+                            ol: ({ children }) => (
+                                <ol style={{ paddingLeft: 20 }}>{children}</ol>
+                            ),
+                            li: ({ children }) => (
+                                <li style={{ marginBottom: 6 }}>{children}</li>
+                            ),
+                            }}
+                            >
+                            {data.content}
+                        </ReactMarkdown>
+                        </div>
+
                     <div className={styles.heartBox} onClick={handleToggleLike}>
                         <img src={liked ? hartIconOn : hartIconOff} />
                         <p>도움이 되었어요</p>

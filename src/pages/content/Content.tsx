@@ -3,7 +3,7 @@ import styles from "./Content.module.css"
 import Header from "../../components/Header";
 import CategoryTabs from "../../components/content/CategoryTabs";
 import ContentCard from "../../components/content/ContentCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { KOR_TO_CATEGORY, CATEGORY_TO_KOR } from "../../util/mapping";
 import { useReportList } from "../../hooks/useReportList";
 import Spinner from '../../components/util/Spinner';
@@ -13,8 +13,10 @@ import '../../styles/global.css'
 
 const ContentPage: React.FC = () => {
     const navigation = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-    const [activeCategory, setActiveCategory] = useState<KorCategory>("부동산");
+    const initialCategory = (searchParams.get("category") as KorCategory) ?? "부동산";
+    const [activeCategory, setActiveCategory] = useState<KorCategory>(initialCategory);
 
     const serverCategory = KOR_TO_CATEGORY[activeCategory];
     const { title, sub } = CATEGORY_DESCRIPTION[activeCategory];
@@ -24,6 +26,10 @@ const ContentPage: React.FC = () => {
       cursor: null,
       size: 20,
     });
+
+    useEffect(() => {
+      setSearchParams({ category: activeCategory }, { replace: true });
+    }, [activeCategory, setSearchParams]);
 
     useEffect(() => {
         const handleResize = () => {
