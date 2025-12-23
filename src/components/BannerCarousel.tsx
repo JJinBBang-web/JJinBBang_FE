@@ -12,8 +12,8 @@ const BannerCarousel = () => {
   const navigation = useNavigate();
 
   const banners = [
-    { id: 1, img: banner1, to: "/content" },
-    { id: 2, img: banner2, to: "/content" },
+    { id: 1, img: banner2, to: "/content" },
+    { id: 2, img: banner1, to: "https://open.kakao.com/o/g99KaE7h" },
   ];
 
    const settings = {
@@ -30,6 +30,15 @@ const BannerCarousel = () => {
     pauseOnFocus: true,
   };
 
+  const handleBannerClick = (to: string) => {
+    if (to.startsWith("http")) {
+      window.open(to, "_blank"); // 새 탭
+      // window.location.href = to; // 같은 탭 원하면 이걸로
+    } else {
+      navigation(to);
+    }
+  };
+
   return (
     <div className={styles.banner}>
         <Slider {...settings}>
@@ -37,7 +46,7 @@ const BannerCarousel = () => {
             <div
                 key={b.id}
                 className={styles.slide}
-                onClick={() => navigation(b.to)}
+                onClick={() => handleBannerClick(b.to)}
                 role="button"
                 tabIndex={0}
             >
