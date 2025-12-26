@@ -8,6 +8,7 @@ import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryAmenities.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 
 interface LocationState {
   facilities?: any[];
@@ -40,6 +41,8 @@ const DormitoryAmenitiesPage: React.FC = () => {
     세탁기: { 없음: false, 개인: false, 공용: false },
     휴게시설: { 있음: false, 없음: false },
   });
+
+  useReviewStepTracking('3-2.3_dormitory_amenities');
 
   const {
     showCancelModal,

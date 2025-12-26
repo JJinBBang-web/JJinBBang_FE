@@ -24,6 +24,8 @@ import { useCancelModal } from "../../util/useCancelModal";
 import { useCreateReview } from "../../hooks/useCreateReview";
 import { koreanToType } from "../../util/mapping";
 import { reviewAutoSave } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+import TagManager from "react-gtm-module";
 
 interface LocationState {
   address?: {
@@ -79,6 +81,10 @@ const ReviewConfirmPage: React.FC = () => {
 
   // ReviewConfirmPage에서는 실시간 자동저장 불필요
   // 리뷰 제출 시에만 자동저장 데이터 삭제
+
+  // GA4 Review Funnel Tracking: Step 8 (Confirm)
+  // 최종 확인 페이지 진입
+  useReviewStepTracking('7_confirm');
 
   // 기숙사 유형인지 체크
   const isDormitory = review.housingType === "기숙사";
@@ -622,6 +628,15 @@ const ReviewConfirmPage: React.FC = () => {
 
         // 리뷰 제출 성공 시 자동저장 데이터 삭제
         reviewAutoSave.clear();
+
+        // GA4 Review Funnel Tracking: Completion Event
+        // 리뷰 작성 완료 이벤트 전송
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'review_write_completed',
+            buildingId: reviewData.buildingRequest?.buildingCode || 'new_building',
+          },
+        });
 
         setIsSubmitting(false);
         setShowConfirmModal(false);

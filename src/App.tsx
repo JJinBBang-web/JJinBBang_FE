@@ -78,13 +78,20 @@ const AppContent: React.FC = () => {
   const setHideNav = useSetRecoilState(hideNavState);
   const accessToken = sessionStorage.getItem("accessToken");
   
+  // GA4 User Property는 세션당 한 번만 전송
+  const hasSetUserProperty = React.useRef(false);
+  
   useEffect(() => {
-    TagManager.dataLayer({
-      dataLayer: {
-        event: "pageview",
-        pagePath: location.pathname,
-      },
-    });
+    const timer = setTimeout(() => {
+      TagManager.dataLayer({
+        dataLayer: {
+          event: "pageview",
+          pagePath: location.pathname,
+        },
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [location]);
 
   // 경로 변환 시 nav 초기화
@@ -108,12 +115,28 @@ const AppContent: React.FC = () => {
   });
 
   useEffect(() => {
-    if (isSuccessUser) {
+    if (isSuccessUser && userData) {
       setIsLoggedIn(true);
+
+      // GA4 User Property: 인증 상태 추적 (세션당 1회만)
+      if (!hasSetUserProperty.current) {
+        console.log("현재 시간:", new Date().toISOString(), "사용자 인증 상태:", userData.univAuthentication);
+        
+        TagManager.dataLayer({
+          dataLayer: {
+            event: "user_status_verified",
+            verification_status: userData.univAuthentication || "unverified",
+            user_id: userData.id,
+          },
+        });
+        
+        hasSetUserProperty.current = true;
+      }
     } else {
       setIsLoggedIn(false);
+      hasSetUserProperty.current = false;
     }
-  }, [isSuccessUser]);
+  }, [isSuccessUser, userData, setIsLoggedIn]);
 
   const hiddenNavPaths = [
     "/auth/*",
@@ -147,29 +170,48 @@ const AppContent: React.FC = () => {
           </Route>
         </Route>
         <Route path="/review">
+          # 1_review_type_select
           <Route path="type" element={<ReviewTypePage />} />
+          # 2.1_address_input
           <Route path="input-address" element={<AddressInputPage />} />
+          # 2.2_address_search
           <Route path="address" element={<AddressSearchPage />} />
+
+          # 3-1.1_floor_input
+          <Route path="floor" element={<FloorInputPage />} />
+          # 3-1.2_address_result
+          <Route path="result" element={<AddressResultPage />} />
+          # 3-1.3_contractType
+          <Route path="price" element={<PaymentTypePage />} />
+          # 3-1.4_price
+          <Route path="jeonse" element={<JeonseInputPage />} />
+          <Route path="wolse" element={<WolseInputPage />} />
+          
+          # 3-2.1_dormitory_input
           <Route path="dormitory" element={<DormitoryInputPage />} />
+          # 3-2.2_dormitory_conditions
           <Route
             path="dormitory-conditions"
             element={<DormitoryConditionsPage />}
           />
+          # 3-2.3_dormitory_amenities
           <Route
             path="dormitory-amenities"
             element={<DormitoryAmenitiesPage />}
           />
 
-          <Route path="result" element={<AddressResultPage />} />
-          <Route path="floor" element={<FloorInputPage />} />
+          # 3-3_agency_input
           <Route path="agency" element={<AgencyInputPage />} />
-          <Route path="price" element={<PaymentTypePage />} />
-          <Route path="jeonse" element={<JeonseInputPage />} />
-          <Route path="wolse" element={<WolseInputPage />} />
+
+          # 4_room_info
           <Route path="room-info" element={<RoomInfoPage />} />
+          # 5.1_filter_ad
           <Route path="filter-ad" element={<ReviewAdvantagePage />} />
+          # 5.2_filter_disad
           <Route path="filter-disad" element={<ReviewDisadvantagePage />} />
+          # 6_content
           <Route path="content" element={<ReviewContentPage />} />
+          # 7_confirm
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
        <Route path="/building/:buildingId" element={<Building />} />
