@@ -110,7 +110,10 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
       className={styles.content}
       onClick={handleNavigation}
     >
-      <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
+      <div className={styles.imgWrap}>
+          <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
+          {/* <div className={styles.imgNum}><p className={styles.count}>20</p></div> */}
+      </div>
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>

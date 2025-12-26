@@ -25,6 +25,7 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
 
   const queryClient = useQueryClient();
 
+
   let activeReviewInfo:
     | GeneralReviewInfo
     | AgencyReviewInfo
@@ -143,12 +144,15 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
       })}
     >
       <div className={styles.buildingContainer}>
-        <img
-          className={styles.buildingImg}
-          src={actualImageUrl}
-          alt={activeReviewInfo?.name}
-          onError={handleError}
-        />
+        <div className={styles.imgWrap}>
+          <img
+            className={styles.buildingImg}
+            src={actualImageUrl}
+            alt={activeReviewInfo?.name}
+            onError={handleError}
+          />
+          {/* <div className={styles.imgNum}><p className={styles.count}>20</p></div> */}
+        </div>
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
             <p className={styles.buildingName}>{activeReviewInfo?.name}</p>
