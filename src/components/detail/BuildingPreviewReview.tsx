@@ -103,7 +103,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-  console.log(activeReviewInfo);
+  console.log(review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -132,7 +132,11 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
     >
       <div className={styles.imgWrap}>
           <img src={review.image} alt="" className={styles.buildingImg} />
-          {/* <div className={styles.imgNum}><p className={styles.count}>20</p></div> */}
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
       </div>
       <div className={styles.infoAndLike}>
         {generalInfo && (

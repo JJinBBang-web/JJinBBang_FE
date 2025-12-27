@@ -25,7 +25,6 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
 
   const queryClient = useQueryClient();
 
-
   let activeReviewInfo:
     | GeneralReviewInfo
     | AgencyReviewInfo
@@ -151,7 +150,11 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
             alt={activeReviewInfo?.name}
             onError={handleError}
           />
-          {/* <div className={styles.imgNum}><p className={styles.count}>20</p></div> */}
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
         </div>
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>

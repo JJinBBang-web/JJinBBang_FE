@@ -47,6 +47,7 @@ export interface PreviewBuildingReviewInfo {
   reviewInfo: ReviewInfo;
   image: string;
   boundInfo?:Boundary;
+  imageCount?: number;
 }
 
 // 리뷰 프리뷰 상태관리
