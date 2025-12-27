@@ -186,16 +186,16 @@ const ContentDetail: React.FC = () => {
                                 }}
                                 />
                             ),
-                            p: ({ children }) => (
+                            p: ({ children }: { children?: React.ReactNode }) => (
                                 <p style={{ lineHeight: 1.7,}}>{children}</p>
                             ),
-                            ul: ({ children }) => (
+                            ul: ({ children }: { children?: React.ReactNode }) => (
                                 <ul style={{ paddingLeft: 20 }}>{children}</ul>
                             ),
-                            ol: ({ children }) => (
+                            ol: ({ children }: { children?: React.ReactNode }) => (
                                 <ol style={{ paddingLeft: 20 }}>{children}</ol>
                             ),
-                            li: ({ children }) => (
+                            li: ({ children }: { children?: React.ReactNode }) => (
                                 <li style={{ marginBottom: 6 }}>{children}</li>
                             ),
                             }}
