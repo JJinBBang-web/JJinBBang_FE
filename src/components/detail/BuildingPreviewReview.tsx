@@ -105,7 +105,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-  console.log(activeReviewInfo);
+  console.log(review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -133,7 +133,14 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
         window.scrollTo(0, 0);
       }}
     >
-      <img src={review.image} alt="" className={styles.buildingImg} />
+      <div className={styles.imgWrap}>
+          <img src={review.image} alt="" className={styles.buildingImg} />
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
+      </div>
       <div className={styles.infoAndLike}>
         {generalInfo && (
           <div className={styles.buildingInfo}>

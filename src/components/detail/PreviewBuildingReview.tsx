@@ -112,7 +112,14 @@ const PreviewBuildingReview: React.FC<Props> = ({ review, trackStep }) => {
       className={styles.content}
       onClick={() => {trackExplorationStep(trackStep); handleNavigation()}}
     >
-      <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
+      <div className={styles.imgWrap}>
+          <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
+      </div>
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>

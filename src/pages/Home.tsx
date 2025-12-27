@@ -14,6 +14,7 @@ import { getAPI } from '../api/baseAPI';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilValue } from 'recoil';
 import MetaTag from '../util/SEOMetaTag';
+import BannerCarousel from '../components/BannerCarousel';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -174,7 +175,8 @@ const Home: React.FC = () => {
           <img src={home_logo} alt="home_logo" />
         </div>
       </div>
-      <Banner />
+      {/* <Banner /> */}
+      <BannerCarousel/>
       <div className={styles.campus_container}>
         <div className={styles.campus_header}>
           <div className={styles.campus_icon}>

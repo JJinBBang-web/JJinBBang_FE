@@ -1,4 +1,4 @@
-name: Deploy Ci Cd
+name: CI (develop)
 
 on:
   push:
@@ -7,33 +7,24 @@ on:
     branches: ["develop"]
 
 jobs:
-  build:
-    name: react build & deploy
+  ci:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: checkout Github Action
-        uses: actions/checkout@v3
 
-      - name: .env setting
-        run: |
-          echo "PUBLIC_URL=${{ secrets.PUBLIC_URL }}" >> .env
-          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> .env
-          echo "REACT_APP_KAKAO_CLIENT_ID=${{ secrets.REACT_APP_KAKAO_CLIENT_ID }}" >> .env
-          echo "REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.REACT_APP_KAKAO_REDIRECT_URI }}" >> .env
-          
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run Lint
         run: npm run lint
 
-      - name: Build
+      - name: Build (validation)
         run: CI=false npm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with: 
-          personal_token: ${{ secrets.ACCESS_TOKEN }}
-          publish_dir: build
