@@ -384,7 +384,10 @@ const MapPage = () => {
             image: markerImage,
             });
 
-            kakao.maps.event.addListener(mk, "click", () => handleMarkerClick(m.id));
+          kakao.maps.event.addListener(mk, "click", () => {
+            trackExplorationStep('3.8_map_view_marker');
+            handleMarkerClick(m.id)
+          });
             return mk;
         });
 
@@ -715,8 +718,14 @@ const MapPage = () => {
                             fontSize: "16px",
                             fontWeight: "500",
                             },
-                        ],
+                      ],
+                        
                         });
+
+                    // 클러스터 클릭 이벤트 추가
+                    kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster: any) {
+                      trackExplorationStep("3.7_map_view_cluster");
+                    });
 
                     clustererRef.current = clusterer;
                     }
