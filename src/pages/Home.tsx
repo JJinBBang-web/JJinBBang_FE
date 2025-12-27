@@ -213,7 +213,7 @@ const Home: React.FC = () => {
             return (
               <div key={getReviewKey(review)}>
                 <div className={styles.line} />
-                <PreviewReview review={review} />
+                <PreviewReview review={review} trackStep="1.1_home_PreviewReview" />
               </div>
             );
           })

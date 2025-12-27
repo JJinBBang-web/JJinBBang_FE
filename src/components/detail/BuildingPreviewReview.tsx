@@ -16,12 +16,14 @@ import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";
+import { trackExplorationStep } from "../../hooks/useExplorationTracking";
 
 interface Props {
   review: ReviewPreview;
+  trackStep: string;
 }
 
-const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
+const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   let activeReviewInfo:
     | GeneralReviewInfo
     | AgencyReviewInfo
@@ -126,6 +128,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
     <div
       className={styles.content}
       onClick={() => {
+        trackExplorationStep(trackStep);
         navigate(`/building/review/${activeReviewInfo?.id}`);
         window.scrollTo(0, 0);
       }}

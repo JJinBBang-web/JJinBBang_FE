@@ -4,6 +4,7 @@ import housingIcon from "../../assets/image/iconHousing.svg"
 import styles from './HousingFilter.module.css'
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
 import { typeToKorean } from "../../util/mapping";
+import useExplorationTracking, { trackExplorationStep } from '../../hooks/useExplorationTracking';
 
 
 const HousingFilter = () => {
@@ -19,7 +20,8 @@ const HousingFilter = () => {
 
     // UI 디자인
     return (
-        <div className={`${styles.container} ${styles.housing_btn}`} onClick={() => {
+      <div className={`${styles.container} ${styles.housing_btn}`} onClick={() => {
+            trackExplorationStep('3.1_map_view_HousingFilter');
             setSelectedType(housingType);
             setBottomSheet({ isOpenModal: true, type: "housing" }); }}>
             <img src={housingIcon} alt="housing"/>

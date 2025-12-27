@@ -77,9 +77,7 @@ const AppContent: React.FC = () => {
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
   const accessToken = sessionStorage.getItem("accessToken");
-  
-  // GA4 User Property는 세션당 한 번만 전송
-  const hasSetUserProperty = React.useRef(false);
+
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -115,28 +113,12 @@ const AppContent: React.FC = () => {
   });
 
   useEffect(() => {
-    if (isSuccessUser && userData) {
+    if (isSuccessUser) {
       setIsLoggedIn(true);
-
-      // GA4 User Property: 인증 상태 추적 (세션당 1회만)
-      if (!hasSetUserProperty.current) {
-        console.log("현재 시간:", new Date().toISOString(), "사용자 인증 상태:", userData.univAuthentication);
-        
-        TagManager.dataLayer({
-          dataLayer: {
-            event: "user_status_verified",
-            verification_status: userData.univAuthentication || "unverified",
-            user_id: userData.id,
-          },
-        });
-        
-        hasSetUserProperty.current = true;
-      }
     } else {
       setIsLoggedIn(false);
-      hasSetUserProperty.current = false;
     }
-  }, [isSuccessUser, userData, setIsLoggedIn]);
+  }, [isSuccessUser]);
 
   const hiddenNavPaths = [
     "/auth/*",
@@ -214,8 +196,10 @@ const AppContent: React.FC = () => {
           # 7_confirm
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-       <Route path="/building/:buildingId" element={<Building />} />
+
+      <Route path="/building/:buildingId" element={<Building />} />
       <Route path="/building/review/:reviewId" element={<Review />} />
+
       <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
       <Route path="/review/:reviewId/update" element={<UpdateConfirmPage/>}/>
       <Route path="/review/:reviewId/update/type" element={<UpdateBuildTypePage/>}/>

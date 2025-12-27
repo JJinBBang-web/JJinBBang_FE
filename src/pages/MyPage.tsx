@@ -334,7 +334,7 @@ const MyPage: React.FC = () => {
         {userReviews.map((review) => (
           <div key={review.id}>
             <div className={styles.line} />
-            <PreviewReview review={review} />
+            <PreviewReview review={review} trackStep="4.1_mypage_PreviewReview" />
           </div>
           // <div key={review.id} className={styles.reviewItem}>
           //   <h3>{review.title || review.buildingName || '제목 없음'}</h3>
