@@ -119,7 +119,7 @@ const AppContent: React.FC = () => {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
-      sessionStorage.removeItem("verificationStatus");
+      sessionStorage.setItem("verificationStatus", "unverified");
     }
   }, [isSuccessUser]);
 
