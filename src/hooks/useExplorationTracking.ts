@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getAPI } from '../api/baseAPI';
 
 declare global {
   interface Window {
@@ -13,12 +14,24 @@ declare global {
  * @param stepName - The unique name of the step
  * @param additionalParams - Any extra parameters to send with the event
  */
-export const trackExplorationStep = (stepName: string, additionalParams: object = {}) => {
+export const trackExplorationStep = async (stepName: string, additionalParams: object = {}) => {
   // Ensure dataLayer exists
   window.dataLayer = window.dataLayer || [];
 
   // Get verification status from sessionStorage
-  const verificationStatus = sessionStorage.getItem('verificationStatus') || 'unverified';
+  let verificationStatus = sessionStorage.getItem('verificationStatus') || 'unverified';
+  
+  // If not verified, check with API
+  if (verificationStatus !== 'verified') {
+    try {
+      const response = await getAPI(`/api/v1/user`, true);
+      if (response.data.univAuthentication === "인증완료") {
+        sessionStorage.setItem("verificationStatus", "verified");
+        verificationStatus = 'verified';
+      }
+    } catch (error) {
+    }
+  }
 
   // Push the event to the dataLayer
   window.dataLayer.push({
