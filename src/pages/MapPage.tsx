@@ -27,6 +27,7 @@ import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import Spinner from '../components/util/Spinner';
 import MetaTag from '../util/SEOMetaTag';
+import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -98,6 +99,7 @@ const MapPage = () => {
 
     // 바텀시트 상태 관리 추가
     const [bottomSheet, setBottomSheet] = useRecoilState(isSheetOpenState);
+
 
     // 라우트 변경 시 모달 상태 초기화 (추가 안전장치)
     useEffect(() => {
@@ -263,8 +265,10 @@ const MapPage = () => {
 
     // 검색 핸들러
     const handleSearch = () => {
-        if (!searchKeyword) return;
-
+      if (!searchKeyword) return;
+      
+        trackExplorationStep('3.2_map_view_search');
+        
         setSearchCurrentPage(1);
         setHasMoreSearch(true);
         setIsSearchMode(true);
@@ -282,7 +286,8 @@ const MapPage = () => {
         setIsSheetVisible(false);
     };
 
-    const handleOpenModal = () => {
+  const handleOpenModal = () => {
+        trackExplorationStep('3.5_map_view_modal');
         if (!isLoggedIn || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
@@ -379,7 +384,10 @@ const MapPage = () => {
             image: markerImage,
             });
 
-            kakao.maps.event.addListener(mk, "click", () => handleMarkerClick(m.id));
+          kakao.maps.event.addListener(mk, "click", () => {
+            trackExplorationStep('3.8_map_view_marker');
+            handleMarkerClick(m.id)
+          });
             return mk;
         });
 
@@ -710,8 +718,14 @@ const MapPage = () => {
                             fontSize: "16px",
                             fontWeight: "500",
                             },
-                        ],
+                      ],
+                        
                         });
+
+                    // 클러스터 클릭 이벤트 추가
+                    kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster: any) {
+                      trackExplorationStep("3.7_map_view_cluster");
+                    });
 
                     clustererRef.current = clusterer;
                     }
@@ -824,11 +838,11 @@ const MapPage = () => {
                             )
                             :
                             (searchAllItems.map((review, index) => (
-                                <div key={`${review.generalBuildingInfo?.id}-${index}`}>
-                                    <div className={styles.line} />
+                                <div className='++!' key={`${review.generalBuildingInfo?.id}-${index}`}>
+                                    <div className={styles.PreviewReview} />
                                     {review.agencyBuildingInfo || viewType === "BUILDING" ? 
-                                        <PreviewBuildingReview review={review} /> : 
-                                        <PreviewReview review={review} />
+                                        <PreviewBuildingReview review={review} trackStep="3.10_map_PreviewBuildingReview" /> : 
+                                        <PreviewReview review={review} trackStep="3.9_map_PreviewReview" />
                                     }
                                 </div>
                                 ))
@@ -891,8 +905,8 @@ const MapPage = () => {
                                 <div key={`${review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}-${index}`}>
                                     <div className={styles.line} />
                                     {review.agencyBuildingInfo || viewType === "BUILDING" ? 
-                                        <PreviewBuildingReview review={review} /> : 
-                                        <PreviewReview review={review} />
+                                        <PreviewBuildingReview review={review} trackStep="3.10_map_PreviewBuildingReview" /> : 
+                                        <PreviewReview review={review} trackStep="3.9_map_PreviewReview" />
                                     }
                                 </div>
                                 ))
@@ -947,9 +961,9 @@ const MapPage = () => {
                             }>
                             {markerDetailData.items.map((item, idx) => 
                                 viewType === "REVIEW" ? (
-                                <PreviewReview key={idx} review={item} />
+                                <PreviewReview key={idx} review={item} trackStep="3.9_map_PreviewReview" />
                                 ) : (
-                                <PreviewBuildingReview review={item} />
+                                <PreviewBuildingReview review={item} trackStep="3.10_map_PreviewBuildingReview" />
                                 )
                             )}
                         </div>

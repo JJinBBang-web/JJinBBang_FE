@@ -5,6 +5,7 @@ import select_dot from "../assets/image/selectDot.svg";
 import not_select_dot from "../assets/image/notSelectDot.svg";
 import preparingService from "../assets/image/preparingService.svg";
 import { useNavigate } from "react-router-dom";
+import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 
 const SLIDE_WIDTH = 173;
 
@@ -25,6 +26,7 @@ const Campus: React.FC<CampusItem> = ({ img, univ, campus, scrollLeft, latitude,
       className={styles.campus}
       onClick={() => {
         if (typeof scrollLeft === "number" && scrollLeft % SLIDE_WIDTH === 0 && univ !== "서비스 준비중!") {
+          trackExplorationStep('1.1_map_view_campus');
           navigation(`/map`, { state: { from: 'home', campusName: campus, latitude, longitude } });
         }
       }}
