@@ -105,8 +105,10 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
-      if (!accessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
+      if (response.data.univAuthentication === "인증완료") {
+        sessionStorage.setItem("verificationStatus", "verified");
+      }
       return response.data;
     },
     refetchOnWindowFocus: false,
@@ -117,6 +119,7 @@ const AppContent: React.FC = () => {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
+      sessionStorage.removeItem("verificationStatus");
     }
   }, [isSuccessUser]);
 
