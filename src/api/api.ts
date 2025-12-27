@@ -15,6 +15,7 @@ export const api = axios.create({
   },
   withCredentials: true, // 쿠키 전송을 위해 기본값 설정
 });
+console.log("API URL:", process.env.REACT_APP_API_URL);
 
 // AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
 declare module 'axios' {
@@ -124,23 +125,23 @@ export const refreshToken = async (): Promise<string> => {
 // 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
-    // console.log(
-    //   "✅ Axios Response:",
-    //   res.data,
-    //   "\n✅ Axios Response URL:",
-    //   res.config.url
-    // );
+    console.log(
+      "✅ Axios Response:",
+      res.data,
+      "\n✅ Axios Response URL:",
+      res.config.url
+    );
 
 
     return res;
   },
   async (error: AxiosError) => {
-    // console.error(
-    //   "❌ Axios Error:",
-    //   error.response?.data,
-    //   "\n❌ Axios Error URL:",
-    //   error.response?.config.url
-    // );
+    console.error(
+      "❌ Axios Error:",
+      error.response?.data,
+      "\n❌ Axios Error URL:",
+      error.response?.config.url
+    );
     const originalRequest = error.config as AxiosRequestConfig;
 
     if (
