@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import banner1 from "../assets/image/content/banner/Banner1.svg";
-import banner2 from "../assets/image/content/banner/Banner2.svg";
+import banner1 from "../assets/image/content/banner/Banner1.png";
+import banner2 from "../assets/image/content/banner/Banner2.png";
 
 
 const BannerCarousel = () => {
