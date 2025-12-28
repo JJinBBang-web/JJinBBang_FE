@@ -1,4 +1,6 @@
 // src/util/fileUpload.ts
+import { tokenStore } from '../api/api';
+
 export const validateFile = (file: File) => {
   const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
   const maxSize = 10 * 1024 * 1024; // 10MB
@@ -22,7 +24,7 @@ export const uploadFile = async (file: File) => {
     const response = await fetch('/api/v1/certificates/upload', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+        Authorization: `Bearer ${tokenStore.getAccessToken()}`,
       },
       body: formData,
     });

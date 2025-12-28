@@ -28,6 +28,7 @@ import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import Spinner from '../components/util/Spinner';
 import MetaTag from '../util/SEOMetaTag';
 import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
+import { tokenStore } from '../api/api';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -617,7 +618,7 @@ const MapPage = () => {
 
     // 토큰 여부 확인
     useEffect(() => {
-        const token = sessionStorage.getItem("accessToken");
+        const token = tokenStore.getAccessToken();
         setIsLoggedIn(!!token);
     }, []);
 

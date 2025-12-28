@@ -1,13 +1,19 @@
 // src/api/api.ts
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
+// SSOT: API 서버 주소는 여기서만 관리 (로컬 : env, 베포 : '')
+export const getApiBaseURL = (): string => {
+  return process.env.REACT_APP_API_URL as string;
+//   return '';
+};
+
 export const api = axios.create({
-  // baseURL: "",
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: getApiBaseURL(),
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
     Accept: 'application/json',
   },
+  withCredentials: true, // 쿠키 전송을 위해 기본값 설정
 });
 console.log("API URL:", process.env.REACT_APP_API_URL);
 
@@ -20,10 +26,29 @@ declare module 'axios' {
   }
 }
 
+// 메모리 기반 토큰 저장소
+class TokenStore {
+  private accessToken: string | null = null;
+
+  getAccessToken(): string | null {
+    return this.accessToken;
+  }
+
+  setAccessToken(token: string | null): void {
+    this.accessToken = token;
+  }
+
+  clearAccessToken(): void {
+    this.accessToken = null;
+  }
+}
+
+export const tokenStore = new TokenStore();
+
 // 요청 인터셉터 (access token 자동 삽입)
 api.interceptors.request.use((config) => {
   if (config.useAuth) {
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = tokenStore.getAccessToken();
 
     if (typeof config.headers?.set === "function") {
       config.headers.set("Authorization", `Bearer ${accessToken}`);
@@ -62,6 +87,41 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+// 토큰 갱신 함수 (공통) - Race Condition 방지
+export const refreshToken = async (): Promise<string> => {
+  // 이미 갱신 중이면 대기
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      failedQueue.push({
+        resolve: (token: string) => resolve(token),
+        reject: (err: any) => reject(err),
+      });
+    });
+  }
+
+  isRefreshing = true;
+
+  try {
+    const response = await axios.put(
+      `${getApiBaseURL()}/api/v1/auth/tokenRefresh`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    const newAccessToken = response.data.data.accessToken;
+    tokenStore.setAccessToken(newAccessToken);
+    processQueue(null, newAccessToken);
+    return newAccessToken;
+  } catch (err) {
+    processQueue(err, null);
+    tokenStore.clearAccessToken();
+    throw err;
+  } finally {
+    isRefreshing = false;
+  }
+};
+
 // 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
@@ -89,50 +149,10 @@ api.interceptors.response.use(
       originalRequest.useAuth &&
       !originalRequest._retry
     ) {
-      const refreshToken = sessionStorage.getItem('refreshToken');
-
-      if (!refreshToken) {
-        return Promise.reject(error);
-      }
-
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({
-            resolve: (token: string) => {
-              if (typeof originalRequest.headers?.set === 'function') {
-                originalRequest.headers.set('Authorization', `Bearer ${token}`);
-              } else {
-                (originalRequest.headers as any)[
-                  'Authorization'
-                ] = `Bearer ${token}`;
-              }
-              resolve(api(originalRequest));
-            },
-            reject,
-          });
-        });
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
 
       try {
-        const response = await axios.put(
-          `${process.env.REACT_APP_API_URL}/api/v1/auth/tokenRefresh`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          }
-        );
-
-        const newAccessToken = response.data.data.accessToken;
-        const newRefreshToken = response.data.data.refreshToken;
-        
-        sessionStorage.setItem("accessToken", newAccessToken);
-        sessionStorage.setItem("refreshToken", newRefreshToken);
-        processQueue(null, newAccessToken);
+        const newAccessToken = await refreshToken();
 
         if (typeof originalRequest.headers?.set === "function") {
           originalRequest.headers.set(
@@ -147,12 +167,7 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
-        processQueue(err, null);
-        sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
         return Promise.reject(err);
-      } finally {
-        isRefreshing = false;
       }
     }
 

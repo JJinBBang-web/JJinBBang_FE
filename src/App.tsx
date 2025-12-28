@@ -18,8 +18,7 @@ import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
 import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
 import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
-import KakaoCallBack from "./pages/KakaoCallBack";
-import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
+import LoginResultPage from "./pages/LoginResultPage";
 import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
 import NewStudentVerification from "./pages/auth/NewStudentVerification";
@@ -47,6 +46,8 @@ import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/baseAPI";
 import { useQuery } from "@tanstack/react-query";
 import ModalBottomSheet from "./components/util/ModalBottomSheet";
+import { tokenStore } from "./api/api";
+import { authApi } from "./api/auth";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
 import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
 import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";
@@ -78,8 +79,7 @@ const AppContent: React.FC = () => {
   const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
-  const accessToken = sessionStorage.getItem("accessToken");
-
+  const [isInitializing, setIsInitializing] = React.useState(true);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -94,6 +94,23 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [location]);
 
+  // 앱 초기화 시 토큰 갱신 (race condition 방지)
+  useEffect(() => {
+    const initializeAuth = async () => {
+      // 메모리에 액세스 토큰이 없으면 리프레시 토큰으로 갱신 시도
+      if (!tokenStore.getAccessToken()) {
+        try {
+          await authApi.refreshAccessToken();
+        } catch (error) {
+          // 리프레시 토큰도 없거나 만료됨 (정상 동작)
+        }
+      }
+      setIsInitializing(false);
+    };
+
+    initializeAuth();
+  }, []);
+
   // 경로 변환 시 nav 초기화
   useEffect(() => {
     setHideNav(false);
@@ -107,6 +124,8 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
+      const currentAccessToken = tokenStore.getAccessToken();
+      if (!currentAccessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
       if (response.data.univAuthentication === "인증완료") {
         sessionStorage.setItem("verificationStatus", "verified");
@@ -114,6 +133,7 @@ const AppContent: React.FC = () => {
       return response.data;
     },
     refetchOnWindowFocus: false,
+    enabled: !isInitializing, // 초기화가 완료될 때까지 쿼리 실행 안함
   });
 
   useEffect(() => {
@@ -143,14 +163,13 @@ const AppContent: React.FC = () => {
     <>
       {showHeaderAndNav}
       <Routes>
-        <Route path="/login/kakao" element={<KakaoCallBack />} />
+        <Route path="/login/result" element={<LoginResultPage />} />
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myaccount" element={<AccountAuthPage />} />
         <Route path="/auth">
-          <Route path="kakao" element={<KakaoAuthPage />} />
           <Route path="student">
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
