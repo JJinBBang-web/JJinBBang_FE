@@ -27,7 +27,6 @@ import { hideNavState } from "../recoil/util/modalState";
 import iconClose from "../assets/image/iconClose.svg";
 import verifiedCharacter from "../assets/image/verifiedSheetCharacter.svg";
 import { isLoginState } from "../recoil/auth/isLoginState";
-import { tokenStore } from "../api/api";
 
 const Review: React.FC = () => {
   const navigate = useNavigate();

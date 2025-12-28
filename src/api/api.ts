@@ -116,6 +116,8 @@ export const refreshToken = async (): Promise<string> => {
   } catch (err) {
     processQueue(err, null);
     tokenStore.clearAccessToken();
+    // 토큰 갱신 실패 시 로그인 상태를 off로 설정하는 이벤트 발생
+    window.dispatchEvent(new CustomEvent('auth:refresh-failed'));
     throw err;
   } finally {
     isRefreshing = false;
@@ -167,6 +169,8 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
+        // 토큰 갱신 실패 시 로그인 상태를 off로 설정하는 이벤트 발생
+        window.dispatchEvent(new CustomEvent('auth:refresh-failed'));
         return Promise.reject(err);
       }
     }

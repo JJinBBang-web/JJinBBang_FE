@@ -57,11 +57,17 @@ function LoginResultPage() {
             if (!existingAccessToken) {
               try {
                 await authApi.refreshAccessToken();
+                // 토큰 갱신 성공 시에만 로그인 상태 on
+                setIsLoggedIn(true);
               } catch (error) {
                 console.error('토큰 갱신 실패:', error);
+                // 토큰 갱신 실패 시 로그인 상태 off 유지
+                setIsLoggedIn(false);
               }
+            } else {
+              // 이미 액세스 토큰이 있으면 로그인 상태 on
+              setIsLoggedIn(true);
             }
-            setIsLoggedIn(true);
             setIsLoading(false);
             navigate('/mypage');
             break;
@@ -100,19 +106,24 @@ function LoginResultPage() {
 
       if (result.code === 200) {
         // 약관 동의 성공 후 액세스 토큰 받기
+        // 이 시점에 리프레시 토큰이 발급되므로, 토큰 갱신 성공 시 로그인 상태 on
         try {
           await authApi.refreshAccessToken();
+          
+          // 리프레시 토큰이 발급된 시점이므로 로그인 상태 on
+          setIsLoggedIn(true);
           
           // 사용자 정보 저장
           if (userEmail) {
             sessionStorage.setItem('email', userEmail);
           }
           sessionStorage.setItem('verificationStatus', 'unverified');
-          setIsLoggedIn(true);
           setShowTerms(false);
           setShowComplete(true);
         } catch (error) {
           console.error('토큰 갱신 실패:', error);
+          // 토큰 갱신 실패 시 로그인 상태 off
+          setIsLoggedIn(false);
           await handleTermsClose();
         }
       } else {

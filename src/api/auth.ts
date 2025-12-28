@@ -30,6 +30,12 @@ export interface UserDeleteResponse {
   data: null;
 }
 
+export interface LogoutResponse {
+  code: number;
+  message: string;
+  data: null;
+}
+
 export interface CertificateVerifyResponse {
   code: number;
   message: string;
@@ -133,6 +139,38 @@ export const authApi = {
       console.error('토큰 갱신 실패:', error);
       tokenStore.clearAccessToken();
       throw new Error('토큰 갱신에 실패했습니다.');
+    }
+  },
+
+  // 로그아웃
+  logout: async (): Promise<LogoutResponse> => {
+    try {
+      const response = await api.delete<LogoutResponse>(
+        "/api/v1/auth/logout",
+        {
+          useAuth: false, // 리프레시 토큰은 쿠키에 있으므로 useAuth 불필요
+        }
+      );
+
+      // 로그아웃 성공 시 메모리 정리
+      if (response.data.code === 200) {
+        tokenStore.clearAccessToken();
+        // 리프레시 토큰은 서버에서 쿠키 삭제 처리됨
+      }
+
+      return response.data;
+    } catch (error: any) {
+      console.error("로그아웃 실패:", error);
+
+      // API 에러 응답에서 메시지 추출
+      let errorMessage = "로그아웃에 실패했습니다.";
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      throw new Error(errorMessage);
     }
   },
 

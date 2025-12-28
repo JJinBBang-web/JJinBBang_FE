@@ -1,30 +1,12 @@
 // src/hooks/useAuth.ts
-import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
-import { tokenStore } from '../api/api';
 
 export const useAuth = () => {
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
 
-  // ✅ 초기 실행 시 sessionStorage에서 상태 복원 (토큰은 메모리 기반)
-  useEffect(() => {
-    const accessToken = tokenStore.getAccessToken();
-    const email = sessionStorage.getItem('email') ?? '';
-    const verificationStatus =
-      (sessionStorage.getItem(
-        'verificationStatus'
-      ) as AuthState['verificationStatus']) || 'none';
-
-    if (accessToken) {
-      setAuth({
-        isAuthenticated: true,
-        email,
-        verificationStatus,
-        isFirstLogin: false,
-      });
-    }
-  }, [setAuth]);
+  // 주의: 초기화 로직은 App.tsx에서 처리하므로 여기서는 제거
+  // App.tsx에서 앱 초기화 시 sessionStorage에서 상태를 복원함
 
   const updateVerificationStatus = (
     status: AuthState['verificationStatus']
