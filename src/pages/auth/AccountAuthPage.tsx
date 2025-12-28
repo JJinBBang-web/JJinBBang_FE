@@ -77,6 +77,11 @@ const AccountAuthPage: React.FC = () => {
           isFirstLogin: false,
         });
 
+        setIsLoggedIn(false);
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('verificationStatus');
+        sessionStorage.removeItem('university');
+
         alert(responseData.message);
         navigate('/');
       }
@@ -97,6 +102,9 @@ const AccountAuthPage: React.FC = () => {
 
       // 성공 시 상태 초기화
       if (responseData.code === 200) {
+        // 메모리 토큰 정리
+        tokenStore.clearAccessToken();
+        
         setAuth({
           isAuthenticated: false,
           email: undefined,
@@ -107,6 +115,7 @@ const AccountAuthPage: React.FC = () => {
         setIsLoggedIn(false);
         sessionStorage.removeItem('email');
         sessionStorage.removeItem('verificationStatus');
+        sessionStorage.removeItem('university');
 
         // 홈 화면으로 이동
         navigate('/');

@@ -40,14 +40,13 @@ import ReviewAdvantagePage from "./pages/review/ReviewAdvantagePage";
 import ReviewDisadvantagePage from "./pages/review/ReviewDisadvantagePage";
 import ReviewContentPage from "./pages/review/ReviewContentPage";
 import ReviewConfirmPage from "./pages/review/ReviewConfirmPage";
-import { RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 import { useEffect } from "react";
-import { isLoginState } from "./recoil/auth/isLoginState";
-import { getAPI } from "./api/baseAPI";
-import { useQuery } from "@tanstack/react-query";
 import ModalBottomSheet from "./components/util/ModalBottomSheet";
-import { tokenStore } from "./api/api";
-import { authApi } from "./api/auth";
+import { useAuthInitialization } from "./hooks/useAuthInitialization";
+import { useUserInfo } from "./hooks/useUserInfo";
+import { hideNavState } from "./recoil/util/modalState";
+import TagManager from "react-gtm-module";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
 import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
 import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";
@@ -59,8 +58,6 @@ import UpdateFloorInputPage from "./pages/update/UpdateFloorInputPage";
 import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 import UpdateDormitoryConditionsPage from "./pages/update/UpdateDormitoryConditionsPage";
 import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitiesPage";
-import { hideNavState } from "./recoil/util/modalState";
-import TagManager from "react-gtm-module";
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
@@ -76,11 +73,16 @@ const queryClient = new QueryClient({
 });
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
-  const [isInitializing, setIsInitializing] = React.useState(true);
   
+  // 인증 초기화
+  const { isInitializing } = useAuthInitialization();
+  
+  // 사용자 정보 조회 및 상태 관리
+  useUserInfo(isInitializing);
+  
+  // GTM 태그 매니저
   useEffect(() => {
     const timer = setTimeout(() => {
       TagManager.dataLayer({
@@ -94,56 +96,10 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [location]);
 
-  // 앱 초기화 시 토큰 갱신 (race condition 방지)
-  useEffect(() => {
-    const initializeAuth = async () => {
-      // 메모리에 액세스 토큰이 없으면 리프레시 토큰으로 갱신 시도
-      if (!tokenStore.getAccessToken()) {
-        try {
-          await authApi.refreshAccessToken();
-        } catch (error) {
-          // 리프레시 토큰도 없거나 만료됨 (정상 동작)
-        }
-      }
-      setIsInitializing(false);
-    };
-
-    initializeAuth();
-  }, []);
-
   // 경로 변환 시 nav 초기화
   useEffect(() => {
     setHideNav(false);
   }, [location.pathname, setHideNav]);
-
-  const {
-    data: userData,
-    isFetching: isFetchingUser,
-    isError: isErrorUser,
-    isSuccess: isSuccessUser,
-  } = useQuery({
-    queryKey: [location.pathname],
-    queryFn: async () => {
-      const currentAccessToken = tokenStore.getAccessToken();
-      if (!currentAccessToken) throw new Error();
-      const response = await getAPI(`/api/v1/user`, true);
-      if (response.data.univAuthentication === "인증완료") {
-        sessionStorage.setItem("verificationStatus", "verified");
-      }
-      return response.data;
-    },
-    refetchOnWindowFocus: false,
-    enabled: !isInitializing, // 초기화가 완료될 때까지 쿼리 실행 안함
-  });
-
-  useEffect(() => {
-    if (isSuccessUser) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-      sessionStorage.setItem("verificationStatus", "unverified");
-    }
-  }, [isSuccessUser]);
 
   const hiddenNavPaths = [
     "/auth/*",
