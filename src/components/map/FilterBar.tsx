@@ -5,7 +5,7 @@ import iconDown from "../../assets/image/downIcon.svg"
 import styles from "./FilterBar.module.css"
 import '../../styles/global.css'
 import { isSheetOpenState } from "../../recoil/util/utilRecoilState";
-
+import useExplorationTracking, { trackExplorationStep } from '../../hooks/useExplorationTracking';
 
 const FilterBar = () => {
     const [filters, setFilters] = useRecoilState(filterState)
@@ -24,17 +24,20 @@ const FilterBar = () => {
                 {/* 찐필터 아이콘 */}
                 <button className={`${styles.filter_icon_btn} ${filters.reviewKeyword.length > 0 ? styles.filter_btn_select : ""}`} 
                 onClick={() => {
+                trackExplorationStep('3.3_map_view_jjinFilter');
                 setBottomSheet({ isOpenModal: true, type: "jjinFilter" }); }}>
                     <img src={iconFilter} className={`${filters.reviewKeyword.length > 0 ? styles.filter_icon_select : ""}`} alt="filter"/>
                 </button>
                 {/* 각종 필터들 */}
                 <button className={`${styles.filter_btn} ${styles.filter_btn_select}`} onClick={() => {
+                trackExplorationStep('3.4_map_view_reviewType');
                 setBottomSheet({ isOpenModal: true, type: "reviewType" }); }}>
                     <p className={`${styles.filter_text} ${styles.filter_text_select}`}>{filters.reviewType}</p>
                     <img src={iconDown} alt="down" className={styles.filter_icon_select}/>
                 </button>
                 <button className={`${styles.filter_btn} ${filters.university ? styles.filter_btn_select : ""}`} 
                 onClick={() => {
+                trackExplorationStep('3.5_map_view_university');
                 setSelectedTypeNum(filters.university);
                 setBottomSheet({ isOpenModal: true, type: "university" }); }}>
                     <p className={`${styles.filter_text} ${filters.university ? styles.filter_text_select : ""}`}>대학교</p>
@@ -42,6 +45,7 @@ const FilterBar = () => {
                 </button>
                 <button className={`${styles.filter_btn} ${filters.contractType!==null || filters.depositMax || filters.depositMin || filters.monthlyRentMin || filters.monthlyRentMax || filters.inMaintenanceCost ? styles.filter_btn_select : ""}`} 
                 onClick={() => {
+                trackExplorationStep('3.6_map_view_contract');
                 setSelectedContractState(filters.contractType);
                 setMaintenanceCostState(filters.inMaintenanceCost);
                 setDepositRangeState([filters.depositMin, filters.depositMax]);

@@ -11,6 +11,7 @@ import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/ma
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";
+import { trackExplorationStep } from "../../hooks/useExplorationTracking";
 
 
 interface Props {
@@ -106,7 +107,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
             <div className={styles.textWrap}>
                 <div className={styles.nameAndBtn}>
                     <p className={styles.buildingName}>{name}</p>
-                    <div className={styles.detailBtn} onClick={handleToBuilding}>건물 상세</div>
+                    <div className={styles.detailBtn} onClick={() => { trackExplorationStep("5.1_buildingDetail"); handleToBuilding() }}>건물 상세</div>
                 </div>
                 {review.generalReviewInfo && (
                     <p className={styles.buildingSize}>{floor}, {review.generalReviewInfo.space}m2, 관리비 {review.generalReviewInfo.maintenanceCost}만</p>

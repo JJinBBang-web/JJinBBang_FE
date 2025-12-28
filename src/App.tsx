@@ -62,6 +62,8 @@ import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitie
 import { hideNavState } from "./recoil/util/modalState";
 import TagManager from "react-gtm-module";
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
+import ContentPage from "./pages/content/Content";
+import ContentDetail from "./pages/content/ContentDetail";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,12 +82,16 @@ const AppContent: React.FC = () => {
   const [isInitializing, setIsInitializing] = React.useState(true);
   
   useEffect(() => {
-    TagManager.dataLayer({
-      dataLayer: {
-        event: "pageview",
-        pagePath: location.pathname,
-      },
-    });
+    const timer = setTimeout(() => {
+      TagManager.dataLayer({
+        dataLayer: {
+          event: "pageview",
+          pagePath: location.pathname,
+        },
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [location]);
 
   // 앱 초기화 시 토큰 갱신 (race condition 방지)
@@ -121,6 +127,9 @@ const AppContent: React.FC = () => {
       const currentAccessToken = tokenStore.getAccessToken();
       if (!currentAccessToken) throw new Error();
       const response = await getAPI(`/api/v1/user`, true);
+      if (response.data.univAuthentication === "인증완료") {
+        sessionStorage.setItem("verificationStatus", "verified");
+      }
       return response.data;
     },
     refetchOnWindowFocus: false,
@@ -132,6 +141,7 @@ const AppContent: React.FC = () => {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
+      sessionStorage.setItem("verificationStatus", "unverified");
     }
   }, [isSuccessUser]);
 
@@ -142,6 +152,7 @@ const AppContent: React.FC = () => {
     "/building/:buildingId",
     "/building/review/:reviewId",
     "/building/review/:reviewId/report",
+    "/content/:reportId",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -166,33 +177,54 @@ const AppContent: React.FC = () => {
           </Route>
         </Route>
         <Route path="/review">
+          # 1_review_type_select
           <Route path="type" element={<ReviewTypePage />} />
+          # 2.1_address_input
           <Route path="input-address" element={<AddressInputPage />} />
+          # 2.2_address_search
           <Route path="address" element={<AddressSearchPage />} />
+
+          # 3-1.1_floor_input
+          <Route path="floor" element={<FloorInputPage />} />
+          # 3-1.2_address_result
+          <Route path="result" element={<AddressResultPage />} />
+          # 3-1.3_contractType
+          <Route path="price" element={<PaymentTypePage />} />
+          # 3-1.4_price
+          <Route path="jeonse" element={<JeonseInputPage />} />
+          <Route path="wolse" element={<WolseInputPage />} />
+          
+          # 3-2.1_dormitory_input
           <Route path="dormitory" element={<DormitoryInputPage />} />
+          # 3-2.2_dormitory_conditions
           <Route
             path="dormitory-conditions"
             element={<DormitoryConditionsPage />}
           />
+          # 3-2.3_dormitory_amenities
           <Route
             path="dormitory-amenities"
             element={<DormitoryAmenitiesPage />}
           />
 
-          <Route path="result" element={<AddressResultPage />} />
-          <Route path="floor" element={<FloorInputPage />} />
+          # 3-3_agency_input
           <Route path="agency" element={<AgencyInputPage />} />
-          <Route path="price" element={<PaymentTypePage />} />
-          <Route path="jeonse" element={<JeonseInputPage />} />
-          <Route path="wolse" element={<WolseInputPage />} />
+
+          # 4_room_info
           <Route path="room-info" element={<RoomInfoPage />} />
+          # 5.1_filter_ad
           <Route path="filter-ad" element={<ReviewAdvantagePage />} />
+          # 5.2_filter_disad
           <Route path="filter-disad" element={<ReviewDisadvantagePage />} />
+          # 6_content
           <Route path="content" element={<ReviewContentPage />} />
+          # 7_confirm
           <Route path="confirm" element={<ReviewConfirmPage />} />
         </Route>
-       <Route path="/building/:buildingId" element={<Building />} />
+
+      <Route path="/building/:buildingId" element={<Building />} />
       <Route path="/building/review/:reviewId" element={<Review />} />
+
       <Route path="/building/review/:reviewId/report" element={<ReportPage />} />
       <Route path="/review/:reviewId/update" element={<UpdateConfirmPage/>}/>
       <Route path="/review/:reviewId/update/type" element={<UpdateBuildTypePage/>}/>
@@ -208,6 +240,8 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/dormitory-conditions" element={<UpdateDormitoryConditionsPage />} />
       <Route path="/review/:reviewId/update/dormitory-amenities" element={<UpdateDormitoryAmenitiesPage />} />
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
+      <Route path="/content" element={<ContentPage/>}/>
+      <Route path="/content/:reportId" element={<ContentDetail/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

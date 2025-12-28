@@ -43,13 +43,13 @@ export const authApi = {
   ): Promise<EmailVerificationResponse> => {
     try {
       const response = await api.post<EmailVerificationResponse>(
-        '/api/v1/auth/emailCode',
+        "/api/v1/auth/emailCode",
         { emailAddress },
         { useAuth: true }
       );
       return response.data;
     } catch (error: any) {
-      console.error('요청 헤더:', error.config?.headers);
+      console.error("요청 헤더:", error.config?.headers);
       throw new Error(`이메일 전송 실패: ${error.response?.data?.message}`);
     }
   },
@@ -61,28 +61,37 @@ export const authApi = {
   ): Promise<EmailVerificationResponse> => {
     try {
       const response = await api.post<EmailVerificationResponse>(
-        '/api/v1/auth/emailCode/verify',
+        "/api/v1/auth/emailCode/verify",
         { emailAddress, authCode },
         {
           useAuth: true, // 인증 토큰 필요
         }
       );
 
-      // API 응답 구조에 따라 처리
-      // 1. 응답 데이터에 success 필드가 있는 경우: 해당 값 사용
-      if (response.data && typeof response.data.success === 'boolean') {
-        return response.data;
+      // 응답 데이터를 any로 타입 단언하여 처리
+      const responseData = response.data as any;
+
+      // 백엔드 응답 구조: { code: number, message: string, data: any }
+      // code가 200이면 성공, 그 외는 실패
+      if (responseData && typeof responseData.code === "number") {
+        const isSuccess = responseData.code === 200;
+        return {
+          success: isSuccess,
+          message:
+            responseData.message ||
+            (isSuccess
+              ? "인증이 완료되었습니다."
+              : "인증코드가 일치하지 않습니다."),
+        };
       }
 
-      // 2. HTTP 상태 코드만 있는 경우: 200이면 성공
-      if (response.status === 200) {
-        return { success: true, message: response.data?.message || '인증이 완료되었습니다.' };
-      }
-
-      // 3. 그 외의 경우 실패 처리
-      return { success: false, message: response.data?.message || '인증코드가 일치하지 않습니다.' };
+      // code 필드가 없는 경우: HTTP 상태 코드로 판단 (fallback)
+      return {
+        success: response.status === 200,
+        message: responseData?.message || "인증이 완료되었습니다.",
+      };
     } catch (error: any) {
-      console.error('이메일 인증코드 검증 실패:', error);
+      console.error("이메일 인증코드 검증 실패:", error);
 
       // API 에러 응답에서 메시지 추출
       if (error.response?.data?.message) {
@@ -90,7 +99,7 @@ export const authApi = {
       } else if (error.message) {
         throw error; // 이미 처리된 에러 메시지 유지
       } else {
-        throw new Error('인증에 실패했습니다.');
+        throw new Error("인증에 실패했습니다.");
       }
     }
   },
@@ -131,7 +140,7 @@ export const authApi = {
   deleteUser: async (): Promise<UserDeleteResponse> => {
     try {
       const response = await api.delete<UserDeleteResponse>(
-        '/api/v1/auth/user',
+        "/api/v1/auth/user",
         {
           useAuth: true, // 인증이 필요한 요청
         }
@@ -145,16 +154,16 @@ export const authApi = {
 
       return response.data;
     } catch (error: any) {
-      console.error('서비스 탈퇴 실패:', error);
-      
+      console.error("서비스 탈퇴 실패:", error);
+
       // API 에러 응답에서 메시지 추출
-      let errorMessage = 'Leave Service Failed.';
+      let errorMessage = "Leave Service Failed.";
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       throw new Error(errorMessage);
     }
   },
@@ -165,14 +174,14 @@ export const authApi = {
   ): Promise<CertificateVerifyResponse> => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       const response = await api.post<CertificateVerifyResponse>(
-        '/api/v1/certificates/enrollment/verify',
+        "/api/v1/certificates/enrollment/verify",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           useAuth: true,
         }
@@ -180,8 +189,8 @@ export const authApi = {
 
       return response.data;
     } catch (error) {
-      console.error('재학증명서 인증 실패:', error);
-      throw new Error('재학증명서 인증에 실패했습니다.');
+      console.error("재학증명서 인증 실패:", error);
+      throw new Error("재학증명서 인증에 실패했습니다.");
     }
   },
 
@@ -191,14 +200,14 @@ export const authApi = {
   ): Promise<CertificateVerifyResponse> => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
       const response = await api.post<CertificateVerifyResponse>(
-        '/api/v1/certificates/admission/verify',
+        "/api/v1/certificates/admission/verify",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           useAuth: true,
         }
@@ -206,8 +215,8 @@ export const authApi = {
 
       return response.data;
     } catch (error) {
-      console.error('합격증명서 인증 실패:', error);
-      throw new Error('합격증명서 인증에 실패했습니다.');
+      console.error("합격증명서 인증 실패:", error);
+      throw new Error("합격증명서 인증에 실패했습니다.");
     }
   },
 };

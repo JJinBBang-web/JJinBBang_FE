@@ -20,14 +20,13 @@ import {
 import { useReviewDetail } from "../hooks/useReviewDetail";
 import { updateReviewState } from "../recoil/review/updateReviewAtoms";
 import { convertToReviewState } from "../util/convertToReviewState";
-import { isLoginState } from "../recoil/auth/isLoginState";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "../api/baseAPI";
 import Modal from "../components/review/Modal";
 import { hideNavState } from "../recoil/util/modalState";
 import iconClose from "../assets/image/iconClose.svg";
 import verifiedCharacter from "../assets/image/verifiedSheetCharacter.svg";
-import { tokenStore } from "../api/api";
+import { isLoginState } from "../recoil/auth/isLoginState";
 
 const Review: React.FC = () => {
   const navigate = useNavigate();
@@ -36,8 +35,8 @@ const Review: React.FC = () => {
   const [reviews, setReviews] = useRecoilState(ReviewInfoState);
   const setUpdateReview = useSetRecoilState(updateReviewState);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLogin] = useRecoilState(isLoginState);
   const setHideNav = useSetRecoilState(hideNavState);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState(false);
 
   const { reviewId } = useParams(); // /building/rv/:reviewId 형식이라면 필요
@@ -46,14 +45,9 @@ const Review: React.FC = () => {
 
   const { data, isLoading, isError } = useReviewDetail(
     reviewId ?? "",
-    reviewType
+    reviewType,
+    isLogin
   );
-
-  // 토큰 여부 확인
-  useEffect(() => {
-      const token = tokenStore.getAccessToken();
-      setIsLoggedIn(!!token);
-  }, []);
 
   // 미인증 여부 확인
   useEffect(() => {
@@ -67,7 +61,7 @@ const Review: React.FC = () => {
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
-    enabled: isLoggedIn,
+    enabled: isLogin,
     refetchOnWindowFocus: false,
   });
 
@@ -132,7 +126,7 @@ const Review: React.FC = () => {
   };
 
   const handleToAuth = () => {
-    if (!isLoggedIn) {
+    if (!isLogin) {
       setHideNav(false);
       setIsModalOpen(false);
       navigate(`/mypage`);
@@ -144,7 +138,7 @@ const Review: React.FC = () => {
   };
 
   if (isLoading) return <div>로딩 중...</div>;
-  else if (!isLoggedIn || verificationStatus)
+  else if (!isLogin || verificationStatus)
     return (
       <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>

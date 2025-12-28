@@ -16,12 +16,14 @@ import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";
+import { trackExplorationStep } from "../../hooks/useExplorationTracking";
 
 interface Props {
   review: ReviewPreview;
+  trackStep: string;
 }
 
-const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
+const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   let activeReviewInfo:
     | GeneralReviewInfo
     | AgencyReviewInfo
@@ -103,7 +105,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-  console.log(activeReviewInfo);
+  console.log(review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,11 +128,19 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
     <div
       className={styles.content}
       onClick={() => {
+        trackExplorationStep(trackStep);
         navigate(`/building/review/${activeReviewInfo?.id}`);
         window.scrollTo(0, 0);
       }}
     >
-      <img src={review.image} alt="" className={styles.buildingImg} />
+      <div className={styles.imgWrap}>
+          <img src={review.image} alt="" className={styles.buildingImg} />
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
+      </div>
       <div className={styles.infoAndLike}>
         {generalInfo && (
           <div className={styles.buildingInfo}>

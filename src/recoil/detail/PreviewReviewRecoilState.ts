@@ -50,6 +50,7 @@ export interface ReviewPreview {
   agencyReviewInfo?: AgencyReviewInfo;
   reviewInfo: ReviewInfo;
   image?: string;
+  imageCount?: number;
 }
 
 // 리뷰 프리뷰 상태관리

@@ -12,6 +12,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import styles from "../../styles/review/DormitoryInputPage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 
 declare global {
   interface Window {
@@ -71,6 +72,8 @@ const DormitoryInputPage: React.FC = () => {
   const [selectedFloor, setSelectedFloor] = useState<string>(
     review.floorType || "저층"
   );
+
+  useReviewStepTracking('3-2.1_dormitory_input');
 
   const {
     showCancelModal,

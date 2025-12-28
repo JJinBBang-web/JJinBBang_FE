@@ -6,6 +6,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/PriceInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 
@@ -47,6 +48,10 @@ const WolseInputPage: React.FC = () => {
 
   // 자동 저장 기능 추가
   useReviewAutoSave('wolse');
+
+  // GA4 Review Funnel Tracking: Step 3 (Price)
+  // 월세/전세 구분은 contractType 파라미터로 필터링 가능
+  useReviewStepTracking('3-1.4_price');
 
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원

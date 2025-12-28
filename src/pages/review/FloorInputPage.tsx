@@ -8,6 +8,7 @@ import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
 import { reviewAutoSave, REVIEW_STEPS } from '../../util/reviewAutoSave';
 import styles from '../../styles/review/FloorInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 
 interface LocationState {
   address: {
@@ -36,6 +37,9 @@ const FloorInputPage: React.FC = () => {
   const [selectedFloor, setSelectedFloor] = useState<string | null>(
     review.floorType && floors.includes(review.floorType) ? review.floorType : null
   );
+
+  // GA4 Review Funnel Tracking: Step 3
+  useReviewStepTracking('3-1.1_floor_input');
 
   // buildingName 변경 시 실시간 업데이트
   const handleBuildingNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
