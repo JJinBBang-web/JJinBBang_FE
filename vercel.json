@@ -1,8 +1,40 @@
 {
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "http://3.35.29.235:8080/api/:path*" },
+  "redirects": [
     {
-      "source": "/((?!api|static|assets|favicon.ico|robots.txt|manifest.json|.*\\..*).*)",
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "jjinbbang.kr"
+        }
+      ],
+      "destination": "https://www.jjinbbang.kr",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/ads.txt",
+      "destination": "/ads.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/seo/sitemap.xml"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "http://3.35.29.235:8080/api/:path*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]

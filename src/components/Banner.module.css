@@ -1,10 +1,11 @@
 .banner {
   position: relative;
-  width: 394px;
+  width: 393px;
   height: 85px;
   flex-shrink: 0;
   background-color: var(--primary-color);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .banner_text_container {

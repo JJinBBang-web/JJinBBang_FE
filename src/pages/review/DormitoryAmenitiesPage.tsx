@@ -8,6 +8,7 @@ import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryAmenities.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 
 interface LocationState {
   facilities?: any[];
@@ -41,6 +42,8 @@ const DormitoryAmenitiesPage: React.FC = () => {
     휴게시설: { 있음: false, 없음: false },
   });
 
+  useReviewStepTracking('3-2.3_dormitory_amenities');
+
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -49,13 +52,16 @@ const DormitoryAmenitiesPage: React.FC = () => {
   } = useCancelModal();
 
   useEffect(() => {
-    // 이전 페이지에서 넘어온 경우, 시설 데이터에 따라 선택 상태 업데이트
-    if (facilities) {
+    // confirm 페이지에서 돌아온 경우 기존 selections 복원
+    if (from === 'confirm' && dormitoryReview.facilityConditions) {
+      setSelections(dormitoryReview.facilityConditions);
+    } else if (facilities) {
+      // 이전 페이지에서 넘어온 경우, 시설 데이터에 따라 선택 상태 업데이트
       const newSelections = { ...selections };
       // 시설 데이터를 선택 상태에 적용
       setSelections(newSelections);
     }
-  }, [facilities]);
+  }, [facilities, from, dormitoryReview.facilityConditions]);
 
   // 옵션 선택 처리 함수 수정
   const handleOptionSelect = (facility: string, option: string) => {

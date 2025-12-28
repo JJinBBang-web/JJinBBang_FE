@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { reviewState, defaultReviewState } from "../../recoil/review/reviewAtoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  reviewState,
+  defaultReviewState,
+} from "../../recoil/review/reviewAtoms";
 import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
+import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -15,12 +20,16 @@ const ReviewTypePage: React.FC = () => {
   const { housingType } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
   const [, setDormitoryReview] = useRecoilState(dormitoryReviewState);
+  const setSelectedTypeNum = useSetRecoilState(selectedTypeNumState);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
 
   // 자동 저장 기능 - type 페이지에서는 자동 저장하지 않음
   // 이유: 빈 상태가 저장되는 것을 방지하기 위해
   // 다음 페이지부터 자동 저장이 시작됨
+
+  // GA4 Review Funnel Tracking: Step 1
+  useReviewStepTracking('1_review_type_select');
 
   const housingTypeNum = (type: string) => {
     if (
@@ -55,17 +64,21 @@ const ReviewTypePage: React.FC = () => {
   }, [locationState.from]);
 
   const handleTypeSelect = (type: string) => {
-    if (type === "공인중개사") {
-      alert("업데이트 준비 중이에요!");
-      return;
-    }
     setSelectedType(type);
+
+    // 기숙사 선택 시 캠퍼스 선택 상태 즉시 초기화 (수정 모드가 아닐 때만)
+    if (type === "기숙사" && locationState.from !== "confirm") {
+      setSelectedTypeNum(null);
+    }
   };
 
   const handleNext = () => {
     if (selectedType) {
       // housingType 변경 시 전체 리셋이 필요한 경우 체크
-      if (housingType && housingTypeNum(selectedType) !== housingTypeNum(housingType)) {
+      if (
+        housingType &&
+        housingTypeNum(selectedType) !== housingTypeNum(housingType)
+      ) {
         // 유형 카테고리가 변경되면 초기화 후 새로운 housingType 설정
         setReview({
           ...defaultReviewState,
@@ -95,17 +108,28 @@ const ReviewTypePage: React.FC = () => {
         reviewAutoSave.save({
           reviewState: review,
           dormitoryReviewState: null,
-          currentStep: REVIEW_STEPS.ADDRESS_INPUT  // 다음 페이지
+          currentStep: REVIEW_STEPS.ADDRESS_INPUT, // 다음 페이지
         });
 
-        // 모든 타입에 대해 주소 입력 페이지로 이동 (기숙사 포함)
-        navigate('/review/input-address', {
-          state: {
-            ...locationState,
-            housingType: selectedType,
-          },
-          replace: false,
-        });
+        // 공인중개사는 주소 검색 없이 바로 상호명 입력 페이지로 이동
+        if (selectedType === "공인중개사") {
+          navigate("/review/agency", {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+            replace: false,
+          });
+        } else {
+          // 기타 타입(기숙사, 원룸 등)은 주소 입력 페이지로 이동
+          navigate("/review/input-address", {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+            replace: false,
+          });
+        }
       }
     }
   };
@@ -176,63 +200,67 @@ const ReviewTypePage: React.FC = () => {
       />
       <div className="content" style={{ backgroundColor: "var(--white)" }}>
         <div className={styles.container}>
-        <header className={styles.header}>
-          <button className={styles.backButton} onClick={handleBack}>
-            <img src={backArrowIcon} alt="back" />
-          </button>
-          <div className={styles.progressBar}>
-            <div className={styles.progressFill}></div>
+          <header className={styles.header}>
+            <button className={styles.backButton} onClick={handleBack}>
+              <img src={backArrowIcon} alt="back" />
+            </button>
+            <div className={styles.progressBar}>
+              <div className={styles.progressFill}></div>
+            </div>
+            <h1>찐빵 유형을 선택해 볼까요?</h1>
+          </header>
+          <div className={styles.buttonGroup}>
+            {[
+              "원/투룸",
+              "아파트",
+              "주택/빌라",
+              "오피스텔",
+              "기숙사",
+              "하숙집/고시원",
+              "공인중개사",
+            ].map((type) => {
+              const isDisabled = type === "공인중개사";
+              return (
+                <button
+                  key={type}
+                  className={`${styles.typeButton} ${
+                    selectedType === type ? styles.selected : ""
+                  } ${isDisabled ? styles.disabled : ""}`}
+                  onClick={() => !isDisabled && handleTypeSelect(type)}
+                  disabled={isDisabled}
+                >
+                  {type}
+                </button>
+              );
+            })}
           </div>
-          <h1>찐빵 유형을 선택해 볼까요?</h1>
-        </header>
-        <div className={styles.buttonGroup}>
-          {[
-            "원/투룸",
-            "아파트",
-            "주택/빌라",
-            "오피스텔",
-            "기숙사",
-            "하숙집/고시원",
-            "공인중개사",
-          ].map((type) => (
-            <button
-              key={type}
-              className={`${styles.typeButton} ${
-                selectedType === type ? styles.selected : ""
-              } ${type === "공인중개사" ? styles.disabled : ""}`}
-              onClick={() => handleTypeSelect(type)}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
 
-        {/* 유형 선택 여부에 따라 버튼 레이아웃 변경 */}
-        {selectedType ? (
-          // 유형이 선택되면 [이전]과 [다음] 버튼을 함께 표시
-          <div className={styles.buttonContainer}>
-            <button className={styles.prevButton} onClick={handleBack}>
-              이전
-            </button>
+          {/* 유형 선택 여부에 따라 버튼 레이아웃 변경 */}
+          {selectedType ? (
+            // 유형이 선택되면 [이전]과 [다음] 버튼을 함께 표시
+            <div className={styles.buttonContainer}>
+              <button className={styles.prevButton} onClick={handleBack}>
+                이전
+              </button>
+              <button
+                className={`${styles.nextButton} ${styles.enabled}`}
+                onClick={handleNext}
+              >
+                다음
+              </button>
+            </div>
+          ) : (
+            // 유형이 선택되지 않으면 [다음] 버튼만 표시 (비활성화 상태)
             <button
-              className={`${styles.nextButton} ${styles.enabled}`}
+              className={styles.nextButton}
               onClick={handleNext}
+              disabled={!selectedType}
             >
               다음
             </button>
-          </div>
-        ) : (
-          // 유형이 선택되지 않으면 [다음] 버튼만 표시 (비활성화 상태)
-          <button
-            className={styles.nextButton}
-            onClick={handleNext}
-            disabled={!selectedType}
-          >
-            다음
-          </button>
-        )}
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 };

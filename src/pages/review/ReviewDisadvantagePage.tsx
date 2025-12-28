@@ -14,6 +14,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/ReviewAdvantage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -60,6 +61,9 @@ const ReviewDisadvantagePage: React.FC = () => {
   // 자동 저장 기능 추가
   useReviewAutoSave('filter-disad');
 
+  // GA4 Review Funnel Tracking: Step 6 (Disadvantage)
+  useReviewStepTracking('5.2_filter_disad');
+
   useEffect(() => {
     // 수정 모드일 경우 기존 상태 복원
     if (from === "confirm") {
@@ -67,7 +71,7 @@ const ReviewDisadvantagePage: React.FC = () => {
     }
   }, [from, review]);
 
-  // 장점-단점 상반된 태그 매핑
+  // 장점-단점 상반된 태그 매핑 (일반 건물용)
   const oppositeTagMapping: { [key: string]: string } = {
     // 위치/주변환경
     "교통이 불편해요": "교통이 편리해요",
@@ -96,7 +100,27 @@ const ReviewDisadvantagePage: React.FC = () => {
     "이사가 힘들었어요": "이사가 편했어요",
   };
 
+  // 공인중개사용 상반된 태그 매핑
+  const agencyOppositeTagMapping: { [key: string]: string } = {
+    // 매물
+    "매물이 한정되어 있어요": "매물이 다양해요",
+    "허위 매물을 소개했어요": "검증된 매물을 소개해줘요",
+    "조건에 맞지 않은 매물만 추천했어요": "조건에 맞는 매물을 추천해줘요",
+    "수수료가 높았어요": "수수료가 합리적이에요",
+    // 서비스/기타
+    "응대가 불친절했어요": "친절하게 응대해요",
+    "설명이 부족했어요": "설명이 자세했어요",
+    "정보를 숨겼어요": "신뢰가 느껴졌어요",
+    "처리 속도가 느렸어요": "대화가 잘 통했어요",
+    "계약을 강요했어요": "거래 방식이 안전했어요",
+    "계약 내용 안내가 불충분했어요": "계약 과정이 투명했어요",
+    "사후 대응이 잘 안되었어요": "사후 대응이 잘 되었어요",
+  };
+
   const handleFilterClick = (label: string) => {
+    // 장점에서 선택된 태그 확인
+    const selectedAdvantages = advantages || review.pros || [];
+
     setSelectedFilters((prev) => {
       let newFilters: string[];
 
@@ -108,16 +132,23 @@ const ReviewDisadvantagePage: React.FC = () => {
         alert("최대 5개까지 선택할 수 있습니다!");
         return prev;
       } else {
-        // 상반된 태그가 장점에서 선택되었는지 확인
-        const oppositeTag = oppositeTagMapping[label];
-        const selectedAdvantages = advantages || review.pros || [];
-
-        if (oppositeTag && selectedAdvantages.includes(oppositeTag)) {
-          alert("같은 항목이 장점으로 선택되었습니다!");
-          return prev;
+        // 공인중개사의 경우: 상반된 태그가 장점에 선택되었는지 확인
+        if (review.housingType === "공인중개사") {
+          const oppositeTag = agencyOppositeTagMapping[label];
+          if (oppositeTag && selectedAdvantages.includes(oppositeTag)) {
+            alert("같은 항목이 장점으로 선택되었습니다!");
+            return prev;
+          }
+        } else {
+          // 기숙사/일반 주거의 경우: 상반된 태그가 장점에서 선택되었는지 확인
+          const oppositeTag = oppositeTagMapping[label];
+          if (oppositeTag && selectedAdvantages.includes(oppositeTag)) {
+            alert("같은 항목이 장점으로 선택되었습니다!");
+            return prev;
+          }
         }
 
-        // 최대 선택 수 미만이고 상반된 태그가 없는 경우 추가
+        // 최대 선택 수 미만이고 중복/상반된 태그가 없는 경우 추가
         newFilters = [...prev, label];
       }
 

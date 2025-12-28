@@ -8,6 +8,8 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+
 
 interface LocationState {
   photos?: string[];
@@ -28,7 +30,7 @@ const AutoHeightTextarea: React.FC<{
   const formattedPlaceholder =
     housingType === "공인중개사"
       ? "자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 방문 후기, 중개 수수료 문제"
-      : "찐거주 후기를 위해 특징과 장단점을 최소 100자 이상 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제";
+      : "찐거주 후기를 위해 특징과 장단점을 최소 50자 이상 적어주세요! 자세한 이야기는 찐빵 유저들에게 큰 도움이 돼요!\n\nex) 학교까지의 거리, 집주인과의 문제";
 
   const adjustHeight = () => {
     const textarea = textareaRef.current;
@@ -66,6 +68,10 @@ const ReviewContentPage: React.FC = () => {
   const [review, setReview] = useRecoilState(reviewState);
   const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } =
     useReviewAutoSave("content");
+
+  // GA4 Review Funnel Tracking: Step 7 (Content)
+  // 사용자가 어떤 유형(공인중개사/원룸)을 리뷰 중인지 같이 보내면 분석할 때 좋음
+  useReviewStepTracking('6_content');
 
   const isNavigatingRef = useRef(false);
 
@@ -146,7 +152,7 @@ const ReviewContentPage: React.FC = () => {
       await reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.CONFIRM
+        currentStep: REVIEW_STEPS.CONFIRM,
       });
 
       navigate("/review/confirm", {

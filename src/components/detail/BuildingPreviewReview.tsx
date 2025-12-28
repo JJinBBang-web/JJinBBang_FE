@@ -14,12 +14,16 @@ import {
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { postAPI } from "../../api/baseAPI";
+import { trackExplorationStep } from "../../hooks/useExplorationTracking";
 
 interface Props {
   review: ReviewPreview;
+  trackStep: string;
 }
 
-const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
+const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   let activeReviewInfo:
     | GeneralReviewInfo
     | AgencyReviewInfo
@@ -41,6 +45,24 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   const rawRating = activeReviewInfo?.rating;
   const numericRating = Number(rawRating) || 0;
   const rating = Math.round(numericRating);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      return postAPI(
+        `/api/v1/user/bookmark`,
+        {
+          type: "review",
+          id: activeReviewInfo?.id,
+          bookmark: !isLiked,
+        },
+        true
+      );
+    },
+    onSuccess: (data) => {
+      setIsLiked(!isLiked);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    },
+  });
 
   let type;
   if (activeReviewInfo?.type === "ROOM") {
@@ -83,6 +105,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
+  console.log(review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -105,11 +128,19 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
     <div
       className={styles.content}
       onClick={() => {
+        trackExplorationStep(trackStep);
         navigate(`/building/review/${activeReviewInfo?.id}`);
         window.scrollTo(0, 0);
       }}
     >
-      <img src={review.image} alt="" className={styles.buildingImg} />
+      <div className={styles.imgWrap}>
+          <img src={review.image} alt="" className={styles.buildingImg} />
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
+      </div>
       <div className={styles.infoAndLike}>
         {generalInfo && (
           <div className={styles.buildingInfo}>
@@ -138,10 +169,7 @@ const BuildingPreviewReview: React.FC<Props> = ({ review }) => {
             className={styles.likeButton}
             onClick={(event) => {
               event.stopPropagation(); // 부모 onClick 이벤트 전파 방지
-              setLikeCount((prev) => {
-                return isLiked ? prev - 1 : prev + 1;
-              });
-              setIsLiked((prev) => !prev);
+              mutation.mutate();
             }}
             src={isLiked ? heartIconOn : heartIconOff}
             alt="heartIcon"

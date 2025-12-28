@@ -1,5 +1,4 @@
 // src/pages/review/ReviewConfirmPage.tsx
-// Fixed syntax errors in try-catch structure
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useState, useEffect, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -25,12 +24,15 @@ import { useCancelModal } from "../../util/useCancelModal";
 import { useCreateReview } from "../../hooks/useCreateReview";
 import { koreanToType } from "../../util/mapping";
 import { reviewAutoSave } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+import TagManager from "react-gtm-module";
 
 interface LocationState {
   address?: {
     roadAddress: string;
     jibunAddress: string;
     buildingName: string;
+    buildingCode?: string;
   };
   buildingName?: string;
   floor?: string;
@@ -79,6 +81,10 @@ const ReviewConfirmPage: React.FC = () => {
 
   // ReviewConfirmPage에서는 실시간 자동저장 불필요
   // 리뷰 제출 시에만 자동저장 데이터 삭제
+
+  // GA4 Review Funnel Tracking: Step 8 (Confirm)
+  // 최종 확인 페이지 진입
+  useReviewStepTracking('7_confirm');
 
   // 기숙사 유형인지 체크
   const isDormitory = review.housingType === "기숙사";
@@ -141,6 +147,9 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.buildingName && {
             detailedAddress: locationState.buildingName,
           }),
+          ...(locationState.address?.buildingCode && {
+            buildingCode: locationState.address.buildingCode,
+          }),
           ...(locationState.paymentType && {
             contractType: locationState.paymentType,
           }),
@@ -171,6 +180,8 @@ const ReviewConfirmPage: React.FC = () => {
         detailedAddress: locationState.buildingName
           ? `${locationState.buildingName}`
           : prev.detailedAddress || "",
+        buildingCode:
+          locationState.address?.buildingCode || prev.buildingCode || "",
         contractType: locationState.paymentType || prev.contractType || "",
         deposit:
           locationState.priceData?.deposit !== undefined
@@ -369,9 +380,29 @@ const ReviewConfirmPage: React.FC = () => {
           );
         }
 
+        // DormitoryInputPage에서 저장된 campusId 사용
+        // selectedTypeNum (대학교 ID)가 campusId로 저장되어 있음
+        const campusId = (review as any).campusId;
+
+        if (!campusId) {
+          alert(
+            "대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요."
+          );
+          navigate("/review/dormitory");
+          return;
+        }
+
+        if (!review.buildingCode) {
+          alert(
+            "기숙사 위치 정보를 찾을 수 없습니다. 주소를 다시 입력해주세요."
+          );
+          navigate("/review/address");
+          return;
+        }
+
         reviewData = {
           dormitoryReview: {
-            campusId: 2, // 임시값, 실제로는 캠퍼스 ID를 받아와야 함
+            campusId: campusId,
             capacity:
               review.roomCapacity || dormitoryReview.roomType === "1인실"
                 ? 1
@@ -398,7 +429,9 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || dormitoryReview.images || [],
           buildingRequest: {
-            ...(review.buildingCode && { buildingCode: review.buildingCode }),
+            // 기숙사는 buildingCode에 Kakao 장소 ID를 저장
+            // DormitoryInputPage에서 키워드 검색 API로 얻은 장소 ID 사용
+            buildingCode: review.buildingCode,
             name:
               (review as any).dormitoryName ||
               review.detailedAddress ||
@@ -470,7 +503,11 @@ const ReviewConfirmPage: React.FC = () => {
           },
           imageUrls: review.images || [],
           buildingRequest: {
-            ...(review.buildingCode && { buildingCode: review.buildingCode }),
+            // 공인중개사가 아닌 경우에만 buildingCode 포함
+            ...(review.buildingCode &&
+              review.housingType !== "공인중개사" && {
+                buildingCode: review.buildingCode,
+              }),
             name: review.detailedAddress || "건물명",
             type: koreanToType[review.housingType] || "APARTMENT",
             address: review.address || "",
@@ -592,6 +629,15 @@ const ReviewConfirmPage: React.FC = () => {
         // 리뷰 제출 성공 시 자동저장 데이터 삭제
         reviewAutoSave.clear();
 
+        // GA4 Review Funnel Tracking: Completion Event
+        // 리뷰 작성 완료 이벤트 전송
+        TagManager.dataLayer({
+          dataLayer: {
+            event: 'review_write_completed',
+            buildingId: reviewData.buildingRequest?.buildingCode || 'new_building',
+          },
+        });
+
         setIsSubmitting(false);
         setShowConfirmModal(false);
         navigate("/mypage");
@@ -636,9 +682,17 @@ const ReviewConfirmPage: React.FC = () => {
 
   const navigateToDetailedAddress = () => {
     if (review.housingType === "공인중개사") {
-      navigate("/review/agency", {
+      navigate("/review/result", {
         state: {
           ...locationState,
+          address: {
+            roadAddress: review.address || "",
+            jibunAddress: review.addressDetail || "",
+            buildingName: review.detailedAddress || "",
+            buildingCode: review.buildingCode || "",
+          },
+          buildingName: review.detailedAddress || "",
+          housingType: review.housingType,
           from: "confirm",
         },
       });
@@ -890,7 +944,9 @@ const ReviewConfirmPage: React.FC = () => {
               className={styles.infoItem}
               onClick={() => handleItemClick(navigateToDetailedAddress)}
             >
-              <span className={styles.label}>상세 주소</span>
+              <span className={styles.label}>
+                {isAgency ? "상호명" : "상세 주소"}
+              </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
                   {isDormitory ? (
@@ -900,11 +956,13 @@ const ReviewConfirmPage: React.FC = () => {
                       {(review as any).dormitoryName ||
                         "기숙사명을 입력해주세요"}
                     </>
+                  ) : isAgency ? (
+                    review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"
                   )}
                   <br />
-                  {review.floorType || ""}
+                  {!isAgency && review.floorType}
                 </span>
                 <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
               </div>
@@ -989,6 +1047,7 @@ const ReviewConfirmPage: React.FC = () => {
                               const selectedOption = Object.entries(
                                 options as Record<string, boolean>
                               ).find(([_, selected]) => selected)?.[0];
+                              // 선택된 옵션이 있으면 항상 표시 ("없음" 포함)
                               return selectedOption ? (
                                 <span
                                   key={facility}
@@ -1171,6 +1230,7 @@ const ReviewConfirmPage: React.FC = () => {
         <CancelModal
           onClose={handleCancelModalClose}
           onConfirm={handleConfirmCancel}
+          currentStep="confirm"
         />
       )}
 

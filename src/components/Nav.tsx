@@ -35,7 +35,7 @@ const Nav = () => {
     return (
         <div className={`${styles.container} ${styles.navbar_div}`}>
             <div className={`${styles.container} ${styles.navbar_tab}`}>
-                <NavLink to="/" className={styles.navbar_nav}>
+                <NavLink to="/" className={styles.navbar_nav} id="nav-home">
                     <img 
                     src={activeNav === 1 ? nav_home_on : nav_home_off} 
                     alt="home"
@@ -44,7 +44,7 @@ const Nav = () => {
                 </NavLink>
             </div>
             <div className={styles.navbar_tab}>
-                <NavLink to="/heart" className={styles.navbar_nav}>
+                <NavLink to="/heart" className={styles.navbar_nav} id="nav-heart">
                     <img 
                     src={activeNav === 2 ? nav_heart_on : nav_heart_off}
                     alt="heart"
@@ -53,7 +53,7 @@ const Nav = () => {
                 </NavLink>
             </div>
             <div className={styles.navbar_tab}>
-                <NavLink to="/map" className={styles.navbar_nav}>
+                <NavLink to="/map" className={styles.navbar_nav} id="nav-map">
                     <img 
                     src={activeNav === 3 ? nav_map_on : nav_map_off} 
                     alt="map"
@@ -62,7 +62,7 @@ const Nav = () => {
                 </NavLink>
             </div>
             <div className={styles.navbar_tab}>
-                <NavLink to="/mypage" className={styles.navbar_nav}>
+                <NavLink to="/mypage" className={styles.navbar_nav} id="nav-mypage">
                     <img 
                     src={activeNav === 4 ? nav_mypage_on : nav_mypage_off} 
                     alt="mypage"

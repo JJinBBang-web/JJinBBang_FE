@@ -11,6 +11,8 @@ import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/AddressResult.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import JBMarker from "../../assets/image/JBMarker.svg";
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
+
 
 interface LocationState {
   address: {
@@ -43,6 +45,8 @@ const AddressResultPage: React.FC = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.9780 }); // 기본값: 서울시청
   const [isMapLoading, setIsMapLoading] = useState(true);
   
+  useReviewStepTracking('3-1.2_address_result');
+
   // 페이지 로드 시 자동 저장된 데이터 복원
   useEffect(() => {
     if (hasAutoSavedData()) {
@@ -149,18 +153,20 @@ const AddressResultPage: React.FC = () => {
             {housingType === "공인중개사"
               ? "정확한 정보가 맞나요?"
               : "정확한 주소가 맞나요?"}
-            <button
-              className={styles.searchButton}
-              onClick={() =>
-                navigate("/review/address", {
-                  state: {
-                    ...locationState,
-                  },
-                })
-              }
-            >
-              주소 재검색
-            </button>
+            {housingType !== "공인중개사" && (
+              <button
+                className={styles.searchButton}
+                onClick={() =>
+                  navigate("/review/address", {
+                    state: {
+                      ...locationState,
+                    },
+                  })
+                }
+              >
+                주소 재검색
+              </button>
+            )}
           </span>
         </div>
         <div className={styles.addressInfo}>
@@ -211,7 +217,20 @@ const AddressResultPage: React.FC = () => {
         </div>
       </div>
       <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={() => navigate(-1)}>
+        <button
+          className={styles.prevButton}
+          onClick={() => {
+            if (housingType === "공인중개사") {
+              navigate("/review/agency", {
+                state: locationState,
+              });
+            } else {
+              navigate("/review/address", {
+                state: locationState,
+              });
+            }
+          }}
+        >
           이전
         </button>
         <button className={styles.nextButton} onClick={handleNext}>

@@ -15,6 +15,7 @@ import FilterModal from "../components/hartListPage/FilterModal";
 import { filterConfigState } from "../recoil/hartListPage/filterConfigState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import PreviewBuildingReview from "../components/detail/PreviewBuildingReview";
+import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 import {
   useInfiniteQuery,
   useQueryClient,
@@ -23,6 +24,7 @@ import {
 import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import MetaTag from "../util/SEOMetaTag";
+
 
 const QUERY_KEYS = {
   heartListData: "heartListData",
@@ -34,6 +36,7 @@ const Heart: React.FC = () => {
 
   const queryClient = useQueryClient();
   const observer = useRef<IntersectionObserver | null>(null);
+
 
   const {
     data,
@@ -163,12 +166,13 @@ const Heart: React.FC = () => {
           <div className={styles.filterContainer}>
             <div
               className={styles.filter}
-              onClick={() =>
+              onClick={() => {
+                trackExplorationStep('2.1_heart_list_filter');
                 setFilterConfig((prev) => ({
                   ...prev,
                   isOpen: !prev.isOpen,
-                }))
-              }
+                }));
+              }}
             >
               <p className={styles.filterText}>필터</p>
               <img className={styles.filterImg} src={downIcon} alt="downIcon" />
@@ -187,10 +191,10 @@ const Heart: React.FC = () => {
                 >
                   <div className={styles.line} />
                   {review.type === "REVIEW" ? (
-                    <PreviewReview review={review} />
+                    <PreviewReview review={review} trackStep="2.2_heart_list_PreviewReview" />
                   ) : null}
                   {review.type === "BUILDING" ? (
-                    <PreviewBuildingReview review={review} />
+                    <PreviewBuildingReview review={review} trackStep="2.3_heart_list_PreviewBuildingReview" />
                   ) : null}
                 </div>
               ))}

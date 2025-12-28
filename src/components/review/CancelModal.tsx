@@ -16,7 +16,11 @@ interface CancelModalProps {
   currentStep?: string; // 현재 페이지의 단계 정보
 }
 
-const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm, currentStep }) => {
+const CancelModal: React.FC<CancelModalProps> = ({
+  onClose,
+  onConfirm,
+  currentStep,
+}) => {
   const [review] = useRecoilState(reviewState);
   const [dormitoryReview] = useRecoilState(dormitoryReviewState);
 
@@ -28,10 +32,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm, currentSt
         dormitoryReviewState: dormitoryReview,
         currentStep: currentStep,
       });
-      console.log('리뷰 내용이 자동 저장되었습니다.');
-    } catch (error) {
-      console.error('자동 저장 실패:', error);
-    }
+    } catch (error) {}
 
     // 저장 후 페이지 이동
     onConfirm();
@@ -59,10 +60,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ onClose, onConfirm, currentSt
             <button className={styles.cancelButton} onClick={onClose}>
               이전
             </button>
-            <button
-              className={styles.cm_confirmButton}
-              onClick={handleCancel}
-            >
+            <button className={styles.cm_confirmButton} onClick={handleCancel}>
               중단
             </button>
           </div>

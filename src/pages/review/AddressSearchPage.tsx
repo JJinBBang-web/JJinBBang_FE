@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
-import { reviewState } from '../../recoil/review/reviewAtoms';
-import styles from '../../styles/review/AddressSearch.module.css';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { reviewState } from "../../recoil/review/reviewAtoms";
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
+import styles from "../../styles/review/AddressSearch.module.css";
 
 declare global {
   interface Window {
@@ -20,10 +21,13 @@ const AddressSearchPage: React.FC = () => {
   const postcodeRef = useRef<HTMLDivElement>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
+  // GA4 Review Funnel Tracking: Step 2
+  useReviewStepTracking('2.2_address_search');
+
   useEffect(() => {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.src =
-      'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     script.onload = () => setIsScriptLoaded(true);
     document.head.appendChild(script);
     return () => {
@@ -39,11 +43,13 @@ const AddressSearchPage: React.FC = () => {
         setTimeout(() => {
           if (window.daum && window.daum.Postcode && postcodeRef.current) {
             new window.daum.Postcode({
-              width: '100%',
-              height: '100%',
+              width: "100%",
+              height: "100%",
               oncomplete: (data) => {
                 // Geocoder를 사용하여 좌표 얻기 (Postcode API에 좌표가 없는 경우를 대비)
-                const getCoordinates = (callback: (lat: number, lng: number) => void) => {
+                const getCoordinates = (
+                  callback: (lat: number, lng: number) => void
+                ) => {
                   // Postcode API에서 좌표를 제공하는 경우
                   if (data.y && data.x) {
                     callback(parseFloat(data.y), parseFloat(data.x));
@@ -52,33 +58,30 @@ const AddressSearchPage: React.FC = () => {
 
                   // 좌표가 없는 경우 Geocoder 사용
                   const geoCoder = new kakao.maps.services.Geocoder();
-                  geoCoder.addressSearch(data.roadAddress, (result: any, status: any) => {
-                    if (status === kakao.maps.services.Status.OK) {
-                      const { x, y } = result[0];
-                      callback(parseFloat(y), parseFloat(x));
-                    } else {
-                      // Geocoder도 실패한 경우 에러 알림
-                      alert('주소의 좌표를 찾을 수 없습니다. 다른 주소를 선택해주세요.');
-                      navigate(-1);
+                  geoCoder.addressSearch(
+                    data.roadAddress,
+                    (result: any, status: any) => {
+                      if (status === kakao.maps.services.Status.OK) {
+                        const { x, y } = result[0];
+                        callback(parseFloat(y), parseFloat(x));
+                      } else {
+                        // Geocoder도 실패한 경우 에러 알림
+                        alert(
+                          "주소의 좌표를 찾을 수 없습니다. 다른 주소를 선택해주세요."
+                        );
+                        navigate(-1);
+                      }
                     }
-                  });
+                  );
                 };
 
                 getCoordinates((lat, lng) => {
-                  console.log('=== 주소 검색 결과 ===');
-                  console.log('도로명 주소:', data.roadAddress);
-                  console.log('지번 주소:', data.jibunAddress);
-                  console.log('건물명:', data.buildingName);
-                  console.log('위도(latitude):', lat);
-                  console.log('경도(longitude):', lng);
-                  console.log('=====================');
-
                   const updatedReview = {
                     ...review,
                     address: data.roadAddress,
-                    addressDetail: data.jibunAddress || '',
-                    detailedAddress: data.buildingName || '',
-                    buildingCode: data.buildingCode || data.bcode || '',
+                    addressDetail: data.jibunAddress || "",
+                    detailedAddress: data.buildingName || "",
+                    buildingCode: data.buildingCode || data.bcode || "",
                     latitude: lat,
                     longitude: lng,
                   };
@@ -106,7 +109,7 @@ const AddressSearchPage: React.FC = () => {
                             roadAddress: data.roadAddress,
                             jibunAddress: data.jibunAddress,
                             buildingName: data.buildingName,
-                            buildingCode: data.buildingCode || data.bcode || '',
+                            buildingCode: data.buildingCode || data.bcode || "",
                           },
                           buildingName: data.buildingName,
                         },
@@ -119,7 +122,7 @@ const AddressSearchPage: React.FC = () => {
                             roadAddress: data.roadAddress,
                             jibunAddress: data.jibunAddress,
                             buildingName: data.buildingName,
-                            buildingCode: data.buildingCode || data.bcode || '',
+                            buildingCode: data.buildingCode || data.bcode || "",
                           },
                           buildingName: data.buildingName,
                         },
@@ -127,28 +130,28 @@ const AddressSearchPage: React.FC = () => {
                     }
                   } else {
                     // 기숙사 타입인 경우 DormitoryInputPage로 이동
-                    if (locationState.housingType === '기숙사') {
-                      navigate('/review/dormitory', {
+                    if (locationState.housingType === "기숙사") {
+                      navigate("/review/dormitory", {
                         state: {
                           ...locationState,
                           address: {
                             roadAddress: data.roadAddress,
                             jibunAddress: data.jibunAddress,
                             buildingName: data.buildingName,
-                            buildingCode: data.buildingCode || data.bcode || '',
+                            buildingCode: data.buildingCode || data.bcode || "",
                           },
                         },
                       });
                     } else {
                       // 일반 주거 타입인 경우 FloorInputPage로 이동
-                      navigate('/review/floor', {
+                      navigate("/review/floor", {
                         state: {
                           ...locationState,
                           address: {
                             roadAddress: data.roadAddress,
                             jibunAddress: data.jibunAddress,
                             buildingName: data.buildingName,
-                            buildingCode: data.buildingCode || data.bcode || '',
+                            buildingCode: data.buildingCode || data.bcode || "",
                           },
                         },
                       });
@@ -173,10 +176,10 @@ const AddressSearchPage: React.FC = () => {
           ref={postcodeRef}
           className={styles.postcodeContainer}
           style={{
-            width: '100%',
-            position: 'relative',
-            maxWidth: '393px',
-            margin: '0 auto',
+            width: "100%",
+            position: "relative",
+            maxWidth: "393px",
+            margin: "0 auto",
           }}
         ></div>
       </div>

@@ -8,6 +8,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { imageUploadAPI } from "../../api/imageUpload";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/PhotoUpload.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import plusIcon from "../../assets/image/iconPlus.svg";
@@ -40,6 +41,9 @@ const PhotoUploadPage: React.FC = () => {
   // Recoil 상태 관리
   const [review, setReview] = useRecoilState(reviewState);
   const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('room-info');
+
+  // GA4 Review Funnel Tracking: Step 4 (Photo)
+  useReviewStepTracking('4_room_info');
 
   // 선택된 사진들의 상태 관리 (blob URLs for preview) - 새로운 리뷰 작성 시에는 빈 배열로 시작
   const [photos, setPhotos] = useState<string[]>([]);
@@ -245,12 +249,16 @@ const PhotoUploadPage: React.FC = () => {
         <button
           className={styles.prevButton}
           onClick={() => {
-            // 이전 페이지로 이동 (가격 입력 페이지들 중 하나를 가정)
-            // location.state의 paymentType에 따라 다른 페이지로 이동
-            const previousPage =
-              locationState?.paymentType === "전세"
-                ? "/review/jeonse"
-                : "/review/wolse";
+            // 공인중개사인 경우 주소 확인 페이지로, 그 외에는 가격 입력 페이지로 이동
+            let previousPage;
+            if (housingType === "공인중개사") {
+              previousPage = "/review/result";
+            } else {
+              previousPage =
+                locationState?.paymentType === "전세"
+                  ? "/review/jeonse"
+                  : "/review/wolse";
+            }
             navigate(previousPage, {
               state: location.state,
               replace: false,

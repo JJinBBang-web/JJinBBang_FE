@@ -9,7 +9,9 @@ export const useMapMarkers = (params?: MarkerRequest) => {
       if (!params) throw new Error('params is undefined');
       return MapAPI.fetchMarkers(params);
     },
-    staleTime: 1000 * 60 * 3,
+    staleTime: 0,
+    gcTime: 1000 * 5,
     enabled: !!params,
+    placeholderData: [],
   });
 };

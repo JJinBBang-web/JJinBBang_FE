@@ -9,7 +9,7 @@ import Modal from '../components/review/Modal';
 import iconClose from "../assets/image/iconClose.svg"
 import PreviewReview from '../components/PreviewReview';
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
-import { Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import { Map as KakaoMap } from 'react-kakao-maps-sdk';
 import JBMarker from "../assets/image/JBMarker.svg";
 import BDMarker from "../assets/image/BDMarker.svg";
 import { MarkerFilter, MarkerRequest, NearByRequest, SearchRequest } from '../types/entity/map/MapInterface';
@@ -27,6 +27,7 @@ import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import Spinner from '../components/util/Spinner';
 import MetaTag from '../util/SEOMetaTag';
+import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -75,6 +76,11 @@ const MapPage = () => {
     const setHideNav = useSetRecoilState(hideNavState);
     const [verificationStatus, setVerificationStatus] = useState(false);
 
+    // 맵페이지
+    const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
+    const kakaoMarkersRef = useRef<kakao.maps.Marker[]>([]);
+    const clusterOverlaysRef = useRef<kakao.maps.CustomOverlay[]>([]);
+
     // 페이지네이션 관련 상태
     const [searchCurrentPage, setSearchCurrentPage] = useState(1);
     const [nearByCurrentPage, setNearByCurrentPage] = useState(1);
@@ -93,6 +99,7 @@ const MapPage = () => {
 
     // 바텀시트 상태 관리 추가
     const [bottomSheet, setBottomSheet] = useRecoilState(isSheetOpenState);
+
 
     // 라우트 변경 시 모달 상태 초기화 (추가 안전장치)
     useEffect(() => {
@@ -202,7 +209,8 @@ const MapPage = () => {
         monthlyRentMax,
         filter.inMaintenanceCost,
         filter.reviewKeyword
-        ]);
+    ]);
+    
 
 
     // 검색 관련
@@ -219,6 +227,7 @@ const MapPage = () => {
     const {
         data: markerData = [],
         isLoading,
+        isFetching: isMarkersFetching,
         isError,
     } = useMapMarkers(
         mapBounds
@@ -228,7 +237,6 @@ const MapPage = () => {
             }
             : undefined
     );
-
     // 마커 하나 선택시
     const {
         data: markerDetailData,
@@ -250,10 +258,17 @@ const MapPage = () => {
 
     const { data: nearByData } = useNearBy(nearByParams);
 
+    const markerDataForRender = useMemo(() => {
+        if (isMarkersFetching) return [];
+        return markerData;
+    }, [isMarkersFetching, markerData]);
+
     // 검색 핸들러
     const handleSearch = () => {
-        if (!searchKeyword) return;
-
+      if (!searchKeyword) return;
+      
+        trackExplorationStep('3.2_map_view_search');
+        
         setSearchCurrentPage(1);
         setHasMoreSearch(true);
         setIsSearchMode(true);
@@ -271,7 +286,8 @@ const MapPage = () => {
         setIsSheetVisible(false);
     };
 
-    const handleOpenModal = () => {
+  const handleOpenModal = () => {
+        trackExplorationStep('3.5_map_view_modal');
         if (!isLoggedIn || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
@@ -302,7 +318,7 @@ const MapPage = () => {
     // 검색 결과 → 마커 배열 변환
     const searchMarkers = useMemo(() => {
         if (!searchData?.items?.length) return [];
-
+        
         return searchData.items
             .map((item) => {
             const id =
@@ -327,7 +343,58 @@ const MapPage = () => {
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
 
-    const markersToRender = modalContent === 'search' ? searchMarkers : markerData;
+    const markersToRender = useMemo(() => {
+        if (modalContent === 'search') return searchMarkers;
+        return markerDataForRender; // 이거 하나로 끝
+    }, [modalContent, searchMarkers, markerDataForRender]);
+
+    const stableMarkersToRender = useMemo(() => {
+        const map = new Map<string, typeof markersToRender[number]>();
+
+        (markersToRender ?? []).forEach((m) => {
+            // id가 유니크면 `${m.id}`로만 해도 됨
+            map.set(`${m.id}`, m);
+        });
+
+        return Array.from(map.values()); 
+    }, [markersToRender]);
+
+    useEffect(() => {
+        const map = mapRef.current;
+        const clusterer = clustererRef.current;
+        if (!map || !clusterer) return;
+
+        // 1) 기존 오버레이 제거
+        clusterOverlaysRef.current.forEach((ov) => ov.setMap(null));
+        clusterOverlaysRef.current = [];
+
+        // 2) 기존 마커 제거
+        clusterer.clear();
+        kakaoMarkersRef.current.forEach((mk) => mk.setMap(null));
+        kakaoMarkersRef.current = [];
+
+        if (!stableMarkersToRender.length) return;
+
+        const markerSrc = viewType === "BUILDING" ? BDMarker : JBMarker;
+        const markerImage = new kakao.maps.MarkerImage(markerSrc, new kakao.maps.Size(40, 40));
+
+        const newMarkers = stableMarkersToRender.map((m) => {
+            const mk = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(m.latitude, m.longitude),
+            image: markerImage,
+            });
+
+          kakao.maps.event.addListener(mk, "click", () => {
+            trackExplorationStep('3.8_map_view_marker');
+            handleMarkerClick(m.id)
+          });
+            return mk;
+        });
+
+        kakaoMarkersRef.current = newMarkers;
+        clusterer.addMarkers(newMarkers);
+    }, [stableMarkersToRender, viewType, selectedSort, modalContent]);
+
 
     // 검색 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
@@ -434,11 +501,11 @@ const MapPage = () => {
         }
 
         // 클릭한 마커 찾기
-        const clickedMarker = markersToRender.find((m) => m.id === markerId);
+        const clickedMarker = markersToRender?.find((m) => m.id === markerId);
         if (!clickedMarker) return;
 
         // 같은 위치의 마커 모두 찾기
-        const sameLocationMarkers = markersToRender.filter(
+        const sameLocationMarkers = markersToRender?.filter(
             (m) => m.latitude === clickedMarker.latitude && m.longitude === clickedMarker.longitude
         );
         
@@ -602,6 +669,15 @@ const MapPage = () => {
 
     };
 
+    const clustererKey = useMemo(() => {
+        const b = mapBounds
+            ? `${mapBounds.neLat},${mapBounds.neLng},${mapBounds.swLat},${mapBounds.swLng}`
+            : 'no-bounds';
+        const f = JSON.stringify(markerFilters);
+        return `${modalContent}-${viewType}-${b}-${f}`;
+    }, [modalContent, viewType, mapBounds, markerFilters]);
+
+
     return (
         <>
         <MetaTag
@@ -614,7 +690,7 @@ const MapPage = () => {
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.map}>
-                <Map
+                <KakaoMap
                 center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
                 level={5}
@@ -622,6 +698,37 @@ const MapPage = () => {
                 zoomable
                 onCreate={(map) => {
                     mapRef.current = map;
+
+                    if (!clustererRef.current) {
+                    const clusterer = new kakao.maps.MarkerClusterer({
+                        map,
+                        averageCenter: true,
+                        minLevel: 3,
+                        styles: [
+                            {
+                            width: "44px",
+                            height: "44px",
+                            borderRadius: "50%",
+                            border: "0.95px solid #ffffff",
+                            background: "rgba(244, 105, 64, 0.8)",
+                            color: "#ffffff",
+                            textAlign: "center",
+                            lineHeight: "44px", // ✅ 여기 중요 (flex 대신 lineHeight가 안정적)
+                            fontFamily: "Spoqa Han Sans Neo",
+                            fontSize: "16px",
+                            fontWeight: "500",
+                            },
+                      ],
+                        
+                        });
+
+                    // 클러스터 클릭 이벤트 추가
+                    kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster: any) {
+                      trackExplorationStep("3.7_map_view_cluster");
+                    });
+
+                    clustererRef.current = clusterer;
+                    }
 
                     if (isInitialized.current) return;
 
@@ -665,7 +772,7 @@ const MapPage = () => {
                         swLng: sw.getLng(),
                     };
 
-
+                    setMapBounds(extractedBounds);
 
                 }}
                 >
@@ -677,49 +784,9 @@ const MapPage = () => {
                             transform: 'translate(-50%, -50%)',
                             }}>
                             <Spinner />
-                        </div>
-                    ) : (
-                    <MarkerClusterer
-                        averageCenter={true}
-                        minLevel={3}
-                        styles={[
-                            {
-                            width: "44px",
-                            height: "44px",
-                            borderRadius:"50%",
-                            border:".95px solid var(--white)",
-                            background: "var(--primary-color80)",
-                            color: "var(--white)",
-                            textAlign: "center",
-                            letterSpacing:"-0.6px",
-                            lineHeight:"150%",
-                            fontFamily: "Spoqa Han Sans Neo",
-                            fontSize: "16px",
-                            fontWeight: "500",
-                            display:"flex",
-                            justifyContent:"center",
-                            alignItems:"center",
-                            },
-                        ]}
-                    >
-                        {markersToRender.map((marker) => {
-
-                            const markerSrc =
-                                viewType === "BUILDING"
-                                    ? BDMarker
-                                    : JBMarker;
-                            return (
-                            <MapMarker
-                                key={`${modalContent}-${marker.id}`}
-                                position={{ lat: marker.latitude, lng: marker.longitude }}
-                                image={{ src: markerSrc, size: { width: 40, height: 40 } }}
-                                onClick={() => handleMarkerClick(marker.id)}
-                            />
-                            )
-                        })}
-                    </MarkerClusterer>
-                    )}
-                </Map>
+                        </div>)
+                    : null }
+                </KakaoMap>
             </div>
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>
@@ -771,11 +838,11 @@ const MapPage = () => {
                             )
                             :
                             (searchAllItems.map((review, index) => (
-                                <div key={`${review.generalBuildingInfo?.id}-${index}`}>
-                                    <div className={styles.line} />
+                                <div className='++!' key={`${review.generalBuildingInfo?.id}-${index}`}>
+                                    <div className={styles.PreviewReview} />
                                     {review.agencyBuildingInfo || viewType === "BUILDING" ? 
-                                        <PreviewBuildingReview review={review} /> : 
-                                        <PreviewReview review={review} />
+                                        <PreviewBuildingReview review={review} trackStep="3.10_map_PreviewBuildingReview" /> : 
+                                        <PreviewReview review={review} trackStep="3.9_map_PreviewReview" />
                                     }
                                 </div>
                                 ))
@@ -838,8 +905,8 @@ const MapPage = () => {
                                 <div key={`${review.agencyBuildingInfo?.id ?? review.dormitoryBuildingInfo?.id ?? review.generalBuildingInfo?.id}-${index}`}>
                                     <div className={styles.line} />
                                     {review.agencyBuildingInfo || viewType === "BUILDING" ? 
-                                        <PreviewBuildingReview review={review} /> : 
-                                        <PreviewReview review={review} />
+                                        <PreviewBuildingReview review={review} trackStep="3.10_map_PreviewBuildingReview" /> : 
+                                        <PreviewReview review={review} trackStep="3.9_map_PreviewReview" />
                                     }
                                 </div>
                                 ))
@@ -894,9 +961,9 @@ const MapPage = () => {
                             }>
                             {markerDetailData.items.map((item, idx) => 
                                 viewType === "REVIEW" ? (
-                                <PreviewReview key={idx} review={item} />
+                                <PreviewReview key={idx} review={item} trackStep="3.9_map_PreviewReview" />
                                 ) : (
-                                <PreviewBuildingReview review={item} />
+                                <PreviewBuildingReview review={item} trackStep="3.10_map_PreviewBuildingReview" />
                                 )
                             )}
                         </div>

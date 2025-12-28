@@ -17,12 +17,14 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";
 import noBuildingImg from "../../assets/image/noBuildingImg.svg";
+import { trackExplorationStep } from "../../hooks/useExplorationTracking";
 
 interface Props {
   review: PreviewBuildingReviewInfo;
+  trackStep: string;
 }
 
-const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
+const PreviewBuildingReview: React.FC<Props> = ({ review, trackStep }) => {
   const navigate = useNavigate();
 
   let activeReviewInfo:
@@ -108,9 +110,16 @@ const PreviewBuildingReview: React.FC<Props> = ({ review }) => {
   return (
     <div
       className={styles.content}
-      onClick={handleNavigation}
+      onClick={() => {trackExplorationStep(trackStep); handleNavigation()}}
     >
-      <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
+      <div className={styles.imgWrap}>
+          <img src={actualImageUrl} alt={name} className={styles.buildingImg} onError={handleError} />
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
+      </div>
       <div className={styles.infoAndLike}>
         <div className={styles.buildingInfo}>{name}</div>
         <div className={styles.likeContainer}>
