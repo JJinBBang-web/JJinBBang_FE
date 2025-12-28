@@ -2,13 +2,14 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 export const api = axios.create({
-  baseURL: "",
-  // baseURL: process.env.REACT_APP_API_URL,
+  // baseURL: "",
+  baseURL: process.env.REACT_APP_API_URL,
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
     Accept: 'application/json',
   },
 });
+console.log("API URL:", process.env.REACT_APP_API_URL);
 
 // AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
 declare module 'axios' {
@@ -64,23 +65,23 @@ const processQueue = (error: any, token: string | null = null) => {
 // 응답 인터셉터 (401 처리 및 토큰 갱신)
 api.interceptors.response.use(
   (res) => {
-    // console.log(
-    //   "✅ Axios Response:",
-    //   res.data,
-    //   "\n✅ Axios Response URL:",
-    //   res.config.url
-    // );
+    console.log(
+      "✅ Axios Response:",
+      res.data,
+      "\n✅ Axios Response URL:",
+      res.config.url
+    );
 
 
     return res;
   },
   async (error: AxiosError) => {
-    // console.error(
-    //   "❌ Axios Error:",
-    //   error.response?.data,
-    //   "\n❌ Axios Error URL:",
-    //   error.response?.config.url
-    // );
+    console.error(
+      "❌ Axios Error:",
+      error.response?.data,
+      "\n❌ Axios Error URL:",
+      error.response?.config.url
+    );
     const originalRequest = error.config as AxiosRequestConfig;
 
     if (

@@ -10,7 +10,8 @@ import SignupCompleteModal from "../components/auth/SignupCompleteModal";
 
 const url = process.env.REACT_APP_API_URL;
 const SITE_URL = process.env.REACT_APP_SITE_URL!;
-const loginUrl = `${SITE_URL}/login/kakao`;
+const loginUrl = `${window.location.origin}/login/kakao`;
+
 export const getSignupToken = () => sessionStorage.getItem("signupToken");
 export const getAccessToken = () => sessionStorage.getItem("accessToken");
 export const getRefreshToken = () => sessionStorage.getItem("refreshToken");
@@ -42,7 +43,7 @@ export const kakaoLogin = async (authCode: string) => {
   };
 
   // const apiUrl = process.env.REACT_APP_API_URL || 'http://3.35.29.235:8080';
-  const response = await fetch(`/api/v1/auth`, {
+  const response = await fetch(url+`/api/v1/auth`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -53,6 +54,7 @@ export const kakaoLogin = async (authCode: string) => {
       redirectUri: loginUrl,
     }),
   });
+  console.log("Kakao Login Response:", response);
 
   // Check if response is HTML (error page)
   const contentType = response.headers.get("content-type");

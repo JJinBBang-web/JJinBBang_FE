@@ -2,7 +2,6 @@
 const KAKAO_CLIENT_ID = process.env.REACT_APP_KAKAO_CLIENT_ID || "";
 
 const REDIRECT_URI =
-  process.env.REACT_APP_KAKAO_REDIRECT_URI ||
   `${window.location.origin}/login/kakao`;
 
 if (!KAKAO_CLIENT_ID || !REDIRECT_URI) {
