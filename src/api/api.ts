@@ -2,8 +2,8 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 export const api = axios.create({
-  baseURL: "",
-  // baseURL: process.env.REACT_APP_API_URL,
+  // baseURL: "",
+  baseURL: process.env.REACT_APP_API_URL,
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
     Accept: 'application/json',
@@ -16,6 +16,7 @@ declare module 'axios' {
     useAuth?: boolean;
     isFile?: boolean;
     _retry?: boolean;
+    optionalAuth?: boolean;
   }
 }
 
@@ -28,6 +29,18 @@ api.interceptors.request.use((config) => {
       config.headers.set("Authorization", `Bearer ${accessToken}`);
     } else {
       (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+    }
+  }
+
+  if (config.optionalAuth) {
+    const accessToken = sessionStorage.getItem('accessToken');
+
+    if (accessToken) {
+      if (typeof config.headers?.set === "function") {
+        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      } else {
+        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+      }
     }
   }
 
@@ -85,7 +98,7 @@ api.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
-      originalRequest.useAuth &&
+      (originalRequest.useAuth || originalRequest.optionalAuth) &&
       !originalRequest._retry
     ) {
       const refreshToken = sessionStorage.getItem('refreshToken');

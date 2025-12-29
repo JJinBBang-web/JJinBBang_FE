@@ -47,7 +47,7 @@ export class ContentAPI {
   static async getReportDetail(reportId: number): Promise<ReportDetail> {
     try {
       const response = await api.get(`/api/v1/report/${reportId}`, {
-        useAuth: false,
+        optionalAuth: true,
       });
 
       if (!response.data || response.data.code !== 200) {
