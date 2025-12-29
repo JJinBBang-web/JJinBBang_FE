@@ -16,8 +16,6 @@ import {
   useRemoveReportLike,
 } from "../../hooks/useReportLike";
 import { formatDate } from "../../util/formatDate";
-import hartIconOff from "../../assets/image/content/WhiteHeart.svg";
-import hartIconOn from "../../assets/image/content/WhiteHeartOn.svg";
 import '../../styles/global.css'
 
 const ContentDetail: React.FC = () => {
@@ -204,10 +202,10 @@ const ContentDetail: React.FC = () => {
                         </ReactMarkdown>
                         </div>
 
-                    <div className={styles.heartBox} onClick={handleToggleLike}>
+                    {/* <div className={styles.heartBox} onClick={handleToggleLike}>
                         <img src={liked ? hartIconOn : hartIconOff} />
                         <p>도움이 되었어요</p>
-                    </div>
+                    </div> */}
                 </div>
                 <ContentFooter likes={likeCount} shares={data.shareCount} onClick={handleBack} onToggleLike={handleToggleLike} isLiked={liked}/>
             </div>
