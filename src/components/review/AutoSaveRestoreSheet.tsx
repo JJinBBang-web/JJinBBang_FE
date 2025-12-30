@@ -19,8 +19,8 @@ const AutoSaveRestoreSheet: React.FC<AutoSaveRestoreSheetProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.overlay}>
+      <div className={styles.sheet}>
         <div className={styles.sheet_header}>
           <div className={styles.header_divider}></div>
         </div>

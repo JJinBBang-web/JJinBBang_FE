@@ -5,6 +5,7 @@ import { reviewState } from "../../recoil/review/reviewAtoms";
 import { AgencyAPI } from "../../api/agency/AgencyAPI";
 import { AgencyInfo } from "../../types/entity/agency/AgencyInterface";
 import CancelModal from "../../components/review/CancelModal";
+import AgencyPagination from "../../components/review/AgencyPagination";
 import { useCancelModal } from "../../util/useCancelModal";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/FloorInput.module.css";
@@ -35,7 +36,7 @@ const AgencyInputPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [selectedAgency, setSelectedAgency] = useState<AgencyInfo | null>(null);
 
-  const ITEMS_PER_PAGE = 4;
+  const ITEMS_PER_PAGE = 5;
 
   const {
     showCancelModal,
@@ -94,16 +95,36 @@ const AgencyInputPage: React.FC = () => {
     setHasSearched(true);
 
     try {
+      // 첫 번째 요청
       const response = await AgencyAPI.searchAgency({
         agencyName: trimmedName,
         num: 10,
-        page: 1,
       });
 
-      if (response.code === 200 && response.data.items.length > 0) {
-        setSearchResults(response.data.items);
+      let allResults = [...(response.items || [])];
+      let cursor = response.nextCursor;
+      let hasMore = response.hasMore;
+
+      // hasMore가 true인 동안 추가 데이터 가져오기
+      while (hasMore && cursor) {
+        const nextResponse = await AgencyAPI.searchAgency({
+          agencyName: trimmedName,
+          num: 10,
+          cursor: cursor, // 커서를 사용하여 다음 페이지 요청
+        });
+
+        allResults = [...allResults, ...(nextResponse.items || [])];
+        cursor = nextResponse.nextCursor;
+        hasMore = nextResponse.hasMore;
+
+        // 무한 루프 방지 (최대 100개)
+        if (allResults.length >= 100) break;
+      }
+
+      if (allResults.length > 0) {
+        setSearchResults(allResults);
         // 전체 페이지 수 계산
-        setTotalPages(Math.ceil(response.data.items.length / ITEMS_PER_PAGE));
+        setTotalPages(Math.ceil(allResults.length / ITEMS_PER_PAGE));
       } else {
         setSearchResults([]);
         setTotalPages(0);
@@ -126,11 +147,47 @@ const AgencyInputPage: React.FC = () => {
     return searchResults.slice(startIndex, endIndex);
   };
 
-  // 페이지 번호 배열 생성
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // 페이지 번호 배열 생성 (첨부된 이미지와 같은 형태)
   const getPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
+    const pages: (number | string)[] = [];
+    const maxVisiblePages = 5; // 한 번에 보여줄 최대 페이지 수
+
+    if (totalPages <= maxVisiblePages + 2) {
+      // 총 페이지가 적으면 모두 표시
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // 현재 페이지를 중심으로 표시
+      if (currentPage <= 3) {
+        // 시작 부분
+        for (let i = 1; i <= 5; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        // 끝 부분
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        // 중간 부분
+        pages.push(1);
+        pages.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      }
     }
     return pages;
   };
@@ -170,7 +227,7 @@ const AgencyInputPage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.ADDRESS_RESULT
+        currentStep: REVIEW_STEPS.ADDRESS_RESULT,
       });
 
       navigate("/review/result", {
@@ -208,8 +265,19 @@ const AgencyInputPage: React.FC = () => {
   const isSearchEnabled = buildingName.trim() !== "";
 
   return (
-    <div className="content">
-      <div className={styles.container}>
+    <div
+      className="content"
+      style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+    >
+      <div
+        className={styles.container}
+        style={{
+          flex: 1,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <header className={styles.header}>
           <div className={styles.progressBar}>
             <div className={styles.progressFill}></div>
@@ -224,154 +292,150 @@ const AgencyInputPage: React.FC = () => {
         </header>
         <div className={styles.inputSection}>
           <label className={styles.label}>상호명</label>
-          <div style={{ position: "relative" }}>
-            <input
-              type="text"
-              className={styles.buildingInput}
-              value={buildingName}
-              onChange={(e) => setBuildingName(e.target.value)}
-              placeholder="예) 찐빵중개사"
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && isSearchEnabled) {
-                  handleSearch();
-                }
+          <input
+            type="text"
+            className={styles.buildingInput}
+            value={buildingName}
+            onChange={(e) => setBuildingName(e.target.value)}
+            placeholder="예) 찐빵중개사"
+            onKeyPress={(e) => {
+              if (e.key === "Enter" && isSearchEnabled) {
+                handleSearch();
+              }
+            }}
+          />
+        </div>
+
+        {/* 검색 결과 영역 - 스크롤 가능 */}
+        <div style={{ flex: 1, overflowY: "auto", paddingBottom: "0.5rem" }}>
+          {/* 검색 중 표시 */}
+          {isSearching && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "15rem",
+                color: "var(--color-gray60)",
+                fontSize: "16px",
               }}
-            />
+            >
+              검색 중이에요. 잠시만 기다려주세요!
+            </div>
+          )}
 
-            {/* 드롭다운 검색 결과 표시 */}
-            {hasSearched && searchResults.length > 0 && (
-              <div>
-                {getCurrentPageData().map((agency, index) => (
-                  <div
-                    key={`${agency.registerNumber}-${index}`}
-                    onClick={() => handleSelectAgency(agency)}
-                    style={{
-                      padding: "16px",
-                      borderBottom:
-                        index < getCurrentPageData().length - 1
-                          ? "1px solid #f0f0f0"
-                          : "none",
-                      cursor: "pointer",
-                      transition: "background-color 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#f5f5f5";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "white";
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontWeight: "600",
-                        marginBottom: "6px",
-                        fontSize: "16px",
-                        color: "#333",
-                      }}
-                    >
-                      {agency.companyName}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        color: "#888",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {agency.roadAddress}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* 검색 결과 없음 안내 */}
-            {hasSearched &&
-              !isSearching &&
-              searchResults.length === 0 &&
-              buildingName.trim().length >= 2 && (
+          {/* 드롭다운 검색 결과 표시 */}
+          {!isSearching && hasSearched && searchResults.length > 0 && (
+            <div>
+              {getCurrentPageData().map((agency, index) => (
                 <div
+                  key={`${agency.registerNumber}-${index}`}
+                  onClick={() => handleSelectAgency(agency)}
                   style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    marginTop: "4px",
                     padding: "16px",
-                    backgroundColor: "white",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "8px",
-                    textAlign: "center",
-                    color: "#666",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    zIndex: 1000,
+                    borderBottom:
+                      index < getCurrentPageData().length - 1
+                        ? "1px solid #f0f0f0"
+                        : "none",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f5f5f5";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "white";
                   }}
                 >
-                  <div style={{ marginBottom: "8px" }}>
-                    검색 결과가 없습니다.
+                  <div
+                    style={{
+                      fontWeight: "600",
+                      marginBottom: "6px",
+                      fontSize: "16px",
+                      color: "#333",
+                    }}
+                  >
+                    {agency.companyName}
                   </div>
-                  <div style={{ fontSize: "13px", color: "#999" }}>
-                    '다음' 버튼을 눌러 진행하세요.
+                  <div
+                    style={{
+                      fontSize: "16px",
+                      color: "#888",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {agency.roadAddress}
                   </div>
                 </div>
-              )}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* 검색 결과 없음 안내 */}
+          {hasSearched &&
+            !isSearching &&
+            searchResults.length === 0 &&
+            buildingName.trim().length >= 2 && (
+              <div
+                style={{
+                  padding: "16px",
+                  backgroundColor: "white",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "8px",
+                  textAlign: "center",
+                  color: "#666",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  margin: "1rem",
+                }}
+              >
+                <div style={{ marginBottom: "8px" }}>검색 결과가 없습니다.</div>
+                <div style={{ fontSize: "13px", color: "#999" }}>
+                  '다음' 버튼을 눌러 진행하세요.
+                </div>
+              </div>
+            )}
         </div>
       </div>
 
-      {/* 페이지네이션 */}
-      {hasSearched && searchResults.length > 0 && totalPages > 1 && (
+      {/* 하단 영역: 페이지네이션 + footer */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          maxWidth: "393px",
+          margin: "0 auto",
+          backgroundColor: "var(--white)",
+          zIndex: 100,
+        }}
+      >
+        {/* 페이지네이션 - footer 위에 위치 */}
+        {hasSearched && searchResults.length > 0 && totalPages > 1 && (
+          <AgencyPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
+
+        {/* footer - 페이지네이션 아래에 위치 */}
         <div
           style={{
+            padding: "0.5rem 1rem 2.75rem",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "8px",
-            padding: "16px 0",
-            marginTop: "8px",
+            gap: "0.38rem",
           }}
         >
-          {getPageNumbers().map((pageNum) => (
-            <button
-              key={pageNum}
-              onClick={() => setCurrentPage(pageNum)}
-              style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                border:
-                  currentPage === pageNum
-                    ? "2px solid #4CAF50"
-                    : "1px solid #e0e0e0",
-                backgroundColor: currentPage === pageNum ? "#4CAF50" : "white",
-                color: currentPage === pageNum ? "white" : "#333",
-                fontSize: "14px",
-                fontWeight: currentPage === pageNum ? "600" : "400",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                if (currentPage !== pageNum) {
-                  e.currentTarget.style.backgroundColor = "#f5f5f5";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (currentPage !== pageNum) {
-                  e.currentTarget.style.backgroundColor = "white";
-                }
-              }}
-            >
-              {pageNum}
-            </button>
-          ))}
+          <button
+            className={styles.prevButton}
+            onClick={handleBack}
+            style={{ flex: 1 }}
+          >
+            이전
+          </button>
         </div>
-      )}
-
-      <footer className={styles.footer}>
-        <button className={styles.prevButton} onClick={handleBack}>
-          이전
-        </button>
-      </footer>
+      </div>
       {showCancelModal && (
         <CancelModal
           onClose={handleCancelModalClose}
