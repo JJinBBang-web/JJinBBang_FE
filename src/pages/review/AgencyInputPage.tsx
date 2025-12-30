@@ -46,8 +46,17 @@ const AgencyInputPage: React.FC = () => {
   } = useCancelModal();
 
   useEffect(() => {
+    // result 페이지에서 돌아온 경우 입력 필드 초기화
+    if (from === "result") {
+      setBuildingName("");
+      setSearchResults([]);
+      setHasSearched(false);
+      setCurrentPage(1);
+      setTotalPages(0);
+      setSelectedAgency(null);
+    }
     // 수정 모드일 경우 기존 상태 복원
-    if (from === "confirm" && review.detailedAddress) {
+    else if (from === "confirm" && review.detailedAddress) {
       setBuildingName(review.detailedAddress);
       // 기존 리뷰 정보로부터 selectedAgency 복원
       const restoredAgency: AgencyInfo = {
