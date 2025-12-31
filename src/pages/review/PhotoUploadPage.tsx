@@ -159,7 +159,8 @@ const PhotoUploadPage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: review,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.FILTER_AD
+        currentStep: REVIEW_STEPS.FILTER_AD,
+        uuid: reviewAutoSave.load()?.uuid
       });
 
       // 일반적인 플로우에서는 장점/단점 페이지로 이동

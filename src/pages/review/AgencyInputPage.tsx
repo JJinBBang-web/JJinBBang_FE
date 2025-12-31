@@ -173,7 +173,8 @@ const AgencyInputPage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.ADDRESS_RESULT
+        currentStep: REVIEW_STEPS.ADDRESS_RESULT,
+        uuid: reviewAutoSave.load()?.uuid
       });
 
       navigate("/review/result", {

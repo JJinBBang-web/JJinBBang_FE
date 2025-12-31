@@ -113,7 +113,8 @@ const AddressResultPage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.ROOM_INFO
+        currentStep: REVIEW_STEPS.ROOM_INFO,
+        uuid: reviewAutoSave.load()?.uuid,
       });
       navigate("/review/room-info", {
         state: {
@@ -124,7 +125,8 @@ const AddressResultPage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.PRICE
+        currentStep: REVIEW_STEPS.PRICE,
+        uuid: reviewAutoSave.load()?.uuid,
       });
       navigate("/review/price", {
         state: {
