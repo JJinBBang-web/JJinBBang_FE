@@ -191,7 +191,8 @@ const ReviewDisadvantagePage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.CONTENT
+        currentStep: REVIEW_STEPS.CONTENT,
+        uuid: reviewAutoSave.load()?.uuid
       });
 
       navigate("/review/content", {

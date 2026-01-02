@@ -23,6 +23,7 @@ declare module 'axios' {
     useAuth?: boolean;
     isFile?: boolean;
     _retry?: boolean;
+    optionalAuth?: boolean;
   }
 }
 
@@ -50,10 +51,26 @@ api.interceptors.request.use((config) => {
   if (config.useAuth) {
     const accessToken = tokenStore.getAccessToken();
 
-    if (typeof config.headers?.set === "function") {
-      config.headers.set("Authorization", `Bearer ${accessToken}`);
-    } else {
-      (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+    // 토큰이 있을 때만 헤더에 추가
+    if (accessToken) {
+      if (typeof config.headers?.set === "function") {
+        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      } else {
+        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+      }
+    }
+  }
+
+  if (config.optionalAuth) {
+    // optionalAuth는 토큰이 있으면 사용하고 없으면 사용하지 않음 (선택적 인증)
+    const accessToken = tokenStore.getAccessToken();
+
+    if (accessToken) {
+      if (typeof config.headers?.set === "function") {
+        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      } else {
+        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+      }
     }
   }
 
@@ -148,7 +165,7 @@ api.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
-      originalRequest.useAuth &&
+      (originalRequest.useAuth || originalRequest.optionalAuth) &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;

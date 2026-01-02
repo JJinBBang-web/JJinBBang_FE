@@ -107,7 +107,8 @@ const PriceInputPage: React.FC = () => {
     reviewAutoSave.save({
       reviewState: updatedReview,
       dormitoryReviewState: null,
-      currentStep: REVIEW_STEPS.ROOM_INFO
+      currentStep: REVIEW_STEPS.ROOM_INFO,
+      uuid: reviewAutoSave.load()?.uuid
     });
 
     navigate('/review/room-info', {
