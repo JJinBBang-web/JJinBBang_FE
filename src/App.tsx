@@ -61,6 +61,7 @@ import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitie
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
+import RecoilNexus from "./util/RecoilNexus";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -117,6 +118,7 @@ const AppContent: React.FC = () => {
 
   return (
     <>
+      <RecoilNexus />
       {showHeaderAndNav}
       <Routes>
         <Route path="/login/result" element={<LoginResultPage />} />

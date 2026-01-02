@@ -31,6 +31,7 @@ const CancelModal: React.FC<CancelModalProps> = ({
         reviewState: review,
         dormitoryReviewState: dormitoryReview,
         currentStep: currentStep,
+        uuid: reviewAutoSave.load()?.uuid
       });
     } catch (error) {}
 

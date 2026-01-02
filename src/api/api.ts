@@ -22,6 +22,7 @@ declare module 'axios' {
     useAuth?: boolean;
     isFile?: boolean;
     _retry?: boolean;
+    optionalAuth?: boolean;
   }
 }
 
@@ -53,6 +54,18 @@ api.interceptors.request.use((config) => {
       config.headers.set("Authorization", `Bearer ${accessToken}`);
     } else {
       (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+    }
+  }
+
+  if (config.optionalAuth) {
+    const accessToken = sessionStorage.getItem('accessToken');
+
+    if (accessToken) {
+      if (typeof config.headers?.set === "function") {
+        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      } else {
+        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+      }
     }
   }
 
@@ -147,7 +160,7 @@ api.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
-      originalRequest.useAuth &&
+      (originalRequest.useAuth || originalRequest.optionalAuth) &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
