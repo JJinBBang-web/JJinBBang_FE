@@ -50,15 +50,19 @@ api.interceptors.request.use((config) => {
   if (config.useAuth) {
     const accessToken = tokenStore.getAccessToken();
 
-    if (typeof config.headers?.set === "function") {
-      config.headers.set("Authorization", `Bearer ${accessToken}`);
-    } else {
-      (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+    // 토큰이 있을 때만 헤더에 추가
+    if (accessToken) {
+      if (typeof config.headers?.set === "function") {
+        config.headers.set("Authorization", `Bearer ${accessToken}`);
+      } else {
+        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
+      }
     }
   }
 
   if (config.optionalAuth) {
-    const accessToken = sessionStorage.getItem('accessToken');
+    // optionalAuth는 토큰이 있으면 사용하고 없으면 사용하지 않음 (선택적 인증)
+    const accessToken = tokenStore.getAccessToken();
 
     if (accessToken) {
       if (typeof config.headers?.set === "function") {

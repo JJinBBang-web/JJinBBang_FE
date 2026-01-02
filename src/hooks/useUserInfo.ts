@@ -7,6 +7,8 @@ import { isLoginState } from '../recoil/auth/isLoginState';
 import { authState, AuthState } from '../recoil/auth/atoms';
 import { tokenStore } from '../api/api';
 import { getAPI } from '../api/baseAPI';
+import { setRecoil } from '../util/RecoilNexus';
+import { explorationFrequencyState } from '../recoil/util/explorationFrequencyState';
 
 /**
  * 사용자 정보 조회 및 상태 관리 훅
@@ -26,13 +28,16 @@ export const useUserInfo = (isInitializing: boolean) => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
+      // 토큰이 없으면 에러 발생 (enabled 옵션으로 이미 체크되지만, 추가 안전장치)
       const currentAccessToken = tokenStore.getAccessToken();
-      if (!currentAccessToken) throw new Error();
+      if (!currentAccessToken) {
+        throw new Error('Access token is not available');
+      }
       const response = await getAPI(`/api/v1/user`, true);
       return response.data;
     },
     refetchOnWindowFocus: false,
-    enabled: !isInitializing && isLogin, // 초기화 완료 후 로그인 상태가 true일 때만 쿼리 실행
+    enabled: !isInitializing && isLogin && !!tokenStore.getAccessToken(), // 초기화 완료 후 로그인 상태가 true이고 토큰이 있을 때만 쿼리 실행
   });
 
   // 사용자 정보 조회 성공 시 sessionStorage 및 authState 업데이트
@@ -76,6 +81,8 @@ export const useUserInfo = (isInitializing: boolean) => {
       sessionStorage.removeItem('email');
       sessionStorage.removeItem('verificationStatus');
       sessionStorage.removeItem('university');
+      // 탐색 빈도 상태 초기화
+      setRecoil(explorationFrequencyState, {});
     }
   }, [isErrorUser, isLogin, setIsLoggedIn, setAuth]);
 
