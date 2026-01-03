@@ -28,4 +28,5 @@ export interface AgencySearchData {
 }
 
 // 공인중개사 조회 API 응답
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AgencySearchResponse extends AgencySearchData {}
