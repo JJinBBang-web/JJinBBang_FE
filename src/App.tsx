@@ -65,6 +65,8 @@ import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
 import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
 import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
+import ContentLoginPage from "./pages/content/ContentLogin";
+import ContentManagePage from "./pages/content/ContentManage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -227,6 +229,8 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
       <Route path="/content" element={<ContentPage/>}/>
       <Route path="/content/:reportId" element={<ContentDetail/>} />
+      <Route path="/admin/content/login" element={<ContentLoginPage/>} />
+      <Route path="/admin/content" element={<ContentManagePage/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

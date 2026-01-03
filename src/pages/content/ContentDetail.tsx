@@ -4,12 +4,13 @@ import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import styles from "./ContentDetail.module.css"
 import Header from "../../components/Header";
-import sample from "../../assets/image/content/sample.png"
+import iconClose from "../../assets/image/iconClose.svg"
 import ContentFooter from "../../components/content/ContentFooter";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useReportDetail } from "../../hooks/useReportDetail";
 import Spinner from '../../components/util/Spinner';
+import verifiedCharacter from '../../assets/image/verifiedSheetCharacter.svg';
 import { CATEGORY_TO_KOR } from "../../util/mapping";
 import {
   useAddReportLike,
@@ -17,9 +18,17 @@ import {
 } from "../../hooks/useReportLike";
 import { formatDate } from "../../util/formatDate";
 import '../../styles/global.css'
+import Modal from "../../components/review/Modal";
 
 const ContentDetail: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSheetVisible, setIsSheetVisible] = useState(true);
+    const [modalContent, setModalContent] = useState<React.ReactNode | null>(null);
+    const [hideNav, setHideNav] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [verificationStatus, setVerificationStatus] = useState(false);
+    
     const navigate = useNavigate();
 
     const { reportId } = useParams();
@@ -45,6 +54,61 @@ const ContentDetail: React.FC = () => {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // 토큰 여부 확인
+    useEffect(() => {
+        const token = sessionStorage.getItem("accessToken");
+        setIsLoggedIn(!!token);
+    }, []);
+
+    // 미인증 여부 확인
+    useEffect(() => {
+        const verification = sessionStorage.getItem("verificationStatus");
+        setVerificationStatus(verification === 'unverified');
+    }, []);
+
+    const openAuthModal = () => {
+        setIsModalOpen(true);
+        setIsSheetVisible(false);
+        setHideNav(true);
+
+        setModalContent(
+            <div className={styles.wrap}>
+            <div className={styles.sheet_header}>
+                <div className={styles.header_divider}></div>
+            </div>
+
+            <div className={styles.sheet_title_wrap}>
+                <div className={styles.sheet_info_wrap}>
+                <p className={styles.sheet_title}></p>
+                </div>
+                <img src={iconClose} width="24px" onClick={handleCloseModal} />
+            </div>
+
+            <div className={styles.sheetWrap}>
+                <img src={verifiedCharacter} />
+                <p className={styles.sheetText}>
+                학교 인증 후<br />
+                찐빵에서 제공하는 정보들을<br />
+                마음에 담을 수 있어요!
+                </p>
+            </div>
+
+            <div className={styles.btnWrap}>
+                <button className={styles.confirmBtn} onClick={handleToAuth}>
+                {!isLoggedIn ? "로그인하러 가기" : "학교 인증하기"}
+                </button>
+            </div>
+            </div>
+        );
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setIsSheetVisible(true);
+        setModalContent(null);
+        setHideNav(false);
+    };
 
     useEffect(() => {
         if (data) {
@@ -75,6 +139,24 @@ const ContentDetail: React.FC = () => {
             },
             });
         }
+    };
+
+    const handleToAuth = () => {
+        handleCloseModal();
+        if (!isLoggedIn) navigate("/mypage");
+        else navigate("/auth/student/verify");
+    };
+
+
+    const handleToggleLikeGuarded = () => {
+        // ✅ 로그인 안했거나, 미인증이면 모달
+        if (!isLoggedIn || verificationStatus) {
+            openAuthModal();
+            return;
+        }
+
+        // ✅ 통과하면 좋아요
+        handleToggleLike();
     };
 
     const copyToClipboard = async (text: string) => {
@@ -161,6 +243,11 @@ const ContentDetail: React.FC = () => {
         <div className={styles.content} style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.container}>
                 <Header onClick={handleBack}/>
+                {isModalOpen && (
+                    <Modal onClose={handleCloseModal}>
+                        {modalContent}
+                    </Modal>
+                )}
                 <div className={styles.section}>
                     <div className={styles.catAndShare}>
                         <div className={styles.category}>{category}</div>
@@ -203,13 +290,8 @@ const ContentDetail: React.FC = () => {
                             {data.content}
                         </ReactMarkdown>
                         </div>
-
-                    {/* <div className={styles.heartBox} onClick={handleToggleLike}>
-                        <img src={liked ? hartIconOn : hartIconOff} />
-                        <p>도움이 되었어요</p>
-                    </div> */}
                 </div>
-                <ContentFooter likes={likeCount} shares={data.shareCount} onClick={handleBack} onToggleLike={handleToggleLike} isLiked={liked}/>
+                <ContentFooter likes={likeCount} shares={data.shareCount} onClick={handleBack} onToggleLike={handleToggleLikeGuarded} isLiked={liked}/>
             </div>
         </div>
     );
