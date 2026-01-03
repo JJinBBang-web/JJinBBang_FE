@@ -346,14 +346,14 @@ const MapPage = () => {
     }, [searchData]);
 
     // 건물 타입에 따른 마커 필터링
-    const filteredMarkerData = useMemo(() => {
-        if (!markerData || markerData.length === 0) return [];
+    const filteredMarkerDataForRender = useMemo(() => {
+        if (!markerDataForRender || markerDataForRender.length === 0) return [];
 
         // buildType이 빈 문자열이거나 "ALL"이면 모든 마커 표시
-        if (!buildType || buildType === "ALL") return markerData;
+        if (!buildType || buildType === "ALL") return markerDataForRender;
 
         // buildType에 따라 필터링
-        return markerData.filter((marker) => {
+        return markerDataForRender.filter((marker) => {
             const markerType = (marker as any).type;
 
             if (buildType === "공인중개사") {
@@ -366,9 +366,9 @@ const MapPage = () => {
 
             return true;
         });
-    }, [markerData, buildType]);
+    }, [markerDataForRender, buildType]);
 
-    const markersToRender = modalContent === 'search' ? searchMarkers : filteredMarkerData;
+    const markersToRender = modalContent === 'search' ? searchMarkers : filteredMarkerDataForRender;
 
     // 검색 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
