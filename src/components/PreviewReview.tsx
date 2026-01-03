@@ -15,12 +15,14 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { getAPI, putAPI, deleteAPI, postAPI } from "../api/baseAPI";
 import { useNavigate } from "react-router-dom";
 import noImg from "../assets/image/noImg.svg";
+import { trackExplorationStep } from "../hooks/useExplorationTracking";
 
 interface Props {
   review: ReviewPreview;
+  trackStep : string;
 }
 
-const PreviewReview: React.FC<Props> = ({ review }) => {
+const PreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
@@ -59,7 +61,6 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
       setIsLiked(!isLiked);
       setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
     },
-    onError: (error) => {},
   });
   const rawRating = activeReviewInfo?.rating;
 
@@ -139,17 +140,27 @@ const PreviewReview: React.FC<Props> = ({ review }) => {
   return (
     <div
       className={styles.previewReviewContainer}
-      onClick={() => navigate(`/building/review/${activeReviewInfo?.id}`, {
-        state: { from: 'mypage' }
-      })}
+      onClick={() => {
+        trackExplorationStep(trackStep);
+        navigate(`/building/review/${activeReviewInfo?.id}`, {
+          state: { from: 'mypage' }
+        })
+      }}
     >
       <div className={styles.buildingContainer}>
-        <img
-          className={styles.buildingImg}
-          src={actualImageUrl}
-          alt={activeReviewInfo?.name}
-          onError={handleError}
-        />
+        <div className={styles.imgWrap}>
+          <img
+            className={styles.buildingImg}
+            src={actualImageUrl}
+            alt={activeReviewInfo?.name}
+            onError={handleError}
+          />
+          {
+            review?.imageCount && review.imageCount > 0 ? (
+              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+            ) : null
+          }
+        </div>
         <div className={styles.buildingContentContainer}>
           <div className={styles.buildingContent1}>
             <p className={styles.buildingName}>{activeReviewInfo?.name}</p>

@@ -1,11 +1,17 @@
 import React from "react";
 import styles from "./Banner.module.css";
 import banner_jjinbbang from "../assets/image/bannerJJinBBang.svg";
+import { useNavigate } from "react-router-dom";
 
 
 const Banner = () => {
+  const navigation = useNavigate();
+  const handleClick = () => {
+    navigation('/content');
+  }
+  
   return (
-    <div className={styles.banner}>
+    <div className={styles.banner} onClick={handleClick}>
       <div className={styles.banner_text_container}>
         <p className={styles.banner_text_1}>
           검증된 학생들의 진짜 후기가 궁금하다면?

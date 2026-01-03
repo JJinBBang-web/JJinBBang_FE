@@ -13,6 +13,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/ReviewAdvantage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
@@ -61,6 +62,9 @@ const ReviewAdvantagePage: React.FC = () => {
 
   // 자동 저장 기능 추가
   useReviewAutoSave('filter-ad');
+
+  // GA4 Review Funnel Tracking: Step 5 (Advantage)
+  useReviewStepTracking('5.1_filter_ad');
 
   useEffect(() => {
     // housingType이 location.state에서 왔다면 review 상태에 반영

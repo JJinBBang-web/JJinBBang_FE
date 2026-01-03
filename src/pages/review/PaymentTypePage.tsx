@@ -6,6 +6,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import styles from "../../styles/review/PaymentType.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 
 interface LocationState {
   address: {
@@ -28,6 +29,7 @@ const PaymentTypePage: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(
     review.contractType || null
   );
+  useReviewStepTracking('3-1.3_contractType');
 
   const {
     showCancelModal,

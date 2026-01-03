@@ -11,9 +11,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useBuildingDetail } from "../hooks/useBuildingDetail";
 import Modal from "../components/review/Modal";
 import { hideNavState } from "../recoil/util/modalState";
-import { isLoginState } from "../recoil/auth/isLoginState";
 import iconClose from "../assets/image/iconClose.svg"
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
+import { isLoginState } from "../recoil/auth/isLoginState";
 
 const Building: React.FC = () => {
     const navigate = useNavigate();
@@ -21,19 +21,13 @@ const Building: React.FC = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(BuildingInfoState);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const setHideNav = useSetRecoilState(hideNavState);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLogin] = useRecoilState(isLoginState);
     const [verificationStatus, setVerificationStatus] = useState(false);
     
     const { buildingId } = useParams(); // URL에서 buildingId 추출
     const isAgency = false; // 필요 시 로직으로 결정
 
-    const { data, isLoading, isError } = useBuildingDetail(buildingId!, isAgency);
-
-    // 토큰 여부 확인
-    useEffect(() => {
-        const token = sessionStorage.getItem("accessToken");
-        setIsLoggedIn(!!token);
-    }, []);
+    const { data, isLoading, isError } = useBuildingDetail(buildingId!, isAgency, isLogin);
 
     // 미인증 여부 확인
     useEffect(() => {
@@ -74,7 +68,7 @@ const Building: React.FC = () => {
     };
 
     const handleToAuth = () => {
-        if (!isLoggedIn) {
+        if (!isLogin) {
             setHideNav(false);
             setIsModalOpen(false);
             navigate(`/mypage`);
@@ -86,7 +80,7 @@ const Building: React.FC = () => {
     }
 
     if (isLoading) return <div>로딩 중...</div>;
-    else if(!isLoggedIn || verificationStatus)
+    else if(!isLogin || verificationStatus)
     return <>
         <Modal onClose={handleCloseModal} style={{ zIndex: 999 }}>
           <div className={styles.wrap2}>

@@ -1,7 +1,7 @@
 // src/api/baseAPI.ts
-import { api } from './api';
+import { api } from "./api";
 
-export const getAPI = async (url: string, useAuthOption: boolean = false) => {
+export const getAPI = async (url: string, useAuthOption = false) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
     if (useAuthOption) {
@@ -10,7 +10,7 @@ export const getAPI = async (url: string, useAuthOption: boolean = false) => {
     const response = await api.get(url, requestConfig);
     return response.data;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     throw error;
   }
 };
@@ -19,7 +19,7 @@ export const getAPI = async (url: string, useAuthOption: boolean = false) => {
 export const postAPI = async (
   url: string,
   data?: any,
-  useAuthOption: boolean = false
+  useAuthOption = false
 ) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
@@ -29,11 +29,8 @@ export const postAPI = async (
     }
 
     const response = await api.post(url, data, requestConfig);
-    
     return response.data;
   } catch (error) {
-    console.error('❌ POST API Error:', error);
-    console.error('🔍 Request Details:', { url, data });
     throw error;
   }
 };
@@ -41,7 +38,7 @@ export const postAPI = async (
 export const putAPI = async (
   url: string,
   data?: any,
-  useAuthOption: boolean = false
+  useAuthOption = false
 ) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
@@ -53,14 +50,14 @@ export const putAPI = async (
     const response = await api.put(url, data, requestConfig);
     return response.data;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     throw error;
   }
 };
 
 export const deleteAPI = async (
   url: string,
-  useAuthOption: boolean = false
+  useAuthOption = false
 ) => {
   try {
     const requestConfig: { useAuth?: boolean } = {};
@@ -72,7 +69,7 @@ export const deleteAPI = async (
     const response = await api.delete(url, requestConfig);
     return response.data;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     throw error;
   }
 };

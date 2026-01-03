@@ -10,6 +10,7 @@ import { useCancelModal } from "../../util/useCancelModal";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/FloorInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 
 interface LocationState {
   address: {
@@ -37,6 +38,8 @@ const AgencyInputPage: React.FC = () => {
   const [selectedAgency, setSelectedAgency] = useState<AgencyInfo | null>(null);
 
   const ITEMS_PER_PAGE = 5;
+
+  useReviewStepTracking('3-3_agency_input');
 
   const {
     showCancelModal,

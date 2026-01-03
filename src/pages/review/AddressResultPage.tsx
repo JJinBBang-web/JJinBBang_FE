@@ -11,6 +11,8 @@ import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/AddressResult.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import JBMarker from "../../assets/image/JBMarker.svg";
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
+
 
 interface LocationState {
   address: {
@@ -43,6 +45,8 @@ const AddressResultPage: React.FC = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.9780 }); // 기본값: 서울시청
   const [isMapLoading, setIsMapLoading] = useState(true);
   
+  useReviewStepTracking('3-1.2_address_result');
+
   // 페이지 로드 시 자동 저장된 데이터 복원
   useEffect(() => {
     if (hasAutoSavedData()) {

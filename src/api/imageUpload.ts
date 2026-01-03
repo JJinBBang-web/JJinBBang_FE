@@ -214,7 +214,7 @@ export const imageUploadAPI = {
    */
   blobToFile: async (
     blobUrl: string,
-    fileName: string = "image.jpg"
+    fileName = "image.jpg"
   ): Promise<File> => {
     try {
       const response = await fetch(blobUrl);
@@ -259,7 +259,7 @@ export const imageUploadAPI = {
    */
   base64ToFile: (
     base64: string,
-    fileName: string = "image.jpg"
+    fileName = "image.jpg"
   ): File => {
     try {
       const byteCharacters = atob(base64.split(',')[1]);

@@ -7,6 +7,41 @@
   position: relative;
 }
 
+.imgWrap{
+  position: relative;
+  padding: 0;
+  margin: 0;
+  min-width: 100%; /* 너비를 부모 요소의 100%로 설정 */
+  max-width: 100%; /* 너비를 부모 요소의 100%로 제한 */
+  min-height: 208px;
+  max-height: 208px;
+}
+
+.imgNum {
+    width: fit-content;
+    margin: 0;
+    padding: 2px 8px;
+    background-color: rgba(9, 10, 10,0.4);
+    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.11);
+    backdrop-filter: blur(10px);
+
+    border-radius: 14px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.imgNum .count {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: var(--white);
+}
+
+
 .buildingImg {
   min-width: 100%; /* 너비를 부모 요소의 100%로 설정 */
   max-width: 100%; /* 너비를 부모 요소의 100%로 제한 */

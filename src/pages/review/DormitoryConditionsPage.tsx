@@ -7,6 +7,7 @@ import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import styles from '../../styles/review/DormitoryConditions.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 
 interface LocationState {
   from?: string;
@@ -47,6 +48,8 @@ const DormitoryConditionsPage: React.FC = () => {
   const [roomCapacity, setRoomCapacity] = useState<string>(
     dormitoryInfo?.roomCapacity ? dormitoryInfo.roomCapacity.toString() : ''
   );
+
+  useReviewStepTracking('3-2.2_dormitory_conditions');
 
   const {
     showCancelModal,

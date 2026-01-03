@@ -334,7 +334,7 @@ const MyPage: React.FC = () => {
         {userReviews.map((review) => (
           <div key={review.id}>
             <div className={styles.line} />
-            <PreviewReview review={review} />
+            <PreviewReview review={review} trackStep="4.1_mypage_PreviewReview" />
           </div>
           // <div key={review.id} className={styles.reviewItem}>
           //   <h3>{review.title || review.buildingName || '제목 없음'}</h3>
@@ -359,7 +359,7 @@ const MyPage: React.FC = () => {
     <MetaTag
         title="찐빵 | 마이페이지"
         description="내가 남긴 후기, 관심 등록을 한눈에 관리하세요"
-        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 가입, 로그인, 후기"
+        keywords="찐빵, 원룸, 자취방, 기숙사, 리뷰, 대학가, 부동산, 가입, 로그인, 후기, 자취, 추천"
         imgsrc="https://jjinbbang.kr/seo/thumbnail.png"
         url="https://jjinbbang.kr/mypage"
     />
@@ -384,6 +384,7 @@ const MyPage: React.FC = () => {
                 auth.verificationStatus !== 'verified' ? styles.disabled : ''
               }`}
               onClick={handleWriteReview}
+              id="btn-write-review"
             >
               <img
                 src={pencilIcon}

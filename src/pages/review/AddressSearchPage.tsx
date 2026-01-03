@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { reviewState } from "../../recoil/review/reviewAtoms";
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 import styles from "../../styles/review/AddressSearch.module.css";
 
 declare global {
@@ -19,6 +20,9 @@ const AddressSearchPage: React.FC = () => {
   const [review, setReview] = useRecoilState(reviewState);
   const postcodeRef = useRef<HTMLDivElement>(null);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+
+  // GA4 Review Funnel Tracking: Step 2
+  useReviewStepTracking('2.2_address_search');
 
   useEffect(() => {
     const script = document.createElement("script");

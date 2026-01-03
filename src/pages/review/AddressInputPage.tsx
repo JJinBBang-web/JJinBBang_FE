@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
 import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
+import useReviewStepTracking from '../../hooks/useReviewStepTracking';
 import styles from '../../styles/review/AddressInput.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import searchIcon from '../../assets/image/iconSearch.svg';
@@ -22,6 +23,9 @@ const AddressInputPage: React.FC = () => {
 
   // 자동 저장 기능 추가
   useReviewAutoSave('input-address');
+
+  // GA4 Review Funnel Tracking: Step 2
+  useReviewStepTracking('2.1_address_input');
 
   const handleSearchClick = () => {
     navigate('/review/address', { state: location.state });

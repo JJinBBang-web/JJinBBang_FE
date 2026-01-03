@@ -149,7 +149,7 @@ const UniversityFilterModal = () => {
         .find((campus) => campus.id === selectedTypeNum);
 
     return (
-        <div className={styles.content}>
+        <div className={`${styles.content} ${styles.univModalSlickScope}`}>
             {/* 초성필터슬라이더 */}
             {/* <Container> */}
             <Slider {...settingsInitial}>

@@ -8,6 +8,7 @@ import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import { imageUploadAPI } from "../../api/imageUpload";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/PhotoUpload.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import plusIcon from "../../assets/image/iconPlus.svg";
@@ -40,6 +41,9 @@ const PhotoUploadPage: React.FC = () => {
   // Recoil 상태 관리
   const [review, setReview] = useRecoilState(reviewState);
   const { restoreAutoSavedData, clearAutoSavedData, hasAutoSavedData } = useReviewAutoSave('room-info');
+
+  // GA4 Review Funnel Tracking: Step 4 (Photo)
+  useReviewStepTracking('4_room_info');
 
   // 선택된 사진들의 상태 관리 (blob URLs for preview) - 새로운 리뷰 작성 시에는 빈 배열로 시작
   const [photos, setPhotos] = useState<string[]>([]);

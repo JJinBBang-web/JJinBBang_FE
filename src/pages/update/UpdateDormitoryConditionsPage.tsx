@@ -153,7 +153,7 @@ const UpdateDormitoryConditionsPage: React.FC = () => {
       ...review,
       dormitoryFee: parseFloat(dormitoryFee),
       dormitoryConditions,
-    } as ReviewState;;
+    } as ReviewState;
 
     setReview(updatedReview);
     

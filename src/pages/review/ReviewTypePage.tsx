@@ -9,6 +9,7 @@ import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
 import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
+import useReviewStepTracking from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -26,6 +27,9 @@ const ReviewTypePage: React.FC = () => {
   // 자동 저장 기능 - type 페이지에서는 자동 저장하지 않음
   // 이유: 빈 상태가 저장되는 것을 방지하기 위해
   // 다음 페이지부터 자동 저장이 시작됨
+
+  // GA4 Review Funnel Tracking: Step 1
+  useReviewStepTracking('1_review_type_select');
 
   const housingTypeNum = (type: string) => {
     if (

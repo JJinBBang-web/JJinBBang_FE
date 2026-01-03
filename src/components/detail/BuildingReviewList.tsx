@@ -74,7 +74,7 @@ const BuildingReviewList: React.FC = () => {
             }
           >
             <div className={styles.line} />
-            <BuildingPreviewReview review={review} />
+            <BuildingPreviewReview review={review} trackStep="6.1_building_review" />
           </div>
         ))}
       </div>
