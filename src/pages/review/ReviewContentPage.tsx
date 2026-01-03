@@ -153,6 +153,7 @@ const ReviewContentPage: React.FC = () => {
         reviewState: updatedReview,
         dormitoryReviewState: null,
         currentStep: REVIEW_STEPS.CONFIRM,
+        uuid: reviewAutoSave.load()?.uuid
       });
 
       navigate("/review/confirm", {

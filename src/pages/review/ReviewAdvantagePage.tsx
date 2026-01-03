@@ -175,7 +175,8 @@ const ReviewAdvantagePage: React.FC = () => {
       reviewAutoSave.save({
         reviewState: updatedReview,
         dormitoryReviewState: null,
-        currentStep: REVIEW_STEPS.FILTER_DISAD
+        currentStep: REVIEW_STEPS.FILTER_DISAD,
+        uuid: reviewAutoSave.load()?.uuid
       });
 
       navigate("/review/filter-disad", {

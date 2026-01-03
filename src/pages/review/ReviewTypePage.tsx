@@ -9,7 +9,7 @@ import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
 import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
-import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+import useReviewStepTracking, { trackReviewStep } from "../../hooks/useReviewStepTracking";
 import styles from "../../styles/review/ReviewType.module.css";
 import backArrowIcon from "../../assets/image/backArrowIcon.svg";
 
@@ -19,17 +19,28 @@ const ReviewTypePage: React.FC = () => {
   const locationState = location.state || {};
   const { housingType } = locationState;
   const [review, setReview] = useRecoilState(reviewState);
-  const [, setDormitoryReview] = useRecoilState(dormitoryReviewState);
+  const [dormitoryReview, setDormitoryReview] = useRecoilState(dormitoryReviewState);
   const setSelectedTypeNum = useSetRecoilState(selectedTypeNumState);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
 
-  // 자동 저장 기능 - type 페이지에서는 자동 저장하지 않음
-  // 이유: 빈 상태가 저장되는 것을 방지하기 위해
-  // 다음 페이지부터 자동 저장이 시작됨
+  // 자동 저장 기능 - type 페이지 진입 시 초기 저장
+  useEffect(() => {
+    const initAutoSave = async () => {
+      await reviewAutoSave.save({
+        reviewState: review,
+        dormitoryReviewState: dormitoryReview,
+        currentStep: REVIEW_STEPS.TYPE,
+        uuid: reviewAutoSave.load()?.uuid,
+      });
 
-  // GA4 Review Funnel Tracking: Step 1
-  useReviewStepTracking('1_review_type_select');
+      // GA4 Review Funnel Tracking: Step 1
+      // 저장 완료 후 트래킹 실행 (UUID 보장)
+      trackReviewStep('1_review_type_select');
+    };
+
+    initAutoSave();
+  }, []);
 
   const housingTypeNum = (type: string) => {
     if (
@@ -109,6 +120,7 @@ const ReviewTypePage: React.FC = () => {
           reviewState: review,
           dormitoryReviewState: null,
           currentStep: REVIEW_STEPS.ADDRESS_INPUT, // 다음 페이지
+          uuid: reviewAutoSave.load()?.uuid
         });
 
         // 공인중개사는 주소 검색 없이 바로 상호명 입력 페이지로 이동
@@ -176,13 +188,24 @@ const ReviewTypePage: React.FC = () => {
   };
 
   // 자동 저장 복원 - 새롭게 작성
-  const handleNewStartFromAutoSave = () => {
+  const handleNewStartFromAutoSave = async() => {
     // 자동 저장 데이터 삭제
     reviewAutoSave.clear();
     // Recoil 상태 초기화
     setReview(defaultReviewState);
     // 바텀 시트 닫기
     setShowAutoSaveSheet(false);
+
+    // 명시적으로 새로운 상태와 UUID로 저장해야 합니다.
+    await reviewAutoSave.save({
+      reviewState: review,
+      dormitoryReviewState: dormitoryReview,
+      currentStep: REVIEW_STEPS.TYPE,
+      uuid: crypto.randomUUID(), // 새로 시작하므로 명시적으로 새 UUID 생성
+    });
+
+    // GA4 이벤트 수동 전송
+    trackReviewStep('1_review_type_select');
   };
 
   // 자동 저장 복원 - 닫기

@@ -7,6 +7,7 @@ export interface AutoSaveData {
   // base64 이미지 데이터 별도 저장 (업로드용)
   reviewBase64Images?: string[];
   dormitoryBase64Images?: string[];
+  uuid?: string;
 }
 
 // 리뷰 작성 단계 정의
@@ -167,6 +168,7 @@ export const reviewAutoSave = {
           images: converted
         };
       }
+      
 
       const saveData = {
         ...data,
@@ -174,8 +176,10 @@ export const reviewAutoSave = {
         dormitoryReviewState: processedDormitoryState,
         reviewBase64Images,
         dormitoryBase64Images,
+        uuid: data.uuid ? data.uuid : crypto.randomUUID(),
         timestamp: Date.now()
       };
+      
 
       sessionStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(saveData));
     } catch (error) {

@@ -63,6 +63,8 @@ import TagManager from "react-gtm-module";
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
+import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
+import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -107,23 +109,24 @@ const AppContent: React.FC = () => {
   } = useQuery({
     queryKey: [location.pathname],
     queryFn: async () => {
-      const response = await getAPI(`/api/v1/user`, true);
-      if (response.data.univAuthentication === "인증완료") {
-        sessionStorage.setItem("verificationStatus", "verified");
+      try {
+        const response = await getAPI(`/api/v1/user`, true);
+        if (response.data.univAuthentication === "인증완료") {
+          sessionStorage.setItem("verificationStatus", "verified");
+          setIsLoggedIn(true);
+        } else {
+          sessionStorage.setItem("verificationStatus", "unverified");
+        }
+        return response.data;
+      } catch (error) {
+        sessionStorage.setItem("verificationStatus", "unverified");
+        setIsLoggedIn(false);
+        setRecoil(explorationFrequencyState, {})
+        throw error;
       }
-      return response.data;
     },
     refetchOnWindowFocus: false,
   });
-
-  useEffect(() => {
-    if (isSuccessUser) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-      sessionStorage.setItem("verificationStatus", "unverified");
-    }
-  }, [isSuccessUser]);
 
   const hiddenNavPaths = [
     "/auth/*",
@@ -141,6 +144,7 @@ const AppContent: React.FC = () => {
 
   return (
     <>
+      <RecoilNexus />
       {showHeaderAndNav}
       <Routes>
         <Route path="/login/kakao" element={<KakaoCallBack />} />
