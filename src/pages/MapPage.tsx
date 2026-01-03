@@ -370,6 +370,52 @@ const MapPage = () => {
 
     const markersToRender = modalContent === 'search' ? searchMarkers : filteredMarkerDataForRender;
 
+    const stableMarkersToRender = useMemo(() => {
+        const map = new Map<string, typeof markersToRender[number]>();
+
+        (markersToRender ?? []).forEach((m) => {
+            map.set(`${m.id}`, m);
+        });
+
+        return Array.from(map.values());
+    }, [markersToRender]);
+
+    useEffect(() => {
+        const map = mapRef.current;
+        const clusterer = clustererRef.current;
+        if (!map || !clusterer) return;
+
+        // 1) 기존 오버레이 제거
+        clusterOverlaysRef.current.forEach((ov) => ov.setMap(null));
+        clusterOverlaysRef.current = [];
+
+        // 2) 기존 마커 제거
+        clusterer.clear();
+        kakaoMarkersRef.current.forEach((mk) => mk.setMap(null));
+        kakaoMarkersRef.current = [];
+
+        if (!stableMarkersToRender.length) return;
+
+        const markerSrc = viewType === "BUILDING" ? BDMarker : JBMarker;
+        const markerImage = new kakao.maps.MarkerImage(markerSrc, new kakao.maps.Size(40, 40));
+
+        const newMarkers = stableMarkersToRender.map((m) => {
+            const mk = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(m.latitude, m.longitude),
+            image: markerImage,
+            });
+
+          kakao.maps.event.addListener(mk, "click", () => {
+            trackExplorationStep('3.8_map_view_marker');
+            handleMarkerClick(m.id)
+          });
+            return mk;
+        });
+
+        kakaoMarkersRef.current = newMarkers;
+        clusterer.addMarkers(newMarkers);
+    }, [stableMarkersToRender, viewType, selectedSort, modalContent]);
+
     // 검색 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
         
