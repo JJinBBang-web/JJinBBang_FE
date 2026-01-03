@@ -24,6 +24,7 @@ import {
 import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import MetaTag from "../util/SEOMetaTag";
+import BannerCarousel from "../components/BannerCarousel";
 
 
 const QUERY_KEYS = {
@@ -161,7 +162,7 @@ const Heart: React.FC = () => {
     />
       <div className={styles.container}>
         <div className={styles.header} />
-        <Banner />
+        <BannerCarousel/>
         <div className={styles.bookmarkContainer}>
           <div className={styles.filterContainer}>
             <div
