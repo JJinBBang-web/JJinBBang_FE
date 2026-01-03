@@ -38,8 +38,6 @@ const Building: React.FC = () => {
         return t === "AGENCY";
     }, [navState.type]);
 
-    console.log("Building Page - isAgency:", isAgency);
-
     const { data, isLoading, isError } = useBuildingDetail(buildingId!, isAgency, isLogin);
 
     // 미인증 여부 확인

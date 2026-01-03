@@ -41,8 +41,6 @@ const BuildingReviewList: React.FC<Props> = ({isAgency}) => {
   if (isLoading) return <div>리뷰 불러오는 중...</div>;
   if (isError) return <div>리뷰 불러오기 실패</div>;
 
-  console.log(data);
-
   return (
     <div>
       <hr/>

@@ -172,8 +172,6 @@ const Review: React.FC = () => {
     );
   if (isError || !data) return <div>리뷰 정보를 불러오지 못했습니다.</div>;
 
-  console.log(reviews);
-
   return (
     <div
       className={styles.content}

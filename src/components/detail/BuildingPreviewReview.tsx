@@ -106,7 +106,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-  console.log(review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -119,7 +118,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
     setLikeCount,
   ]);
 
-  console.log(review.image);
   return (
     <div
       className={styles.content}
