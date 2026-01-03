@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import styles from "./Building.module.css"
 import Header from "../components/Header";
 import ImageSlider from "../components/detail/ImageSlider";
@@ -7,7 +7,7 @@ import TopButton from "../components/util/TopButton";
 import BuildingReviewList from "../components/detail/BuildingReviewList";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { BuildingInfoState } from "../recoil/detail/BuildingRecoilState";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useBuildingDetail } from "../hooks/useBuildingDetail";
 import Modal from "../components/review/Modal";
 import { hideNavState } from "../recoil/util/modalState";
@@ -15,8 +15,15 @@ import iconClose from "../assets/image/iconClose.svg"
 import verifiedCharacter from '../assets/image/verifiedSheetCharacter.svg';
 import { isLoginState } from "../recoil/auth/isLoginState";
 
+type NavState = {
+  type?: string; // rawType 들어옴 (예: "AGENCY" 등)
+};
+
 const Building: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const navState = (location.state as NavState) ?? {};
+
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [buildingInfo, setBuildingInfo] = useRecoilState(BuildingInfoState);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,8 +31,14 @@ const Building: React.FC = () => {
     const [isLogin] = useRecoilState(isLoginState);
     const [verificationStatus, setVerificationStatus] = useState(false);
     
-    const { buildingId } = useParams(); // URL에서 buildingId 추출
-    const isAgency = false; // 필요 시 로직으로 결정
+    const { buildingId } = useParams();
+
+    const isAgency = useMemo(() => {
+        const t = navState.type;
+        return t === "AGENCY";
+    }, [navState.type]);
+
+    console.log("Building Page - isAgency:", isAgency);
 
     const { data, isLoading, isError } = useBuildingDetail(buildingId!, isAgency, isLogin);
 
@@ -120,7 +133,7 @@ const Building: React.FC = () => {
                 {/* 건물 정보 및 키워드 */}
                 <BuildingInfo building={buildingInfo}/>
                 {/* 리뷰모음 */}
-                <BuildingReviewList/>
+                <BuildingReviewList isAgency={isAgency}/>
             </div>
             <div className={styles.fixedWrap}>
                 {/* 탑버튼 */}

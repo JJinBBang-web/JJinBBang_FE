@@ -6,7 +6,11 @@ import { ReviewPreviewState } from "../../recoil/detail/PreviewReviewRecoilState
 import { useNavigate, useParams } from "react-router-dom";
 import { useBuildingReviewList } from "../../hooks/useBuildingReviewList";
 
-const BuildingReviewList: React.FC = () => {
+interface Props {
+    isAgency : boolean;
+}
+
+const BuildingReviewList: React.FC<Props> = ({isAgency}) => {
   const { buildingId } = useParams();
   const [reviews, setReviews] = useRecoilState(ReviewPreviewState);
   const [selectedSort, setSelectedSort] = useState<
@@ -17,7 +21,7 @@ const BuildingReviewList: React.FC = () => {
   const { data, isLoading, isError } = useBuildingReviewList({
     buildingId: buildingId ?? "",
     sortBy: selectedSort,
-    isAgency: false,
+    isAgency: isAgency,
   });
 
   useEffect(() => {
@@ -36,6 +40,8 @@ const BuildingReviewList: React.FC = () => {
   if (data?.itemNum === 0) return null;
   if (isLoading) return <div>리뷰 불러오는 중...</div>;
   if (isError) return <div>리뷰 불러오기 실패</div>;
+
+  console.log(data);
 
   return (
     <div>

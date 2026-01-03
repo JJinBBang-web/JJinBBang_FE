@@ -15,7 +15,6 @@ interface Props {
 }
 
 const BuildingInfo: React.FC<Props> = ({building}) => {
-
     const [isLiked, setIsLiked] = useState(building.basicInfo.liked);
 
     useEffect(() => {
@@ -56,7 +55,7 @@ const BuildingInfo: React.FC<Props> = ({building}) => {
             const agency = building.basicInfo as agencyBuildingInfo;
             return (
             <div className={styles.agencyType}>
-                {agency.type.map((t) => typeToKorean[t] ?? t).join(" / ")}
+                {typeToKorean[agency.type] ?? agency.type}
             </div>
             );
         }

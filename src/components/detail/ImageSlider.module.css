@@ -108,3 +108,7 @@
   color: var(--color-gray40);
   gap: 20px
 }
+
+.emptyIcon {
+  width: 130px;
+}
