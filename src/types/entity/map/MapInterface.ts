@@ -39,7 +39,7 @@ export interface NearByRequest {
   type : "REVIEW"|"BUILDING",
   sortBy : "RCMND" | "LATEST" | "LIKES" | "STARS",
   idList : number[],
-  // AgencyIdList: number[] | null,
+  agencyIdList?: number[],
 }
 
 export interface NearByResponse {

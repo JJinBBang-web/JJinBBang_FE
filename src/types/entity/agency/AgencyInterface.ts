@@ -16,19 +16,16 @@ export interface AgencySearchParams {
   agencyName: string;      // 공인중개사 상호명 (필수)
   num?: number;            // 한 페이지에서 조회할 중개사 수 (선택, 기본 10, 1-10)
   page?: number;           // 페이지 번호 (선택, 기본 1)
+  cursor?: string;         // 다음 페이지를 위한 커서 (선택)
 }
 
 // 공인중개사 조회 응답 데이터
 export interface AgencySearchData {
   items: AgencyInfo[];     // 조회된 공인중개사 목록
   num: number;             // 요청한 페이지당 개수
-  page: number;            // 현재 페이지 번호
-  totalCount: number;      // 전체 검색 결과 수
+  nextCursor: string;      // 다음 페이지 커서
+  hasMore: boolean;        // 다음 페이지 존재 여부
 }
 
 // 공인중개사 조회 API 응답
-export interface AgencySearchResponse {
-  code: number;
-  message: string;
-  data: AgencySearchData;
-}
+export interface AgencySearchResponse extends AgencySearchData {}

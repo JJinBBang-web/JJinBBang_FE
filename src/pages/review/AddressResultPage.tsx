@@ -222,7 +222,10 @@ const AddressResultPage: React.FC = () => {
           onClick={() => {
             if (housingType === "공인중개사") {
               navigate("/review/agency", {
-                state: locationState,
+                state: {
+                  ...locationState,
+                  from: "result",
+                },
               });
             } else {
               navigate("/review/address", {
