@@ -155,8 +155,6 @@ const ContentDetail: React.FC = () => {
 
     const category = CATEGORY_TO_KOR[data.category];
 
-    console.log(data);
-
     return (         
         <div className={styles.content} style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.container}>

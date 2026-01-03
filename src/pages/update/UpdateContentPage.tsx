@@ -78,7 +78,7 @@ const UpdateContentPage: React.FC = () => {
       return;
     }
 
-    if (content.trim().length < 100) {
+    if (content.trim().length < 50) {
       alert("최소 50자 이상 작성해야 해요!");
       return;
     }

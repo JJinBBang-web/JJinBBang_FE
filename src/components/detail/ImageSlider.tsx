@@ -18,7 +18,6 @@ const ImageSlider: React.FC<Props> = ({ building, review }) => {
     : review?.reviewImages.imageUrl;
 
   const images = fixImageUrls(rawImages ?? []);
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlers = useSwipeable({
@@ -37,7 +36,12 @@ const ImageSlider: React.FC<Props> = ({ building, review }) => {
 
   // if (!images || images.length === 0) return null;
 
-  const total = images.length;
+  const validImages = (images ?? []).filter(
+    (v): v is string => typeof v === "string" && v.trim().length > 0
+  );
+
+    const total = validImages.length;
+
 
   const getVisibleDots = (total: number, currentIndex: number) => {
     const maxDots = 10;
@@ -102,7 +106,7 @@ const ImageSlider: React.FC<Props> = ({ building, review }) => {
           className={styles.slider}
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {images && images.length > 0 ? (
+          {validImages.length > 0 ? (
             // ✅ images 배열에 항목이 있을 때 (기존 코드)
             images.map((src, i) => (
               <img
