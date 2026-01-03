@@ -11,6 +11,7 @@ import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/FloorInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+import Spinner from "../../components/util/Spinner";
 
 interface LocationState {
   address: {
@@ -320,7 +321,7 @@ const AgencyInputPage: React.FC = () => {
         </div>
 
         {/* 검색 결과 영역 - 스크롤 가능 */}
-        <div style={{ flex: 1, overflowY: "auto", paddingBottom: "0.5rem" }}>
+        <div style={{ flex: 1, overflowY: "auto", paddingBottom: "10rem" }}>
           {/* 검색 중 표시 */}
           {isSearching && (
             <div
@@ -331,8 +332,11 @@ const AgencyInputPage: React.FC = () => {
                 height: "15rem",
                 color: "var(--color-gray60)",
                 fontSize: "16px",
+                flexDirection: "column",
+                gap: "8px",
               }}
             >
+              <Spinner/>
               검색 중이에요. 잠시만 기다려주세요!
             </div>
           )}
