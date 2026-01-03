@@ -19,10 +19,6 @@ export class MapAPI {
       if (res.data.code !== 200 || !res.data.data) {
         throw new Error("마커 조회 실패");
       }
-
-      console.log(body);
-      console.log(res.data.data);
-
       return res.data.data;
     } catch (error) {
       throw error;
