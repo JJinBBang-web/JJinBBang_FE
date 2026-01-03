@@ -235,16 +235,18 @@ const MapPage = () => {
         isLoading: isMarkerDetailLoading,
     } = useNearBy(markerDetailParams);
 
-    const { buildingIds: nearByBuildingIds /*, agencyIds: nearByAgencyIds */ } = splitIds(markerData as MarkerItem[]);
+    const { buildingIds: nearByBuildingIds, agencyIds: nearByAgencyIds } = splitIds(markerData as MarkerItem[]);
 
-    const nearByParams: NearByRequest | undefined = mapBounds
+    const nearByParams: NearByRequest | undefined = mapBounds && (nearByBuildingIds.length > 0 || nearByAgencyIds.length > 0)
     ? {
         num: 10,
         page: nearByCurrentPage,
         type: viewType,
         sortBy: selectedSort,
-        idList: nearByBuildingIds,
-        // agencyIdList: nearByAgencyIds
+        // REVIEW 타입: 모든 ID를 idList에 담음
+        // BUILDING 타입: 일반 건물은 idList, 공인중개사는 agencyIdList로 분리
+        idList: viewType === "REVIEW" ? [...nearByBuildingIds, ...nearByAgencyIds] : nearByBuildingIds,
+        agencyIdList: viewType === "BUILDING" ? nearByAgencyIds : undefined
         }
     : undefined;
 
@@ -441,21 +443,23 @@ const MapPage = () => {
         const sameLocationMarkers = markersToRender.filter(
             (m) => m.latitude === clickedMarker.latitude && m.longitude === clickedMarker.longitude
         );
-        
+
         const { buildingIds, agencyIds } = splitIds(sameLocationMarkers as MarkerItem[]);
 
-        if (buildingIds.length === 0) {
-            // 같은 위치가 전부 AGENCY면 호출 안 함(혹은 agencyIdList만 허용되면 거기에 맞춰 호출)
+        if (buildingIds.length === 0 && agencyIds.length === 0) {
+            // 마커가 없는 경우에만 return
             return;
         }
 
         const params: NearByRequest = {
-            num: buildingIds.length,  // 모두 가져오기
+            num: buildingIds.length + agencyIds.length,  // 모두 가져오기
             page: 1,
             type: viewType,
             sortBy: selectedSort,
-            idList: buildingIds,
-            // agencyIdList: agencyIds, 
+            // REVIEW 타입: 모든 ID를 idList에 담음
+            // BUILDING 타입: 일반 건물은 idList, 공인중개사는 agencyIdList로 분리
+            idList: viewType === "REVIEW" ? [...buildingIds, ...agencyIds] : buildingIds,
+            agencyIdList: viewType === "BUILDING" ? agencyIds : undefined,
         };
 
         setMarkerDetailParams(params);
