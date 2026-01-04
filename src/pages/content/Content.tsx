@@ -56,20 +56,21 @@ const ContentPage: React.FC = () => {
                 <Header type="title" title="찐빵 리포트" onClick={handleBack}/>
                 <div className={styles.section}>
                     <CategoryTabs active={activeCategory} onChange={setActiveCategory} />
-                    {isLoading && <div style={{
-                                      position: 'absolute',
-                                      top: '50%',
-                                      left: '50%',
-                                      transform: 'translate(-50%, -50%)',
-                                      }}>
-                                      <Spinner />
-                                  </div>
-                                            }
                     <div className={styles.categoryInfo}>
                         <p className={styles.infoTitle}>{title}</p>
                         <p className={styles.infoSub}>{sub}</p>
                     </div>
                     {isError && <div>로그인이 필요합니다.</div>}
+                    {isLoading && <div style={{
+                        margin: '0 auto',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '50vh',
+                        }}>
+                        <Spinner />
+                    </div>
+                    }
                     {!isLoading && !isError && (
                       <div className={styles.contentWrap}>
                         {reportList.map(item => (
