@@ -37,6 +37,61 @@
     margin-bottom: 6px;
 }
 
+.researchBtnWrap {
+    width: 100%;
+    padding: 0 16px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.researchBtn {
+    width: fit-content;
+    height: 34px;
+    border: none;
+    border-radius: 12px;
+    background-color: var(--white);
+    box-shadow: 2px 2px 18px 0px rgba(0, 0, 0, 0.08);
+    padding: 0px 12px;
+
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.6px;
+    line-height: 24px;
+    color: var(--color-gray80);
+}
+
+.focusBtnWrap {
+    width: 100%;
+    padding: 0 16px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 20vh;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.focusBtn {
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--white);
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.11);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.focusIcon {
+    width: 32px;
+    height: 32px;
+}
 
 /* 모달 */
 .wrap {
