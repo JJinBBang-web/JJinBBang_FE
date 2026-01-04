@@ -250,3 +250,33 @@
     line-height: 22px;
     color: var(--white);
 }
+
+.likedButton {
+    margin: 32px auto;
+    width: fit-content;
+    height: 42px;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--color-gray10);
+    border-radius: 60px;
+    background-color: var(--white);
+
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5; /* 21px */
+    letter-spacing: -0.6px;
+    color: var(--color-gray60);
+}
+
+.likedButtonActive {
+    border: 1px solid var(--primary-color);
+    background-color: var(--block-selected);
+    color: var(--primary-color);
+}
+.heartIcon {
+    width: 18px;
+}

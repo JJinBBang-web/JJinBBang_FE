@@ -19,6 +19,8 @@ import {
 import { formatDate } from "../../util/formatDate";
 import '../../styles/global.css'
 import Modal from "../../components/review/Modal";
+import HeartIconOff from '../../assets/image/content/reportHeartOff.svg';
+import HeartIconOn from '../../assets/image/content/reportHeartOn.svg';
 
 const ContentDetail: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -287,7 +289,11 @@ const ContentDetail: React.FC = () => {
                             >
                             {data.content}
                         </ReactMarkdown>
-                        </div>
+                    </div>
+                    <button className={`${styles.likedButton} ${liked ? styles.likedButtonActive : ''}`} onClick={handleToggleLikeGuarded}>
+                        <img src={liked ? HeartIconOn : HeartIconOff} className={styles.heartIcon} />
+                        좋아요
+                    </button>
                 </div>
                 <ContentFooter likes={likeCount} shares={data.shareCount} onClick={handleBack} onToggleLike={handleToggleLikeGuarded} isLiked={liked}/>
             </div>
