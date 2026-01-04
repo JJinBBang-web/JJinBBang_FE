@@ -29,6 +29,11 @@
     display: none; /* Chrome, Safari, Opera 스크롤바 숨기기 */
 }
 
+.contentWrap {
+    max-width: 393px;
+    width: 100%;
+}
+
 .section {
     margin: 58px 16px;
     display: flex;

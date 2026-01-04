@@ -42,7 +42,8 @@ export const useReviewAutoSave = (currentStep?: string) => {
           await reviewAutoSave.save({
             reviewState: review,
             dormitoryReviewState: dormitoryReview,
-            currentStep: existingData?.currentStep || currentStep
+            currentStep: existingData?.currentStep || currentStep,
+            uuid: reviewAutoSave.load()?.uuid
           });
           lastSaveRef.current = currentHash;
         } catch (error) {
