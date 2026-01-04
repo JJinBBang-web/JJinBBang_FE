@@ -1,0 +1,115 @@
+.card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.category {
+    width: fit-content;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background-color: var(--block-selected);
+    color: var(--primary-color);
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5; /* 21px */
+    letter-spacing: -0.6px;
+}
+
+.title {
+    padding-right: 4px;
+    color: var(--black);
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3; /* 21px */
+    letter-spacing: -0.6px;
+}
+
+.dateAndInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date {
+    color: var(--color-gray40);
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5; /* 21px */
+    letter-spacing: -0.5px;
+}
+
+.meta {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.meta span {
+    color: var(--color-gray40);
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5; /* 21px */
+    letter-spacing: -0.5px;
+}
+
+.iconWrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 4px;
+    width: 14px;
+    height: 14px;
+}
+
+.manageButtons{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.editButton {
+    width: 60px;
+    height: 32px;
+    border: 1px solid var(--color-gray40);
+    border-radius: 8px;
+    background-color: var(--white);
+    color: var(--color-gray60);
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.deleteButton {
+    width: 60px;
+    height: 32px;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    background-color: var(--white);
+    color: var(--primary-color);
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}

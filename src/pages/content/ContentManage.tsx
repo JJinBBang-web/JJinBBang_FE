@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styles from "./Content.module.css"
 import Header from "../../components/Header";
 import CategoryTabs from "../../components/content/CategoryTabs";
-import ContentCard from "../../components/content/ContentCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { KOR_TO_CATEGORY, CATEGORY_TO_KOR } from "../../util/mapping";
 import { useReportList } from "../../hooks/useReportList";
@@ -10,6 +9,7 @@ import Spinner from '../../components/util/Spinner';
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
 import { formatDate } from "../../util/formatDate";
 import '../../styles/global.css'
+import ContentManageCard from "../../components/content/ContentManageCard";
 
 const ContentManagePage: React.FC = () => {
     const navigation = useNavigate();
@@ -80,10 +80,9 @@ const ContentManagePage: React.FC = () => {
                     {!isLoading && !isError && (
                       <div className={styles.contentWrap}>
                         {reportList.map(item => (
-                          <ContentCard
+                          <ContentManageCard
                             key={item.id}
                             id={item.id}
-                            img={item.coverImage}
                             category={CATEGORY_TO_KOR[item.category]}
                             title={item.title}
                             date={formatDate(item.createdAt)}
