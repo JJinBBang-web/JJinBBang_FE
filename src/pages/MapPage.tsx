@@ -243,16 +243,18 @@ const MapPage = () => {
         isLoading: isMarkerDetailLoading,
     } = useNearBy(markerDetailParams);
 
-    const { buildingIds: nearByBuildingIds /*, agencyIds: nearByAgencyIds */ } = splitIds(markerData as MarkerItem[]);
+    const { buildingIds: nearByBuildingIds, agencyIds: nearByAgencyIds } = splitIds(markerData as MarkerItem[]);
 
-    const nearByParams: NearByRequest | undefined = mapBounds
+    const nearByParams: NearByRequest | undefined = mapBounds && (nearByBuildingIds.length > 0 || nearByAgencyIds.length > 0)
     ? {
         num: 10,
         page: nearByCurrentPage,
         type: viewType,
         sortBy: selectedSort,
-        idList: nearByBuildingIds,
-        // agencyIdList: nearByAgencyIds
+        // REVIEW 타입: 모든 ID를 idList에 담음
+        // BUILDING 타입: 일반 건물은 idList, 공인중개사는 agencyIdList로 분리
+        idList: viewType === "REVIEW" ? [...nearByBuildingIds, ...nearByAgencyIds] : nearByBuildingIds,
+        agencyIdList: viewType === "BUILDING" ? nearByAgencyIds : undefined
         }
     : undefined;
 
@@ -337,26 +339,45 @@ const MapPage = () => {
                 : item.dormitoryBuildingInfo
                 ? "DORMITORY"
                 : "GENERAL";
-            
+
             return { id, latitude: lat, longitude: lng, type };
             })
             .filter((m): m is { id: number; latitude: number; longitude: number; type: string } => !!m);
     }, [searchData]);
 
-    const markersToRender = useMemo(() => {
-        if (modalContent === 'search') return searchMarkers;
-        return markerDataForRender; // 이거 하나로 끝
-    }, [modalContent, searchMarkers, markerDataForRender]);
+    // 건물 타입에 따른 마커 필터링
+    const filteredMarkerDataForRender = useMemo(() => {
+        if (!markerDataForRender || markerDataForRender.length === 0) return [];
+
+        // buildType이 빈 문자열이거나 "ALL"이면 모든 마커 표시
+        if (!buildType || buildType === "ALL") return markerDataForRender;
+
+        // buildType에 따라 필터링
+        return markerDataForRender.filter((marker) => {
+            const markerType = (marker as any).type;
+
+            if (buildType === "공인중개사") {
+                return markerType === "AGENCY";
+            } else if (buildType === "기숙사") {
+                return markerType === "DORMITORY";
+            } else if (buildType === "원룸" || buildType === "투룸+" || buildType === "오피스텔") {
+                return markerType === "GENERAL";
+            }
+
+            return true;
+        });
+    }, [markerDataForRender, buildType]);
+
+    const markersToRender = modalContent === 'search' ? searchMarkers : filteredMarkerDataForRender;
 
     const stableMarkersToRender = useMemo(() => {
         const map = new Map<string, typeof markersToRender[number]>();
 
         (markersToRender ?? []).forEach((m) => {
-            // id가 유니크면 `${m.id}`로만 해도 됨
             map.set(`${m.id}`, m);
         });
 
-        return Array.from(map.values()); 
+        return Array.from(map.values());
     }, [markersToRender]);
 
     useEffect(() => {
@@ -394,7 +415,6 @@ const MapPage = () => {
         kakaoMarkersRef.current = newMarkers;
         clusterer.addMarkers(newMarkers);
     }, [stableMarkersToRender, viewType, selectedSort, modalContent]);
-
 
     // 검색 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
@@ -508,21 +528,23 @@ const MapPage = () => {
         const sameLocationMarkers = markersToRender?.filter(
             (m) => m.latitude === clickedMarker.latitude && m.longitude === clickedMarker.longitude
         );
-        
+
         const { buildingIds, agencyIds } = splitIds(sameLocationMarkers as MarkerItem[]);
 
-        if (buildingIds.length === 0) {
-            // 같은 위치가 전부 AGENCY면 호출 안 함(혹은 agencyIdList만 허용되면 거기에 맞춰 호출)
+        if (buildingIds.length === 0 && agencyIds.length === 0) {
+            // 마커가 없는 경우에만 return
             return;
         }
 
         const params: NearByRequest = {
-            num: buildingIds.length,  // 모두 가져오기
+            num: buildingIds.length + agencyIds.length,  // 모두 가져오기
             page: 1,
             type: viewType,
             sortBy: selectedSort,
-            idList: buildingIds,
-            // agencyIdList: agencyIds, 
+            // REVIEW 타입: 모든 ID를 idList에 담음
+            // BUILDING 타입: 일반 건물은 idList, 공인중개사는 agencyIdList로 분리
+            idList: viewType === "REVIEW" ? [...buildingIds, ...agencyIds] : buildingIds,
+            agencyIdList: viewType === "BUILDING" ? agencyIds : undefined,
         };
 
         setMarkerDetailParams(params);

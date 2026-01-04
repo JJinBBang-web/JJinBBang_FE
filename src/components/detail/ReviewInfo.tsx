@@ -59,7 +59,7 @@ const ReviewInfo: React.FC<Props> = ({review}) => {
     },[liked, review.reviewInfo.likeCount, setIsLiked, setLikeCount]);
 
     const handleToBuilding = () => {
-        navigate(`/building/${buildingId}`);
+        navigate(`/building/${buildingId}`, { state: { type: rawType } });
     };
 
     return (

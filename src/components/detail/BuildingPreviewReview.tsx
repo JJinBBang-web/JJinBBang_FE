@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";
 import { trackExplorationStep } from "../../hooks/useExplorationTracking";
+import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
 
 interface Props {
   review: ReviewPreview;
@@ -105,7 +106,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
   const [isLiked, setIsLiked] = useState(activeReviewInfo?.liked);
   const [likeCount, setLikeCount] = useState(review.reviewInfo.likeCount);
 
-  console.log(review);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -118,12 +118,6 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
     setLikeCount,
   ]);
 
-  // 공인중개사 프리뷰
-
-  // 기숙사 프리뷰
-
-  // 일반 프리뷰
-
   return (
     <div
       className={styles.content}
@@ -134,12 +128,24 @@ const BuildingPreviewReview: React.FC<Props> = ({ review, trackStep }) => {
       }}
     >
       <div className={styles.imgWrap}>
-          <img src={review.image} alt="" className={styles.buildingImg} />
-          {
-            review?.imageCount && review.imageCount > 0 ? (
-              <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
-            ) : null
-          }
+        { review.image && review.image.trim().length > 0 ? (
+            <img src={review.image} alt="" className={styles.buildingImg} />
+          ) : (
+            <div className={styles.noImageContainer}>
+              <img
+                src={emptyCharacterIcon}
+                alt="empty"
+                className={styles.emptyIcon}
+              />
+              <p>등록된 이미지가 없습니다.</p>
+            </div>
+          )
+        }
+        {
+          review?.imageCount && review.imageCount > 0 ? (
+            <div className={styles.imgNum}><p className={styles.count}>{review.imageCount}</p></div>
+          ) : null
+        }
       </div>
       <div className={styles.infoAndLike}>
         {generalInfo && (
