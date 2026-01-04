@@ -10,6 +10,7 @@ import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategor
 import { formatDate } from "../../util/formatDate";
 import '../../styles/global.css'
 import ContentManageCard from "../../components/content/ContentManageCard";
+import pencilIcon from '../../assets/image/pencilIcon.svg';
 
 const ContentManagePage: React.FC = () => {
     const navigation = useNavigate();
@@ -56,6 +57,10 @@ const ContentManagePage: React.FC = () => {
         navigation(-1);
     };
 
+    const handleToWrite = () => {
+        navigation("/admin/content/write?from=write");
+    }
+
     const reportList = data?.reportList ?? [];
 
     return (         
@@ -93,6 +98,9 @@ const ContentManagePage: React.FC = () => {
                       </div>
                     )}
                 </div>
+                <button className={styles.writeBtn} onClick={handleToWrite}>
+                    <img src={pencilIcon} alt="write" className={styles.writeImg}/>
+                </button>
             </div>
         </div>
     );

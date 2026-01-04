@@ -113,3 +113,153 @@
     font-weight: 500;
     cursor: pointer;
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 9999;
+}
+
+.modalContainer {
+  width: 100%;
+  max-width: 393px;
+  background-color: var(--white);
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modalHandle {
+  width: 3.125rem;
+  height: 0.3125rem;
+  background-color: #dadee8;
+  border-radius: 2px;
+  position: absolute;
+  top: 0.62rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.cancelModal {
+  display: flex;
+  width: 100%;
+  height: 32rem;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.confirmModal {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 24px;
+}
+
+.completeModalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  margin-bottom: 1rem;
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-family: 'Squoqa Han Sans Neo';
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: -0.0375rem;
+  margin-top: 4.73rem;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+.modalSubtitle {
+  font-size: 1rem;
+  font-family: 'Squoqa Han Sans Neo';
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.0375rem;
+  color: var(--color-gray60);
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.confirmButton {
+  width: calc(100% - 2rem);
+  height: 3.375rem;
+  max-width: calc(393px - 2rem);
+  background-color: var(--primary-color);
+  color: var(--white);
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+}
+
+.emptyCharacterIcon {
+  margin-bottom: 5rem;
+}
+
+.modalButtons {
+  width: calc(100% - 32px);
+  left: 0;
+  right: 0;
+  bottom: 2.75rem;
+  display: flex;
+  gap: 0.38rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  background-color: var(--white);
+}
+
+.cancelButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--color-gray20);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--color-gray60);
+  cursor: pointer;
+}
+
+.checkIconImage {
+  width: 4.375rem;
+  height: 4.375rem;
+  margin-top: 4.73rem;
+}
+
+.cm_confirmButton {
+  flex: 1;
+  height: 3.375rem;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
+}

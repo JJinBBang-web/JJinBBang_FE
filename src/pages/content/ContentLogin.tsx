@@ -31,11 +31,15 @@ const ContentLoginPage = () => {
     }
   };
 
+  const handleToHome = () => {
+    navigate("/");
+  }
+
   return (
     <div className={styles.content} style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
       <form className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.header_logo}>
+          <div className={styles.header_logo} onClick={handleToHome}>
             <img src={home_logo} alt="home_logo" />
           </div>
         </div>
