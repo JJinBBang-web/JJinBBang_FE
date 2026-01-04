@@ -14,6 +14,7 @@ export interface ReportItem {
   createdAt: string; // "2025.11.10"
   likeCount: number;
   viewCount: number;
+  isLiked?: boolean;
 }
 
 export interface ReportListPageInfo {

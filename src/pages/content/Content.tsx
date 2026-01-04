@@ -82,6 +82,7 @@ const ContentPage: React.FC = () => {
                             date={formatDate(item.createdAt)}
                             likes={item.likeCount}
                             views={item.viewCount}
+                            isLiked={item.isLiked ?? false}
                           />
                         ))}
                       </div>
