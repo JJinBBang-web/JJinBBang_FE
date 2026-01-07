@@ -1,0 +1,84 @@
+/* src/components/event/RentTypeToggle.module.css */
+.tabRow {
+  width: 100%;
+  position: relative;           
+  display: flex;
+  gap: 0px;
+  padding: 4px;
+  border-radius: 6px;
+  background: rgba(9,10,10,0.04);
+  height: 46px;
+  box-sizing: border-box;
+  margin-bottom: 13px;
+  overflow: hidden;             
+}
+
+.slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);      
+  height: calc(100% - 8px);
+  border-radius: 6px;
+  background: var(--white);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform 200ms ease;  
+  will-change: transform;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-family: 'Sqoa Han Sans Neo';
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.6px;
+
+  color: var(--color-gray60);
+  position: relative;
+  z-index: 1;
+}
+
+.tabActive {
+  background-color: var(--white);
+  color: var(--color-gray80);
+}
+
+.optionGrid {
+  display: flex;
+  flex-wrap: wrap;
+  flex:1;
+  row-gap: 10px;
+  column-gap: 6px;
+
+  margin-bottom: 20px;
+}
+
+.optionChip {
+  border: 1px solid var(--color-gray10);
+  border-radius: 6px;
+  background-color: var(--white);
+  padding: 7px 10px;
+
+  font-family: 'Sqoa Han Sans Neo';
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.6px;
+  color: var(--color-gray60);
+}
+
+.optionChipSelected {
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--white);
+}
