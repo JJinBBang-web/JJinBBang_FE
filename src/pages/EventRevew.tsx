@@ -115,6 +115,7 @@ const EventReviewPage: React.FC = () => {
         </div>
         <button
           className={styles.confirmButton}
+          disabled={!isValid}
         >
           리뷰 등록하기
         </button>
