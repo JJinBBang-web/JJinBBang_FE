@@ -241,21 +241,17 @@ const ReviewTypePage: React.FC = () => {
               "기숙사",
               "하숙집/고시원",
               "공인중개사",
-            ].map((type) => {
-              const isDisabled = type === "공인중개사";
-              return (
-                <button
-                  key={type}
-                  className={`${styles.typeButton} ${
-                    selectedType === type ? styles.selected : ""
-                  } ${isDisabled ? styles.disabled : ""}`}
-                  onClick={() => !isDisabled && handleTypeSelect(type)}
-                  disabled={isDisabled}
-                >
-                  {type}
-                </button>
-              );
-            })}
+            ].map((type) => (
+              <button
+                key={type}
+                className={`${styles.typeButton} ${
+                  selectedType === type ? styles.selected : ""
+                }`}
+                onClick={() => handleTypeSelect(type)}
+              >
+                {type}
+              </button>
+            ))}
           </div>
 
           {/* 유형 선택 여부에 따라 버튼 레이아웃 변경 */}

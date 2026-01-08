@@ -24,7 +24,7 @@ export interface Keywords {
 export interface agencyBuildingInfo{
     liked: boolean;
     id: number | null;
-    type: string[];
+    type: string;
     name: string;
     address: string;
     rating: number;
