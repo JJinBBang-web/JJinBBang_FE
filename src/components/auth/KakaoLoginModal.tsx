@@ -23,6 +23,7 @@ const KakaoLoginModal = ({ onClose }: KakaoLoginModalProps) => {
   const handleKakaoLogin = () => {
     // 로그인 결과를 받을 URL (base64 인코딩은 authApi에서 처리)
     const redirectUrl = `${window.location.origin}/login/result`;
+    console.log(redirectUrl);
     // 백엔드 소셜 로그인 API 호출
     authApi.startSocialLogin('kakao', redirectUrl);
   };

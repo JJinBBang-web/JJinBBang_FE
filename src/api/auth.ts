@@ -116,7 +116,7 @@ export const authApi = {
     // 일반 Base64 인코딩 후 URL-safe 형식으로 변환
     const base64 = btoa(redirectUrl);
     const encodedUrl = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
+    console.log(redirectUrl);
     console.log(encodedUrl);
     // SSOT: api.ts에서 baseURL 가져오기
     const apiUrl = getApiBaseURL();
