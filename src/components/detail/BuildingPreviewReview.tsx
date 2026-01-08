@@ -3,8 +3,8 @@ import heartIconOn from "../../assets/image/heartIconOn.svg";
 import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
-import PreviewReviewContent from "../PreviewReviewContent";
-import { tagMessages, tagImages } from "../Tag";
+import PreviewReviewContent from "../../util/components/PreviewReviewContent";
+import { tagMessages, tagImages } from "../../constants/Tag";
 import {
   ReviewPreview,
   GeneralReviewInfo,

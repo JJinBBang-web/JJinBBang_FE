@@ -15,7 +15,7 @@ import profileIcon from '../assets/image/profileIcon.svg';
 import KakaoLoginModal from '../components/auth/KakaoLoginModal';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
-import PreviewReview from '../components/PreviewReview';
+import PreviewReview from '../util/components/PreviewReview';
 import MetaTag from '../util/SEOMetaTag';
 
 interface UserProfile {

@@ -1,7 +1,7 @@
 import styles from "./ReportButton.module.css"
 import reportIcon from "../../assets/image/reportIcon.svg"
 import { useState } from "react"
-import Modal from "../review/Modal"
+import Modal from "./Modal"
 import reportModalIcon from "../../assets/image/ReportModalIcon.svg"
 import verifyCompleteIcon from "../../assets/image/verifyCompleteIcon.svg"
 import { useLocation, useNavigate } from "react-router-dom"

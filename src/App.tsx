@@ -8,11 +8,11 @@ import {
   Routes,
   useLocation,
 } from "react-router-dom";
-import Home from "./pages/Home";
+import Home from "./Home/Home";
 import MapPage from "./pages/MapPage";
-import Heart from "./pages/HeartListPage";
+import Heart from "./Heart/HeartListPage";
 import MyPage from "./pages/MyPage";
-import Nav from "./components/Nav";
+import Nav from "./util/components/Nav";
 import Building from "./pages/Building";
 import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
@@ -46,7 +46,7 @@ import { useEffect } from "react";
 import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/baseAPI";
 import { useQuery } from "@tanstack/react-query";
-import ModalBottomSheet from "./components/util/ModalBottomSheet";
+import ModalBottomSheet from "./components/map/ModalBottomSheet";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
 import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
 import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";

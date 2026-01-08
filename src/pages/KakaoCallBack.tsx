@@ -10,7 +10,7 @@ import SignupCompleteModal from "../components/auth/SignupCompleteModal";
 
 const url = process.env.REACT_APP_API_URL;
 const SITE_URL = process.env.REACT_APP_SITE_URL!;
-const loginUrl = `${SITE_URL}/login/kakao`;
+const loginUrl = `${window.location.origin}/login/kakao`;
 export const getSignupToken = () => sessionStorage.getItem("signupToken");
 export const getAccessToken = () => sessionStorage.getItem("accessToken");
 export const getRefreshToken = () => sessionStorage.getItem("refreshToken");

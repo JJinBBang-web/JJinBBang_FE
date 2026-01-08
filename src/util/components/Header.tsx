@@ -1,5 +1,5 @@
 import styles from "./Header.module.css"
-import backIcon from "../assets/image/backIcon.svg"
+import backIcon from "../../assets/image/backIcon.svg"
 
 interface HeaderProps {
   type?: 'title' | 'icon';

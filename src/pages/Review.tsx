@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./Review.module.css";
-import Header from "../components/Header";
+import Header from "../util/components/Header";
 import ImageSlider from "../components/detail/ImageSlider";
 import TopButton from "../components/util/TopButton";
 import ReviewInfo from "../components/detail/ReviewInfo";
@@ -9,7 +9,7 @@ import ReviewMapInfo from "../components/detail/ReviewMapInfo";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { ReviewInfoState } from "../recoil/detail/ReviewInfoRecoliState";
 import Footer from "../components/detail/Footer";
-import ReportButton from "../components/util/ReportButton";
+import ReportButton from "../components/review/ReportButton";
 import ReviewFacilitiesInfo from "../components/detail/ReviewFacilitiesInfo";
 import {
   useLocation,

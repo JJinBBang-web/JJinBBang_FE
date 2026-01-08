@@ -4,7 +4,7 @@ import heartIconOff from "../../assets/image/heartIconOff.svg";
 import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
-import PreviewReviewContent from "../PreviewReviewContent";
+import PreviewReviewContent from "./PreviewReviewContent";
 import {
   AgencyBuildingInfo,
   DormitoryBuildingInfo,
@@ -12,7 +12,7 @@ import {
   PreviewBuildingReviewInfo,
 } from "../../recoil/detail/PreviewBuildingReviewRecoilState";
 import { useEffect, useState } from "react";
-import { typeToKorean } from "../../util/mapping";
+import { typeToKorean } from "../mapping";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { postAPI } from "../../api/baseAPI";

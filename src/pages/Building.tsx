@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import styles from "./Building.module.css"
-import Header from "../components/Header";
+import Header from "../util/components/Header";
 import ImageSlider from "../components/detail/ImageSlider";
 import BuildingInfo from "../components/detail/BuildingInfo";
 import TopButton from "../components/util/TopButton";

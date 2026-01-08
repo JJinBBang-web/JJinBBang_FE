@@ -3,13 +3,13 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import styles from "./ContentDetail.module.css"
-import Header from "../../components/Header";
+import Header from "../../util/components/Header";
 import sample from "../../assets/image/content/sample.png"
 import ContentFooter from "../../components/content/ContentFooter";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useReportDetail } from "../../hooks/useReportDetail";
-import Spinner from '../../components/util/Spinner';
+import Spinner from '../../util/components/Spinner';
 import { CATEGORY_TO_KOR } from "../../util/mapping";
 import {
   useAddReportLike,

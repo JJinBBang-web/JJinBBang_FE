@@ -1,21 +1,21 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./PreviewReview.module.css";
-import heartIconOn from "../assets/image/heartIconOn.svg";
-import heartIconOff from "../assets/image/heartIconOff.svg";
-import starIconOn from "../assets/image/starIconOn.svg";
-import starIconOff from "../assets/image/starIconOff.svg";
-import PreviewReviewContent from "../components/PreviewReviewContent";
+import heartIconOn from "../../assets/image/heartIconOn.svg";
+import heartIconOff from "../../assets/image/heartIconOff.svg";
+import starIconOn from "../../assets/image/starIconOn.svg";
+import starIconOff from "../../assets/image/starIconOff.svg";
+import PreviewReviewContent from "./PreviewReviewContent";
 import {
   ReviewPreview,
   GeneralReviewInfo,
   AgencyReviewInfo,
   DormitoryReviewInfo,
-} from "../recoil/detail/PreviewReviewRecoilState";
+} from "../../recoil/detail/PreviewReviewRecoilState";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { getAPI, putAPI, deleteAPI, postAPI } from "../api/baseAPI";
+import { getAPI, putAPI, deleteAPI, postAPI } from "../../api/baseAPI";
 import { useNavigate } from "react-router-dom";
-import noImg from "../assets/image/noImg.svg";
-import { trackExplorationStep } from "../hooks/useExplorationTracking";
+import noImg from "../../assets/image/noImg.svg";
+import { trackExplorationStep } from "../../hooks/useExplorationTracking";
 
 interface Props {
   review: ReviewPreview;

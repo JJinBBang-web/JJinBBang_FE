@@ -2,7 +2,7 @@ import styles from "./UpdateConfirmPage.module.css";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
-import { tagMessages, tagImages } from '../../components/Tag';
+import { tagMessages, tagImages } from '../../constants/Tag';
 import closeIcon from '../../assets/image/iconClose.svg';
 import ArrowIcon from '../../assets/image/arrowIcon.svg';
 import starFilledIcon from '../../assets/image/starIconOnRed.svg';

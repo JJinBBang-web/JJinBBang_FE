@@ -7,14 +7,14 @@ import React, {
 } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./HeartListPage.module.css";
-import Banner from "../components/Banner";
-import PreviewReview from "../components/PreviewReview";
+import Banner from "../deprecated/components/Banner";
+import PreviewReview from "../util/components/PreviewReview";
 import downIcon from "../assets/image/downIcon.svg";
 import campus_img_1 from "../assets/image/campusImg1.svg";
-import FilterModal from "../components/hartListPage/FilterModal";
+import FilterModal from "./components/FilterModal";
 import { filterConfigState } from "../recoil/hartListPage/filterConfigState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import PreviewBuildingReview from "../components/detail/PreviewBuildingReview";
+import PreviewBuildingReview from "../util/components/PreviewBuildingReview";
 import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 import {
   useInfiniteQuery,
@@ -24,7 +24,7 @@ import {
 import { getAPI, putAPI, deleteAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import MetaTag from "../util/SEOMetaTag";
-import BannerCarousel from "../components/BannerCarousel";
+import BannerCarousel from "../util/components/BannerCarousel";
 
 
 const QUERY_KEYS = {

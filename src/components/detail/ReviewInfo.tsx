@@ -5,7 +5,7 @@ import starIconOn from "../../assets/image/starIconOn.svg";
 import starIconOff from "../../assets/image/starIconOff.svg";
 import heartIcon from "../../assets/image/heartIcon.svg";
 import { Review } from "../../recoil/detail/ReviewInfoRecoliState";
-import { tagImages, tagMessages } from "../Tag";
+import { tagImages, tagMessages } from "../../constants/Tag";
 import { useEffect, useState } from "react";
 import { contractTypeToKorean, floorToKorean, typeToKorean } from "../../util/mapping";
 import { useNavigate } from "react-router-dom";

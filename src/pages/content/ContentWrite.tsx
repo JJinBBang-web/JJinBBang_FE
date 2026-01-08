@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./ContentWritePage.module.css"
 import { useNavigate } from "react-router-dom";
 import { KOR_TO_CATEGORY, CATEGORY_TO_KOR } from "../../util/mapping";
-import Spinner from '../../components/util/Spinner';
+import Spinner from '../../util/components/Spinner';
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
 import '../../styles/global.css'
 

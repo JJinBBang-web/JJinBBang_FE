@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./CampusSlide.module.css";
-import campus_arrow from "../assets/image/campusArrow.svg";
-import select_dot from "../assets/image/selectDot.svg";
-import not_select_dot from "../assets/image/notSelectDot.svg";
-import preparingService from "../assets/image/preparingService.svg";
+import campus_arrow from "../../assets/image/campusArrow.svg";
+import select_dot from "../../assets/image/selectDot.svg";
+import not_select_dot from "../../assets/image/notSelectDot.svg";
+import preparingService from "../../assets/image/preparingService.svg";
 import { useNavigate } from "react-router-dom";
-import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
+import useExplorationTracking, { trackExplorationStep } from '../../hooks/useExplorationTracking';
 
 const SLIDE_WIDTH = 173;
 

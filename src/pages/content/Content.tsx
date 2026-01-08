@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Content.module.css"
-import Header from "../../components/Header";
+import Header from "../../util/components/Header";
 import CategoryTabs from "../../components/content/CategoryTabs";
 import ContentCard from "../../components/content/ContentCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { KOR_TO_CATEGORY, CATEGORY_TO_KOR } from "../../util/mapping";
 import { useReportList } from "../../hooks/useReportList";
-import Spinner from '../../components/util/Spinner';
+import Spinner from '../../util/components/Spinner';
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
 import { formatDate } from "../../util/formatDate";
 import '../../styles/global.css'

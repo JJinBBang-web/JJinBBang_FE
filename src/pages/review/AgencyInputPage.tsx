@@ -11,7 +11,7 @@ import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import styles from "../../styles/review/FloorInput.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import useReviewStepTracking from "../../hooks/useReviewStepTracking";
-import Spinner from "../../components/util/Spinner";
+import Spinner from "../../util/components/Spinner";
 
 interface LocationState {
   address: {

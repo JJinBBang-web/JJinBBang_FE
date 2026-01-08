@@ -3,9 +3,9 @@ import React from 'react';
 import styles from './Home.module.css';
 import home_logo from '../assets/logo/homeLogo.svg';
 import campus_icon from '../assets/image/campusIcon.svg';
-import Banner from '../components/Banner';
-import CampusSlide from '../components/CampusSlide';
-import PreviewReview from '../components/PreviewReview';
+import Banner from '../deprecated/components/Banner';
+import CampusSlide from './components/CampusSlide';
+import PreviewReview from '../util/components/PreviewReview';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import pencil from '../assets/image/pencil.svg';
 import iconRight from '../assets/image/iconRight.svg';
@@ -14,7 +14,7 @@ import { getAPI } from '../api/baseAPI';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilValue } from 'recoil';
 import MetaTag from '../util/SEOMetaTag';
-import BannerCarousel from '../components/BannerCarousel';
+import BannerCarousel from '../util/components/BannerCarousel';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;

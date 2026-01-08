@@ -12,7 +12,7 @@ import {
   JjinAgencyFilterState,
 } from "../../recoil/util/filterRecoilState";
 import { DormFilterState } from "../../recoil/util/dormFilterState";
-import { tagMessages, tagLongMessages } from "../../components/Tag";
+import { tagMessages, tagLongMessages } from "../../constants/Tag";
 import styles from "../../styles/review/ReviewConfirm.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
 import ArrowIcon from "../../assets/image/arrowIcon.svg";
