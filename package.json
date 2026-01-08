@@ -80,6 +80,5 @@
     "allowedHosts": [
       "localhost"
     ]
-  },
-  "proxy" : "https://api.jjinbbang.kr"
+  }
 }
