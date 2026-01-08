@@ -13,6 +13,7 @@ import ProsAndConsInput from "../components/event/ProsAndConsInput";
 import type { CategoryTab } from "../components/event/SelectCategory";
 import { eventReviewFormState, eventReviewFormValidState } from "../recoil/event/eventReviewFormState";
 import PhotoUpload from "../components/event/PhotoUpload";
+import ReviewTextInput from "../components/event/ReviewTextInput";
 
 
 
@@ -104,9 +105,15 @@ const EventReviewPage: React.FC = () => {
               maxPhotos={3}
             />
           </div>
-          <hr className={styles.divider} /> 
+          <hr className={styles.divider} />
           <div className={styles.section}>
             <QuestionInfo title="찐 후기 작성" isRequired={true} />
+            <ReviewTextInput
+              value={form.reviewText}
+              onChange={(next) => setForm((p) => ({ ...p, reviewText: next }))}
+              minLength={20}
+              maxLength={1000}
+            />
           </div>
           <hr className={styles.divider} /> 
           <div className={styles.section}>
