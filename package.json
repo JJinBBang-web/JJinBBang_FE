@@ -80,6 +80,7 @@
     "allowedHosts": [
       "localhost"
     ],
-    "proxy": "http://3.35.29.235:8080"
-  }
+    "proxy": "https://api.jjinbbang.kr"
+  },
+  "proxy": "https://api.jjinbbang.kr"
 }
