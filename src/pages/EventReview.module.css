@@ -64,6 +64,19 @@
     z-index: 999;
 }
 
+.textContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.giftIcon {
+  width: 20px;
+  height: 20px;
+}
+
 .section {
   display: flex;
   flex-direction: column;
@@ -148,6 +161,7 @@
 }
 
 .reviewText {
+  margin: 0;
   font-family: "Spoqa Han Sans Neo";
   font-size: 16px;
   font-weight: 500;

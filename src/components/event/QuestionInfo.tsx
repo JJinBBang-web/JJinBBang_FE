@@ -16,9 +16,8 @@ const QuestionInfo: React.FC<QuestionInfoProps> = ({
         <div className={styles.questionInfo}>
             <div className={styles.titleRow}>
                 <span className={styles.title}>{title}</span>
-                <span className={styles.required}>
-                    {isRequired ? '*' : ''}
-                </span>
+                {isRequired === true && <span className={styles.required}>*</span>}
+                {isRequired === false && <span className={styles.optional}>선택</span>}
             </div>
             {description && <p className={styles.description}>{description}</p>}
         </div>

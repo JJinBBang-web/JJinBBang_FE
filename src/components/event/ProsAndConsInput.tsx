@@ -11,6 +11,8 @@ type Props = {
   onChangeSelected: (nextSelected: string[]) => void;
   minSelect?: number;
   maxSelect?: number;
+  disabledOptions?: string[];
+  oppositeType?: "장점" | "단점";
 };
 
 const ProsAndConsInput: React.FC<Props> = ({
@@ -20,6 +22,8 @@ const ProsAndConsInput: React.FC<Props> = ({
   onChangeSelected,
   minSelect = 3,
   maxSelect,
+  disabledOptions = [],
+  oppositeType,
 }) => {
   const removeSelected = (item: string) => {
     onChangeSelected(selected.filter((x) => x !== item));
@@ -37,6 +41,8 @@ const ProsAndConsInput: React.FC<Props> = ({
         selected={selected}
         onChangeSelected={onChangeSelected}
         maxSelect={maxSelect}
+        disabledOptions={disabledOptions}
+        oppositeType={oppositeType}
       />
 
       {isSelected && (

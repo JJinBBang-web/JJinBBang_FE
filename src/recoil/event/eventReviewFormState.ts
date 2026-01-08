@@ -26,6 +26,8 @@ export type EventReviewForm = {
 
   // 이벤트 참여 정보
   phone: string;
+  agreeMarketing: boolean;
+  agreePrivacy: boolean;
 
   // UI 상태(선택): 제출 시 로딩/에러 등
   ui: {
@@ -49,6 +51,8 @@ export const eventReviewFormState = atom<EventReviewForm>({
     photos: [],
     reviewText: "",
     phone: "",
+    agreeMarketing: false,
+    agreePrivacy: false,
     ui: { isSubmitting: false },
   },
 });
@@ -68,9 +72,12 @@ export const eventReviewFormValidState = selector({
     const prosOk = f.pros.length >= 3 && f.pros.length <= 5;
     const consOk = f.cons.length >= 3 && f.cons.length <= 5;
 
-    const reviewOk = f.reviewText.trim().length > 0;
-    const phoneOk = f.phone.trim().length >= 10; // 필요하면 정규식으로 더 엄격하게
+    const reviewOk = f.reviewText.trim().length >= 20;
+    // 휴대폰 번호는 하이픈 제거 후 정확히 11자리여야 함
+    const phoneNumbersOnly = f.phone.replace(/[^\d]/g, "");
+    const phoneOk = phoneNumbersOnly.length === 11;
+    const agreeOk = f.agreeMarketing && f.agreePrivacy;
 
-    return hasAddress && hasPrice && prosOk && consOk && reviewOk && phoneOk;
+    return hasAddress && hasPrice && prosOk && consOk && reviewOk && phoneOk && agreeOk;
   },
 });
