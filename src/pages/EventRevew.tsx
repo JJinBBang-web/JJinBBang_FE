@@ -12,6 +12,7 @@ import { JjinFilterState } from "../recoil/util/filterRecoilState";
 import ProsAndConsInput from "../components/event/ProsAndConsInput";
 import type { CategoryTab } from "../components/event/SelectCategory";
 import { eventReviewFormState, eventReviewFormValidState } from "../recoil/event/eventReviewFormState";
+import PhotoUpload from "../components/event/PhotoUpload";
 
 
 
@@ -94,9 +95,14 @@ const EventReviewPage: React.FC = () => {
               maxSelect={5}
             />
           </div>
-          <hr className={styles.divider} /> 
+          <hr className={styles.divider} />
           <div className={styles.section}>
-            <QuestionInfo title="방 사진 인증" description="실제 거주했던 방 사진을 올려주세요 (최대 3장)" isRequired={false} />
+            <QuestionInfo title="방 사진 인증" isRequired={false} />
+            <PhotoUpload
+              photos={form.photos}
+              onChange={(next) => setForm((p) => ({ ...p, photos: next }))}
+              maxPhotos={3}
+            />
           </div>
           <hr className={styles.divider} /> 
           <div className={styles.section}>
