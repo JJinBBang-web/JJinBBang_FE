@@ -74,12 +74,28 @@ const EventReviewPage: React.FC = () => {
                 type="text"
                 placeholder="주소 검색"
                 className={styles.inputField}
+                value={form.address.keyword}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    address: { ...p.address, keyword: e.target.value },
+                  }))
+                }
               />
-              <img
-                src={searchDeleteIcon}
-                alt="삭제 아이콘"
-                className={styles.icon}
-              />
+              {form.address.keyword && (
+                <img
+                  src={searchDeleteIcon}
+                  alt="삭제 아이콘"
+                  className={styles.icon}
+                  onClick={() =>
+                    setForm((p) => ({
+                      ...p,
+                      address: { keyword: "" },
+                    }))
+                  }
+                  style={{ cursor: "pointer" }}
+                />
+              )}
             </div>
           </div>
           <hr className={styles.divider} />
@@ -106,6 +122,8 @@ const EventReviewPage: React.FC = () => {
               }
               minSelect={3}
               maxSelect={5}
+              disabledOptions={form.cons}
+              oppositeType="단점"
             />
           </div>
           <hr className={styles.divider} />
@@ -124,6 +142,8 @@ const EventReviewPage: React.FC = () => {
               }
               minSelect={3}
               maxSelect={5}
+              disabledOptions={form.pros}
+              oppositeType="장점"
             />
           </div>
           <hr className={styles.divider} />

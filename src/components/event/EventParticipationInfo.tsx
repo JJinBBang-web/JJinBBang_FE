@@ -20,9 +20,21 @@ const EventParticipationInfo: React.FC<Props> = ({
   onAgreePrivacyChange,
 }) => {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 숫자와 하이픈만 허용
-    const value = e.target.value.replace(/[^\d-]/g, "");
-    onPhoneChange(value);
+    // 숫자만 추출
+    const numbersOnly = e.target.value.replace(/[^\d]/g, "");
+
+    // 11자리 초과 입력 방지
+    if (numbersOnly.length > 11) return;
+
+    // 자동 하이픈 추가 (010-0000-0000 형식)
+    let formatted = numbersOnly;
+    if (numbersOnly.length > 3 && numbersOnly.length <= 7) {
+      formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+    } else if (numbersOnly.length > 7) {
+      formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 7)}-${numbersOnly.slice(7)}`;
+    }
+
+    onPhoneChange(formatted);
   };
 
   return (

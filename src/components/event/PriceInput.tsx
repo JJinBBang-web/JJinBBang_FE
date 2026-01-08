@@ -28,7 +28,9 @@ const PriceInput: React.FC<Props> = ({ value, onChange }) => {
 
   const handle =
     (key: keyof PriceValue) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange({ ...value, [key]: e.target.value });
+      // 숫자만 허용
+      const numericValue = e.target.value.replace(/[^\d]/g, "");
+      onChange({ ...value, [key]: numericValue });
     };
 
   return (

@@ -73,7 +73,9 @@ export const eventReviewFormValidState = selector({
     const consOk = f.cons.length >= 3 && f.cons.length <= 5;
 
     const reviewOk = f.reviewText.trim().length >= 20;
-    const phoneOk = f.phone.trim().length >= 10;
+    // 휴대폰 번호는 하이픈 제거 후 정확히 11자리여야 함
+    const phoneNumbersOnly = f.phone.replace(/[^\d]/g, "");
+    const phoneOk = phoneNumbersOnly.length === 11;
     const agreeOk = f.agreeMarketing && f.agreePrivacy;
 
     return hasAddress && hasPrice && prosOk && consOk && reviewOk && phoneOk && agreeOk;
