@@ -14,6 +14,7 @@ import type { CategoryTab } from "../components/event/SelectCategory";
 import { eventReviewFormState, eventReviewFormValidState } from "../recoil/event/eventReviewFormState";
 import PhotoUpload from "../components/event/PhotoUpload";
 import ReviewTextInput from "../components/event/ReviewTextInput";
+import EventParticipationInfo from "../components/event/EventParticipationInfo";
 
 
 
@@ -115,9 +116,17 @@ const EventReviewPage: React.FC = () => {
               maxLength={1000}
             />
           </div>
-          <hr className={styles.divider} /> 
+          <hr className={styles.divider} />
           <div className={styles.section}>
-            <QuestionInfo title="이벤트 참여 정보" description="휴대폰 번호를 남겨주세요" isRequired={true} />
+            <QuestionInfo title="이벤트 참여 정보" isRequired={true} />
+            <EventParticipationInfo
+              phone={form.phone}
+              onPhoneChange={(next) => setForm((p) => ({ ...p, phone: next }))}
+              agreeMarketing={form.agreeMarketing}
+              onAgreeMarketingChange={(next) => setForm((p) => ({ ...p, agreeMarketing: next }))}
+              agreePrivacy={form.agreePrivacy}
+              onAgreePrivacyChange={(next) => setForm((p) => ({ ...p, agreePrivacy: next }))}
+            />
           </div>
         </div>
       </div>
