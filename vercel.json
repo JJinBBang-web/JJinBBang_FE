@@ -31,7 +31,7 @@
     },
     {
       "source": "/api/:path*",
-      "destination": "https://www.jjinbbang.kr/api/:path*"
+      "destination": "http://3.35.29.235:8080/api/:path*"
     },
     {
       "source": "/(.*)",
