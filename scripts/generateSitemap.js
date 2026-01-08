@@ -6,7 +6,7 @@ import path from "node:path";
   const SitemapGeneratedDate = new Date().toISOString();
   const DOMAIN = "https://jjinbbang.kr";
 
-  const pages = ["/", "/map", "/heart", "/mypage"].map((p) => DOMAIN + p);
+  const pages = ["/", "/map", "/heart", "/mypage", "/content"].map((p) => DOMAIN + p);
 
   const pageSitemap = pages
     .map(
