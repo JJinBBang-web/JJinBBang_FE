@@ -33,6 +33,14 @@ const SelectCategory: React.FC<Props> = ({
   }, [optionsByTab, activeTabKey]);
 
   const toggleOption = (option: string) => {
+    const exists = selected.includes(option);
+
+    // 이미 선택된 항목은 해제 가능
+    if (exists) {
+      onChangeSelected(selected.filter((x) => x !== option));
+      return;
+    }
+
     // 비활성화된 옵션은 선택 불가 + alert 표시
     if (disabledOptions.includes(option)) {
       if (oppositeType) {
@@ -41,14 +49,11 @@ const SelectCategory: React.FC<Props> = ({
       return;
     }
 
-    const exists = selected.includes(option);
-
-    if (exists) {
-      onChangeSelected(selected.filter((x) => x !== option));
+    // 최대 개수 체크
+    if (typeof maxSelect === "number" && selected.length >= maxSelect) {
+      alert("최대 5개만 선택할 수 있어요!");
       return;
     }
-
-    if (typeof maxSelect === "number" && selected.length >= maxSelect) return;
 
     onChangeSelected([...selected, option]);
   };
@@ -78,7 +83,6 @@ const SelectCategory: React.FC<Props> = ({
               type="button"
               className={`${styles.optionChip} ${isSelected ? styles.optionChipSelected : ""} ${isDisabled ? styles.optionChipDisabled : ""}`}
               onClick={() => toggleOption(opt)}
-              disabled={isDisabled}
             >
               {opt}
             </button>

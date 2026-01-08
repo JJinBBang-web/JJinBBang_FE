@@ -48,6 +48,36 @@ const EventReviewPage: React.FC = () => {
     {} as Record<string, string[]>
   );
 
+  // 장점 선택 시 같은 번호의 단점 라벨들을 비활성화
+  const prosDisabledLabels = form.cons.map((consLabel) => {
+    // cons에서 선택된 label로부터 key를 찾음
+    for (const category of jjinFilters) {
+      const negFilter = category.negativeFilters.find((f) => f.label === consLabel);
+      if (negFilter) {
+        // 같은 번호의 positiveFilter를 찾음 (예: NE_BD_LO_01 -> PO_BD_LO_01)
+        const number = negFilter.key.slice(-2); // 마지막 2자리
+        const posFilter = category.positiveFilters.find((f) => f.key.endsWith(number));
+        if (posFilter) return posFilter.label;
+      }
+    }
+    return "";
+  }).filter(Boolean);
+
+  // 단점 선택 시 같은 번호의 장점 라벨들을 비활성화
+  const consDisabledLabels = form.pros.map((prosLabel) => {
+    // pros에서 선택된 label로부터 key를 찾음
+    for (const category of jjinFilters) {
+      const posFilter = category.positiveFilters.find((f) => f.label === prosLabel);
+      if (posFilter) {
+        // 같은 번호의 negativeFilter를 찾음 (예: PO_BD_LO_01 -> NE_BD_LO_01)
+        const number = posFilter.key.slice(-2); // 마지막 2자리
+        const negFilter = category.negativeFilters.find((f) => f.key.endsWith(number));
+        if (negFilter) return negFilter.label;
+      }
+    }
+    return "";
+  }).filter(Boolean);
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -122,7 +152,7 @@ const EventReviewPage: React.FC = () => {
               }
               minSelect={3}
               maxSelect={5}
-              disabledOptions={form.cons}
+              disabledOptions={prosDisabledLabels}
               oppositeType="단점"
             />
           </div>
@@ -142,7 +172,7 @@ const EventReviewPage: React.FC = () => {
               }
               minSelect={3}
               maxSelect={5}
-              disabledOptions={form.pros}
+              disabledOptions={consDisabledLabels}
               oppositeType="장점"
             />
           </div>
