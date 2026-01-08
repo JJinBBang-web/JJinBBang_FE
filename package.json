@@ -81,6 +81,5 @@
       "localhost"
     ],
     "proxy": "https://api.jjinbbang.kr"
-  },
-  "proxy": "https://api.jjinbbang.kr"
+  }
 }

@@ -30,6 +30,10 @@
       "destination": "/favicon.ico"
     },
     {
+      "source": "/api/:path*",
+      "destination": "https://api.jjinbbang.kr/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
