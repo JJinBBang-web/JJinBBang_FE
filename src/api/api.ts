@@ -3,8 +3,8 @@ import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 // SSOT: API 서버 주소는 여기서만 관리 (로컬 : env, 베포 : '')
 export const getApiBaseURL = (): string => {
-  // return process.env.REACT_APP_API_URL as string;
-  return 'https://api.jjinbbang.kr';
+  return process.env.REACT_APP_API_URL as string;
+  // return '';
 };
 
 export const api = axios.create({
