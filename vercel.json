@@ -1,4 +1,28 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "jjinbbang.kr"
+        }
+      ],
+      "destination": "https://www.jjinbbang.kr",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!api/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "jjinbbang.kr"
+        }
+      ],
+      "destination": "https://www.jjinbbang.kr/:path",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/robots.txt",
@@ -23,19 +47,6 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-    "redirects": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "jjinbbang.kr"
-        }
-      ],
-      "destination": "https://www.jjinbbang.kr",
-      "permanent": true
     }
   ]
 }
