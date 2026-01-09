@@ -31,7 +31,7 @@
     },
     {
       "source": "/api/:path*",
-      "destination": "https://api.jjinbbang.kr/:path*"
+      "destination": "https://api.jjinbbang.kr/api/:path*"
     },
     {
       "source": "/(.*)",
