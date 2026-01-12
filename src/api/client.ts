@@ -1,5 +1,6 @@
 // src/api/client.ts
 import axios from 'axios';
+import { tokenStore } from './api';
 
 const client = axios.create({
   baseURL: "",
@@ -11,7 +12,7 @@ const client = axios.create({
 
 client.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem('accessToken');
+    const token = tokenStore.getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

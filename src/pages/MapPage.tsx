@@ -27,6 +27,8 @@ import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import Spinner from '../components/util/Spinner';
 import MetaTag from '../util/SEOMetaTag';
+import { isLoginState } from '../recoil/auth/isLoginState';
+import focusIcon from '../assets/image/focus.svg';
 import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
@@ -58,6 +60,7 @@ const MapPage = () => {
         FILTER_ATOMS.forEach(reset);
     }, []);
     const didResetRef = useRef(false);
+    const didCampusMoveRef = useRef(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -67,7 +70,7 @@ const MapPage = () => {
     const [isSheetVisible, setIsSheetVisible] = useState(true);
     const [mapBounds, setMapBounds] = useState<MarkerRequest['bounds'] | null>(null);
     const [selectedSort, setSelectedSort] = useState<"RCMND" | "LATEST" | "LIKES" | "STARS">("RCMND");
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLogin] = useRecoilState(isLoginState);
     const [markerDetailParams, setMarkerDetailParams] = useState<NearByRequest | undefined>(undefined);
     const campusCenter = useRecoilValue(campusCenterState);
     const setCampusCenter = useSetRecoilState(campusCenterState);
@@ -80,6 +83,17 @@ const MapPage = () => {
     const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
     const kakaoMarkersRef = useRef<kakao.maps.Marker[]>([]);
     const clusterOverlaysRef = useRef<kakao.maps.CustomOverlay[]>([]);
+    
+    // 초기 위치 저장용 ref
+    const initialCenterRef = useRef<{ lat: number; lng: number } | null>(null);
+    const initialBoundsRef = useRef<MarkerRequest["bounds"] | null>(null);
+    // 임시 위치 저장용 state
+    const [tempBounds, setTempBounds] = useState<MarkerRequest["bounds"] | null>(null);
+    // 버튼 노출 여부
+    const [showMapActionBtns, setShowMapActionBtns] = useState(false);
+
+    // 첫 boundsChanged 이벤트 스킵용 ref
+    const skipFirstBoundsChangedRef = useRef(true);
 
     // 페이지네이션 관련 상태
     const [searchCurrentPage, setSearchCurrentPage] = useState(1);
@@ -290,7 +304,7 @@ const MapPage = () => {
 
   const handleOpenModal = () => {
         trackExplorationStep('3.5_map_view_modal');
-        if (!isLoggedIn || verificationStatus) {
+        if (!isLogin || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
             setHideNav(true);
@@ -380,6 +394,7 @@ const MapPage = () => {
         return Array.from(map.values());
     }, [markersToRender]);
 
+    // 마커 렌더링
     useEffect(() => {
         const map = mapRef.current;
         const clusterer = clustererRef.current;
@@ -469,26 +484,35 @@ const MapPage = () => {
         }
     }, [searchData, searchCurrentPage]);
 
-    
+    // 캠퍼스 중심 좌표 변경 시 초기 위치 설정
     useEffect(() => {
-        if (campusCenter && mapRef.current) {
-            const offset = 0.01;
+        if (!campusCenter || !mapRef.current) return;
+        if (didCampusMoveRef.current) return; // ✅ 한 번만
 
-            // 지도 중심 이동
-            mapRef.current.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
+        didCampusMoveRef.current = true;
 
-            // bounds 업데이트
-            setMapBounds({
-                neLat: campusCenter.lat + offset,
-                neLng: campusCenter.lng + offset,
-                swLat: campusCenter.lat - offset,
-                swLng: campusCenter.lng - offset,
-            });
+        const offset = 0.01;
+        mapRef.current.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
 
-            // center 상태도 동기화 (선택사항)
-            setMapCenter({ lat: campusCenter.lat, lng: campusCenter.lng });
-        }
+        const initB = {
+            neLat: campusCenter.lat + offset,
+            neLng: campusCenter.lng + offset,
+            swLat: campusCenter.lat - offset,
+            swLng: campusCenter.lng - offset,
+        };
+
+        setMapBounds(initB);
+        setTempBounds(initB);
+        setMapCenter({ lat: campusCenter.lat, lng: campusCenter.lng });
+
+        // 초기값도 세팅
+        initialCenterRef.current = { lat: campusCenter.lat, lng: campusCenter.lng };
+        initialBoundsRef.current = initB;
+
+        // 버튼 숨김
+        setShowMapActionBtns(false);
     }, [campusCenter]);
+
 
 
     // nearBy 데이터가 업데이트될 때 누적 처리
@@ -513,7 +537,7 @@ const MapPage = () => {
 
 
     const handleMarkerClick = (markerId: number) => {
-        if(!isLoggedIn || verificationStatus) {
+        if(!isLogin || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
             setHideNav(true);
@@ -637,12 +661,6 @@ const MapPage = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // 토큰 여부 확인
-    useEffect(() => {
-        const token = sessionStorage.getItem("accessToken");
-        setIsLoggedIn(!!token);
-    }, []);
-
     // 미인증 여부 확인
     useEffect(() => {
         const verification = sessionStorage.getItem("verificationStatus");
@@ -651,7 +669,7 @@ const MapPage = () => {
 
     // login & 인증 여부에 따라 다르게 이동
     const handleToAuth = () => {
-        if (!isLoggedIn) {
+        if (!isLogin) {
             setHideNav(false);
             setIsModalOpen(false);
             setModalContent(null);
@@ -689,6 +707,47 @@ const MapPage = () => {
         setMapCenter(initialCenter);
     }
 
+    };
+
+    const handleResearchHere = () => {
+        if (!tempBounds) return;
+
+        setMapBounds(tempBounds);
+
+        setShowMapActionBtns(false);
+
+        // 근처 리스트 페이지네이션 초기화
+        setNearByCurrentPage(1);
+        setHasMoreNearBy(true);
+    };
+
+    const handleFocusToInitial = () => {
+        const initCenter = initialCenterRef.current ?? campusCenter ?? { lat: 35.153237, lng: 128.101090 };
+        const offset = 0.01;
+
+        const initB = {
+            neLat: initCenter.lat + offset,
+            neLng: initCenter.lng + offset,
+            swLat: initCenter.lat - offset,
+            swLng: initCenter.lng - offset,
+        };
+
+        // 지도 이동
+        if (mapRef.current) {
+            mapRef.current.panTo(new kakao.maps.LatLng(initCenter.lat, initCenter.lng));
+        }
+
+        // 상태 동기화 + 재조회
+        setMapCenter(initCenter);
+        setTempBounds(initB);
+        setMapBounds(initB);
+
+        // 버튼 숨김
+        setShowMapActionBtns(false);
+
+        // 근처 리스트도 초기화
+        setNearByCurrentPage(1);
+        setHasMoreNearBy(true);
     };
 
     const clustererKey = useMemo(() => {
@@ -767,18 +826,32 @@ const MapPage = () => {
 
                     setMapBounds(extractedBounds);
 
+                    if (!initialBoundsRef.current) initialBoundsRef.current = extractedBounds;
+                    if (!initialCenterRef.current) {
+                        const center = map.getCenter();
+                        initialCenterRef.current = { lat: center.getLat(), lng: center.getLng() };
+                    }
+
+                    setTempBounds(extractedBounds);
+
                     // 🔥 campusCenter가 있다면 초기 위치로 이동!
                     if (campusCenter) {
                         map.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
 
                         const offset = 0.01;
-                        setMapBounds({
-                        neLat: campusCenter.lat + offset,
-                        neLng: campusCenter.lng + offset,
-                        swLat: campusCenter.lat - offset,
-                        swLng: campusCenter.lng - offset,
-                        });
+                        const initB = {
+                            neLat: campusCenter.lat + offset,
+                            neLng: campusCenter.lng + offset,
+                            swLat: campusCenter.lat - offset,
+                            swLng: campusCenter.lng - offset,
+                        };
+
+                        setMapBounds(initB);
+                        setTempBounds(initB);
                         setMapCenter(campusCenter);
+
+                        initialCenterRef.current = campusCenter;
+                        initialBoundsRef.current = initB;
                     }
                     isInitialized.current = true;
                 }}
@@ -794,7 +867,26 @@ const MapPage = () => {
                         swLng: sw.getLng(),
                     };
 
-                    setMapBounds(extractedBounds);
+                    setTempBounds(extractedBounds);
+
+                    if (skipFirstBoundsChangedRef.current) {
+                        skipFirstBoundsChangedRef.current = false;
+                        return;
+                    }
+
+                    const initB = initialBoundsRef.current;
+                    if (!initB) {
+                        setShowMapActionBtns(true);
+                        return;
+                    }
+
+                    const isSame =
+                        Math.abs(initB.neLat - extractedBounds.neLat) < 1e-6 &&
+                        Math.abs(initB.neLng - extractedBounds.neLng) < 1e-6 &&
+                        Math.abs(initB.swLat - extractedBounds.swLat) < 1e-6 &&
+                        Math.abs(initB.swLng - extractedBounds.swLng) < 1e-6;
+
+                    setShowMapActionBtns(!isSame);
 
                 }}
                 >
@@ -815,8 +907,19 @@ const MapPage = () => {
                 <SearchBar onSearch={handleSearch} isSearchMode={isSearchMode} onClearSearch={handleClearSearch}/>
             </div>
             <FilterBar/>
+            {showMapActionBtns && (
+                <div className={styles.researchBtnWrap}>
+                    <button className={styles.researchBtn} onClick={handleResearchHere}>
+                    이 지도에서 재검색
+                    </button>
+                </div>
+            )}
+            <div className={styles.focusBtnWrap}>
+                <button className={styles.focusBtn} onClick={handleFocusToInitial}>
+                <img src={focusIcon} alt='focusIcon' className={styles.focusIcon}/>
+                </button>
+            </div>
             {isSheetVisible && <ReviewListHeader onOpenModal={handleOpenModal} />}
-            {/* 토큰 없는 경우 && 인증 X 경우 ? 팝업 등장 (안에서 학교인증X ? 학생인증 : 회/로 ) */}
             {isModalOpen && modalContent && (
             <Modal onClose={handleCloseModal} style={{ zIndex: 999 }} >
                 {modalContent == 'search' && (
@@ -874,11 +977,6 @@ const MapPage = () => {
                                     <Spinner />
                                 </div>
                             )}
-                            {/* {!hasMoreSearch && searchAllItems.length > 0 && (
-                                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-                                    모든 결과를 불러왔습니다.
-                                </div>
-                            )} */}
                         </div>               
                     </div>
                 )}
@@ -938,11 +1036,6 @@ const MapPage = () => {
                                      <Spinner />
                                 </div>
                             )}
-                            {/* {!hasMoreNearBy && nearByAllItems.length > 0 && (
-                                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-                                    모든 결과를 불러왔습니다.
-                                </div>
-                            )} */}
                         </div>               
                     </div>
                 )}
