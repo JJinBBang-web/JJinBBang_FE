@@ -27,6 +27,7 @@ import { isSheetOpenState } from '../recoil/util/utilRecoilState';
 import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import Spinner from '../util/components/Spinner';
 import MetaTag from '../util/SEOMetaTag';
+import { isLoginState } from '../recoil/auth/isLoginState';
 import focusIcon from '../assets/image/focus.svg';
 import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
 
@@ -69,7 +70,7 @@ const MapPage = () => {
     const [isSheetVisible, setIsSheetVisible] = useState(true);
     const [mapBounds, setMapBounds] = useState<MarkerRequest['bounds'] | null>(null);
     const [selectedSort, setSelectedSort] = useState<"RCMND" | "LATEST" | "LIKES" | "STARS">("RCMND");
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLogin] = useRecoilState(isLoginState);
     const [markerDetailParams, setMarkerDetailParams] = useState<NearByRequest | undefined>(undefined);
     const campusCenter = useRecoilValue(campusCenterState);
     const setCampusCenter = useSetRecoilState(campusCenterState);
@@ -303,7 +304,7 @@ const MapPage = () => {
 
   const handleOpenModal = () => {
         trackExplorationStep('3.5_map_view_modal');
-        if (!isLoggedIn || verificationStatus) {
+        if (!isLogin || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
             setHideNav(true);
@@ -536,7 +537,7 @@ const MapPage = () => {
 
 
     const handleMarkerClick = (markerId: number) => {
-        if(!isLoggedIn || verificationStatus) {
+        if(!isLogin || verificationStatus) {
             setModalContent('login');
             setIsModalOpen(true);
             setHideNav(true);
@@ -660,12 +661,6 @@ const MapPage = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // 토큰 여부 확인
-    useEffect(() => {
-        const token = sessionStorage.getItem("accessToken");
-        setIsLoggedIn(!!token);
-    }, []);
-
     // 미인증 여부 확인
     useEffect(() => {
         const verification = sessionStorage.getItem("verificationStatus");
@@ -674,7 +669,7 @@ const MapPage = () => {
 
     // login & 인증 여부에 따라 다르게 이동
     const handleToAuth = () => {
-        if (!isLoggedIn) {
+        if (!isLogin) {
             setHideNav(false);
             setIsModalOpen(false);
             setModalContent(null);

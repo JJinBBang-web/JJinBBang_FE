@@ -5,6 +5,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { authState, AuthState } from '../recoil/auth/atoms';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import { userApi } from '../api/user';
+import { tokenStore } from '../api/api';
 import styles from '../styles/MyPage.module.css';
 import questionIcon from '../assets/image/questionIcon.svg';
 import arrowIcon from '../assets/image/arrowIcon.svg';
@@ -90,8 +91,7 @@ const MyPage: React.FC = () => {
     } catch (error: any) {
       console.error('유저 정보 조회 실패:', error);
       if (error.response?.status === 401) {
-        sessionStorage.removeItem('accessToken');
-        sessionStorage.removeItem('refreshToken');
+        tokenStore.clearAccessToken();
         setAuth({
           isAuthenticated: false,
           email: undefined,
@@ -136,27 +136,45 @@ const MyPage: React.FC = () => {
     }
   };
 
-  // sessionStorage에서 인증 상태 복원
+  // 메모리에서 인증 상태 복원
   useEffect(() => {
-    const accessToken = sessionStorage.getItem('accessToken');
+    // 로그인 상태가 false이면 복원하지 않음
+    if (!isLogin) {
+      // 로그아웃 상태에서는 authState도 확실히 초기화
+      if (auth.isAuthenticated) {
+        setAuth({
+          isAuthenticated: false,
+          email: undefined,
+          verificationStatus: 'unverified',
+          isFirstLogin: false,
+        });
+      }
+      return;
+    }
+
+    const accessToken = tokenStore.getAccessToken();
+    
+    // accessToken이 없으면 복원하지 않음
+    if (!accessToken) {
+      return;
+    }
+
     const email = sessionStorage.getItem('email');
     const verificationStatus = sessionStorage.getItem('verificationStatus') as
       | 'verified'
       | 'unverified'
       | 'pending';
 
-    if (accessToken) {
-      if (!auth.isAuthenticated) {
-        setAuth({
-          isAuthenticated: true,
-          email: email || undefined,
-          verificationStatus: verificationStatus || 'unverified',
-          isFirstLogin: false,
-        });
-      }
-      fetchUserInfo();
+    if (!auth.isAuthenticated) {
+      setAuth({
+        isAuthenticated: true,
+        email: email || undefined,
+        verificationStatus: verificationStatus || 'unverified',
+        isFirstLogin: false,
+      });
     }
-  }, []);
+    fetchUserInfo();
+  }, [isLogin, auth.isAuthenticated, setAuth]);
 
   // 인증 상태 변경 시 리뷰 조회
   useEffect(() => {
@@ -167,7 +185,19 @@ const MyPage: React.FC = () => {
 
   // 컴포넌트 마운트 시 로그인 상태 확인
   useEffect(() => {
-    if (auth.isAuthenticated) {
+    // 로그인 상태가 false이면 userProfile 초기화
+    if (!isLogin) {
+      setUserProfile({
+        isLoggedIn: false,
+        nickname: '익명의 찐빵이',
+        school: '찐빵대학교',
+        isVerified: false,
+      });
+      return;
+    }
+
+    // 로그인 상태가 true이고 auth.isAuthenticated도 true일 때만 업데이트
+    if (auth.isAuthenticated && isLogin) {
       setUserProfile((prev) => ({
         ...prev,
         isLoggedIn: true,
@@ -181,11 +211,13 @@ const MyPage: React.FC = () => {
         }));
       }
     }
-  }, [auth, setAuth]);
+  }, [auth, isLogin, setAuth]);
 
   // isLoginState와 authState 동기화
   useEffect(() => {
     if (!isLogin) {
+      // 로그아웃 시 모든 상태 초기화
+      tokenStore.clearAccessToken();
       setAuth({
         isAuthenticated: false,
         email: undefined,
@@ -198,8 +230,9 @@ const MyPage: React.FC = () => {
         school: '찐빵대학교',
         isVerified: false,
       });
+      setUserReviews([]);
     }
-  }, [isLogin]);
+  }, [isLogin, setAuth]);
 
   const handleCloseTermsModal = () => {
     setShowTermsModal(false);

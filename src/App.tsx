@@ -18,8 +18,7 @@ import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
 import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
 import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
-import KakaoCallBack from "./pages/KakaoCallBack";
-import KakaoAuthPage from "./pages/auth/KakaoAuthPage";
+import LoginResultPage from "./pages/LoginResultPage";
 import MyAccountPage from "./pages/auth/MyAccountPage";
 import AccountAuthPage from "./pages/auth/AccountAuthPage";
 import NewStudentVerification from "./pages/auth/NewStudentVerification";
@@ -41,8 +40,12 @@ import ReviewAdvantagePage from "./pages/review/ReviewAdvantagePage";
 import ReviewDisadvantagePage from "./pages/review/ReviewDisadvantagePage";
 import ReviewContentPage from "./pages/review/ReviewContentPage";
 import ReviewConfirmPage from "./pages/review/ReviewConfirmPage";
-import { RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 import { useEffect } from "react";
+import { useAuthInitialization } from "./hooks/useAuthInitialization";
+import { useUserInfo } from "./hooks/useUserInfo";
+import { hideNavState } from "./recoil/util/modalState";
+import TagManager from "react-gtm-module";
 import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/baseAPI";
 import { useQuery } from "@tanstack/react-query";
@@ -58,13 +61,10 @@ import UpdateFloorInputPage from "./pages/update/UpdateFloorInputPage";
 import UpdateDormitoryInputPage from "./pages/update/UpdateDormitoryInputPage";
 import UpdateDormitoryConditionsPage from "./pages/update/UpdateDormitoryConditionsPage";
 import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitiesPage";
-import { hideNavState } from "./recoil/util/modalState";
-import TagManager from "react-gtm-module";
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
-import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
-import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
+import RecoilNexus from "./util/RecoilNexus";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,12 +77,16 @@ const queryClient = new QueryClient({
 });
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const [isLogin, setIsLoggedIn] = useRecoilState(isLoginState);
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
-  const accessToken = sessionStorage.getItem("accessToken");
-
   
+  // 인증 초기화
+  const { isInitializing } = useAuthInitialization();
+  
+  // 사용자 정보 조회 및 상태 관리
+  useUserInfo(isInitializing);
+  
+  // GTM 태그 매니저
   useEffect(() => {
     const timer = setTimeout(() => {
       TagManager.dataLayer({
@@ -100,33 +104,6 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     setHideNav(false);
   }, [location.pathname, setHideNav]);
-
-  const {
-    data: userData,
-    isFetching: isFetchingUser,
-    isError: isErrorUser,
-    isSuccess: isSuccessUser,
-  } = useQuery({
-    queryKey: [location.pathname],
-    queryFn: async () => {
-      try {
-        const response = await getAPI(`/api/v1/user`, true);
-        if (response.data.univAuthentication === "인증완료") {
-          sessionStorage.setItem("verificationStatus", "verified");
-          setIsLoggedIn(true);
-        } else {
-          sessionStorage.setItem("verificationStatus", "unverified");
-        }
-        return response.data;
-      } catch (error) {
-        sessionStorage.setItem("verificationStatus", "unverified");
-        setIsLoggedIn(false);
-        setRecoil(explorationFrequencyState, {})
-        throw error;
-      }
-    },
-    refetchOnWindowFocus: false,
-  });
 
   const hiddenNavPaths = [
     "/auth/*",
@@ -147,14 +124,13 @@ const AppContent: React.FC = () => {
       <RecoilNexus />
       {showHeaderAndNav}
       <Routes>
-        <Route path="/login/kakao" element={<KakaoCallBack />} />
+        <Route path="/login/result" element={<LoginResultPage />} />
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/myaccount" element={<AccountAuthPage />} />
         <Route path="/auth">
-          <Route path="kakao" element={<KakaoAuthPage />} />
           <Route path="student">
             <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
