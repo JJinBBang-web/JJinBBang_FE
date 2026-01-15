@@ -2,9 +2,10 @@
 .container {
   background-color: var(--white);
   padding: 0 1rem;
-  height: 100%;
+  height: calc(100vh - 7rem);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .header {
@@ -129,14 +130,14 @@
 
 .footer {
   position: fixed;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 2.75rem;
   display: flex;
-  gap: 0.38rem;
+  gap: 12px;
   max-width: 393px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 12px 16px 44px;
   background-color: var(--white);
 }
 
