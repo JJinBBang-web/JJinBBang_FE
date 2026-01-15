@@ -21,6 +21,9 @@ import '../../styles/global.css'
 import Modal from "../../components/review/Modal";
 import HeartIconOff from '../../assets/image/content/reportHeartOff.svg';
 import HeartIconOn from '../../assets/image/content/reportHeartOn.svg';
+import { useRecoilState } from "recoil";
+import { isLoginState } from "../../recoil/auth/isLoginState";
+import { tokenStore } from "../../api/api";
 
 const ContentDetail: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -28,7 +31,7 @@ const ContentDetail: React.FC = () => {
     const [isSheetVisible, setIsSheetVisible] = useState(true);
     const [modalContent, setModalContent] = useState<React.ReactNode | null>(null);
     const [hideNav, setHideNav] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLogin] = useRecoilState(isLoginState);
     const [verificationStatus, setVerificationStatus] = useState(false);
     
     const navigate = useNavigate();
@@ -55,12 +58,6 @@ const ContentDetail: React.FC = () => {
         handleResize();
 
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // 토큰 여부 확인
-    useEffect(() => {
-        const token = sessionStorage.getItem("accessToken");
-        setIsLoggedIn(!!token);
     }, []);
 
     // 미인증 여부 확인
@@ -98,7 +95,7 @@ const ContentDetail: React.FC = () => {
 
             <div className={styles.btnWrap}>
                 <button className={styles.confirmBtn} onClick={handleToAuth}>
-                {!isLoggedIn ? "로그인하러 가기" : "학교 인증하기"}
+                {!isLogin ? "로그인하러 가기" : "학교 인증하기"}
                 </button>
             </div>
             </div>
@@ -145,14 +142,14 @@ const ContentDetail: React.FC = () => {
 
     const handleToAuth = () => {
         handleCloseModal();
-        if (!isLoggedIn) navigate("/mypage");
+        if (!isLogin) navigate("/mypage");
         else navigate("/auth/student/verify");
     };
 
 
     const handleToggleLikeGuarded = () => {
         // ✅ 로그인 안했거나, 미인증이면 모달
-        if (!isLoggedIn || verificationStatus) {
+        if (!isLogin || verificationStatus) {
             openAuthModal();
             return;
         }
@@ -295,7 +292,7 @@ const ContentDetail: React.FC = () => {
                         좋아요
                     </button>
                 </div>
-                <ContentFooter likes={likeCount} shares={data.shareCount} onClick={handleBack} onToggleLike={handleToggleLikeGuarded} isLiked={liked}/>
+                <ContentFooter likes={likeCount} shares={data.shareCount} onClick={handleBack} onToggleLike={handleToggleLikeGuarded} isLiked={liked} onShare={handleShare}/>
             </div>
         </div>
     );
