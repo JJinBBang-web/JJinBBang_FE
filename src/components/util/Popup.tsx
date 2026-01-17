@@ -42,7 +42,7 @@ const PopupSheet = () => { {
             </div>
             <div className={styles.sheet_content}>
                 <div className={styles.sheet_text_wrap}>
-                    <p className={styles.sheet_text_title}>1/15~16일 신입생 인증 재요청</p>
+                    <p className={styles.sheet_text_title}>1월 8일~16일 신입생 인증 재요청</p>
                     <p className={styles.sheet_text_body}>서버 오류로 해당 기간 인증 내역이 유실되었습니다.<br/>대상자분들은 다시 한번 인증 부탁드립니다.<br/>불편을 드려 정말 죄송합니다</p>
                 </div>
                 <img src={characterIcon} width="180px"alt='character'/>
