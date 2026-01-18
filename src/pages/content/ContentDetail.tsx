@@ -24,6 +24,7 @@ import HeartIconOn from '../../assets/image/content/reportHeartOn.svg';
 import { useRecoilState } from "recoil";
 import { isLoginState } from "../../recoil/auth/isLoginState";
 import { tokenStore } from "../../api/api";
+import copyIcon from '../../assets/image/content/copyIcon.svg';
 
 const ContentDetail: React.FC = () => {
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -65,6 +66,50 @@ const ContentDetail: React.FC = () => {
         const verification = sessionStorage.getItem("verificationStatus");
         setVerificationStatus(verification === 'unverified');
     }, []);
+
+    const openShareModal = (url: string) => {
+        setIsModalOpen(true);
+        setIsSheetVisible(false);
+        setHideNav(true);
+
+        setModalContent(
+            <div className={styles.wrap}>
+            <div className={styles.sheet_header}>
+                <div className={styles.header_divider}></div>
+            </div>
+
+            <div className={styles.shareSheetText}>
+                {title}
+            </div>
+
+            <div className={styles.btnWrap}>
+                <div className={styles.shareInputRow}>
+                    <div className={styles.shareInput}>{url}</div>
+                    <img 
+                        src={copyIcon}
+                        className={styles.copyIconBtn}
+                        onClick={async () => {
+                            try {
+                                await copyToClipboard(url);
+                                alert("링크를 복사했어요!");
+                            } catch {
+                                alert("복사에 실패했어요 😢");
+                            }
+                        }}
+                        aria-label="copy"
+                    />
+                </div>
+            </div>
+
+            <div className={styles.btnWrap}>
+                <button className={styles.confirmBtn} onClick={handleCloseModal}>
+                    확인
+                </button>
+            </div>
+            </div>
+        );
+    };
+
 
     const openAuthModal = () => {
         setIsModalOpen(true);
@@ -187,37 +232,30 @@ const ContentDetail: React.FC = () => {
         };
 
         try {
+            openShareModal(url);
         // Web Share API 미지원이면 링크 복사로 fallback
         if (!navigator.share) {
             await copyToClipboard(url);
-            alert("링크를 복사했어요!");
+            openShareModal(url);
             return;
         }
 
         // (선택) canShare 체크
         if (navigator.canShare && !navigator.canShare(shareData)) {
             await copyToClipboard(url);
-            alert("링크를 복사했어요!");
+            openShareModal(url);
             return;
         }
 
         // 공유 실행
         await navigator.share(shareData);
 
-            // TODO: 공유 성공 시 shareCount 올리는 API가 있으면 여기서 호출
-            // ex) ContentAPI.increaseShareCount(id)
-
         } catch (e) {
-            // ✅ 사용자가 공유창 닫음: fallback 복사하지 말기
-            if (e === "AbortError") return;
+            const err = e as DOMException;
+            if (err?.name === "AbortError") return;
 
-            // ✅ 진짜 공유 실패일 때만 복사 시도
-            try {
-                await copyToClipboard(url);
-                
-            } catch (copyErr) {
-                // 복사도 막히면 최후 fallback
-            }
+            // ✅ 실패면 모달로 fallback (복사도 모달에서)
+            openShareModal(url);
         }
     };
 

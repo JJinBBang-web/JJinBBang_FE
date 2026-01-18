@@ -226,6 +226,42 @@
     text-align: center;
 }
 
+.shareSheetText {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 160%;
+    color: var(--black);
+    text-align: center;
+
+    margin: 14px 0px;
+}
+
+.shareInputRow {
+    width: 100%;
+    padding: 18px 20px;
+
+    border: 1px solid var(--color-gray20);
+    border-radius: 16px;
+    background-color: var(--white);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.shareInput {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    line-height: 150%;
+    color: var(--color-gray60);
+}
+
 .btnWrap {
     width: 100%;
     margin: 10px 0;
