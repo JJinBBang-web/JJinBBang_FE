@@ -15,6 +15,7 @@ import { isLoginState } from '../recoil/auth/isLoginState';
 import { useRecoilValue } from 'recoil';
 import MetaTag from '../util/SEOMetaTag';
 import BannerCarousel from '../components/BannerCarousel';
+import PopupSheet from '../components/util/Popup';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -235,6 +236,8 @@ const Home: React.FC = () => {
       </div>
       <div />
     </div>
+
+    <PopupSheet/>
     </>
   );
 };
