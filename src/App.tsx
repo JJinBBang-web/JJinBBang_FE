@@ -61,9 +61,11 @@ import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitie
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
-import RecoilNexus from "./util/RecoilNexus";
 import LatestReveiwList from "./pages/LatestReviewList";
 import MyReviewList from "./pages/MyReviewList";
+import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
+import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
+import EventReviewPage from "./pages/EventRevew";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -114,6 +116,7 @@ const AppContent: React.FC = () => {
     "/content/:reportId",
     "/latestreivews",
     "/myreviewList",
+    "/event/review/write",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -206,6 +209,7 @@ const AppContent: React.FC = () => {
       <Route path="/content/:reportId" element={<ContentDetail/>} />
       <Route path="/latestreivews"  element={<LatestReveiwList/>}/>
       <Route path="/myreviewList"  element={<MyReviewList/>}/>
+      <Route path="/event/review/write" element={<EventReviewPage/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
