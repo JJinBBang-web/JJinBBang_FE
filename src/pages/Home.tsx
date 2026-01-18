@@ -16,6 +16,10 @@ import { useRecoilValue } from 'recoil';
 import MetaTag from '../util/SEOMetaTag';
 import BannerCarousel from '../components/BannerCarousel';
 import PopupSheet from '../components/util/Popup';
+import { useUserReviews } from '../hooks/useUserReviews';
+import { Review } from '../api/user';
+import Spinner from '../components/util/Spinner';
+import { useNavigate } from 'react-router-dom';
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -33,7 +37,7 @@ const QUERY_KEYS = {
 };
 
 const Home: React.FC = () => {
-
+  const navigate = useNavigate();
   const isLogin = useRecoilValue(isLoginState);
 
   const {
@@ -151,6 +155,17 @@ const Home: React.FC = () => {
   const validReviewData =
     Array.isArray(reviewData) && isLogin ? reviewData : [];
 
+  const {
+    data: myReviewData,
+    isFetching: isFetchingMyReviews,
+    isError: isErrorMyReviews,
+    } = useUserReviews(0, 10);
+
+  const myReviews: Review[] =
+    Array.isArray(myReviewData)
+      ? (myReviewData as Review[])
+      : (myReviewData?.data.reviews as Review[]) || [];
+
   if (
     isFetchingUser ||
     isFetchingCampus ||
@@ -212,7 +227,7 @@ const Home: React.FC = () => {
         </div>
 
         {validReviewData.length > 0 ? (
-          validReviewData.map((review: any) => {
+          validReviewData.slice(0,3).map((review: any) => {
             return (
               <div key={getReviewKey(review)}>
                 <div className={styles.line} />
@@ -232,6 +247,50 @@ const Home: React.FC = () => {
               </p>
             </div>
           </div>
+        )}
+
+        {validReviewData.length > 3 && (
+          <button className={styles.allReviewBtn} onClick={()=> navigate('/latestreivews')}>
+            전체보기
+          </button>
+        )}
+      </div>
+      <div className={styles.previewReviewContainer}>
+        <div className={styles.previewHeader}>
+          <p className={styles.previewTitle}>내가 작성한 리뷰</p>
+        </div>
+
+        {
+          isFetchingMyReviews ?
+          <div>
+            <Spinner/>
+          </div> : null
+        }
+        {myReviews.length > 0 ? (
+          myReviews.slice(0,3).map((review: any) => {
+            return (
+              <div key={getReviewKey(review)}>
+                <div className={styles.line} />
+                <PreviewReview review={review} trackStep="1.2_home_PreviewReview" />
+              </div>
+            );
+          })
+        ) : (
+          <div className={styles.noReviewContainer}>
+            <div className={styles.line} />
+            <div className={styles.noReviewImgContainer}>
+              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
+              <p className={styles.noReviewText}>
+                앗! 아직 등록된 찐빵이 없어요!
+              </p>
+            </div>
+          </div>
+        )}
+
+        {myReviews.length > 3 && (
+          <button className={styles.allReviewBtn} onClick={()=> navigate('/myreviewList')}>
+            전체보기
+          </button>
         )}
       </div>
       <div />

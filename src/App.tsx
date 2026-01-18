@@ -62,6 +62,8 @@ import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
 import RecoilNexus from "./util/RecoilNexus";
+import LatestReveiwList from "./pages/LatestReviewList";
+import MyReviewList from "./pages/MyReviewList";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,6 +112,8 @@ const AppContent: React.FC = () => {
     "/building/review/:reviewId",
     "/building/review/:reviewId/report",
     "/content/:reportId",
+    "/latestreivews",
+    "/myreviewList",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -200,6 +204,8 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
       <Route path="/content" element={<ContentPage/>}/>
       <Route path="/content/:reportId" element={<ContentDetail/>} />
+      <Route path="/latestreivews"  element={<LatestReveiwList/>}/>
+      <Route path="/myreviewList"  element={<MyReviewList/>}/>
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>

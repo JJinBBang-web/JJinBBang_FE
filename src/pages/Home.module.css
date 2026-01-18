@@ -225,3 +225,19 @@
   line-height: 150%; /* 21px */
   letter-spacing: -0.6px;
 }
+
+
+.allReviewBtn {
+  margin-bottom: 20px;
+  padding: 6px 16px;
+  border: 1px solid var(--color-gray20);
+  border-radius: 12px;
+  background-color: var(--white);
+
+  color: var(--color-gray60);
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.6px;
+}
