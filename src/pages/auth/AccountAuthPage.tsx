@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { authState, AuthState } from '../../recoil/auth/atoms';
+import { isLoginState } from '../../recoil/auth/isLoginState';
 import { authApi } from '../../api/auth';
+import { tokenStore } from '../../api/api';
 import styles from '../../styles/auth/AccountAuthPage.module.css';
 import questionIcon from '../../assets/image/questionIcon.svg';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
@@ -15,6 +17,7 @@ import LeaveServiceModal2 from '../../components/auth/LeaveServiceModal2';
 const AccountAuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [auth, setAuth] = useRecoilState<AuthState>(authState);
+  const [, setIsLoggedIn] = useRecoilState(isLoginState);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
@@ -74,6 +77,11 @@ const AccountAuthPage: React.FC = () => {
           isFirstLogin: false,
         });
 
+        setIsLoggedIn(false);
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('verificationStatus');
+        sessionStorage.removeItem('university');
+
         alert(responseData.message);
         navigate('/');
       }
@@ -89,23 +97,32 @@ const AccountAuthPage: React.FC = () => {
     try {
       setIsLoggingOut(true);
 
-      // Recoil 상태 초기화
-      setAuth({
-        isAuthenticated: false,
-        email: undefined,
-        verificationStatus: 'unverified',
-        isFirstLogin: false,
-      });
+      // 로그아웃 API 호출
+      const responseData = await authApi.logout();
 
-      // 로컬 스토리지 정리
-      sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('refreshToken');
-      sessionStorage.removeItem('signupToken');
+      // 성공 시 상태 초기화
+      if (responseData.code === 200) {
+        // 메모리 토큰 정리
+        tokenStore.clearAccessToken();
+        
+        setAuth({
+          isAuthenticated: false,
+          email: undefined,
+          verificationStatus: 'unverified',
+          isFirstLogin: false,
+        });
 
-      // MyPage로 이동
-      navigate('/mypage');
-    } catch (error) {
+        setIsLoggedIn(false);
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('verificationStatus');
+        sessionStorage.removeItem('university');
+
+        // 홈 화면으로 이동
+        navigate('/');
+      }
+    } catch (error: any) {
       console.error('로그아웃 실패:', error);
+      alert(error.message || '로그아웃 처리 중 오류가 발생했습니다.');
     } finally {
       setIsLoggingOut(false);
     }
