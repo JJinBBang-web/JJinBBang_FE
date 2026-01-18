@@ -9,7 +9,9 @@ import Header from "../../components/Header";
 import { imageUploadAPI } from "../../api/imageUpload";
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
 import { useReportDetail } from "../../hooks/useReportDetail";
-import { CATEGORY_TO_KOR } from "../../util/mapping";
+import { CATEGORY_TO_KOR, KOR_TO_CATEGORY } from "../../util/mapping";
+import { useCreateReport } from "../../hooks/useCreateReport";
+import { useUpdateReport } from "../../hooks/useUpdateReport";
 
 
 const ContentWritePage: React.FC = () => {
@@ -42,12 +44,19 @@ const ContentWritePage: React.FC = () => {
   .replace(/<!--[\s\S]*?-->/g, "")
   .trim();
 
+  const { mutateAsync: createReport, isPending: isCreating } = useCreateReport();
+  const { mutateAsync: updateReport, isPending: isUpdating } = useUpdateReport();
+
+
   const isConfirmDisabled =
     normalizedTitle.length === 0 ||
     normalizedContent.length === 0 ||
-    isUploading;
+    isUploading ||
+    isCreating ||
+    isUpdating;
 
   const { data, isLoading, isError } = useReportDetail(id);
+
 
   useEffect(() => {
     if (!isEdit) return;        // edit 모드만
@@ -170,45 +179,53 @@ const ContentWritePage: React.FC = () => {
     await handleUploadFile(img);
   };
 
+  const getFirstImageFromMarkdown = (md: string): string | undefined => {
+    // ![alt](url "title") 형태에서 url만 캡처
+    // 공백 전까지 url로 보고, 괄호 닫기 전까지의 나머지는 title로 취급
+    const re = /!\[[^\]]*\]\(\s*([^\s)]+)(?:\s+["'][^"']*["'])?\s*\)/m;
+    const match = md.match(re);
+    return match?.[1];
+  };
+
   const onSubmit = async () => {
     if (isConfirmDisabled) return;
 
     try {
+      const coverImage = getFirstImageFromMarkdown(normalizedContent) ?? "";
       if (!isEdit) {
-        // write: 생성
-        // await createReportAPI({
-        //   title: normalizedTitle,
-        //   content: normalizedContent,
-        //   category: selectedCategory,
-        // });
+        if (!window.confirm("리포트를 저장하시겠습니까?")) return;
+        
+        await createReport({
+          title: normalizedTitle,
+          content: normalizedContent,
+          category: KOR_TO_CATEGORY[selectedCategory],
+          coverImage,
+        });
 
-        if (window.confirm("리포트를 저장하시겠습니까?")) {
           alert("리포트가 저장되었습니다.");
-          navigation("/admin/content", { replace: true }); // 원하는 곳
-        } else {
+          navigation("/admin/content", { replace: true });
           return;
-        }
-        return;
       }
 
-      // edit: 수정
-      if (!id) {
+      if (!id || Number.isNaN(id)) {
         alert("수정할 글 id가 없어요.");
         return;
       }
 
-      // await updateReportAPI(reportId, {
-      //   title: normalizedTitle,
-      //   content: normalizedContent,
-      //   category: selectedCategory,
-      // });
+      if (!window.confirm("리포트를 수정하시겠습니까?")) return;
 
-      if (window.confirm("리포트를 수정하시겠습니까?")) {
-          alert("리포트가 수정되었습니다.");
-          navigation("/admin/content", { replace: true }); // 원하는 곳
-        } else {
-          return;
-        }
+      await updateReport({
+        reportId: id,
+        data: {
+          title: normalizedTitle,
+          content: normalizedContent,
+          category: KOR_TO_CATEGORY[selectedCategory],
+          coverImage,
+        },
+      });
+
+      alert("리포트가 수정되었습니다.");
+      navigation("/admin/content", { replace: true });
     } catch (e: any) {
       console.error(e);
       alert(e?.message ?? "저장에 실패했어요.");
@@ -286,7 +303,7 @@ const ContentWritePage: React.FC = () => {
         </div>
 
         <div className={styles.btnWrap}>
-          <button className={styles.confirmBtn} disabled={isConfirmDisabled} onClick={onSubmit}>{isEdit ? "수정 완료" : "작성 완료"}</button>
+          <button className={styles.confirmBtn} disabled={isConfirmDisabled} onClick={onSubmit}>{isCreating ? "저장 중.." : isEdit ? "수정 완료" : "작성 완료"}</button>
         </div>
       </div>
     </div>

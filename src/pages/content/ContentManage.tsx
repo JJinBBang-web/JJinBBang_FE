@@ -61,6 +61,8 @@ const ContentManagePage: React.FC = () => {
         navigation("/admin/content/write?from=write");
     }
 
+    
+
     const reportList = data?.reportList ?? [];
 
     return (         

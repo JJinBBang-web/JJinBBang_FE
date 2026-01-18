@@ -39,3 +39,11 @@ export interface ReportDetail {
   shareCount: number;
   isLiked: boolean;
 }
+
+// 리포트 작성 & 수정 요청
+export interface RefortCreateRequest {
+    category: ReportCategory;
+    coverImage?: string;
+    title: string;
+    content: string;
+};

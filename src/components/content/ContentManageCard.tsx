@@ -6,6 +6,7 @@ import viewIcon from '../../assets/image/content/View.svg';
 import '../../styles/global.css'
 import checkIcon from '../../assets/image/checkIconActive.svg';
 import emptyCharacterIcon from "../../assets/image/emptyCharacterIcon.svg";
+import { useDeleteReport } from "../../hooks/useDeleteReport";
 
 interface Props {
   category: string;
@@ -14,7 +15,6 @@ interface Props {
   likes: number;
   views: number;
   id?: number;
-  onDelete?: () => void;
 }
 
 const ContentManageCard: React.FC<Props> = ({
@@ -29,7 +29,9 @@ const ContentManageCard: React.FC<Props> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteMConfirmodal] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-  
+
+  const { mutate: deleteReport, isPending } = useDeleteReport();
+
   const handleToEdit = () => {
     navigation(`/admin/content/edit/${id}?from=edit`,); 
   }
@@ -46,18 +48,16 @@ const ContentManageCard: React.FC<Props> = ({
   const handleDeleteConfirm = async () => {
       if (!id) return;
 
-      try {
-        setIsDelete(true);
-
-        // const response = await deleteAPI(`/api/v1/review/${reviewId}`, true);
-
-        setShowDeleteMConfirmodal(true);
-        setShowDeleteModal(false);
-
-      } catch (error) {
-        console.error("[관리자] 리포트 삭제 실패:", error);
-        setIsDelete(false); // 실패 시 다시 버튼 활성화
-      }
+      deleteReport(id, {
+        onSuccess: () => {
+          setShowDeleteMConfirmodal(true);
+          setShowDeleteModal(false);
+        },
+        onError: (error) => {
+          console.error("[관리자] 리포트 삭제 실패:", error);
+          alert("삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        },
+      });
     };
 
   return (
