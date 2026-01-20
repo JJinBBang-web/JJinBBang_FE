@@ -2,6 +2,9 @@ import { atom, selector } from "recoil";
 import type { PriceValue } from "../../components/event/PriceInput";
 
 export type EventReviewForm = {
+  // 대학교
+  university: string;
+
   // 주소
   address: {
     keyword: string;        // 인풋에 보이는 텍스트
@@ -39,6 +42,7 @@ export type EventReviewForm = {
 export const eventReviewFormState = atom<EventReviewForm>({
   key: "eventReviewFormState",
   default: {
+    university: "",
     address: { keyword: "" },
     price: {
       rentType: "MONTHLY",
@@ -57,12 +61,14 @@ export const eventReviewFormState = atom<EventReviewForm>({
   },
 });
 
-// 버튼 활성화 같은 “계산 상태”는 selector로
+// 버튼 활성화 같은 "계산 상태"는 selector로
 export const eventReviewFormValidState = selector({
   key: "eventReviewFormValidState",
   get: ({ get }) => {
     const f = get(eventReviewFormState);
 
+    // 대학교 선택 여부
+    const hasUniversity = f.university.trim() !== "";
     const hasAddress = !!(f.address.roadAddress || f.address.keyword.trim());
     const hasPrice =
       f.price.deposit.trim() !== "" &&
@@ -78,6 +84,6 @@ export const eventReviewFormValidState = selector({
     const phoneOk = phoneNumbersOnly.length === 11;
     const agreeOk = f.agreeMarketing && f.agreePrivacy;
 
-    return hasAddress && hasPrice && prosOk && consOk && reviewOk && phoneOk && agreeOk;
+    return hasUniversity && hasAddress && hasPrice && prosOk && consOk && reviewOk && phoneOk && agreeOk;
   },
 });

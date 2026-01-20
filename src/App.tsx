@@ -66,6 +66,7 @@ import ContentDetail from "./pages/content/ContentDetail";
 import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
 import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
 import EventReviewPage from "./pages/EventRevew";
+import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -138,6 +139,7 @@ const AppContent: React.FC = () => {
     "/building/review/:reviewId/report",
     "/content/:reportId",
     "/event/review/write",
+    "/event/address-search",
   ];
 
   const showHeaderAndNav = !hiddenNavPaths.some((pattern) =>
@@ -230,6 +232,7 @@ const AppContent: React.FC = () => {
       <Route path="/content" element={<ContentPage/>}/>
       <Route path="/content/:reportId" element={<ContentDetail/>} />
       <Route path="/event/review/write" element={<EventReviewPage/>} />
+      <Route path="/event/address-search" element={<EventAddressSearchPage/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}
     </>
