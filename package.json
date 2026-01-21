@@ -79,7 +79,6 @@
   "options": {
     "allowedHosts": [
       "localhost"
-    ],
-    "proxy": "http://3.35.29.235:8080"
+    ]
   }
 }

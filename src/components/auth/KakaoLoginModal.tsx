@@ -2,9 +2,9 @@
 import React from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '../../recoil/auth/atoms';
+import { authApi } from '../../api/auth';
 import styles from '../../styles/auth/KakaoLoginModal.module.css';
 import kakaoIcon from '../../assets/image/kakaoIcon.svg';
-import { KAKAO_AUTH_URL } from '../../util/kakaoAuth';
 
 interface KakaoLoginModalProps {
   onClose: () => void;
@@ -21,11 +21,11 @@ const KakaoLoginModal = ({ onClose }: KakaoLoginModalProps) => {
   };
 
   const handleKakaoLogin = () => {
-    // 로그인 성공 후 리다이렉트 시 처리를 위해
-    // 로컬 스토리지에 firstLogin 플래그 저장
-    sessionStorage.setItem('isFirstLogin', 'true');
-    // 카카오 로그인 페이지로 이동
-    window.location.href = KAKAO_AUTH_URL;
+    // 로그인 결과를 받을 URL (base64 인코딩은 authApi에서 처리)
+    const redirectUrl = `${window.location.origin}/login/result`;
+    console.log(redirectUrl);
+    // 백엔드 소셜 로그인 API 호출
+    authApi.startSocialLogin('kakao', redirectUrl);
   };
 
   return (

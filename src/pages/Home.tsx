@@ -15,6 +15,7 @@ import { isLoginState } from "../recoil/auth/isLoginState";
 import { useRecoilValue } from "recoil";
 import MetaTag from "../util/SEOMetaTag";
 import BannerCarousel from "../components/BannerCarousel";
+import PopupSheet from '../components/util/Popup';
 import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.svg";
 import { useNavigate } from "react-router-dom";
 
@@ -247,6 +248,10 @@ const Home: React.FC = () => {
         </div>
         <div />
       </div>
+      <div />
+    </div>
+
+    <PopupSheet/>
     </>
   );
 };
