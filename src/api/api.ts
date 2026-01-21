@@ -1,5 +1,5 @@
 // src/api/api.ts
-import axios, { AxiosRequestConfig, AxiosError } from 'axios';
+import axios, { AxiosRequestConfig, AxiosError } from "axios";
 
 // SSOT: API 서버 주소는 여기서만 관리 (로컬 : env, 베포 : '')
 export const getApiBaseURL = (): string => {
@@ -10,14 +10,14 @@ export const getApiBaseURL = (): string => {
 export const api = axios.create({
   baseURL: getApiBaseURL(),
   headers: {
-    'Content-Type': 'application/json; charset=UTF-8',
-    Accept: 'application/json',
+    "Content-Type": "application/json; charset=UTF-8",
+    Accept: "application/json",
   },
   withCredentials: true, // 쿠키 전송을 위해 기본값 설정
 });
 
 // AxiosRequestConfig 타입 확장 (useAuth, _retry 커스텀)
-declare module 'axios' {
+declare module "axios" {
   export interface AxiosRequestConfig {
     useAuth?: boolean;
     isFile?: boolean;
@@ -123,7 +123,7 @@ export const refreshToken = async (): Promise<string> => {
       {},
       {
         withCredentials: true,
-      }
+      },
     );
     const newAccessToken = response.data.data.accessToken;
     tokenStore.setAccessToken(newAccessToken);
@@ -133,7 +133,7 @@ export const refreshToken = async (): Promise<string> => {
     processQueue(err, null);
     tokenStore.clearAccessToken();
     // 토큰 갱신 실패 시 로그인 상태를 off로 설정하는 이벤트 발생
-    window.dispatchEvent(new CustomEvent('auth:refresh-failed'));
+    window.dispatchEvent(new CustomEvent("auth:refresh-failed"));
     throw err;
   } finally {
     isRefreshing = false;
@@ -149,7 +149,6 @@ api.interceptors.response.use(
     //   "\n✅ Axios Response URL:",
     //   res.config.url
     // );
-
 
     return res;
   },
@@ -175,22 +174,21 @@ api.interceptors.response.use(
         if (typeof originalRequest.headers?.set === "function") {
           originalRequest.headers.set(
             "Authorization",
-            `Bearer ${newAccessToken}`
+            `Bearer ${newAccessToken}`,
           );
         } else {
-          (originalRequest.headers as any)[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
+          (originalRequest.headers as any)["Authorization"] =
+            `Bearer ${newAccessToken}`;
         }
 
         return api(originalRequest);
       } catch (err) {
         // 토큰 갱신 실패 시 로그인 상태를 off로 설정하는 이벤트 발생
-        window.dispatchEvent(new CustomEvent('auth:refresh-failed'));
+        window.dispatchEvent(new CustomEvent("auth:refresh-failed"));
         return Promise.reject(err);
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
