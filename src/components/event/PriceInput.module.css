@@ -1,7 +1,7 @@
 .wrapper {
   width: 100%;
-  position: relative;  
-  box-sizing: border-box;         
+  position: relative;
+  box-sizing: border-box;
 }
 
 .inputGrid {
@@ -35,40 +35,43 @@
 }
 
 .inputRow {
-    width: fit-content;
-    display: flex;
-    flex-direction: row;
-    padding: 10.5px;
-    justify-content: space-between;
-    border: 1px solid var(--color-gray10);
-    border-radius: 8.75px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10.5px;
+  justify-content: space-between;
+  border: 1px solid var(--color-gray10);
+  border-radius: 8.75px;
+  box-sizing: border-box;
 }
 
 .input {
-    width: 60%;
-    border: none;
-
-    font-family: "Spoqa Han Sans Neo";
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.6px;
-    line-height: 1.5;
-    color: var(--color-gray80);
+  width: 60%;
+  border: none;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+  line-height: 1.5;
+  color: var(--color-gray80);
 }
 
 .input::placeholder {
-    color: var(--color-gray40)
+  color: var(--color-gray40);
 }
 
 .input:focus {
-    outline: none;
+  outline: none;
 }
 
 .unit {
-    font-family: "Spoqa Han Sans Neo";
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.6px;
-    line-height: 1.5;
-    color: var(--color-gray40);
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.6px;
+  line-height: 1.5;
+  color: var(--color-gray40);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
