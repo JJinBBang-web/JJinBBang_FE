@@ -1,6 +1,6 @@
 // src/api/content/ContentAPI.ts
 
-import { api } from "../api";
+import { api, tokenStore } from "../api";
 import { ReportListResponse, ReportCategory, ReportDetail } from "../../types/entity/content/ContentInterface";
 
 export class ContentAPI {
@@ -46,8 +46,9 @@ export class ContentAPI {
    */
   static async getReportDetail(reportId: number): Promise<ReportDetail> {
     try {
+      const token = tokenStore.getAccessToken();
       const response = await api.get(`/api/v1/report/${reportId}`, {
-        optionalAuth: true,
+        useAuth: !!token,
       });
 
       if (!response.data || response.data.code !== 200) {

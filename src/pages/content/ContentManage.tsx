@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styles from "./Content.module.css"
 import Header from "../../components/Header";
 import CategoryTabs from "../../components/content/CategoryTabs";
-import ContentCard from "../../components/content/ContentCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { KOR_TO_CATEGORY, CATEGORY_TO_KOR } from "../../util/mapping";
 import { useReportList } from "../../hooks/useReportList";
@@ -10,8 +9,10 @@ import Spinner from '../../components/util/Spinner';
 import { CATEGORY_DESCRIPTION, KorCategory } from "../../constants/reportCategoryDescription";
 import { formatDate } from "../../util/formatDate";
 import '../../styles/global.css'
+import ContentManageCard from "../../components/content/ContentManageCard";
+import pencilIcon from '../../assets/image/pencilIcon.svg';
 
-const ContentPage: React.FC = () => {
+const ContentManagePage: React.FC = () => {
     const navigation = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -27,11 +28,17 @@ const ContentPage: React.FC = () => {
       size: 20,
     });
 
-    console.log(data);
-
     useEffect(() => {
       setSearchParams({ category: activeCategory }, { replace: true });
     }, [activeCategory, setSearchParams]);
+
+    useEffect(() => {
+        const isAdmin = sessionStorage.getItem("isAdmin");
+        if (!isAdmin) {
+            alert("관리자만 접근 가능합니다");
+            navigation("/admin/login");
+        }
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -50,19 +57,24 @@ const ContentPage: React.FC = () => {
         navigation(-1);
     };
 
+    const handleToWrite = () => {
+        navigation("/admin/content/write?from=write");
+    }
+
+    
+
     const reportList = data?.reportList ?? [];
 
     return (         
         <div className={styles.content} style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.container}>
-                <Header type="title" title="찐빵 리포트" onClick={handleBack}/>
+                <Header type="title" title="찐빵 리포트 목록 관리" onClick={handleBack}/>
                 <div className={styles.section}>
                     <CategoryTabs active={activeCategory} onChange={setActiveCategory} />
                     <div className={styles.categoryInfo}>
                         <p className={styles.infoTitle}>{title}</p>
                         <p className={styles.infoSub}>{sub}</p>
                     </div>
-                    {isError && <div>로그인이 필요합니다.</div>}
                     {isLoading && <div style={{
                         margin: '0 auto',
                         display: 'flex',
@@ -76,24 +88,25 @@ const ContentPage: React.FC = () => {
                     {!isLoading && !isError && (
                       <div className={styles.contentWrap}>
                         {reportList.map(item => (
-                          <ContentCard
+                          <ContentManageCard
                             key={item.id}
                             id={item.id}
-                            img={item.coverImage}
                             category={CATEGORY_TO_KOR[item.category]}
                             title={item.title}
                             date={formatDate(item.createdAt)}
                             likes={item.likeCount}
                             views={item.viewCount}
-                            isLiked={item.isLiked ?? false}
                           />
                         ))}
                       </div>
                     )}
                 </div>
+                <button className={styles.writeBtn} onClick={handleToWrite}>
+                    <img src={pencilIcon} alt="write" className={styles.writeImg}/>
+                </button>
             </div>
         </div>
     );
 }
 
-export default ContentPage;
+export default ContentManagePage;

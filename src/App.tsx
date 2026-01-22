@@ -63,6 +63,9 @@ import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
 import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
 import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
+import ContentLoginPage from "./pages/content/ContentLogin";
+import ContentManagePage from "./pages/content/ContentManage";
+import ContentWritePage from "./pages/content/ContentWrite";
 import EventReviewPage from "./pages/EventRevew";
 import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
 
@@ -113,6 +116,7 @@ const AppContent: React.FC = () => {
     "/building/review/:reviewId",
     "/building/review/:reviewId/report",
     "/content/:reportId",
+    "/admin/content/*",
     "/event/review/write",
     "/event/address-search",
   ];
@@ -205,6 +209,10 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
       <Route path="/content" element={<ContentPage/>}/>
       <Route path="/content/:reportId" element={<ContentDetail/>} />
+      <Route path="/admin/content/login" element={<ContentLoginPage/>} />
+      <Route path="/admin/content" element={<ContentManagePage/>} />
+      <Route path="/admin/content/write" element={<ContentWritePage/>} />
+      <Route path="/admin/content/edit/:reportId" element={<ContentWritePage/>} />
       <Route path="/event/review/write" element={<EventReviewPage/>} />
       <Route path="/event/address-search" element={<EventAddressSearchPage/>} />
       </Routes>
