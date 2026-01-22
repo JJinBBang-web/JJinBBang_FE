@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import styles from "./FilterModal.module.css";
-import { filterConfigState } from "../../recoil/hartListPage/filterConfigState";
+import { filterConfigState } from "../recoil/filterConfigState";
 import iconClose from "../../assets/image/iconClose.svg";
 
 const FilterModal = () => {

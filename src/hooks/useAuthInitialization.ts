@@ -42,18 +42,7 @@ export const useAuthInitialization = () => {
     initializeAuth();
   }, [isLogin, setIsLoggedIn, setAuth]);
 
-  // 토큰 갱신 실패 이벤트 리스너
-  useEffect(() => {
-    const handleRefreshFailed = () => {
-      setIsLoggedIn(false);
-    };
-    
-    window.addEventListener('auth:refresh-failed', handleRefreshFailed);
-    
-    return () => {
-      window.removeEventListener('auth:refresh-failed', handleRefreshFailed);
-    };
-  }, [setIsLoggedIn]);
+
 
   return { isInitializing };
 };

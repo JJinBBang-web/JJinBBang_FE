@@ -133,7 +133,7 @@ const Review: React.FC = () => {
     } else {
       setHideNav(false);
       setIsModalOpen(false);
-      navigate(`/auth/student/verify`);
+      navigate(`/auth/verify`);
     }
   };
 

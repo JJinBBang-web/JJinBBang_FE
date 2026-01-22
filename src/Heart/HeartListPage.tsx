@@ -12,7 +12,7 @@ import PreviewReview from "../util/components/PreviewReview";
 import downIcon from "../assets/image/downIcon.svg";
 import campus_img_1 from "../assets/image/campusImg1.svg";
 import FilterModal from "./components/FilterModal";
-import { filterConfigState } from "../recoil/hartListPage/filterConfigState";
+import { filterConfigState } from "./recoil/filterConfigState";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
 import PreviewBuildingReview from "../util/components/PreviewBuildingReview";
 import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';

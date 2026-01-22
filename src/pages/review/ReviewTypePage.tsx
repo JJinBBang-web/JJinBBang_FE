@@ -6,7 +6,7 @@ import {
   defaultReviewState,
 } from "../../recoil/review/reviewAtoms";
 import { dormitoryReviewState } from "../../recoil/review/dormitoryReviewAtoms";
-import { selectedTypeNumState } from "../../recoil/map/mapRecoilState";
+import { selectedTypeNumState } from "../../Map/recoil/mapRecoilState";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 import AutoSaveRestoreSheet from "../../components/review/AutoSaveRestoreSheet";
 import useReviewStepTracking, { trackReviewStep } from "../../hooks/useReviewStepTracking";

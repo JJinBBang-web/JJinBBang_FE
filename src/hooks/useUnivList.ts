@@ -1,6 +1,6 @@
 // src/hooks/useUnivList.ts
 import { useQuery } from "@tanstack/react-query";
-import { UnivAPI } from "../api/user/UnivAPI"; // 실제 경로에 맞게 조정
+import { UnivAPI } from "../api/User/UserAPI"; // 실제 경로에 맞게 조정
 import { CampusResponse } from "../types/entity/user/UnivInterface";
 
 export const useUnivList = () => {

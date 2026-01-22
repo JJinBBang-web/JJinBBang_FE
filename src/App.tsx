@@ -9,20 +9,20 @@ import {
   useLocation,
 } from "react-router-dom";
 import Home from "./Home/Home";
-import MapPage from "./pages/MapPage";
+import MapPage from "./Map/MapPage";
 import Heart from "./Heart/HeartListPage";
-import MyPage from "./pages/MyPage";
+import MyPage from "./MyPage/MyPage";
 import Nav from "./util/components/Nav";
 import Building from "./pages/Building";
 import Review from "./pages/Review";
 import ReportPage from "./pages/ReportPage";
 import UpdateBuildTypePage from "./pages/update/UpdateBuildTypePage";
 import UpdateConfirmPage from "./pages/update/UpdateConfirmPage";
-import LoginResultPage from "./pages/LoginResultPage";
-import MyAccountPage from "./pages/auth/MyAccountPage";
-import AccountAuthPage from "./pages/auth/AccountAuthPage";
-import NewStudentVerification from "./pages/auth/NewStudentVerification";
-import CurrentStudentVerification from "./pages/auth/CurrentStudentVerification";
+import LoginResultPage from "./MyPage/components/LoginResultPage";
+import Verify from "./Auth/pages/Verify";
+import MyAccount from "./MyAccount/MyAccount";
+import NewStudentVerification from "./Auth/pages/NewStudentVerification";
+import CurrentStudentVerification from "./Auth/pages/CurrentStudentVerification";
 import ReviewTypePage from "./pages/review/ReviewTypePage";
 import AddressInputPage from "./pages/review/AddressInputPage";
 import AddressSearchPage from "./pages/review/AddressSearchPage";
@@ -49,7 +49,7 @@ import TagManager from "react-gtm-module";
 import { isLoginState } from "./recoil/auth/isLoginState";
 import { getAPI } from "./api/baseAPI";
 import { useQuery } from "@tanstack/react-query";
-import ModalBottomSheet from "./components/map/ModalBottomSheet";
+import ModalBottomSheet from "./Map/components/ModalBottomSheet";
 import UpdateAddressInputPage from "./pages/update/UpdateAddressInputPage";
 import UpdateContractTypePage from "./pages/update/UpdateContractTypePage";
 import UpdateContractPricePage from "./pages/update/UpdateContractPricePage";
@@ -129,10 +129,10 @@ const AppContent: React.FC = () => {
         <Route path="/map" element={<MapPage />} />
         <Route path="/heart" element={<Heart />} />
         <Route path="/mypage" element={<MyPage />} />
-        <Route path="/myaccount" element={<AccountAuthPage />} />
+        <Route path="/myaccount" element={<MyAccount />} />
         <Route path="/auth">
+          <Route path="verify" element={<Verify />} />
           <Route path="student">
-            <Route path="verify" element={<MyAccountPage />} />
             <Route path="new" element={<NewStudentVerification />} />
             <Route path="current" element={<CurrentStudentVerification />} />
           </Route>

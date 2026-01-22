@@ -1,5 +1,7 @@
 // src/api/api.ts
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
+import { setRecoil } from '../util/RecoilNexus';
+import { isLoginState } from '../recoil/auth/isLoginState';
 
 // SSOT: API 서버 주소는 여기서만 관리 (로컬 : env, 베포 : '')
 export const getApiBaseURL = (): string => {
@@ -22,7 +24,6 @@ declare module 'axios' {
     useAuth?: boolean;
     isFile?: boolean;
     _retry?: boolean;
-    optionalAuth?: boolean;
   }
 }
 
@@ -60,18 +61,6 @@ api.interceptors.request.use((config) => {
     }
   }
 
-  if (config.optionalAuth) {
-    // optionalAuth는 토큰이 있으면 사용하고 없으면 사용하지 않음 (선택적 인증)
-    const accessToken = tokenStore.getAccessToken();
-
-    if (accessToken) {
-      if (typeof config.headers?.set === "function") {
-        config.headers.set("Authorization", `Bearer ${accessToken}`);
-      } else {
-        (config.headers as any)["Authorization"] = `Bearer ${accessToken}`;
-      }
-    }
-  }
 
   if (config.isFile) {
     // axios는 FormData 사용 시 Content-Type 생략하는 게 안전합니다.
@@ -132,8 +121,9 @@ export const refreshToken = async (): Promise<string> => {
   } catch (err) {
     processQueue(err, null);
     tokenStore.clearAccessToken();
-    // 토큰 갱신 실패 시 로그인 상태를 off로 설정하는 이벤트 발생
-    window.dispatchEvent(new CustomEvent('auth:refresh-failed'));
+
+    // 토큰 갱신 실패 시 로그인 상태를 off로 설정 (RecoilNexus 사용)
+    setRecoil(isLoginState, false);
     throw err;
   } finally {
     isRefreshing = false;
@@ -149,8 +139,6 @@ api.interceptors.response.use(
     //   "\n✅ Axios Response URL:",
     //   res.config.url
     // );
-
-
     return res;
   },
   async (error: AxiosError) => {
@@ -164,33 +152,21 @@ api.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
-      (originalRequest.useAuth || originalRequest.optionalAuth) &&
+      originalRequest.useAuth &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
 
       try {
-        const newAccessToken = await refreshToken();
-
-        if (typeof originalRequest.headers?.set === "function") {
-          originalRequest.headers.set(
-            "Authorization",
-            `Bearer ${newAccessToken}`
-          );
-        } else {
-          (originalRequest.headers as any)[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
-        }
-
+        await refreshToken();
         return api(originalRequest);
-      } catch (err) {
-        // 토큰 갱신 실패 시 로그인 상태를 off로 설정하는 이벤트 발생
-        window.dispatchEvent(new CustomEvent('auth:refresh-failed'));
+      } catch (err) {        
         return Promise.reject(err);
       }
     }
-
+    if (error.response?.status === 401) {
+      setRecoil(isLoginState, false);
+    }
     return Promise.reject(error);
   }
 );
