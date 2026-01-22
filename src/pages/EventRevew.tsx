@@ -14,13 +14,9 @@ import ProsAndConsInput from "../components/event/ProsAndConsInput";
 import type { CategoryTab } from "../components/event/SelectCategory";
 import {
   eventReviewFormState,
-  eventReviewFormValidState,
+  eventReviewStep1ValidState,
 } from "../recoil/event/eventReviewFormState";
 import PhotoUpload from "../components/event/PhotoUpload";
-import ReviewTextInput from "../components/event/ReviewTextInput";
-import EventParticipationInfo from "../components/event/EventParticipationInfo";
-import { eventReviewAPI, EventReviewRequest } from "../api/event/EventReviewAPI";
-import { imageUploadAPI } from "../api/imageUpload";
 import DormitoryUniversityModal from "../components/review/DormitoryUniversityModal";
 
 const EventReviewPage: React.FC = () => {
@@ -28,7 +24,7 @@ const EventReviewPage: React.FC = () => {
   const jjinFilters = useRecoilValue(JjinFilterState);
 
   const [form, setForm] = useRecoilState(eventReviewFormState);
-  const isValid = useRecoilValue(eventReviewFormValidState);
+  const isStep1Valid = useRecoilValue(eventReviewStep1ValidState);
 
   // 대학교 선택 모달 상태
   const [isUniversityModalOpen, setIsUniversityModalOpen] = useState(false);
@@ -100,56 +96,9 @@ const EventReviewPage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleSubmit = async () => {
-    if (!isValid || form.ui.isSubmitting) return;
-
-    setForm((prev) => ({
-      ...prev,
-      ui: { isSubmitting: true, submitError: undefined },
-    }));
-
-    try {
-      // 1. 이미지 업로드 (blob URL -> CDN URL)
-      let imageUrls: string[] = [];
-      if (form.photos.length > 0) {
-        imageUrls = await imageUploadAPI.uploadBlobUrls(form.photos, "review");
-      }
-
-      // 2. API 요청 데이터 구성
-      const request: EventReviewRequest = {
-        review: {
-          university: form.university,
-          contractType: form.price.rentType === "MONTHLY" ? "월세" : "전세",
-          deposit: parseInt(form.price.deposit, 10) || 0,
-          monthlyRent: parseInt(form.price.monthlyRent, 10) || 0,
-          administrationCost: parseInt(form.price.maintenanceFee, 10) || 0,
-          positiveKeywords: form.pros,
-          negativeKeywords: form.cons,
-          images: imageUrls,
-          content: form.reviewText,
-        },
-        phoneNumber: form.phone,
-        hasAgreedToMarketing: form.agreeMarketing,
-        hasAgreedToPrivacy: form.agreePrivacy,
-      };
-
-      // 3. API 호출
-      await eventReviewAPI.submitReview(request);
-
-      // 4. 성공 시 처리
-      alert("리뷰가 성공적으로 등록되었습니다!");
-      navigate(-1);
-    } catch (error: any) {
-      console.error("리뷰 등록 실패:", error);
-      setForm((prev) => ({
-        ...prev,
-        ui: {
-          isSubmitting: false,
-          submitError: error?.message || "리뷰 등록에 실패했습니다.",
-        },
-      }));
-      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
-    }
+  const handleNext = () => {
+    if (!isStep1Valid) return;
+    navigate("/event/review/write/step2");
   };
 
   return (
@@ -293,32 +242,6 @@ const EventReviewPage: React.FC = () => {
               maxPhotos={3}
             />
           </div>
-          <hr className={styles.divider} />
-          <div className={styles.section}>
-            <QuestionInfo title="찐 후기 작성" isRequired={true} />
-            <ReviewTextInput
-              value={form.reviewText}
-              onChange={(next) => setForm((p) => ({ ...p, reviewText: next }))}
-              minLength={20}
-              maxLength={1000}
-            />
-          </div>
-          <hr className={styles.divider} />
-          <div className={styles.section}>
-            <QuestionInfo title="이벤트 참여 정보" isRequired={true} />
-            <EventParticipationInfo
-              phone={form.phone}
-              onPhoneChange={(next) => setForm((p) => ({ ...p, phone: next }))}
-              agreeMarketing={form.agreeMarketing}
-              onAgreeMarketingChange={(next) =>
-                setForm((p) => ({ ...p, agreeMarketing: next }))
-              }
-              agreePrivacy={form.agreePrivacy}
-              onAgreePrivacyChange={(next) =>
-                setForm((p) => ({ ...p, agreePrivacy: next }))
-              }
-            />
-          </div>
         </div>
       </div>
       <footer className={styles.footer}>
@@ -329,11 +252,11 @@ const EventReviewPage: React.FC = () => {
           <img src={giftIcon} alt="기프티콘" className={styles.giftIcon} />
         </div>
         <button
-          className={`${styles.confirmButton} ${isValid ? styles.active : ""}`}
-          disabled={!isValid || form.ui.isSubmitting}
-          onClick={handleSubmit}
+          className={`${styles.confirmButton} ${isStep1Valid ? styles.active : ""}`}
+          disabled={!isStep1Valid}
+          onClick={handleNext}
         >
-          {form.ui.isSubmitting ? "등록 중..." : "리뷰 등록하기"}
+          리뷰 등록하기
         </button>
       </footer>
 
