@@ -35,10 +35,9 @@ const EventReviewPage: React.FC = () => {
     setIsUniversityModalOpen(false);
   };
 
-  // 주소 검색 페이지로 이동 (임시 비활성화)
+  // 주소 검색 페이지로 이동
   const handleAddressSearch = () => {
-    // TODO: 주소 검색 기능 활성화 시 아래 주석 해제
-    // navigate("/event/address-search");
+    navigate("/event/address-search");
   };
 
   const tabs: CategoryTab[] = jjinFilters.map((c) => ({
