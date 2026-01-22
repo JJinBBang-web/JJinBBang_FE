@@ -162,8 +162,6 @@ const MapPage = () => {
         }
     }, [location.state]);
 
-
-
     // filter Recoil
     const [buildType, setBuildType] = useRecoilState(housingTypeState);
     const [filter, setFilter] = useRecoilState(filterState);
