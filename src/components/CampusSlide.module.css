@@ -22,9 +22,11 @@
   scrollbar-width: none;
   padding: 16px;
   margin: -16px;
-  -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 */
-  transform: translateZ(0); /* GPU 가속 활성화 */
-  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch; 
+  /* iOS에서 부드러운 스크롤 */
+  /* transform: translateZ(0);  */
+  /* GPU 가속 활성화 */
+  /* will-change: scroll-position; */
 }
 .campus_slide_inner {
   position: relative;

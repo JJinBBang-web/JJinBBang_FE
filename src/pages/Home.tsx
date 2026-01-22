@@ -16,7 +16,7 @@ import { useRecoilValue } from "recoil";
 import MetaTag from "../util/SEOMetaTag";
 import BannerCarousel from "../components/BannerCarousel";
 import PopupSheet from "../components/util/Popup";
-import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.svg";
+import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.png";
 import { useNavigate } from "react-router-dom";
 
 const getReviewKey = (review: any) => {
