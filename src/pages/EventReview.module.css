@@ -129,15 +129,14 @@
 /* 주소필드 */
 .addressSearchInput {
   width: 100%;
-  height: 63px;
+  min-height: 63px;
   padding: 15px;
   margin: 0;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   box-sizing: border-box;
-  justify-content: space-between;
 
   border: 1px solid var(--color-gray10);
   border-radius: 9px;
@@ -147,11 +146,12 @@
 .icon {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .inputField {
   flex: 1;
-  height: 100%;
   border: none;
   outline: none;
   font-family: "Spoqa Han Sans Neo";
@@ -160,9 +160,33 @@
   letter-spacing: -0.6px;
   line-height: 1.5;
   color: var(--color-gray80);
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 
 .inputField::placeholder {
+  color: var(--color-gray60);
+}
+
+.addressText {
+  flex: 1;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  line-height: 1.5;
+  color: var(--color-gray80);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.addressPlaceholder {
+  flex: 1;
+  font-family: "Spoqa Han Sans Neo";
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  line-height: 1.5;
   color: var(--color-gray60);
 }
 

@@ -159,14 +159,11 @@ const EventReviewPage: React.FC = () => {
               style={{ cursor: "pointer" }}
             >
               <img src={searchIcon} alt="검색 아이콘" className={styles.icon} />
-              <input
-                type="text"
-                placeholder="주소 입력"
-                className={styles.inputField}
-                value={form.address.keyword}
-                readOnly
-                style={{ cursor: "pointer" }}
-              />
+              {form.address.keyword ? (
+                <span className={styles.addressText}>{form.address.keyword}</span>
+              ) : (
+                <span className={styles.addressPlaceholder}>주소 입력</span>
+              )}
               {form.address.keyword && (
                 <img
                   src={searchDeleteIcon}
