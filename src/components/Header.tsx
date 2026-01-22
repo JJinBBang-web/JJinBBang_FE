@@ -1,8 +1,9 @@
 import styles from "./Header.module.css"
 import backIcon from "../assets/image/backIcon.svg"
+import closeIcon from '../assets/image/iconClose.svg';
 
 interface HeaderProps {
-  type?: 'title' | 'icon';
+  type?: 'title' | 'back' | 'close';
   title?: string;
   onClick?: () => void;
 }
@@ -10,7 +11,7 @@ interface HeaderProps {
 const Header:React.FC<HeaderProps> = ({type, onClick, title}) => {
     return (
         <div className={styles.content} >
-            <img src={backIcon} alt="백버튼" onClick={onClick}/>
+            <img src={type === 'back' ? backIcon : closeIcon} alt={type === 'back' ? "백버튼" : "닫기버튼"} onClick={onClick}/>
             {type === 'title'
             ? 
             <>

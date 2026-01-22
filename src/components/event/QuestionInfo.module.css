@@ -1,0 +1,58 @@
+.questionInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.titleRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.title {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 1.6;
+    color: var(--black);
+    margin: 0;
+}
+
+.required {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 1.6;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.optional {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+    line-height: 1.6;
+    color: var(--color-gray60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    background-color: var(--color-gray10);
+    border-radius: 4px;
+}
+
+.description {
+    font-family: "Spoqa Han Sans Neo";
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.6px;
+    line-height: 1.5;
+    color: var(--color-gray60);
+}
