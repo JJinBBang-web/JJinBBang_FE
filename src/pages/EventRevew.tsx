@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./EventReview.module.css";
 import searchIcon from "../assets/image/iconSearch.svg";
@@ -8,7 +8,7 @@ import Header from "../components/Header";
 import "../styles/global.css";
 import QuestionInfo from "../components/event/QuestionInfo";
 import PriceInput from "../components/event/PriceInput";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { JjinFilterState } from "../recoil/util/filterRecoilState";
 import ProsAndConsInput from "../components/event/ProsAndConsInput";
 import type { CategoryTab } from "../components/event/SelectCategory";
@@ -17,7 +17,8 @@ import {
   eventReviewStep1ValidState,
 } from "../recoil/event/eventReviewFormState";
 import PhotoUpload from "../components/event/PhotoUpload";
-import DormitoryUniversityModal from "../components/review/DormitoryUniversityModal";
+import { isSheetOpenState } from "../recoil/util/utilRecoilState";
+import { universityLabelState } from "../recoil/map/universityRecoilState";
 
 const EventReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -26,13 +27,22 @@ const EventReviewPage: React.FC = () => {
   const [form, setForm] = useRecoilState(eventReviewFormState);
   const isStep1Valid = useRecoilValue(eventReviewStep1ValidState);
 
-  // 대학교 선택 모달 상태
-  const [isUniversityModalOpen, setIsUniversityModalOpen] = useState(false);
+  // 대학교 선택 모달 상태 (Map에서 사용하는 ModalBottomSheet 공유)
+  const setBottomSheet = useSetRecoilState(isSheetOpenState);
+  const universityLabel = useRecoilValue(universityLabelState);
 
-  // 대학교 선택 핸들러
-  const handleUniversitySelect = (university: string) => {
-    setForm((prev) => ({ ...prev, university }));
-    setIsUniversityModalOpen(false);
+  // universityLabel이 변경되면 form에 반영
+  useEffect(() => {
+    if (universityLabel) {
+      // "대학교명_캠퍼스명" 형식을 "대학교명 캠퍼스명"으로 변환
+      const formattedLabel = universityLabel.replace("_", " ");
+      setForm((prev) => ({ ...prev, university: formattedLabel }));
+    }
+  }, [universityLabel, setForm]);
+
+  // 대학교 선택 모달 열기
+  const handleOpenUniversityModal = () => {
+    setBottomSheet({ isOpenModal: true, type: "university" });
   };
 
   // 주소 검색 페이지로 이동
@@ -119,7 +129,7 @@ const EventReviewPage: React.FC = () => {
             />
             <div
               className={styles.addressSearchInput}
-              onClick={() => setIsUniversityModalOpen(true)}
+              onClick={handleOpenUniversityModal}
               style={{ cursor: "pointer" }}
             >
               <img src={searchIcon} alt="검색 아이콘" className={styles.icon} />
@@ -256,12 +266,6 @@ const EventReviewPage: React.FC = () => {
         </button>
       </footer>
 
-      {/* 대학교 선택 모달 */}
-      <DormitoryUniversityModal
-        isOpen={isUniversityModalOpen}
-        onClose={() => setIsUniversityModalOpen(false)}
-        onUniversitySelect={handleUniversitySelect}
-      />
     </div>
   );
 };
