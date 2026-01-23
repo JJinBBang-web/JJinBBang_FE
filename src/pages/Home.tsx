@@ -19,6 +19,7 @@ import PopupSheet from "../components/util/Popup";
 import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.png";
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
+import EventPopupSheet from "../components/util/EventPopup";
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -250,9 +251,8 @@ const Home: React.FC = () => {
             </div>
           )}
         </div>
-        <div />
       </div>
-      <div />
+      {/* <EventPopupSheet/> */}
     </>
   );
 };

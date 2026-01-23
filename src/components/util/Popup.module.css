@@ -19,6 +19,16 @@
     transform: translate(-50%, -50%);
 }
 
+.popupImg {
+    z-index: 10000; /* 가장 앞에 보이도록 설정 */
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    max-width: calc(393px * 0.9);
+}
+
 .overlay {
     position: fixed;
     top: 0;
