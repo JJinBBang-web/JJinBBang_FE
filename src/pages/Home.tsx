@@ -22,6 +22,7 @@ import PopupSheet from "../components/util/Popup";
 import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.png";
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
+import EventPopupSheet from "../components/util/EventPopup";
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -236,77 +237,9 @@ const Home: React.FC = () => {
             마음에 드는 후기는 관심등록해 보세요!
           </p>
         </div>
-
-        {validReviewData.length > 0 ? (
-          validReviewData.slice(0,3).map((review: any) => {
-            return (
-              <div key={getReviewKey(review)}>
-                <div className={styles.line} />
-                <PreviewReview review={review} trackStep="1.1_home_PreviewReview" />
-              </div>
-            );
-          })
-        ) : (
-          <div className={styles.noReviewContainer}>
-            <div className={styles.line} />
-            <div className={styles.noReviewImgContainer}>
-              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
-              <p className={styles.noReviewText}>
-                앗! 아직 최근 본 찐빵이 없어요!
-                <br />
-                지도에서 내 주변 찐빵을 둘러볼까요?
-              </p>
-            </div>
-          </div>
-        )}
-
-        {validReviewData.length > 3 && (
-          <button className={styles.allReviewBtn} onClick={()=> navigate('/latestreivews')}>
-            전체보기
-          </button>
-        )}
-      </div>
-      <div className={styles.previewReviewContainer}>
-        <div className={styles.previewHeader}>
-          <p className={styles.previewTitle}>내가 작성한 리뷰</p>
-        </div>
-
-        {
-          isFetchingMyReviews ?
-          <div>
-            <Spinner/>
-          </div> : null
-        }
-        {myReviews.length > 0 ? (
-          myReviews.slice(0,3).map((review: any) => {
-            return (
-              <div key={getReviewKey(review)}>
-                <div className={styles.line} />
-                <PreviewReview review={review} trackStep="1.2_home_PreviewReview" />
-              </div>
-            );
-          })
-        ) : (
-          <div className={styles.noReviewContainer}>
-            <div className={styles.line} />
-            <div className={styles.noReviewImgContainer}>
-              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
-              <p className={styles.noReviewText}>
-                앗! 아직 등록된 찐빵이 없어요!
-              </p>
-            </div>
-          </div>
-        )}
-
-        {myReviews.length > 3 && (
-          <button className={styles.allReviewBtn} onClick={()=> navigate('/myreviewList')}>
-            전체보기
-          </button>
-        )}
       </div>
       </div>
-
-      <PopupSheet />
+      {/* <EventPopupSheet/> */}
     </>
   );
 };
