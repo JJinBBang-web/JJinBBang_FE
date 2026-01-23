@@ -2,11 +2,14 @@ import { atom, selector } from "recoil";
 import type { PriceValue } from "../../components/event/PriceInput";
 
 export type EventReviewForm = {
+  // 대학교
+  university: string;
+
   // 주소
   address: {
-    keyword: string;        // 인풋에 보이는 텍스트
-    roadAddress?: string;   // 실제 선택된 주소
-    detail?: string;        // 상세 주소
+    keyword: string; // 인풋에 보이는 텍스트
+    roadAddress?: string; // 실제 선택된 주소
+    detail?: string; // 상세 주소
     lat?: number;
     lng?: number;
   };
@@ -39,6 +42,7 @@ export type EventReviewForm = {
 export const eventReviewFormState = atom<EventReviewForm>({
   key: "eventReviewFormState",
   default: {
+    university: "",
     address: { keyword: "" },
     price: {
       rentType: "MONTHLY",
@@ -57,17 +61,22 @@ export const eventReviewFormState = atom<EventReviewForm>({
   },
 });
 
-// 버튼 활성화 같은 “계산 상태”는 selector로
+// 버튼 활성화 같은 "계산 상태"는 selector로
 export const eventReviewFormValidState = selector({
   key: "eventReviewFormValidState",
   get: ({ get }) => {
     const f = get(eventReviewFormState);
 
-    const hasAddress = !!(f.address.roadAddress || f.address.keyword.trim());
+    // 대학교 선택 여부
+    const hasUniversity = f.university.trim() !== "";
+    // TODO: 주소 검색 기능 활성화 시 아래 주석 해제
+    // const hasAddress = !!(f.address.roadAddress || f.address.keyword.trim());
     const hasPrice =
       f.price.deposit.trim() !== "" &&
       f.price.maintenanceFee.trim() !== "" &&
-      (f.price.rentType === "JEONSE" ? true : f.price.monthlyRent.trim() !== "");
+      (f.price.rentType === "JEONSE"
+        ? true
+        : f.price.monthlyRent.trim() !== "");
 
     const prosOk = f.pros.length >= 3 && f.pros.length <= 5;
     const consOk = f.cons.length >= 3 && f.cons.length <= 5;
@@ -78,6 +87,16 @@ export const eventReviewFormValidState = selector({
     const phoneOk = phoneNumbersOnly.length === 11;
     const agreeOk = f.agreeMarketing && f.agreePrivacy;
 
-    return hasAddress && hasPrice && prosOk && consOk && reviewOk && phoneOk && agreeOk;
+    return (
+      hasUniversity &&
+      // TODO: 주소 검색 기능 활성화 시 아래 주석 해제
+      // hasAddress &&
+      hasPrice &&
+      prosOk &&
+      consOk &&
+      reviewOk &&
+      phoneOk &&
+      agreeOk
+    );
   },
 });

@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getInitial } from "../../util/getInitial";
 import { UnivAPI } from "../../api/user/UnivAPI";
 import { CampusResponse, UnivCampusInterface } from "../../types/entity/user/UnivInterface";
+import { imageReloadVersionState } from "../../recoil/util/imageReloadVersion";
 
 const INITIAL_LIST = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ",];
 
@@ -33,6 +34,7 @@ const UniversityFilterModal = () => {
     const [selectedTypeNum, setSelectedTypeNum] = useRecoilState(selectedTypeNumState);
     const setFilterState = useSetRecoilState(filterState);
     const [filter, setFilter] = useRecoilState(filterState);
+    const imageVersion = useRecoilValue(imageReloadVersionState);
 
     // 모달 상태관리
     const [,setBottomSheet] = useRecoilState(isSheetOpenState)
@@ -45,6 +47,8 @@ const UniversityFilterModal = () => {
     
     // 대학교 바운더리 상태관리
     const setCampusCenter = useSetRecoilState(campusCenterState);
+
+
 
     const handleConfirm = () => {
         const selectedCampus = filteredUniversities
@@ -192,7 +196,15 @@ const UniversityFilterModal = () => {
                             setSelectedUniversityKey(`${uni.universityName}_${campus.campusName}`);
                         }}
                         >
-                        <img src={campus.logoImageUrl} alt={uni.universityName} className={styles.univLogo} />
+                        <img
+                            src={
+                                campus.logoImageUrl
+                                ? `${campus.logoImageUrl}${campus.logoImageUrl.includes("?") ? "&" : "?"}v=${imageVersion}`
+                                : ""
+                            }
+                            alt={uni.universityName}
+                            className={styles.univLogo}
+                            />
                         <p className={`${styles.uni_title} ${selectedTypeNum === campus.id ? styles.selected_text : ""}`}>{uni.universityName}</p>
                         <p className={`${styles.uni_campus} ${selectedTypeNum === campus.id ? styles.selected_text : ""}`}>{campus.campusName}</p>
                         </button>

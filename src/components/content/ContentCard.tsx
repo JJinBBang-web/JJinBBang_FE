@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./ContentCard.module.css";
 import { useNavigate, useParams } from "react-router-dom";
-import heartIcon from '../../assets/image/heartIcon.svg';
+import HeartIconOff from '../../assets/image/content/reportHeartOff.svg';
+import HeartIconOn from '../../assets/image/content/reportHeartOn.svg';
 import viewIcon from '../../assets/image/content/View.svg';
 import '../../styles/global.css'
 
@@ -13,6 +14,7 @@ interface Props {
   views: number;
   img?: string;
   id?: number;
+  isLiked?: boolean;
 }
 
 const ContentCard: React.FC<Props> = ({
@@ -23,6 +25,7 @@ const ContentCard: React.FC<Props> = ({
   views,
   img,
   id,
+  isLiked,
 }) => {
   const navigation = useNavigate();
   
@@ -42,7 +45,7 @@ const ContentCard: React.FC<Props> = ({
 
             <div className={styles.meta}>
                 <span className={styles.iconWrap}>
-                    <img className={styles.icon} src={heartIcon} />{likes}
+                    <img className={styles.icon} src={isLiked ? HeartIconOn : HeartIconOff} />{likes}
                 </span>
                 <span className={styles.iconWrap}>
                     <img  className={styles.icon} src={viewIcon}/> {views}

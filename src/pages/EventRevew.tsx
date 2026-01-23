@@ -7,7 +7,7 @@ import giftIcon from "../assets/image/giftIcon.svg";
 import Header from "../components/Header";
 import "../styles/global.css";
 import QuestionInfo from "../components/event/QuestionInfo";
-import PriceInput, { PriceValue } from "../components/event/PriceInput";
+import PriceInput from "../components/event/PriceInput";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { JjinFilterState } from "../recoil/util/filterRecoilState";
 import ProsAndConsInput from "../components/event/ProsAndConsInput";
@@ -19,6 +19,9 @@ import {
 import PhotoUpload from "../components/event/PhotoUpload";
 import ReviewTextInput from "../components/event/ReviewTextInput";
 import EventParticipationInfo from "../components/event/EventParticipationInfo";
+import { eventReviewAPI, EventReviewRequest } from "../api/event/EventReviewAPI";
+import { imageUploadAPI } from "../api/imageUpload";
+import DormitoryUniversityModal from "../components/review/DormitoryUniversityModal";
 
 const EventReviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -26,6 +29,21 @@ const EventReviewPage: React.FC = () => {
 
   const [form, setForm] = useRecoilState(eventReviewFormState);
   const isValid = useRecoilValue(eventReviewFormValidState);
+
+  // 대학교 선택 모달 상태
+  const [isUniversityModalOpen, setIsUniversityModalOpen] = useState(false);
+
+  // 대학교 선택 핸들러
+  const handleUniversitySelect = (university: string) => {
+    setForm((prev) => ({ ...prev, university }));
+    setIsUniversityModalOpen(false);
+  };
+
+  // 주소 검색 페이지로 이동 (임시 비활성화)
+  const handleAddressSearch = () => {
+    // TODO: 주소 검색 기능 활성화 시 아래 주석 해제
+    // navigate("/event/address-search");
+  };
 
   const tabs: CategoryTab[] = jjinFilters.map((c) => ({
     key: c.id,
@@ -82,6 +100,58 @@ const EventReviewPage: React.FC = () => {
     navigate(-1);
   };
 
+  const handleSubmit = async () => {
+    if (!isValid || form.ui.isSubmitting) return;
+
+    setForm((prev) => ({
+      ...prev,
+      ui: { isSubmitting: true, submitError: undefined },
+    }));
+
+    try {
+      // 1. 이미지 업로드 (blob URL -> CDN URL)
+      let imageUrls: string[] = [];
+      if (form.photos.length > 0) {
+        imageUrls = await imageUploadAPI.uploadBlobUrls(form.photos, "review");
+      }
+
+      // 2. API 요청 데이터 구성
+      const request: EventReviewRequest = {
+        review: {
+          university: form.university,
+          contractType: form.price.rentType === "MONTHLY" ? "월세" : "전세",
+          deposit: parseInt(form.price.deposit, 10) || 0,
+          monthlyRent: parseInt(form.price.monthlyRent, 10) || 0,
+          administrationCost: parseInt(form.price.maintenanceFee, 10) || 0,
+          positiveKeywords: form.pros,
+          negativeKeywords: form.cons,
+          images: imageUrls,
+          content: form.reviewText,
+        },
+        phoneNumber: form.phone,
+        hasAgreedToMarketing: form.agreeMarketing,
+        hasAgreedToPrivacy: form.agreePrivacy,
+      };
+
+      // 3. API 호출
+      await eventReviewAPI.submitReview(request);
+
+      // 4. 성공 시 처리
+      alert("리뷰가 성공적으로 등록되었습니다!");
+      navigate(-1);
+    } catch (error: any) {
+      console.error("리뷰 등록 실패:", error);
+      setForm((prev) => ({
+        ...prev,
+        ui: {
+          isSubmitting: false,
+          submitError: error?.message || "리뷰 등록에 실패했습니다.",
+        },
+      }));
+      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
   return (
     <div className={styles.content}>
       <div className={styles.container}>
@@ -92,37 +162,75 @@ const EventReviewPage: React.FC = () => {
           </div>
         </div>
         <div className={styles.optionContainer}>
+          {/* 대학교 선택 필드 */}
           <div className={styles.section}>
             <QuestionInfo
-              title="어디에 살고 계신가요?"
-              description="재학 중인 학교와 자취방 주소를 입력해주세요."
+              title="어느 대학교에 재학중이신가요?"
+              description="재학 중인 대학교를 입력해주세요"
               isRequired={true}
             />
-            <div className={styles.addressSearchInput}>
+            <div
+              className={styles.addressSearchInput}
+              onClick={() => setIsUniversityModalOpen(true)}
+              style={{ cursor: "pointer" }}
+            >
               <img src={searchIcon} alt="검색 아이콘" className={styles.icon} />
               <input
                 type="text"
-                placeholder="주소 검색"
+                placeholder="대학교 선택"
+                className={styles.inputField}
+                value={form.university}
+                readOnly
+                style={{ cursor: "pointer" }}
+              />
+              {form.university && (
+                <img
+                  src={searchDeleteIcon}
+                  alt="삭제 아이콘"
+                  className={styles.icon}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setForm((p) => ({ ...p, university: "" }));
+                  }}
+                  style={{ cursor: "pointer" }}
+                />
+              )}
+            </div>
+          </div>
+          <hr className={styles.divider} />
+          {/* 주소 검색 필드 */}
+          <div className={styles.section}>
+            <QuestionInfo
+              title="어디에 살고 계신가요?"
+              description="자취방 주소를 입력해주세요"
+              isRequired={true}
+            />
+            <div
+              className={styles.addressSearchInput}
+              onClick={handleAddressSearch}
+              style={{ cursor: "pointer" }}
+            >
+              <img src={searchIcon} alt="검색 아이콘" className={styles.icon} />
+              <input
+                type="text"
+                placeholder="주소 입력"
                 className={styles.inputField}
                 value={form.address.keyword}
-                onChange={(e) =>
-                  setForm((p) => ({
-                    ...p,
-                    address: { ...p.address, keyword: e.target.value },
-                  }))
-                }
+                readOnly
+                style={{ cursor: "pointer" }}
               />
               {form.address.keyword && (
                 <img
                   src={searchDeleteIcon}
                   alt="삭제 아이콘"
                   className={styles.icon}
-                  onClick={() =>
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setForm((p) => ({
                       ...p,
                       address: { keyword: "" },
-                    }))
-                  }
+                    }));
+                  }}
                   style={{ cursor: "pointer" }}
                 />
               )}
@@ -222,11 +330,19 @@ const EventReviewPage: React.FC = () => {
         </div>
         <button
           className={`${styles.confirmButton} ${isValid ? styles.active : ""}`}
-          disabled={!isValid}
+          disabled={!isValid || form.ui.isSubmitting}
+          onClick={handleSubmit}
         >
-          리뷰 등록하기
+          {form.ui.isSubmitting ? "등록 중..." : "리뷰 등록하기"}
         </button>
       </footer>
+
+      {/* 대학교 선택 모달 */}
+      <DormitoryUniversityModal
+        isOpen={isUniversityModalOpen}
+        onClose={() => setIsUniversityModalOpen(false)}
+        onUniversitySelect={handleUniversitySelect}
+      />
     </div>
   );
 };

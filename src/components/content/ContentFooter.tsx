@@ -12,10 +12,11 @@ interface Props {
   isLiked?: boolean;
   onToggleLike?: () => void;
   onClick?: () => void;
+  onShare?: () => void;
 }
 
 
-const ContentFooter: React.FC<Props> = ({ likes, shares, onToggleLike, onClick, isLiked}) => {
+const ContentFooter: React.FC<Props> = ({ likes, shares, onToggleLike, onClick, isLiked, onShare}) => {
   return (
     <div className={styles.footerContainer}>
       <div className={styles.leftBox}>
@@ -24,7 +25,7 @@ const ContentFooter: React.FC<Props> = ({ likes, shares, onToggleLike, onClick, 
           <span className={styles.count}>{likes}</span>
         </div>
 
-        <div className={styles.iconWrap}>
+        <div className={styles.iconWrap} onClick={onShare}>
           <img className={styles.icon} src={ShareIcon}/>
           <span className={styles.count}>{shares}</span>
         </div>
