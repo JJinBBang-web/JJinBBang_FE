@@ -23,6 +23,8 @@ import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
 import EventPopupSheet from "../components/util/EventPopup";
+import { geoCoordsState, geoStatusState, geoErrorState } from "../recoil/location/locationState";
+
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -170,6 +172,11 @@ const Home: React.FC = () => {
     Array.isArray(myReviewData)
       ? (myReviewData as Review[])
       : (myReviewData?.data.reviews as Review[]) || [];
+
+  /* 위치 기반 변수들 */
+  const coords = useRecoilValue(geoCoordsState);
+  const status = useRecoilValue(geoStatusState);
+  const err = useRecoilValue(geoErrorState);
 
   if (
     isFetchingUser ||

@@ -70,6 +70,8 @@ import ContentManagePage from "./pages/content/ContentManage";
 import ContentWritePage from "./pages/content/ContentWrite";
 import EventReviewPage from "./pages/EventRevew";
 import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
+import {geoWatchEnabledState} from "./recoil/location/locationPermissionState";
+import {useGlobalGeolocation} from "./hooks/useGlobalGeolocation";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -84,12 +86,54 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
+
+  const geoWatchEnabled = useRecoilValue(geoWatchEnabledState);
+  const setGeoWatchEnabled = useSetRecoilState(geoWatchEnabledState);
   
   // 인증 초기화
   const { isInitializing } = useAuthInitialization();
   
   // 사용자 정보 조회 및 상태 관리
   useUserInfo(isInitializing);
+
+  useGlobalGeolocation({
+    enabled: geoWatchEnabled,
+    minUpdateMs: 1000,
+  });
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    // 세션 1회만
+    const key = "askedLocationPermission";
+    if (sessionStorage.getItem(key) === "1") return;
+    sessionStorage.setItem(key, "1");
+
+    const ok = window.confirm(
+      "내 주변 대학/캠퍼스를 자동으로 추천하려면 위치 권한이 필요해요.\n지금 허용할까요?"
+    );
+    if (!ok) return;
+
+    if (!("geolocation" in navigator)) {
+      alert("이 브라우저에서는 위치 기능을 지원하지 않아요.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        // ✅ 권한 OK → 전역 watch 시작
+        setGeoWatchEnabled(true);
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          alert("위치 권한이 거부되었어요. 브라우저 설정에서 허용할 수 있어요.");
+        } else {
+          alert("현재 위치를 가져오지 못했어요. 잠시 후 다시 시도해 주세요.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 }
+    );
+  }, [location.pathname, setGeoWatchEnabled]);
   
   // GTM 태그 매니저
   useEffect(() => {
