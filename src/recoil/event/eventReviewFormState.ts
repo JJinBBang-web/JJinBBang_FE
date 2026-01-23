@@ -69,8 +69,8 @@ export const eventReviewStep1ValidState = selector({
 
     // 대학교 선택 여부
     const hasUniversity = f.university.trim() !== "";
-    // TODO: 주소 검색 기능 활성화 시 아래 주석 해제
-    // const hasAddress = !!(f.address.roadAddress || f.address.keyword.trim());
+    // 주소 입력 여부
+    const hasAddress = !!(f.address.roadAddress || f.address.keyword.trim());
     const hasPrice =
       f.price.deposit.trim() !== "" &&
       f.price.maintenanceFee.trim() !== "" &&
@@ -83,8 +83,7 @@ export const eventReviewStep1ValidState = selector({
 
     return (
       hasUniversity &&
-      // TODO: 주소 검색 기능 활성화 시 아래 주석 해제
-      // hasAddress &&
+      hasAddress &&
       hasPrice &&
       prosOk &&
       consOk
