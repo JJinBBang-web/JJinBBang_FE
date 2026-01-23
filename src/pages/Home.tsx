@@ -210,8 +210,7 @@ const Home: React.FC = () => {
           <CampusSlide campusList={campusList} />
         </div>
 
-        {/* 기존 safetyContainer 임시 주석처리
-      <div className={styles.safetyContainer}>
+      {/* <div className={styles.safetyContainer}>
         <img src={pencil} alt="pencil" />
         <div>
           <p className={styles.safetyText}>
@@ -222,14 +221,21 @@ const Home: React.FC = () => {
           </p>
         </div>
         <div style={{ width: '9px', height: '100%' }}/>
-      </div>
+      </div> */}
+
+      <img
+          src={ReviewEventBanner}
+          alt="리뷰 이벤트 배너"
+          style={{ width: "92%", cursor: "pointer", borderRadius: "16px" }}
+          onClick={() => navigate("/event/review/write")}
+        />
       <div className={styles.previewReviewContainer}>
         <div className={styles.previewHeader}>
           <p className={styles.previewTitle}>최근 본 찐빵 후기들</p>
           <p className={styles.previewText}>
             마음에 드는 후기는 관심등록해 보세요!
           </p>
-        </div>*/}
+        </div>
 
         {validReviewData.length > 0 ? (
           validReviewData.slice(0,3).map((review: any) => {
@@ -298,7 +304,7 @@ const Home: React.FC = () => {
           </button>
         )}
       </div>
-      <div />
+      </div>
 
       <PopupSheet />
     </>
