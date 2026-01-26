@@ -7,6 +7,7 @@ import { authApi } from '../api/auth';
 import { api, tokenStore } from '../api/api';
 import TermsAgreementModal from '../components/auth/TermsAgreementModal';
 import SignupCompleteModal from '../components/auth/SignupCompleteModal';
+import { imageReloadVersionState } from '../recoil/util/imageReloadVersion';
 
 type LoginStatus = 'oauth_failed' | 'terms_pending' | 'success';
 
@@ -18,6 +19,8 @@ function LoginResultPage() {
   const [showComplete, setShowComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState('');
+  const [, setImageReloadVersion] = useRecoilState(imageReloadVersionState);
+
 
   useEffect(() => {
     const handleLoginResult = async () => {
@@ -59,6 +62,9 @@ function LoginResultPage() {
                 await authApi.refreshAccessToken();
                 // 토큰 갱신 성공 시에만 로그인 상태 on
                 setIsLoggedIn(true);
+
+                setImageReloadVersion((v) => v + 1);
+
               } catch (error) {
                 console.error('토큰 갱신 실패:', error);
                 // 토큰 갱신 실패 시 로그인 상태 off 유지
@@ -67,6 +73,9 @@ function LoginResultPage() {
             } else {
               // 이미 액세스 토큰이 있으면 로그인 상태 on
               setIsLoggedIn(true);
+
+              setImageReloadVersion((v) => v + 1);
+
             }
             setIsLoading(false);
             navigate('/mypage');

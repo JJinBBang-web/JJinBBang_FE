@@ -12,6 +12,7 @@ import questionIcon from '../../assets/image/questionIcon.svg';
 import arrowIcon from '../../assets/image/arrowIcon.svg';
 import LeaveServiceModal1 from '../../components/auth/LeaveServiceModal1';
 import LeaveServiceModal2 from '../../components/auth/LeaveServiceModal2';
+import { imageReloadVersionState } from '../../recoil/util/imageReloadVersion';
 
 
 const AccountAuthPage: React.FC = () => {
@@ -22,6 +23,8 @@ const AccountAuthPage: React.FC = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [, setImageReloadVersion] = useRecoilState(imageReloadVersionState);
+
 
   // 인증 상태에 따른 텍스트 표시
   const getVerificationStatus = () => {
@@ -81,6 +84,8 @@ const AccountAuthPage: React.FC = () => {
         sessionStorage.removeItem('email');
         sessionStorage.removeItem('verificationStatus');
         sessionStorage.removeItem('university');
+
+        setImageReloadVersion((v) => v + 1);
 
         alert(responseData.message);
         navigate('/');

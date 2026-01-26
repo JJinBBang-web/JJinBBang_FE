@@ -46,4 +46,4 @@ export interface RefortCreateRequest {
     coverImage?: string;
     title: string;
     content: string;
-};
+}

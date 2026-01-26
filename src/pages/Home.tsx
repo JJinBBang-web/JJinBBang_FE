@@ -18,6 +18,8 @@ import BannerCarousel from "../components/BannerCarousel";
 import PopupSheet from "../components/util/Popup";
 import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.png";
 import { useNavigate } from "react-router-dom";
+import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
+import EventPopupSheet from "../components/util/EventPopup";
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -37,6 +39,7 @@ const QUERY_KEYS = {
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const isLogin = useRecoilValue(isLoginState);
+  const imageVersion = useRecoilValue(imageReloadVersionState);
 
   const {
     data: userData,
@@ -64,7 +67,9 @@ const Home: React.FC = () => {
         `/api/v1/user/univ/campus?universityName=${userData?.university}`,
       );
       return response.data.campusList.map((campus: any) => ({
-        img: campus.logoImageUrl || "default_image_url",
+        img: campus.logoImageUrl
+          ? `${campus.logoImageUrl}${campus.logoImageUrl.includes("?") ? "&" : "?"}v=${imageVersion}`
+          : "default_image_url",
         univ: userData.university,
         campus: campus.campusName,
         latitude: campus.latitude,
@@ -246,11 +251,8 @@ const Home: React.FC = () => {
             </div>
           )}
         </div>
-        <div />
       </div>
-      <div />
-
-      <PopupSheet />
+      {/* <EventPopupSheet/> */}
     </>
   );
 };
