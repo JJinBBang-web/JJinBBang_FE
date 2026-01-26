@@ -34,13 +34,13 @@
 
 .removeButton {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
+  top: 4px;
+  right: 4px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: none;
-  background: rgba(0, 0, 0, 0.5);
+  background: transparent;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -49,8 +49,8 @@
 }
 
 .removeButton img {
-  width: 14px;
-  height: 14px;
+  width: 36px;
+  height: 36px;
 }
 
 .addPhotoBox {

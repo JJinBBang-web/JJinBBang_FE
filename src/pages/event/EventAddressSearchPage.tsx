@@ -54,8 +54,8 @@ const EventAddressSearchPage: React.FC = () => {
                     },
                   }));
 
-                  // 이벤트 리뷰 페이지로 돌아가기
-                  navigate("/event/review/write");
+                  // 이벤트 리뷰 페이지로 돌아가기 (replace로 히스토리 대체)
+                  navigate("/event/review/write", { replace: true });
                 };
 
                 // Postcode API에서 좌표를 제공하는 경우

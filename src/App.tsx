@@ -67,6 +67,7 @@ import ContentLoginPage from "./pages/content/ContentLogin";
 import ContentManagePage from "./pages/content/ContentManage";
 import ContentWritePage from "./pages/content/ContentWrite";
 import EventReviewPage from "./pages/EventRevew";
+import EventReviewStep2Page from "./pages/event/EventReviewStep2Page";
 import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
 
 const queryClient = new QueryClient({
@@ -118,6 +119,7 @@ const AppContent: React.FC = () => {
     "/content/:reportId",
     "/admin/content/*",
     "/event/review/write",
+    "/event/review/write/step2",
     "/event/address-search",
   ];
 
@@ -214,6 +216,7 @@ const AppContent: React.FC = () => {
       <Route path="/admin/content/write" element={<ContentWritePage/>} />
       <Route path="/admin/content/edit/:reportId" element={<ContentWritePage/>} />
       <Route path="/event/review/write" element={<EventReviewPage/>} />
+      <Route path="/event/review/write/step2" element={<EventReviewStep2Page/>} />
       <Route path="/event/address-search" element={<EventAddressSearchPage/>} />
       </Routes>
       {showHeaderAndNav && <Nav />}

@@ -1,24 +1,24 @@
 import styles from './Popup.module.css';
-import iconClose from "../../assets/image/iconClose.svg"
-import characterIcon from "../../assets/image/emptyCharacterIcon.svg"
+import iconArrow from "../../assets/image/webArrow.svg"
 import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "home_popup_hidden_until";
-const HIDE_MS = 24 * 60 * 60 * 1000; // 24시간
-// const HIDE_MS = 30 * 1000;
+// const STORAGE_KEY = "home_popup_hidden_until";
+const STORAGE_KEY = "webmail_popup_hidden_until";
+// const HIDE_MS = 24 * 60 * 60 * 1000; // 24시간
+const HIDE_MS = 30 * 1000;
 
 const PopupSheet = () => { {
     const [isOpenPopup, setIsOpenPopup] = useState(true);
 
     useEffect(() => {
-        const hiddenUntil = Number(localStorage.getItem(STORAGE_KEY) || "0");
-        const now = Date.now();
+        // const hiddenUntil = Number(localStorage.getItem(STORAGE_KEY) || "0");
+        // const now = Date.now();
 
-        // 아직 숨김 기간이면 닫힌 상태 유지
-        if (now < hiddenUntil) {
-            setIsOpenPopup(false);
-            return;
-        }
+        // // 아직 숨김 기간이면 닫힌 상태 유지
+        // if (now < hiddenUntil) {
+        //     setIsOpenPopup(false);
+        //     return;
+        // }
 
         // 숨김 기간이 아니면 오픈
         setIsOpenPopup(true);
@@ -26,10 +26,14 @@ const PopupSheet = () => { {
 
 
     const closeModal = () => {
-        const hiddenUntil = Date.now() + HIDE_MS;
-        localStorage.setItem(STORAGE_KEY, String(hiddenUntil));
+        // const hiddenUntil = Date.now() + HIDE_MS;
+        // localStorage.setItem(STORAGE_KEY, String(hiddenUntil));
         setIsOpenPopup(false);
     };
+
+    const handleClickWebmail = () => {
+        window.open("https://zm908.mailplug.com/member/login?host_domain=gnu.ac.kr&t=1768656907", "_blank");
+    }
 
     if (!isOpenPopup) return null;
     
@@ -37,7 +41,7 @@ const PopupSheet = () => { {
         <>
         <div className={styles.overlay} onClick={closeModal}/>
         <div className={styles.sheet}>
-            <div className={styles.sheet_title_wrap}>
+            {/* <div className={styles.sheet_title_wrap}>
                 <img src={iconClose} width="24px" onClick={closeModal} role="button" alt='close'/>
             </div>
             <div className={styles.sheet_content}>
@@ -48,6 +52,14 @@ const PopupSheet = () => { {
                 <img src={characterIcon} width="180px"alt='character'/>
             </div>
             <p className={styles.info}>확인이나 X를 누르시면 24시간동안 팝업이 보이지 않습니다.</p>
+            <button className={styles.sheet_button} onClick={closeModal}>확인</button> */}
+            <div className={styles.sheet_content}>
+                <div className={styles.sheet_text_wrap}>
+                    <p className={styles.sheet_text_title}>잠깐! 학교 메일 발급받으셨나요?</p>
+                    <p className={styles.sheet_text_body}>웹메일(@gnu.ac.kr)을 발급받아야<br/>해당 주소로 인증코드를 받을 수 있어요</p>
+                </div>
+                <button className={styles.webmailBtn} onClick={handleClickWebmail}>메일 발급받기 <img src={iconArrow} alt='화살표버튼' className={styles.arrowImg}/></button>
+            </div>
             <button className={styles.sheet_button} onClick={closeModal}>확인</button>
         </div>
         </>
