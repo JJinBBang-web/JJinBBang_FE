@@ -61,6 +61,8 @@ import UpdateDormitoryAmenitiesPage from "./pages/update/UpdateDormitoryAmenitie
 import UpdatePhotoUploadPage from "./pages/update/UpdatePhotoUploadPage";
 import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
+import LatestReveiwList from "./pages/LatestReviewList";
+import MyReviewList from "./pages/MyReviewList";
 import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
 import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
 import ContentLoginPage from "./pages/content/ContentLogin";
@@ -69,6 +71,9 @@ import ContentWritePage from "./pages/content/ContentWrite";
 import EventReviewPage from "./pages/EventRevew";
 import EventReviewStep2Page from "./pages/event/EventReviewStep2Page";
 import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
+import {geoWatchEnabledState} from "./recoil/location/locationPermissionState";
+import {useGlobalGeolocation} from "./hooks/useGlobalGeolocation";
+import { geoCoordsState, geoStatusState, geoErrorState } from "./recoil/location/locationState";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,12 +88,117 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const hideNav = useRecoilValue(hideNavState);
   const setHideNav = useSetRecoilState(hideNavState);
+
+  const geoWatchEnabled = useRecoilValue(geoWatchEnabledState);
+  const setGeoWatchEnabled = useSetRecoilState(geoWatchEnabledState);
+
+  const setGeoCoords = useSetRecoilState(geoCoordsState);
+  const setGeoStatus = useSetRecoilState(geoStatusState);
+  const setGeoError = useSetRecoilState(geoErrorState);
   
   // 인증 초기화
   const { isInitializing } = useAuthInitialization();
   
   // 사용자 정보 조회 및 상태 관리
   useUserInfo(isInitializing);
+
+  useGlobalGeolocation({
+    enabled: geoWatchEnabled,
+    minUpdateMs: 1000,
+  });
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    const nav = window.navigator;
+    if (!("geolocation" in navigator)) return;
+
+    let cancelled = false;
+
+    const sync = async () => {
+      try {
+        // Permissions API 지원 브라우저
+        if ("permissions" in navigator) {
+          const perm = await (navigator as any).permissions.query({ name: "geolocation" });
+          if (cancelled) return;
+
+          if (perm.state === "granted") {
+            setGeoWatchEnabled(true);
+            return;
+          }
+
+          if (perm.state === "denied") {
+            setGeoWatchEnabled(false);
+            setGeoCoords(null);
+            setGeoStatus("denied");
+            setGeoError("Location permission denied.");
+            return;
+          }
+
+          // prompt면 여기서는 아무것도 안 함 (아래 confirm 흐름으로 넘어가게)
+          return;
+        }
+
+        // ✅ Permissions API 미지원(사파리 등) fallback:
+        // 허용되어 있으면 getCurrentPosition이 성공함 → watch ON
+        nav.geolocation.getCurrentPosition(
+          () => {
+            if (cancelled) return;
+            setGeoWatchEnabled(true);
+          },
+          (err) => {
+            if (cancelled) return;
+            if (err.code === err.PERMISSION_DENIED) {
+              setGeoWatchEnabled(false);
+              setGeoCoords(null);
+              setGeoStatus("denied");
+              setGeoError("Location permission denied.");
+            }
+          },
+          { enableHighAccuracy: true, timeout: 3000, maximumAge: 10_000 }
+        );
+      } catch {
+        // ignore
+      }
+    };
+
+    sync();
+    return () => {
+      cancelled = true;
+    };
+  }, [location.pathname, setGeoWatchEnabled, setGeoCoords, setGeoStatus, setGeoError]);
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    if (!("geolocation" in navigator)) return;
+
+    const run = async () => {
+      if (!("permissions" in navigator)) return; // fallback은 위 sync가 처리
+
+      const perm = await (navigator as any).permissions.query({ name: "geolocation" });
+
+      // prompt일 때만 confirm
+      if (perm.state !== "prompt") return;
+
+      const key = "askedLocationPermission";
+      if (sessionStorage.getItem(key) === "1") return;
+      sessionStorage.setItem(key, "1");
+
+      const ok = window.confirm(
+        "내 주변 대학/캠퍼스를 자동으로 추천하려면 위치 권한이 필요해요.\n지금 허용할까요?"
+      );
+      if (!ok) return;
+
+      navigator.geolocation.getCurrentPosition(
+        () => setGeoWatchEnabled(true),
+        () => undefined,
+        { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 }
+      );
+    };
+
+    run();
+  }, [location.pathname, setGeoWatchEnabled]);
+
+
   
   // GTM 태그 매니저
   useEffect(() => {
@@ -117,6 +227,8 @@ const AppContent: React.FC = () => {
     "/building/review/:reviewId",
     "/building/review/:reviewId/report",
     "/content/:reportId",
+    "/latestreivews",
+    "/myreviewList",
     "/admin/content/*",
     "/event/review/write",
     "/event/review/write/step2",
@@ -211,6 +323,8 @@ const AppContent: React.FC = () => {
       <Route path="/review/:reviewId/update/photo-upload" element={<UpdatePhotoUploadPage />} />
       <Route path="/content" element={<ContentPage/>}/>
       <Route path="/content/:reportId" element={<ContentDetail/>} />
+      <Route path="/latestreivews"  element={<LatestReveiwList/>}/>
+      <Route path="/myreviewList"  element={<MyReviewList/>}/>
       <Route path="/admin/content/login" element={<ContentLoginPage/>} />
       <Route path="/admin/content" element={<ContentManagePage/>} />
       <Route path="/admin/content/write" element={<ContentWritePage/>} />

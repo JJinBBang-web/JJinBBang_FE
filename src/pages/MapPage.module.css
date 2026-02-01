@@ -61,7 +61,7 @@
     font-weight: 400;
     letter-spacing: -0.6px;
     line-height: 24px;
-    color: var(--color-gray80);
+    color: var(--primary-color);
 }
 
 .focusBtnWrap {
