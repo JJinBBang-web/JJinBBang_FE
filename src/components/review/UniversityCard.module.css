@@ -1,0 +1,60 @@
+.card{
+  width: 100%;
+  text-align: left;
+  border: none;
+  padding: 16px 0;
+  background: var(--white);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.dormcard {
+  width: 100%;
+  text-align: left;
+  border: none;
+  padding: 16px 0;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.selected{
+  background-color: var(--block-unactive-btn);
+}
+
+.img {
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-gray20);
+}
+
+.textWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.title{
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.6px;
+  font-family: "Spoqa Han Sans Neo";
+  color: var(--black);
+}
+
+.address{
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.6px;
+  font-family: "Spoqa Han Sans Neo";
+  color: var(--color-gray60);
+}
+
+.match{
+  color: var(--block-blue); /* 파란색 */
+}

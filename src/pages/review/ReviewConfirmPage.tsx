@@ -49,6 +49,11 @@ interface LocationState {
   from?: string;
   housingType?: string;
   roomData?: any;
+  campusId?: number;
+  universityName?: string;
+  dormitoryId?: number;
+  dormitoryName?: string;
+  roomCapacity?: number;
 }
 
 const ReviewConfirmPage: React.FC = () => {
@@ -72,6 +77,8 @@ const ReviewConfirmPage: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  console.log(review);
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -162,6 +169,13 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.priceData?.managementFee !== undefined && {
             managementFee: locationState.priceData.managementFee,
           }),
+          ...(locationState.campusId !== undefined && { campusId: locationState.campusId }),
+          ...(locationState.universityName && { university: locationState.universityName }),
+          ...(locationState.dormitoryId !== undefined && { dormitoryId: locationState.dormitoryId }),
+          ...(locationState.dormitoryName && { dormitoryName: locationState.dormitoryName }),
+          ...(locationState.roomCapacity !== undefined && { roomCapacity: locationState.roomCapacity, }),
+          ...(locationState.floor && {
+            floorType: locationState.floor,})
         };
         setReview(mergedState);
       }
@@ -382,27 +396,27 @@ const ReviewConfirmPage: React.FC = () => {
 
         // DormitoryInputPage에서 저장된 campusId 사용
         // selectedTypeNum (대학교 ID)가 campusId로 저장되어 있음
-        const campusId = (review as any).campusId;
+        const dormitoryId = (review as any).dormitoryId;
 
-        if (!campusId) {
-          alert(
-            "대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요."
-          );
-          navigate("/review/dormitory");
-          return;
-        }
+        // if (!campusId) {
+        //   alert(
+        //     "대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요."
+        //   );
+        //   navigate("/review/university-input");
+        //   return;
+        // }
 
-        if (!review.buildingCode) {
+        if (!dormitoryId) {
           alert(
             "기숙사 위치 정보를 찾을 수 없습니다. 주소를 다시 입력해주세요."
           );
-          navigate("/review/address");
+          navigate("/review/university-input");
           return;
         }
 
         reviewData = {
           dormitoryReview: {
-            campusId: campusId,
+            dormitoryId: dormitoryId,
             capacity:
               review.roomCapacity || dormitoryReview.roomType === "1인실"
                 ? 1
@@ -705,6 +719,7 @@ const ReviewConfirmPage: React.FC = () => {
             buildingName: review.detailedAddress || "",
           },
           buildingName: review.detailedAddress || "",
+          roomCapacity: review.roomCapacity || 0,
           floor: review.floorType || "",
           from: "confirm",
         },
@@ -842,6 +857,22 @@ const ReviewConfirmPage: React.FC = () => {
     });
   };
 
+  const navigateToUniversityInput = () => {
+    navigate("/review/university-input", {
+      state: {
+          address: {
+            roadAddress: review.address || "",
+            jibunAddress: review.addressDetail || "",
+            buildingName: review.detailedAddress || "",
+          },
+          buildingName: review.detailedAddress || "",
+          university: review.universityName || "",
+          from: "confirm",
+        },
+        replace: true,
+    })
+  }
+
   // 65자 이상일 경우 ... 표시하는 함수
   const truncateReviewText = (text: string): string => {
     if (!text) return "후기를 작성해주세요";
@@ -854,6 +885,7 @@ const ReviewConfirmPage: React.FC = () => {
 
     return text;
   };
+
 
   // 태그 표시 함수 수정
   const renderTags = (tags: string[]) => {
@@ -927,7 +959,7 @@ const ReviewConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              onClick={() => handleItemClick(navigateToAddress)}
+              onClick={() => isDormitory ? null : handleItemClick(navigateToAddress)}
             >
               <span className={styles.label}>주소</span>
               <div className={styles.value}>
@@ -936,9 +968,27 @@ const ReviewConfirmPage: React.FC = () => {
                     {review.address || "주소를 입력해주세요"}
                   </span>
                 </div>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {!isDormitory && <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />}
               </div>
             </div>
+
+            {isDormitory && (
+              <div
+                className={styles.infoItem}
+                onClick={() => handleItemClick(navigateToUniversityInput)}
+              >
+                <span className={styles.label}>기숙사명</span>
+                <div className={styles.value}>
+                  <span className={styles.valueText}>
+                      {(review as any).universityName || "대학교를 입력해주세요"}
+                      <br />
+                      {(review as any).dormitoryName ||
+                        "기숙사명을 입력해주세요"}
+                  </span>
+                  <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                </div>
+              </div>
+            )}
 
             <div
               className={styles.infoItem}
@@ -949,14 +999,7 @@ const ReviewConfirmPage: React.FC = () => {
               </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {isDormitory ? (
-                    <>
-                      {(review as any).university || "대학교를 입력해주세요"}
-                      <br />
-                      {(review as any).dormitoryName ||
-                        "기숙사명을 입력해주세요"}
-                    </>
-                  ) : isAgency ? (
+                  {isDormitory ? `${review.roomCapacity}인실` : isAgency ? (
                     review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"

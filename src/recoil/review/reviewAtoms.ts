@@ -24,6 +24,9 @@ export interface ReviewState {
   longitude?: number | null; 
   buildingCode?: string;
   universityName?: string;
+  campusId?:number;
+  dormitoryId?: number;
+  dormitoryName?: string;
   dormitoryConditions?: {
     hasDistanceCriteria: boolean;
     hasGradeCriteria: boolean;

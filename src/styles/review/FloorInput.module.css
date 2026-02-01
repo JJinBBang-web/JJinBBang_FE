@@ -139,21 +139,30 @@
   height: 3.375rem;
   background-color: var(--color-gray20);
   border: none;
-  border-radius: 16px;
+  border-radius: 13px;
   font-size: 1rem;
   color: var(--color-gray60);
   cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
 }
+
 
 .nextButton {
   flex: 1;
   height: 3.375rem;
   background-color: var(--color-gray40);
   border: none;
-  border-radius: 16px;
+  border-radius: 13px;
   font-size: 1rem;
   color: var(--white);
   cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 3.375rem;
+  letter-spacing: -0.0375rem;
 }
 
 .nextButton:disabled {
@@ -363,4 +372,21 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-gray40);
+}
+
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: calc(100% - 2rem);
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(393px - 2rem);
+  padding-bottom: 2.75rem;
+  padding-top: 10px;
+  bottom: 0rem;
+  gap: 0.38rem;
+  background-color: var(--white);
 }
