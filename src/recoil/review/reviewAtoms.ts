@@ -17,7 +17,6 @@ export interface ReviewState {
   rating: number;
   images: string[];
   description: string;
-  roomCapacity?: number;
   dormitoryFee?: number;
   space?:number;
   latitude?: number | null;

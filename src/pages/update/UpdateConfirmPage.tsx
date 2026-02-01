@@ -47,7 +47,7 @@ const UpdateConfirmPage: React.FC = () => {
     const housingType = typeToKorean[review?.housingType ?? ''] || '';
     const contractType = contractTypeToKorean[review?.contractType ?? ''] || '';
     const floor = floorToKorean[review?.floorType ?? ''] || ""; 
-    const roomCapacity = review?.roomCapacity ?? review?.dormitoryConditions?.roomCapacity;
+    const roomCapacity = review?.dormitoryConditions?.roomCapacity;
 
     const [showRatingModal, setShowRatingModal] = useState(false);
     
@@ -214,7 +214,7 @@ const UpdateConfirmPage: React.FC = () => {
           state: {
             from: "update",
             universityName : review?.universityName,
-            roomCapacity: review?.roomCapacity ?? review?.dormitoryConditions?.roomCapacity,
+            roomCapacity: review?.dormitoryConditions?.roomCapacity,
             floorType: floor || '',
             buildingName: review?.detailedAddress,
           }

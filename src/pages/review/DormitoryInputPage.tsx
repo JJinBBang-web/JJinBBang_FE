@@ -66,9 +66,9 @@ const DormitoryInputPage: React.FC = () => {
   const [dormitoryName, setDormitoryName] = useState<string>(
     extendedReview.dormitoryName || ""
   );
-  const [roomCapacity, setRoomCapacity] = useState<string>(
-    review.roomCapacity ? review.roomCapacity.toString() : ""
-  );
+  // const [roomCapacity, setRoomCapacity] = useState<string>(
+  //   review.roomCapacity ? review.roomCapacity.toString() : ""
+  // );
   const [selectedFloor, setSelectedFloor] = useState<string>(
     review.floorType || "저층"
   );
@@ -139,9 +139,9 @@ const DormitoryInputPage: React.FC = () => {
     if (from === "confirm") {
       setUniversity(extendedReview.university || "");
       setDormitoryName(extendedReview.dormitoryName || "");
-      setRoomCapacity(
-        review.roomCapacity ? review.roomCapacity.toString() : ""
-      );
+      // setRoomCapacity(
+      //   review.roomCapacity ? review.roomCapacity.toString() : ""
+      // );
       setSelectedFloor(review.floorType || "저층");
     } else {
       // 처음 진입할 때는 대학교 선택 초기화
@@ -262,7 +262,7 @@ const DormitoryInputPage: React.FC = () => {
   ) => {
     const updatedReview = {
       ...review,
-      roomCapacity: Number(roomCapacity),
+      // roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
       dormitoryFee: 0, // 기숙사비 제거, 기본값 설정
       buildingCode: finalBuildingCode, // Kakao 장소 ID를 buildingCode로 업데이트
@@ -285,7 +285,7 @@ const DormitoryInputPage: React.FC = () => {
     const dormitoryData = {
       university: university,
       dormitoryName: dormitoryName,
-      roomCapacity: Number(roomCapacity),
+      // roomCapacity: Number(roomCapacity),
       floorType: selectedFloor,
     };
 
@@ -318,7 +318,7 @@ const DormitoryInputPage: React.FC = () => {
   const isNextEnabled =
     university !== "" &&
     dormitoryName !== "" &&
-    roomCapacity !== "" &&
+    // roomCapacity !== "" &&
     selectedFloor !== "";
 
   return (
@@ -360,8 +360,8 @@ const DormitoryInputPage: React.FC = () => {
             <input
               type="text"
               className={styles.buildingInput}
-              value={roomCapacity}
-              onChange={(e) => handleInputChange(e, setRoomCapacity)}
+              // value={roomCapacity}
+              // onChange={(e) => handleInputChange(e, setRoomCapacity)}
               placeholder="0"
             />
             <span className={styles.unit}>인실</span>

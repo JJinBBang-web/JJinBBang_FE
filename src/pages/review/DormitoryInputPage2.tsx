@@ -33,7 +33,7 @@ const DormitoryInputPage2: React.FC = () => {
   const [review, setReview] = useRecoilState(reviewState);
   
   const [roomCapacity, setRoomCapacity] = useState<string>(
-    review.roomCapacity ? review.roomCapacity.toString() : ""
+    review.dormitoryConditions?.roomCapacity ? review.dormitoryConditions?.roomCapacity.toString() : ""
   );
   const [selectedFloor, setSelectedFloor] = useState<string>(
     review.floorType || "저층"
@@ -63,8 +63,8 @@ const DormitoryInputPage2: React.FC = () => {
       setRoomCapacity(
       capFromState !== undefined && capFromState !== null
         ? String(capFromState)
-        : review.roomCapacity !== undefined && review.roomCapacity !== null
-          ? String(review.roomCapacity)
+        : review.dormitoryConditions?.roomCapacity !== undefined && review.dormitoryConditions?.roomCapacity !== null
+          ? String(review.dormitoryConditions.roomCapacity)
           : ""
       );
       setSelectedFloor(
@@ -86,30 +86,34 @@ const DormitoryInputPage2: React.FC = () => {
   };
 
   const proceedToNextStep = () => {
-    // ReviewState에 저장
+    const capNum = roomCapacity.trim() === "" ? undefined : Number(roomCapacity);
+
     setReview((prev) => ({
       ...prev,
-      roomCapacity: Number(roomCapacity),
+      dormitoryConditions: {
+        ...(prev.dormitoryConditions ?? {
+          hasDistanceCriteria: false,
+          hasGradeCriteria: false,
+          dormitoryFee: 0,
+        }),
+        roomCapacity: capNum,
+      },
       floorType: selectedFloor,
     }));
 
-    const dormitoryData = {
-      roomCapacity: Number(roomCapacity),
-      floorType: selectedFloor,
+    const nextState = {
+      ...location.state,
+      roomCapacity: capNum,
+      floor: selectedFloor,
     };
 
-    // 기존 흐름 유지: confirm이면 confirm으로, 아니면 다음 단계로
     if (from === "confirm") {
-      navigate("/review/confirm", {
-        state: { ...location.state, roomCapacity: Number(roomCapacity), floor: selectedFloor },
-      });
+      navigate("/review/confirm", { state: nextState });
     } else {
-      navigate("/review/dormitory-conditions", {
-        state: { ...location.state, roomCapacity: Number(roomCapacity), floor: selectedFloor },
-      });
+      navigate("/review/dormitory-conditions", { state: nextState });
     }
   };
-
+  
   const handleNext = () => {
     // 간단 검증
     if (roomCapacity.trim() === "") {

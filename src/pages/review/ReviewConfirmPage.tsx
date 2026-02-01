@@ -77,8 +77,9 @@ const ReviewConfirmPage: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const confirmedRoomCapacity = review.dormitoryConditions?.roomCapacity;
 
-  console.log(review);
+
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -173,7 +174,16 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.universityName && { university: locationState.universityName }),
           ...(locationState.dormitoryId !== undefined && { dormitoryId: locationState.dormitoryId }),
           ...(locationState.dormitoryName && { dormitoryName: locationState.dormitoryName }),
-          ...(locationState.roomCapacity !== undefined && { roomCapacity: locationState.roomCapacity, }),
+          ...(locationState.roomCapacity !== undefined && {
+              dormitoryConditions: {
+                ...(autoSavedData.reviewState?.dormitoryConditions ?? {
+                  hasDistanceCriteria: false,
+                  hasGradeCriteria: false,
+                  dormitoryFee: 0,
+                }),
+                roomCapacity: locationState.roomCapacity,
+              },
+            }),
           ...(locationState.floor && {
             floorType: locationState.floor,})
         };
@@ -209,8 +219,19 @@ const ReviewConfirmPage: React.FC = () => {
           locationState.priceData?.managementFee !== undefined
             ? locationState.priceData.managementFee
             : prev.managementFee || 0,
-      }));
-    }
+        ...(locationState.roomCapacity !== undefined && {
+          dormitoryConditions: {
+            ...(prev.dormitoryConditions ?? {
+              hasDistanceCriteria: false,
+              hasGradeCriteria: false,
+              dormitoryFee: 0,
+            }),
+            roomCapacity: locationState.roomCapacity,
+          },
+        }),
+        ...(locationState.floor && { floorType: locationState.floor }),
+            }));
+          }
   }, [locationState, setReview, setDormitoryReview]);
 
   // 라벨에 맞는 아이콘 찾기 - 기숙사 필터 지원
@@ -414,13 +435,14 @@ const ReviewConfirmPage: React.FC = () => {
           return;
         }
 
+        const cap =
+          review.dormitoryConditions?.roomCapacity ??
+          (dormitoryReview.roomType === "1인실" ? 1 : 2);
+
         reviewData = {
           dormitoryReview: {
             dormitoryId: dormitoryId,
-            capacity:
-              review.roomCapacity || dormitoryReview.roomType === "1인실"
-                ? 1
-                : 2,
+            capacity: cap,
             dormFee: review.dormitoryFee || 0,
             floor:
               review.floorType === "지하층"
@@ -719,7 +741,7 @@ const ReviewConfirmPage: React.FC = () => {
             buildingName: review.detailedAddress || "",
           },
           buildingName: review.detailedAddress || "",
-          roomCapacity: review.roomCapacity || 0,
+          roomCapacity: review.dormitoryConditions?.roomCapacity || 0,
           floor: review.floorType || "",
           from: "confirm",
         },
@@ -999,7 +1021,7 @@ const ReviewConfirmPage: React.FC = () => {
               </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {isDormitory ? `${review.roomCapacity}인실` : isAgency ? (
+                  {isDormitory ? `${confirmedRoomCapacity ?? ""}인실` : isAgency ? (
                     review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"

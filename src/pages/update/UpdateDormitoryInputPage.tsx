@@ -42,7 +42,7 @@ const UpdateDormitoryInputPage: React.FC = () => {
     buildingName || review?.detailedAddress || ''
   );
   const [capacity, setCapacity] = useState<number | undefined>(
-    roomCapacity ?? review?.roomCapacity ?? review?.dormitoryConditions?.roomCapacity ?? undefined
+    roomCapacity ?? review?.dormitoryConditions?.roomCapacity ?? undefined
   );
   const [selectedFloor, setSelectedFloor] = useState(() => {
     if (floorType) return floorType;
