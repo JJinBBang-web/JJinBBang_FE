@@ -73,6 +73,7 @@ import EventReviewStep2Page from "./pages/event/EventReviewStep2Page";
 import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
 import {geoWatchEnabledState} from "./recoil/location/locationPermissionState";
 import {useGlobalGeolocation} from "./hooks/useGlobalGeolocation";
+import { geoCoordsState, geoStatusState, geoErrorState } from "./recoil/location/locationState";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +91,10 @@ const AppContent: React.FC = () => {
 
   const geoWatchEnabled = useRecoilValue(geoWatchEnabledState);
   const setGeoWatchEnabled = useSetRecoilState(geoWatchEnabledState);
+
+  const setGeoCoords = useSetRecoilState(geoCoordsState);
+  const setGeoStatus = useSetRecoilState(geoStatusState);
+  const setGeoError = useSetRecoilState(geoErrorState);
   
   // 인증 초기화
   const { isInitializing } = useAuthInitialization();
@@ -104,37 +109,96 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     if (location.pathname !== "/") return;
+    const nav = window.navigator;
+    if (!("geolocation" in navigator)) return;
 
-    // 세션 1회만
-    const key = "askedLocationPermission";
-    if (sessionStorage.getItem(key) === "1") return;
-    sessionStorage.setItem(key, "1");
+    let cancelled = false;
 
-    const ok = window.confirm(
-      "내 주변 대학/캠퍼스를 자동으로 추천하려면 위치 권한이 필요해요.\n지금 허용할까요?"
-    );
-    if (!ok) return;
+    const sync = async () => {
+      try {
+        // Permissions API 지원 브라우저
+        if ("permissions" in navigator) {
+          const perm = await (navigator as any).permissions.query({ name: "geolocation" });
+          if (cancelled) return;
 
-    if (!("geolocation" in navigator)) {
-      alert("이 브라우저에서는 위치 기능을 지원하지 않아요.");
-      return;
-    }
+          if (perm.state === "granted") {
+            setGeoWatchEnabled(true);
+            return;
+          }
 
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        // ✅ 권한 OK → 전역 watch 시작
-        setGeoWatchEnabled(true);
-      },
-      (err) => {
-        if (err.code === err.PERMISSION_DENIED) {
-          alert("위치 권한이 거부되었어요. 브라우저 설정에서 허용할 수 있어요.");
-        } else {
-          alert("현재 위치를 가져오지 못했어요. 잠시 후 다시 시도해 주세요.");
+          if (perm.state === "denied") {
+            setGeoWatchEnabled(false);
+            setGeoCoords(null);
+            setGeoStatus("denied");
+            setGeoError("Location permission denied.");
+            return;
+          }
+
+          // prompt면 여기서는 아무것도 안 함 (아래 confirm 흐름으로 넘어가게)
+          return;
         }
-      },
-      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 }
-    );
+
+        // ✅ Permissions API 미지원(사파리 등) fallback:
+        // 허용되어 있으면 getCurrentPosition이 성공함 → watch ON
+        nav.geolocation.getCurrentPosition(
+          () => {
+            if (cancelled) return;
+            setGeoWatchEnabled(true);
+          },
+          (err) => {
+            if (cancelled) return;
+            if (err.code === err.PERMISSION_DENIED) {
+              setGeoWatchEnabled(false);
+              setGeoCoords(null);
+              setGeoStatus("denied");
+              setGeoError("Location permission denied.");
+            }
+          },
+          { enableHighAccuracy: true, timeout: 3000, maximumAge: 10_000 }
+        );
+      } catch {
+        // ignore
+      }
+    };
+
+    sync();
+    return () => {
+      cancelled = true;
+    };
+  }, [location.pathname, setGeoWatchEnabled, setGeoCoords, setGeoStatus, setGeoError]);
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    if (!("geolocation" in navigator)) return;
+
+    const run = async () => {
+      if (!("permissions" in navigator)) return; // fallback은 위 sync가 처리
+
+      const perm = await (navigator as any).permissions.query({ name: "geolocation" });
+
+      // prompt일 때만 confirm
+      if (perm.state !== "prompt") return;
+
+      const key = "askedLocationPermission";
+      if (sessionStorage.getItem(key) === "1") return;
+      sessionStorage.setItem(key, "1");
+
+      const ok = window.confirm(
+        "내 주변 대학/캠퍼스를 자동으로 추천하려면 위치 권한이 필요해요.\n지금 허용할까요?"
+      );
+      if (!ok) return;
+
+      navigator.geolocation.getCurrentPosition(
+        () => setGeoWatchEnabled(true),
+        () => undefined,
+        { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 }
+      );
+    };
+
+    run();
   }, [location.pathname, setGeoWatchEnabled]);
+
+
   
   // GTM 태그 매니저
   useEffect(() => {

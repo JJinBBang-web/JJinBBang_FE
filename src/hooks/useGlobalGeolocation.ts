@@ -24,18 +24,28 @@ export function useGlobalGeolocation({
   const watchIdRef = useRef<number | null>(null);
   const lastEmitRef = useRef<number>(0);
 
+  const clearWatch = () => {
+    if (watchIdRef.current != null && "geolocation" in navigator) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+    }
+    watchIdRef.current = null;
+  };
+
   useEffect(() => {
     if (!enabled) {
-      // 끄면 정리
-      if (watchIdRef.current != null && "geolocation" in navigator) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-      }
-      watchIdRef.current = null;
+      clearWatch();
+      lastEmitRef.current = 0;
+
+      // ✅ 중요: 이전 좌표/에러가 남지 않게 리셋
+      setCoords(null);
+      setErr(null);
       setStatus("idle");
       return;
     }
 
     if (!("geolocation" in navigator)) {
+      clearWatch();
+      setCoords(null);
       setStatus("unsupported");
       setErr("Geolocation is not supported in this browser.");
       return;
@@ -60,6 +70,9 @@ export function useGlobalGeolocation({
         });
       },
       (error) => {
+        clearWatch();
+        setCoords(null);
+
         if (error.code === error.PERMISSION_DENIED) {
           setStatus("denied");
           setErr("Location permission denied.");
@@ -76,10 +89,16 @@ export function useGlobalGeolocation({
     );
 
     return () => {
-      if (watchIdRef.current != null) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-      }
-      watchIdRef.current = null;
+      clearWatch();
     };
-  }, [enabled, highAccuracy, timeoutMs, maximumAgeMs, minUpdateMs, setStatus, setCoords, setErr]);
+  }, [
+    enabled,
+    highAccuracy,
+    timeoutMs,
+    maximumAgeMs,
+    minUpdateMs,
+    setStatus,
+    setCoords,
+    setErr,
+  ]);
 }
