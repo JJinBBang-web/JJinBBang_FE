@@ -348,13 +348,13 @@ const ReviewConfirmPage: React.FC = () => {
       return;
     }
 
-    if (!review.latitude || !review.longitude) {
-      alert(
-        "주소 정보를 불러오는 중 오류가 발생했습니다. 주소를 다시 선택해주세요."
-      );
-      setShowConfirmModal(false);
-      return;
-    }
+    // if (!review.latitude || !review.longitude) {
+    //   alert(
+    //     "주소 정보를 불러오는 중 오류가 발생했습니다. 주소를 다시 선택해주세요."
+    //   );
+    //   setShowConfirmModal(false);
+    //   return;
+    // }
 
     setIsSubmitting(true);
 
@@ -442,19 +442,19 @@ const ReviewConfirmPage: React.FC = () => {
               "",
           },
           imageUrls: review.images || dormitoryReview.images || [],
-          buildingRequest: {
-            // 기숙사는 buildingCode에 Kakao 장소 ID를 저장
-            // DormitoryInputPage에서 키워드 검색 API로 얻은 장소 ID 사용
-            buildingCode: review.buildingCode,
-            name:
-              (review as any).dormitoryName ||
-              review.detailedAddress ||
-              "기숙사명",
-            type: "DORMITORY",
-            address: review.address || "",
-            latitude: review.latitude!,
-            longitude: review.longitude!,
-          },
+          // buildingRequest: {
+          //   // 기숙사는 buildingCode에 Kakao 장소 ID를 저장
+          //   // DormitoryInputPage에서 키워드 검색 API로 얻은 장소 ID 사용
+          //   buildingCode: review.buildingCode,
+          //   name:
+          //     (review as any).dormitoryName ||
+          //     review.detailedAddress ||
+          //     "기숙사명",
+          //   type: "DORMITORY",
+          //   address: review.address || "",
+          //   latitude: review.latitude!,
+          //   longitude: review.longitude!,
+          // },
           keywords: {
             positive: positiveKeywords,
             negative: negativeKeywords,

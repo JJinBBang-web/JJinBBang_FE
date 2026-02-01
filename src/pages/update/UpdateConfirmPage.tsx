@@ -47,6 +47,7 @@ const UpdateConfirmPage: React.FC = () => {
     const housingType = typeToKorean[review?.housingType ?? ''] || '';
     const contractType = contractTypeToKorean[review?.contractType ?? ''] || '';
     const floor = floorToKorean[review?.floorType ?? ''] || ""; 
+    const roomCapacity = review?.roomCapacity ?? review?.dormitoryConditions?.roomCapacity;
 
     const [showRatingModal, setShowRatingModal] = useState(false);
     
@@ -64,6 +65,8 @@ const UpdateConfirmPage: React.FC = () => {
           setReview((prev) => {
             // prev가 null이어도 항상 ReviewState가 되도록 보정
             const base: ReviewState = prev ?? defaultReviewState;
+
+            console.log(prev);
             const next: ReviewState = { ...base };
 
             const newAddress = addr.roadAddress ?? addr.jibunAddress;
@@ -102,6 +105,8 @@ const UpdateConfirmPage: React.FC = () => {
     const handleRateReview = () => {
       setShowRatingModal(true);
     };
+
+    console.log(review);
 
     // api 연동해야함.
     // 최종 재업로드 함수
@@ -209,7 +214,7 @@ const UpdateConfirmPage: React.FC = () => {
           state: {
             from: "update",
             universityName : review?.universityName,
-            roomCapacity: review?.dormitoryConditions?.roomCapacity,
+            roomCapacity: review?.roomCapacity ?? review?.dormitoryConditions?.roomCapacity,
             floorType: floor || '',
             buildingName: review?.detailedAddress,
           }
@@ -364,7 +369,7 @@ const UpdateConfirmPage: React.FC = () => {
         case "DORMITORY" :
           return {
             dormitoryReview: {
-              campusId: 1,
+              dormitoryId: r.dormitoryId ?? 1,
               capacity: r.dormitoryConditions?.roomCapacity ?? 1,
               dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
               floor: r.floorType ?? 'LOW',
@@ -386,7 +391,7 @@ const UpdateConfirmPage: React.FC = () => {
               ),
               lounge: Object.values(r.facilityConditions?.lounge ?? {})[0] ?? false
             },
-            ...(buildingRequest ? { buildingRequest } : {}),
+            // ...(buildingRequest ? { buildingRequest } : {}),
           };
 
         default : 
@@ -548,6 +553,21 @@ const UpdateConfirmPage: React.FC = () => {
               </div>
             </div>
 
+            {review?.housingType === "DORMITORY" && (
+              <div
+                className={styles.infoItem}
+              >
+                <span className={styles.label}>기숙사명</span>
+                <div className={styles.value}>
+                  <span className={styles.valueText}>
+                      {review?.universityName}
+                      <br />
+                      {review?.detailedAddress}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div
               className={styles.infoItem}
               onClick={() => 
@@ -559,10 +579,8 @@ const UpdateConfirmPage: React.FC = () => {
                 {review?.housingType === "DORMITORY" ? (
                 <>
                   <span className={styles.valueText}>
-                    {review?.universityName}
+                    {roomCapacity}인실
                     <br/>
-                    {review?.detailedAddress}
-                    <br />
                     {floor}
                   </span>
                 </>
