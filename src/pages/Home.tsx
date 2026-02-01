@@ -64,9 +64,6 @@ const Home: React.FC = () => {
   const canUseLocation = geoWatchEnabled && !!coords;
   const isGuestNoLocation = !isLogin && !canUseLocation;
 
-  console.log(coords);
-  console.log(canUseLocation);
-
   const {
     data: userData,
     isFetching: isFetchingUser,
