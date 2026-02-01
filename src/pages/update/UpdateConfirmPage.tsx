@@ -18,6 +18,8 @@ import { deleteAPI, putAPI } from "../../api/baseAPI";
 import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
 import UpdateCancelModal from "../../components/review/UpdateCancelModal";
 import { imageUploadAPI } from "../../api/imageUpload";
+import { useQueryClient } from '@tanstack/react-query';
+
 
 
 
@@ -32,6 +34,7 @@ type AddressPick = {
 const UpdateConfirmPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const queryClient = useQueryClient();
 
     const { reviewId } = useParams();
 
@@ -125,6 +128,8 @@ const UpdateConfirmPage: React.FC = () => {
           // ✅ 인증 필요하면 true
           await putAPI(`/api/v1/review/${reviewId}`, body, true);
 
+          queryClient.invalidateQueries({ queryKey: ['userReview'] });
+
           setShowRatingModal(false);
           setShowConfirmModal(true);
       } catch (e) {
@@ -143,7 +148,8 @@ const UpdateConfirmPage: React.FC = () => {
         setIsDelete(true);
 
         const response = await deleteAPI(`/api/v1/review/${reviewId}`, true);
-
+        
+        queryClient.invalidateQueries({ queryKey: ['userReview'] });
 
         setReview(defaultReviewState);
         setShowDeleteMConfirmodal(true);

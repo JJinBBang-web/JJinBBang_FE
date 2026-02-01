@@ -27,8 +27,6 @@ const ContentPage: React.FC = () => {
       size: 20,
     });
 
-    console.log(data);
-
     useEffect(() => {
       setSearchParams({ category: activeCategory }, { replace: true });
     }, [activeCategory, setSearchParams]);

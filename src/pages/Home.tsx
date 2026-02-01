@@ -1,4 +1,7 @@
 // Home.tsx
+import { useUserReviews } from '../hooks/useUserReviews';
+import { Review } from '../api/user';
+import Spinner from '../components/util/Spinner';
 import React from "react";
 import styles from "./Home.module.css";
 import home_logo from "../assets/logo/homeLogo.svg";
@@ -20,6 +23,11 @@ import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
 import EventPopupSheet from "../components/util/EventPopup";
+import { geoCoordsState, geoStatusState, geoErrorState } from "../recoil/location/locationState";
+import { geoWatchEnabledState } from '../recoil/location/locationPermissionState';
+import { useNearUniversities } from "../hooks/useNearUniversities";
+import { CampusResponse } from '../types/entity/user/UnivInterface';
+
 
 const getReviewKey = (review: any) => {
   if (review.generalReviewInfo) return `general-${review.generalReviewInfo.id}`;
@@ -29,17 +37,32 @@ const getReviewKey = (review: any) => {
   return "unknown";
 };
 
+const mapNearToCampusSlide = (items: CampusResponse[] = []) =>
+  items.map((it) => ({
+    img: it.campusInfo?.logoImageUrl || "default_image_url",
+    univ: it.universityName,
+    campus: it.campusInfo?.campusName,
+    latitude: it.campusInfo?.latitude,
+    longitude: it.campusInfo?.longitude,
+  }));
+
 const QUERY_KEYS = {
   userData: "USER_DATA",
   campusData: "CAMPUS_DATA",
   reviewData: "RECENT_REVIEW_DATA",
-  univData: "UNIV_DATA",
+  // univData: "UNIV_DATA",
 };
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const isLogin = useRecoilValue(isLoginState);
   const imageVersion = useRecoilValue(imageReloadVersionState);
+  const geoWatchEnabled = useRecoilValue(geoWatchEnabledState);
+
+    /* 위치 기반 변수들 */
+  const coords = useRecoilValue(geoCoordsState);
+  const canUseLocation = geoWatchEnabled && !!coords;
+  const isGuestNoLocation = !isLogin && !canUseLocation;
 
   const {
     data: userData,
@@ -76,59 +99,30 @@ const Home: React.FC = () => {
         longitude: campus.longitude,
       }));
     },
-    enabled: isLogin && !!userData?.university,
+    enabled: isLogin && !!userData?.university && !canUseLocation,
     refetchOnWindowFocus: false,
   });
-
-  // ✅ 비로그인일 때만 실행
-  const {
-    data: universityList,
-    isFetching: isFetchingUniversityList,
-    isError: isErrorUniversityList,
-  } = useQuery({
-    queryKey: [QUERY_KEYS.univData, "guest"],
-    queryFn: async () => {
-      const response = await getAPI(`/api/v1/user/univ`);
-      return response.data.map((univ: any) => ({
-        name: univ.universityName,
-        code: univ.universityName[0].charCodeAt(0),
-      }));
-    },
-    enabled: !!!userData?.university,
-    refetchOnWindowFocus: false,
-  });
-
-  const university =
-    universityList?.reduce((minUniv: any, currentUniv: any) =>
-      currentUniv.code < minUniv.code ? currentUniv : minUniv,
-    )?.name || null;
 
   const {
-    data: campusListGuest,
-    isFetching: isFetchingCampusGuest,
-    isError: isErrorCampusGuest,
-  } = useQuery({
-    queryKey: [QUERY_KEYS.campusData, "guest"],
-    queryFn: async () => {
-      const response = await getAPI(
-        `/api/v1/user/univ/campus?universityName=${university}`,
-      );
-      return response.data.campusList.map((campus: any) => ({
-        img: campus.logoImageUrl || "default_image_url",
-        univ: university,
-        campus: campus.campusName,
-        latitude: campus.latitude,
-        longitude: campus.longitude,
-      }));
-    },
-    enabled: !!!userData?.university && !!university,
-    refetchOnWindowFocus: false,
+    data: nearUnivData,
+    isFetching: isFetchingNearUniv,
+    isError: isErrorNearUniv,
+  } = useNearUniversities({
+    lat: canUseLocation ? coords?.lat : null,
+    lng: canUseLocation ? coords?.lng : null,
+    enabled: canUseLocation || isGuestNoLocation,
+    keepPreviousData: true,
   });
 
-  const campusList = campusListLogin || campusListGuest || [];
-  const isFetchingCampus = isLogin
-    ? isFetchingCampusLogin
-    : isFetchingCampusGuest;
+  const campusList =
+    canUseLocation || isGuestNoLocation
+    ? mapNearToCampusSlide(nearUnivData ?? [])
+    : (campusListLogin ?? []);
+    
+  const isFetchingCampus =
+    (canUseLocation || isGuestNoLocation)
+      ? isFetchingNearUniv
+      : isFetchingCampusLogin;
 
   const reviewDict = JSON.parse(localStorage.getItem("reviewList") || "{}");
 
@@ -157,16 +151,25 @@ const Home: React.FC = () => {
   const validReviewData =
     Array.isArray(reviewData) && isLogin ? reviewData : [];
 
-  if (
-    isFetchingUser ||
-    isFetchingCampus ||
-    isFetchingReviewInfo ||
-    isFetchingUniversityList
-  ) {
-    return null;
-  }
+  const {
+    data: myReviewData,
+    isFetching: isFetchingMyReviews,
+    isError: isErrorMyReviews,
+    } = useUserReviews(0, 10);
 
-  return (
+  const myReviews: Review[] =
+    Array.isArray(myReviewData)
+      ? (myReviewData as Review[])
+      : (myReviewData?.data.reviews as Review[]) || [];
+
+
+  if (
+      isFetchingUser ||
+      isFetchingCampus ||
+      isFetchingReviewInfo
+    ) return null;
+
+    return (
     <>
       <MetaTag
         title="찐빵 | 자취 후기 공유 플랫폼"
@@ -197,8 +200,7 @@ const Home: React.FC = () => {
           <CampusSlide campusList={campusList} />
         </div>
 
-        {/* 기존 safetyContainer 임시 주석처리
-      <div className={styles.safetyContainer}>
+      {/* <div className={styles.safetyContainer}>
         <img src={pencil} alt="pencil" />
         <div>
           <p className={styles.safetyText}>
@@ -209,48 +211,87 @@ const Home: React.FC = () => {
           </p>
         </div>
         <div style={{ width: '9px', height: '100%' }}/>
-      </div>
-      */}
-        <img
+      </div> */}
+
+      <img
           src={ReviewEventBanner}
           alt="리뷰 이벤트 배너"
           style={{ width: "92%", cursor: "pointer", borderRadius: "16px" }}
           onClick={() => navigate("/event/review/write")}
         />
-        <div className={styles.previewReviewContainer}>
-          <div className={styles.previewHeader}>
-            <p className={styles.previewTitle}>최근 본 찐빵 후기들</p>
-            <p className={styles.previewText}>
-              마음에 드는 후기는 관심등록해 보세요!
-            </p>
-          </div>
-
-          {validReviewData.length > 0 ? (
-            validReviewData.map((review: any) => {
-              return (
-                <div key={getReviewKey(review)}>
-                  <div className={styles.line} />
-                  <PreviewReview
-                    review={review}
-                    trackStep="1.1_home_PreviewReview"
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <div className={styles.noReviewContainer}>
-              <div className={styles.line} />
-              <div className={styles.noReviewImgContainer}>
-                <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
-                <p className={styles.noReviewText}>
-                  앗! 아직 최근 본 찐빵이 없어요!
-                  <br />
-                  지도에서 내 주변 찐빵을 둘러볼까요?
-                </p>
-              </div>
-            </div>
-          )}
+      <div className={styles.previewReviewContainer}>
+        <div className={styles.previewHeader}>
+          <p className={styles.previewTitle}>최근 본 찐빵 후기들</p>
+          <p className={styles.previewText}>
+            마음에 드는 후기는 관심등록해 보세요!
+          </p>
         </div>
+        {validReviewData.length > 0 ? (
+          validReviewData.slice(0,3).map((review: any) => {
+            return (
+              <div key={getReviewKey(review)}>
+                <div className={styles.line} />
+                <PreviewReview review={review} trackStep="1.1_home_PreviewReview" />
+              </div>
+            );
+          })
+        ) : (
+          <div className={styles.noReviewContainer}>
+            <div className={styles.line} />
+            <div className={styles.noReviewImgContainer}>
+              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
+              <p className={styles.noReviewText}>
+                앗! 아직 최근 본 찐빵이 없어요!
+                <br />
+                지도에서 내 주변 찐빵을 둘러볼까요?
+              </p>
+            </div>
+          </div>
+        )}
+        {validReviewData.length > 3 && (
+          <button className={styles.allReviewBtn} onClick={()=> navigate('/latestreivews')}>
+            전체보기
+          </button>
+        )}
+      </div>
+      <div className={styles.previewReviewContainer}>
+        <div className={styles.previewHeader}>
+          <p className={styles.previewTitle}>내가 작성한 리뷰</p>
+        </div>
+
+        {
+          isFetchingMyReviews ?
+          <div>
+            <Spinner/>
+          </div> : null
+        }
+        {myReviews.length > 0 ? (
+          myReviews.slice(0,3).map((review: any) => {
+            return (
+              <div key={getReviewKey(review)}>
+                <div className={styles.line} />
+                <PreviewReview review={review} trackStep="1.2_home_PreviewReview" />
+              </div>
+            );
+          })
+        ) : (
+          <div className={styles.noReviewContainer}>
+            <div className={styles.line} />
+            <div className={styles.noReviewImgContainer}>
+              <img src={emptyCharacterIcon} alt="emptyCharacterIcon" />
+              <p className={styles.noReviewText}>
+                앗! 아직 등록된 찐빵이 없어요!
+              </p>
+            </div>
+          </div>
+        )}
+
+        {myReviews.length > 3 && (
+          <button className={styles.allReviewBtn} onClick={()=> navigate('/myreviewList')}>
+            전체보기
+          </button>
+        )}
+      </div>
       </div>
       {/* <EventPopupSheet/> */}
     </>

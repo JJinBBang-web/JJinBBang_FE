@@ -33,6 +33,8 @@ import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplor
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
+const DEFAULT_CENTER = { lat: 35.153237, lng: 128.101090 };
+
 const splitIds = (arr: MarkerItem[]) => {
   const buildingIds:number[] = [];
   const agencyIds:number[] = [];
@@ -114,6 +116,8 @@ const MapPage = () => {
     // 바텀시트 상태 관리 추가
     const [bottomSheet, setBottomSheet] = useRecoilState(isSheetOpenState);
 
+    // 위치 ref
+    const didGeoInitRef = useRef(false);
 
     // 라우트 변경 시 모달 상태 초기화 (추가 안전장치)
     useEffect(() => {
@@ -222,13 +226,11 @@ const MapPage = () => {
         filter.inMaintenanceCost,
         filter.reviewKeyword
     ]);
-    
-
 
     // 검색 관련
     const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
     const [searchParams, setSearchParams] = useState<SearchRequest>();
-    const [mapCenter, setMapCenter] = useState({ lat: 35.153237, lng: 128.101090 });
+    const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
 
     const {
         data: searchData,
@@ -512,6 +514,55 @@ const MapPage = () => {
     }, [campusCenter]);
 
 
+    useEffect(() => {
+        // 캠퍼스 점프가 있으면 내 위치로 덮어쓰지 않음
+        if (campusCenter) return;
+        if (didGeoInitRef.current) return;
+
+        if (!navigator.geolocation) {
+            didGeoInitRef.current = true;
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+            didGeoInitRef.current = true;
+
+            const myCenter = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+            };
+
+            setMapCenter(myCenter);
+
+            const offset = 0.01;
+            const myBounds = {
+                neLat: myCenter.lat + offset,
+                neLng: myCenter.lng + offset,
+                swLat: myCenter.lat - offset,
+                swLng: myCenter.lng - offset,
+            };
+
+            setMapBounds(myBounds);
+            setTempBounds(myBounds);
+
+            initialCenterRef.current = myCenter;
+            initialBoundsRef.current = myBounds;
+
+            setShowMapActionBtns(false);
+
+            if (mapRef.current) {
+                mapRef.current.panTo(new kakao.maps.LatLng(myCenter.lat, myCenter.lng));
+            }
+            },
+            () => {
+            // 권한 거부/실패 -> 기본 센터 유지 (그냥 아무것도 안 함)
+            didGeoInitRef.current = true;
+            setMapCenter(DEFAULT_CENTER);
+            },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+        );
+        }, [campusCenter]);
 
     // nearBy 데이터가 업데이트될 때 누적 처리
     useEffect(() => {

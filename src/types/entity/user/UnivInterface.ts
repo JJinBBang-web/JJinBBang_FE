@@ -10,5 +10,6 @@ export interface CampusResponse {
     id: number,
     universityName: string,
     universityLogo: string,
-    campuses : UnivCampusInterface[]
+    campuses : UnivCampusInterface[],
+    campusInfo?:UnivCampusInterface,
 }
