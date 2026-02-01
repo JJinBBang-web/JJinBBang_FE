@@ -390,3 +390,21 @@
   gap: 0.38rem;
   background-color: var(--white);
 }
+
+.lottiesImg {
+  position: relative;
+}
+
+.lottiesImg .bigSearchIcon {
+  width: 37px;
+  height: 37px;
+  position: absolute;
+  bottom: -12px; right:-12px;
+}
+
+.loadingText {
+  font-size: 14px;
+  color: var(--color-gray40);
+  text-align: center;
+  line-height: 150%;
+}

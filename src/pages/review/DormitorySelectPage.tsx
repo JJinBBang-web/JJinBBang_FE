@@ -8,6 +8,9 @@ import { useDormitoriesByCampusId } from "../../hooks/useDormitoriesByCampusId";
 import DormitoryCard from "../../components/review/DormitoryCard";
 import { useCancelModal } from "../../util/useCancelModal";
 import CancelModal from "../../components/review/CancelModal";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../assets/lottie/loading.json";
+import bigSearchIcon from "../../assets/image/bigSearchIcon.svg";
 
 interface LocationState {
   address: {
@@ -125,7 +128,27 @@ const DormitorySelectPage:React.FC = () => {
 
         <div style={{ flex: 1, overflow: "auto", padding: "2px" }}>
           {dormQuery.isFetching && (
-            <div style={{ padding: "8px 0", fontSize: 13, color: "#777" }}>불러오는 중...</div>
+            <div
+                style={{
+                  padding: "6.5rem 0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection:"column",
+                  gap: "32px",
+                }}
+              >
+                <div className={styles.lottiesImg}>
+                  <Lottie
+                    animationData={loadingAnimation}
+                    loop
+                    autoplay
+                    style={{ width:70 }}
+                />
+                <img src={bigSearchIcon} className={styles.bigSearchIcon}/>
+                </div>
+                <p className={styles.loadingText}>검색중이에요<br/>잠시만 기다려주세요!</p>
+              </div>
           )}
 
           {dormQuery.isError && (
