@@ -10,6 +10,7 @@ import verifyCompleteIcon from "../../assets/image/verifyCompleteIcon.svg";
 import graduateCharacter from "../../assets/image/graduateCharacter.svg";
 import warningIcon from "../../assets/image/warningIcon.svg";
 import checkIconActive from "../../assets/image/checkIconActive.svg";
+import PopupSheet from "../../components/util/Popup";
 
 enum VerificationStep {
   EMAIL_INPUT,
@@ -209,6 +210,7 @@ const CurrentStudentVerification: React.FC = () => {
 
   // 인증 코드 입력 화면 렌더링
   const renderCodeVerification = () => (
+    <>
     <main className={styles.container}>
       <h1 className={styles.title}>인증코드를 입력해 주세요.</h1>
       <span className={styles.description}>
@@ -270,6 +272,8 @@ const CurrentStudentVerification: React.FC = () => {
         )}
       </form>
     </main>
+    <PopupSheet/>
+    </>
   );
 
   // 인증 완료 화면 렌더링
