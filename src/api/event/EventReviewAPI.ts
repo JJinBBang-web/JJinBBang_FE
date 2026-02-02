@@ -15,6 +15,7 @@ export interface EventReviewRequest {
     negativeKeywords: string[];
     images: string[];
     content: string;
+    address: string;
   };
   phoneNumber: string;
   hasAgreedToMarketing: boolean;
