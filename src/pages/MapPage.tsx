@@ -29,7 +29,10 @@ import Spinner from '../components/util/Spinner';
 import MetaTag from '../util/SEOMetaTag';
 import { isLoginState } from '../recoil/auth/isLoginState';
 import focusIcon from '../assets/image/focus.svg';
-import useExplorationTracking, { trackExplorationStep } from '../hooks/useExplorationTracking';
+import { trackExplorationStep } from '../hooks/useExplorationTracking';
+import { geoCoordsState } from "../recoil/location/locationState";
+import { geoWatchEnabledState } from "../recoil/location/locationPermissionState";
+import { useNearUniversities } from "../hooks/useNearUniversities";
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
 
@@ -116,8 +119,73 @@ const MapPage = () => {
     // 바텀시트 상태 관리 추가
     const [bottomSheet, setBottomSheet] = useRecoilState(isSheetOpenState);
 
+    // 위치 캠퍼스 조회 변수
+    const geoWatchEnabled = useRecoilValue(geoWatchEnabledState);
+    const coords = useRecoilValue(geoCoordsState);
+    const enableNearUnivQuery = !geoWatchEnabled || !!coords;
+
+    const [readyCenter, setReadyCenter] = useState<{lat:number; lng:number} | null>(null);
+
     // 위치 ref
     const didGeoInitRef = useRef(false);
+
+    const { data: nearUnivData, isFetching: isFetchingNearUniv } = useNearUniversities({
+        lat: coords?.lat ?? null,
+        lng: coords?.lng ?? null,
+        enabled: enableNearUnivQuery,
+        keepPreviousData: true,
+    });
+
+    const firstValid = nearUnivData?.find(
+        (u) => u?.campusInfo?.latitude != null && u?.campusInfo?.longitude != null
+    );
+
+    const firstLat = firstValid?.campusInfo?.latitude;
+    const firstLng = firstValid?.campusInfo?.longitude;
+
+    // 초기 center 확정(한 번만)
+    useEffect(() => {
+        if (readyCenter) return;
+
+        // 1) Home에서 캠퍼스 점프해서 넘어온 경우 (location.state lat/lng)
+        const jumpLat = location.state?.latitude;
+        const jumpLng = location.state?.longitude;
+        if (jumpLat && jumpLng) {
+            setReadyCenter({ lat: jumpLat, lng: jumpLng });
+            return;
+        }
+
+        // 2) recoil에 campusCenter가 이미 있으면 그걸로
+        if (campusCenter) {
+            setReadyCenter(campusCenter);
+            return;
+        }
+
+        // 3) 위치 기반 nearUnivData의 첫 유효 캠퍼스로
+        if (!enableNearUnivQuery) return;
+        if (isFetchingNearUniv) return;
+
+        if (firstLat != null && firstLng != null) {
+            setReadyCenter({ lat: firstLat, lng: firstLng });
+            return;
+        }
+
+    // 4) (선택) 아무것도 없으면 fallback
+    // setReadyCenter(DEFAULT_CENTER);
+    }, [
+        readyCenter,
+        location.state,
+        campusCenter,
+        enableNearUnivQuery,
+        isFetchingNearUniv,
+        firstLat,
+        firstLng,
+    ]);
+
+    useEffect(() => {
+        if (!readyCenter) return;
+        setMapCenter(readyCenter);
+    }, [readyCenter]);
 
     // 라우트 변경 시 모달 상태 초기화 (추가 안전장치)
     useEffect(() => {
@@ -187,7 +255,7 @@ const MapPage = () => {
         const hasCampusJump = !!location.state?.latitude && !!location.state?.longitude;
 
         if ((fromHome || hasCampusJump) && !didResetRef.current) {
-            // ✅ 한 방에 초기화
+            // 한 방에 초기화
             resetAllFilters();
 
             // 로컬 상태도 필요하면 같이 초기화
@@ -230,7 +298,7 @@ const MapPage = () => {
     // 검색 관련
     const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
     const [searchParams, setSearchParams] = useState<SearchRequest>();
-    const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
+    const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
 
     const {
         data: searchData,
@@ -487,7 +555,8 @@ const MapPage = () => {
     // 캠퍼스 중심 좌표 변경 시 초기 위치 설정
     useEffect(() => {
         if (!campusCenter || !mapRef.current) return;
-        if (didCampusMoveRef.current) return; // ✅ 한 번만
+        if (!readyCenter) return;
+        if (didCampusMoveRef.current) return; //한 번만
 
         didCampusMoveRef.current = true;
 
@@ -511,58 +580,55 @@ const MapPage = () => {
 
         // 버튼 숨김
         setShowMapActionBtns(false);
-    }, [campusCenter]);
-
+    }, [campusCenter, readyCenter]);
 
     useEffect(() => {
-        // 캠퍼스 점프가 있으면 내 위치로 덮어쓰지 않음
-        if (campusCenter) return;
         if (didGeoInitRef.current) return;
-
-        if (!navigator.geolocation) {
+        if (campusCenter) {
             didGeoInitRef.current = true;
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-            didGeoInitRef.current = true;
+        // nearUnivData를 요청할 수 있는 상태가 아니면 기다리기
+        if (!enableNearUnivQuery) return;
+        if (isFetchingNearUniv) return;
 
-            const myCenter = {
-                lat: pos.coords.latitude,
-                lng: pos.coords.longitude,
-            };
-
-            setMapCenter(myCenter);
-
-            const offset = 0.01;
-            const myBounds = {
-                neLat: myCenter.lat + offset,
-                neLng: myCenter.lng + offset,
-                swLat: myCenter.lat - offset,
-                swLng: myCenter.lng - offset,
-            };
-
-            setMapBounds(myBounds);
-            setTempBounds(myBounds);
-
-            initialCenterRef.current = myCenter;
-            initialBoundsRef.current = myBounds;
-
-            setShowMapActionBtns(false);
-
-            if (mapRef.current) {
-                mapRef.current.panTo(new kakao.maps.LatLng(myCenter.lat, myCenter.lng));
-            }
-            },
-            () => {
-            // 권한 거부/실패 -> 기본 센터 유지 (그냥 아무것도 안 함)
-            didGeoInitRef.current = true;
-            setMapCenter(DEFAULT_CENTER);
-            },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+        const firstValid = nearUnivData?.find(
+            (u) => u?.campusInfo?.latitude != null && u?.campusInfo?.longitude != null
         );
-        }, [campusCenter]);
+
+        const lat = firstValid?.campusInfo?.latitude;
+        const lng = firstValid?.campusInfo?.longitude;
+
+        if (lat == null || lng == null) return; // 유효 캠퍼스 없으면 기다리거나 fallback 결정
+
+        didGeoInitRef.current = true;
+
+        const center = { lat, lng };
+        const offset = 0.01;
+        const bounds = {
+            neLat: lat + offset,
+            neLng: lng + offset,
+            swLat: lat - offset,
+            swLng: lng - offset,
+        };
+
+        setCampusCenter(center); // 선택값으로도 반영
+        setMapCenter(center);
+        setMapBounds(bounds);
+        setTempBounds(bounds);
+        initialCenterRef.current = center;
+        initialBoundsRef.current = bounds;
+        setShowMapActionBtns(false);
+
+        mapRef.current?.panTo(new kakao.maps.LatLng(lat, lng));
+        }, [
+        campusCenter,
+        enableNearUnivQuery,
+        isFetchingNearUniv,
+        nearUnivData,
+        setCampusCenter,
+        ]);
 
     // nearBy 데이터가 업데이트될 때 누적 처리
     useEffect(() => {
@@ -820,6 +886,17 @@ const MapPage = () => {
         <div className={styles.content}             
             style={{ minHeight: `${windowHeight}px`, display: "flex", flexDirection: "column" }}>
             <div className={styles.map}>
+                {!mapCenter ? (
+                    <div style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                    }}>
+                    <Spinner />
+                    </div>
+                ) : (
                 <KakaoMap
                 center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
@@ -882,26 +959,6 @@ const MapPage = () => {
                     }
 
                     setTempBounds(extractedBounds);
-
-                    // 🔥 campusCenter가 있다면 초기 위치로 이동!
-                    if (campusCenter) {
-                        map.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
-
-                        const offset = 0.01;
-                        const initB = {
-                            neLat: campusCenter.lat + offset,
-                            neLng: campusCenter.lng + offset,
-                            swLat: campusCenter.lat - offset,
-                            swLng: campusCenter.lng - offset,
-                        };
-
-                        setMapBounds(initB);
-                        setTempBounds(initB);
-                        setMapCenter(campusCenter);
-
-                        initialCenterRef.current = campusCenter;
-                        initialBoundsRef.current = initB;
-                    }
                     isInitialized.current = true;
                 }}
                 onBoundsChanged={(map) => {
@@ -950,6 +1007,7 @@ const MapPage = () => {
                         </div>)
                     : null }
                 </KakaoMap>
+                )}
             </div>
             <div className={`${styles.container} ${styles.header_bar}`}>
                 <HousingFilter/>

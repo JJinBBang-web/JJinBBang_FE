@@ -6,24 +6,23 @@ import React from "react";
 import styles from "./Home.module.css";
 import home_logo from "../assets/logo/homeLogo.svg";
 import campus_icon from "../assets/image/campusIcon.svg";
-import Banner from "../components/Banner";
+// import Banner from "../components/Banner";
 import CampusSlide from "../components/CampusSlide";
 import PreviewReview from "../components/PreviewReview";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-import pencil from "../assets/image/pencil.svg";
-import iconRight from "../assets/image/iconRight.svg";
+// import pencil from "../assets/image/pencil.svg";
+// import iconRight from "../assets/image/iconRight.svg";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import { useRecoilValue } from "recoil";
 import MetaTag from "../util/SEOMetaTag";
 import BannerCarousel from "../components/BannerCarousel";
-import PopupSheet from "../components/util/Popup";
 import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.png";
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
 import EventPopupSheet from "../components/util/EventPopup";
-import { geoCoordsState, geoStatusState, geoErrorState } from "../recoil/location/locationState";
+import { geoCoordsState, geoStatusState} from "../recoil/location/locationState";
 import { geoWatchEnabledState } from '../recoil/location/locationPermissionState';
 import { useNearUniversities } from "../hooks/useNearUniversities";
 import { CampusResponse } from '../types/entity/user/UnivInterface';
@@ -63,6 +62,16 @@ const Home: React.FC = () => {
   const coords = useRecoilValue(geoCoordsState);
   const canUseLocation = geoWatchEnabled && !!coords;
   const isGuestNoLocation = !isLogin && !canUseLocation;
+  const geoStatus = useRecoilValue(geoStatusState);
+
+  const isLocationFlow = geoWatchEnabled; 
+
+  const isLocationReady =
+  !isLocationFlow // 위치 플로우가 아니면 바로 ready
+  || (geoStatus === "watching" && !!coords) // 위치 플로우면 coords 확보해야 ready
+  || geoStatus === "denied"
+  || geoStatus === "unsupported"
+  || geoStatus === "error";
 
   const {
     data: userData,
@@ -197,7 +206,13 @@ const Home: React.FC = () => {
               내 대학 근처의 찐 후기들만 모아 한눈에!
             </p>
           </div>
-          <CampusSlide campusList={campusList} />
+          {!isLocationReady ? (
+              <div style={{ height: 140, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <Spinner />
+              </div>
+            ) : (
+              <CampusSlide campusList={campusList} />
+            )}
         </div>
 
       {/* <div className={styles.safetyContainer}>
@@ -293,7 +308,7 @@ const Home: React.FC = () => {
         )}
       </div>
       </div>
-      {/* <EventPopupSheet/> */}
+      <EventPopupSheet/>
     </>
   );
 };
