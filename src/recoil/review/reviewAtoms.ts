@@ -17,13 +17,15 @@ export interface ReviewState {
   rating: number;
   images: string[];
   description: string;
-  roomCapacity?: number;
   dormitoryFee?: number;
   space?:number;
   latitude?: number | null;
   longitude?: number | null; 
   buildingCode?: string;
   universityName?: string;
+  campusId?:number;
+  dormitoryId?: number;
+  dormitoryName?: string;
   dormitoryConditions?: {
     hasDistanceCriteria: boolean;
     hasGradeCriteria: boolean;

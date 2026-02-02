@@ -18,6 +18,9 @@ export const useCreateReview = () => {
       queryClient.invalidateQueries({
         queryKey: ['reviewList'],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['userReview'],
+      });
 
       // 건물 상세 정보 캐시 무효화 (평점 업데이트)
       queryClient.invalidateQueries({

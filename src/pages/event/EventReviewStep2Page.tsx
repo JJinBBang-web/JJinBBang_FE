@@ -52,6 +52,7 @@ const EventReviewStep2Page: React.FC = () => {
           negativeKeywords: form.cons,
           images: imageUrls,
           content: form.reviewText,
+          address: form.address.roadAddress || form.address.keyword,
         },
         phoneNumber: form.phone,
         hasAgreedToMarketing: form.agreeMarketing,

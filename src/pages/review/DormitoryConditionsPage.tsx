@@ -17,7 +17,6 @@ interface LocationState {
     semesterGrade?: number;
     hasDistanceCriteria?: boolean;
     hasGradeCriteria?: boolean;
-    roomCapacity?: number;
   };
 }
 
@@ -44,9 +43,6 @@ const DormitoryConditionsPage: React.FC = () => {
   );
   const [semesterGrade, setSemesterGrade] = useState<string>(
     dormitoryInfo?.semesterGrade ? dormitoryInfo.semesterGrade.toString() : ''
-  );
-  const [roomCapacity, setRoomCapacity] = useState<string>(
-    dormitoryInfo?.roomCapacity ? dormitoryInfo.roomCapacity.toString() : ''
   );
 
   useReviewStepTracking('3-2.2_dormitory_conditions');
@@ -75,7 +71,6 @@ const DormitoryConditionsPage: React.FC = () => {
       setDormitoryFee(dormitoryFee ? dormitoryFee.toString() : '');
       setResidenceArea(residenceArea || '');
       setSemesterGrade(semesterGrade ? semesterGrade.toString() : '');
-      setRoomCapacity(roomCapacity ? roomCapacity.toString() : '');
     }
   }, [from, review]);
 
@@ -143,23 +138,37 @@ const DormitoryConditionsPage: React.FC = () => {
   };
 
   const handleNext = () => {
+    setReview((prev) => {
+      const prevDorm = prev.dormitoryConditions ?? {
+        hasDistanceCriteria: false,
+        hasGradeCriteria: false,
+        dormitoryFee: 0,
+      };
+
+      const nextDorm = {
+        ...prevDorm,
+        hasDistanceCriteria,
+        hasGradeCriteria,
+        dormitoryFee: parseFloat(dormitoryFee),
+        residenceArea: hasDistanceCriteria ? residenceArea : "",
+        semesterGrade: hasGradeCriteria ? parseFloat(semesterGrade) : undefined,
+      };
+      return {
+        ...prev,
+        dormitoryFee: parseFloat(dormitoryFee),
+        dormitoryConditions: nextDorm,
+      };
+    });
+
     const dormitoryConditions = {
+      ...(review.dormitoryConditions ?? {}),
       hasDistanceCriteria,
       hasGradeCriteria,
       dormitoryFee: parseFloat(dormitoryFee),
-      residenceArea: hasDistanceCriteria ? residenceArea : '',
+      residenceArea: hasDistanceCriteria ? residenceArea : "",
       semesterGrade: hasGradeCriteria ? parseFloat(semesterGrade) : undefined,
-      roomCapacity: roomCapacity ? parseInt(roomCapacity, 10) : undefined,
     };
 
-    const updatedReview = {
-      ...review,
-      roomCapacity: roomCapacity ? parseInt(roomCapacity, 10) : undefined,
-      dormitoryFee: parseFloat(dormitoryFee),
-      dormitoryConditions,
-    };
-
-    setReview(updatedReview);
 
     if (from === 'confirm') {
       navigate('/review/confirm', {

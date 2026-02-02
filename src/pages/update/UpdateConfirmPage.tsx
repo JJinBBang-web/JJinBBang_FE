@@ -18,6 +18,8 @@ import { deleteAPI, putAPI } from "../../api/baseAPI";
 import { UpdateReviewRequest } from "../../types/entity/review/ReviewUpdateInterface";
 import UpdateCancelModal from "../../components/review/UpdateCancelModal";
 import { imageUploadAPI } from "../../api/imageUpload";
+import { useQueryClient } from '@tanstack/react-query';
+
 
 
 
@@ -32,6 +34,7 @@ type AddressPick = {
 const UpdateConfirmPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const queryClient = useQueryClient();
 
     const { reviewId } = useParams();
 
@@ -47,6 +50,7 @@ const UpdateConfirmPage: React.FC = () => {
     const housingType = typeToKorean[review?.housingType ?? ''] || '';
     const contractType = contractTypeToKorean[review?.contractType ?? ''] || '';
     const floor = floorToKorean[review?.floorType ?? ''] || ""; 
+    const roomCapacity = review?.dormitoryConditions?.roomCapacity;
 
     const [showRatingModal, setShowRatingModal] = useState(false);
     
@@ -64,6 +68,8 @@ const UpdateConfirmPage: React.FC = () => {
           setReview((prev) => {
             // prev가 null이어도 항상 ReviewState가 되도록 보정
             const base: ReviewState = prev ?? defaultReviewState;
+
+            console.log(prev);
             const next: ReviewState = { ...base };
 
             const newAddress = addr.roadAddress ?? addr.jibunAddress;
@@ -103,6 +109,8 @@ const UpdateConfirmPage: React.FC = () => {
       setShowRatingModal(true);
     };
 
+    console.log(review);
+
     // api 연동해야함.
     // 최종 재업로드 함수
     const handleSubmitRating = async () => {
@@ -119,6 +127,8 @@ const UpdateConfirmPage: React.FC = () => {
           
           // ✅ 인증 필요하면 true
           await putAPI(`/api/v1/review/${reviewId}`, body, true);
+
+          queryClient.invalidateQueries({ queryKey: ['userReview'] });
 
           setShowRatingModal(false);
           setShowConfirmModal(true);
@@ -138,7 +148,8 @@ const UpdateConfirmPage: React.FC = () => {
         setIsDelete(true);
 
         const response = await deleteAPI(`/api/v1/review/${reviewId}`, true);
-
+        
+        queryClient.invalidateQueries({ queryKey: ['userReview'] });
 
         setReview(defaultReviewState);
         setShowDeleteMConfirmodal(true);
@@ -364,7 +375,7 @@ const UpdateConfirmPage: React.FC = () => {
         case "DORMITORY" :
           return {
             dormitoryReview: {
-              campusId: 1,
+              dormitoryId: r.dormitoryId ?? 1,
               capacity: r.dormitoryConditions?.roomCapacity ?? 1,
               dormFee: r.dormitoryFee ?? r.dormitoryConditions?.dormitoryFee ?? 0,
               floor: r.floorType ?? 'LOW',
@@ -386,7 +397,7 @@ const UpdateConfirmPage: React.FC = () => {
               ),
               lounge: Object.values(r.facilityConditions?.lounge ?? {})[0] ?? false
             },
-            ...(buildingRequest ? { buildingRequest } : {}),
+            // ...(buildingRequest ? { buildingRequest } : {}),
           };
 
         default : 
@@ -548,6 +559,21 @@ const UpdateConfirmPage: React.FC = () => {
               </div>
             </div>
 
+            {review?.housingType === "DORMITORY" && (
+              <div
+                className={styles.infoItem}
+              >
+                <span className={styles.label}>기숙사명</span>
+                <div className={styles.value}>
+                  <span className={styles.valueText}>
+                      {review?.universityName}
+                      <br />
+                      {review?.detailedAddress}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div
               className={styles.infoItem}
               onClick={() => 
@@ -559,10 +585,8 @@ const UpdateConfirmPage: React.FC = () => {
                 {review?.housingType === "DORMITORY" ? (
                 <>
                   <span className={styles.valueText}>
-                    {review?.universityName}
+                    {roomCapacity}인실
                     <br/>
-                    {review?.detailedAddress}
-                    <br />
                     {floor}
                   </span>
                 </>
