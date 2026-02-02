@@ -108,8 +108,10 @@ const AppContent: React.FC = () => {
     minUpdateMs: 1000,
   });
 
+  const allowPaths = ["/", "/map"];
+  
   useEffect(() => {
-    if (location.pathname !== "/") return;
+    if (!allowPaths.includes(location.pathname)) return;
     const nav = window.navigator;
     if (!("geolocation" in navigator)) return;
 

@@ -3,11 +3,14 @@ import { useSetRecoilState } from "recoil";
 import { geoCoordsState, geoErrorState, geoStatusState } from "../recoil/location/locationState";
 
 type Options = {
-  enabled: boolean;           // 전역 추적 켤지/말지
+  enabled: boolean;
   highAccuracy?: boolean;
   timeoutMs?: number;
   maximumAgeMs?: number;
-  minUpdateMs?: number;       // 너무 잦은 업데이트 방지(프론트 렌더링/백엔드 호출 대비)
+  minUpdateMs?: number;
+
+  /** enabled=false일 때 coords를 지울지 (기본 false 추천) */
+  clearCoordsOnDisable?: boolean;
 };
 
 export function useGlobalGeolocation({
@@ -16,6 +19,7 @@ export function useGlobalGeolocation({
   timeoutMs = 10_000,
   maximumAgeMs = 5_000,
   minUpdateMs = 1_000,
+  clearCoordsOnDisable = false,
 }: Options) {
   const setStatus = useSetRecoilState(geoStatusState);
   const setCoords = useSetRecoilState(geoCoordsState);
@@ -32,22 +36,24 @@ export function useGlobalGeolocation({
   };
 
   useEffect(() => {
+    // ✅ 매번 시작 전에 기존 watch 정리 (중복 방지)
+    clearWatch();
+
     if (!enabled) {
-      clearWatch();
       lastEmitRef.current = 0;
 
-      // ✅ 중요: 이전 좌표/에러가 남지 않게 리셋
-      setCoords(null);
+      // ✅ coords를 기본은 유지 (원하면 옵션으로 비우기)
+      if (clearCoordsOnDisable) setCoords(null);
+
       setErr(null);
       setStatus("idle");
       return;
     }
 
     if (!("geolocation" in navigator)) {
-      clearWatch();
-      setCoords(null);
       setStatus("unsupported");
       setErr("Geolocation is not supported in this browser.");
+      // coords는 유지/삭제는 선택인데, 보통 유지가 UX 좋음
       return;
     }
 
@@ -57,7 +63,7 @@ export function useGlobalGeolocation({
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const now = Date.now();
-        if (now - lastEmitRef.current < minUpdateMs) return; // throttle
+        if (now - lastEmitRef.current < minUpdateMs) return;
         lastEmitRef.current = now;
 
         setCoords({
@@ -71,11 +77,11 @@ export function useGlobalGeolocation({
       },
       (error) => {
         clearWatch();
-        setCoords(null);
 
         if (error.code === error.PERMISSION_DENIED) {
           setStatus("denied");
           setErr("Location permission denied.");
+          // ✅ denied여도 coords를 굳이 null로 날리지 말자 (원하면 여기서 setCoords(null))
         } else {
           setStatus("error");
           setErr(error.message || "Failed to get location.");
@@ -97,6 +103,7 @@ export function useGlobalGeolocation({
     timeoutMs,
     maximumAgeMs,
     minUpdateMs,
+    clearCoordsOnDisable,
     setStatus,
     setCoords,
     setErr,

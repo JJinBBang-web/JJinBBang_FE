@@ -22,7 +22,7 @@ import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
 import EventPopupSheet from "../components/util/EventPopup";
-import { geoCoordsState} from "../recoil/location/locationState";
+import { geoCoordsState, geoStatusState} from "../recoil/location/locationState";
 import { geoWatchEnabledState } from '../recoil/location/locationPermissionState';
 import { useNearUniversities } from "../hooks/useNearUniversities";
 import { CampusResponse } from '../types/entity/user/UnivInterface';
@@ -62,6 +62,16 @@ const Home: React.FC = () => {
   const coords = useRecoilValue(geoCoordsState);
   const canUseLocation = geoWatchEnabled && !!coords;
   const isGuestNoLocation = !isLogin && !canUseLocation;
+  const geoStatus = useRecoilValue(geoStatusState);
+
+  const isLocationFlow = geoWatchEnabled; 
+
+  const isLocationReady =
+  !isLocationFlow // 위치 플로우가 아니면 바로 ready
+  || (geoStatus === "watching" && !!coords) // 위치 플로우면 coords 확보해야 ready
+  || geoStatus === "denied"
+  || geoStatus === "unsupported"
+  || geoStatus === "error";
 
   const {
     data: userData,
@@ -196,7 +206,13 @@ const Home: React.FC = () => {
               내 대학 근처의 찐 후기들만 모아 한눈에!
             </p>
           </div>
-          <CampusSlide campusList={campusList} />
+          {!isLocationReady ? (
+              <div style={{ height: 140, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <Spinner />
+              </div>
+            ) : (
+              <CampusSlide campusList={campusList} />
+            )}
         </div>
 
       {/* <div className={styles.safetyContainer}>
