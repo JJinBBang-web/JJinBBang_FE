@@ -333,7 +333,7 @@ const AgencyInputPage: React.FC = () => {
   };
 
   const handleToQnA = () => {
-    // navigate("/review/confirm");
+    navigate("/review/agency/report");
     console.log("문의이동");
   };
 

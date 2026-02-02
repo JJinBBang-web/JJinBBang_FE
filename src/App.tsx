@@ -75,6 +75,7 @@ import DormitoryInputPage2 from "./pages/review/DormitoryInputPage2";
 import {geoWatchEnabledState} from "./recoil/location/locationPermissionState";
 import {useGlobalGeolocation} from "./hooks/useGlobalGeolocation";
 import { geoCoordsState, geoStatusState, geoErrorState } from "./recoil/location/locationState";
+import QnAPage from "./pages/QnAPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -297,7 +298,8 @@ const AppContent: React.FC = () => {
 
           # 3-3_agency_input
           <Route path="agency" element={<AgencyInputPage />} />
-
+          <Route path="agency/report" element={<QnAPage/>}/>
+          
           # 4_room_info
           <Route path="room-info" element={<RoomInfoPage />} />
           # 5.1_filter_ad
