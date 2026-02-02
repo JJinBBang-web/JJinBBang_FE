@@ -23,7 +23,7 @@ export interface AgencyReview {
 }
 
 export interface DormitoryReview {
-  campusId: number;
+  dormitoryId: number;
   capacity : number;
   dormFee : number;
   floor : string;

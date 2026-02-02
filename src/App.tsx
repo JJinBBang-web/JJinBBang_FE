@@ -71,6 +71,9 @@ import ContentWritePage from "./pages/content/ContentWrite";
 import EventReviewPage from "./pages/EventRevew";
 import EventReviewStep2Page from "./pages/event/EventReviewStep2Page";
 import EventAddressSearchPage from "./pages/event/EventAddressSearchPage";
+import UniversityInputPage from "./pages/review/UniversityInputPage";
+import DormitorySelectPage from "./pages/review/DormitorySelectPage";
+import DormitoryInputPage2 from "./pages/review/DormitoryInputPage2";
 import {geoWatchEnabledState} from "./recoil/location/locationPermissionState";
 import {useGlobalGeolocation} from "./hooks/useGlobalGeolocation";
 import { geoCoordsState, geoStatusState, geoErrorState } from "./recoil/location/locationState";
@@ -138,7 +141,7 @@ const AppContent: React.FC = () => {
           return;
         }
 
-        // ✅ Permissions API 미지원(사파리 등) fallback:
+        // Permissions API 미지원(사파리 등) fallback:
         // 허용되어 있으면 getCurrentPosition이 성공함 → watch ON
         nav.geolocation.getCurrentPosition(
           () => {
@@ -275,14 +278,18 @@ const AppContent: React.FC = () => {
           <Route path="jeonse" element={<JeonseInputPage />} />
           <Route path="wolse" element={<WolseInputPage />} />
           
-          # 3-2.1_dormitory_input
-          <Route path="dormitory" element={<DormitoryInputPage />} />
-          # 3-2.2_dormitory_conditions
+          # 3-2.1_university_input
+          <Route path="university-input" element={<UniversityInputPage />} />
+          # 3-2.2_dormitory_select
+          <Route path="dormitory-select" element={<DormitorySelectPage />} />
+          # 3-2.2_dormitory_input
+          <Route path="dormitory" element={<DormitoryInputPage2 />} />
+          # 3-2.3_dormitory_conditions
           <Route
             path="dormitory-conditions"
             element={<DormitoryConditionsPage />}
           />
-          # 3-2.3_dormitory_amenities
+          # 3-2.4_dormitory_amenities
           <Route
             path="dormitory-amenities"
             element={<DormitoryAmenitiesPage />}

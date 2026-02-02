@@ -132,6 +132,15 @@ const ReviewTypePage: React.FC = () => {
             },
             replace: false,
           });
+        } else if (selectedType === "기숙사") {
+          // 기숙사는 캠퍼스 선택 페이지로 이동
+          navigate("/review/university-input", {
+            state: {
+              ...locationState,
+              housingType: selectedType,
+            },
+            replace: false,
+          });
         } else {
           // 기타 타입(기숙사, 원룸 등)은 주소 입력 페이지로 이동
           navigate("/review/input-address", {

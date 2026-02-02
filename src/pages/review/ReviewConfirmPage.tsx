@@ -49,6 +49,11 @@ interface LocationState {
   from?: string;
   housingType?: string;
   roomData?: any;
+  campusId?: number;
+  universityName?: string;
+  dormitoryId?: number;
+  dormitoryName?: string;
+  roomCapacity?: number;
 }
 
 const ReviewConfirmPage: React.FC = () => {
@@ -71,6 +76,9 @@ const ReviewConfirmPage: React.FC = () => {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const confirmedRoomCapacity = review.dormitoryConditions?.roomCapacity;
+
 
   const {
     showCancelModal,
@@ -162,6 +170,22 @@ const ReviewConfirmPage: React.FC = () => {
           ...(locationState.priceData?.managementFee !== undefined && {
             managementFee: locationState.priceData.managementFee,
           }),
+          ...(locationState.campusId !== undefined && { campusId: locationState.campusId }),
+          ...(locationState.universityName && { university: locationState.universityName }),
+          ...(locationState.dormitoryId !== undefined && { dormitoryId: locationState.dormitoryId }),
+          ...(locationState.dormitoryName && { dormitoryName: locationState.dormitoryName }),
+          ...(locationState.roomCapacity !== undefined && {
+              dormitoryConditions: {
+                ...(autoSavedData.reviewState?.dormitoryConditions ?? {
+                  hasDistanceCriteria: false,
+                  hasGradeCriteria: false,
+                  dormitoryFee: 0,
+                }),
+                roomCapacity: locationState.roomCapacity,
+              },
+            }),
+          ...(locationState.floor && {
+            floorType: locationState.floor,})
         };
         setReview(mergedState);
       }
@@ -195,8 +219,19 @@ const ReviewConfirmPage: React.FC = () => {
           locationState.priceData?.managementFee !== undefined
             ? locationState.priceData.managementFee
             : prev.managementFee || 0,
-      }));
-    }
+        ...(locationState.roomCapacity !== undefined && {
+          dormitoryConditions: {
+            ...(prev.dormitoryConditions ?? {
+              hasDistanceCriteria: false,
+              hasGradeCriteria: false,
+              dormitoryFee: 0,
+            }),
+            roomCapacity: locationState.roomCapacity,
+          },
+        }),
+        ...(locationState.floor && { floorType: locationState.floor }),
+            }));
+          }
   }, [locationState, setReview, setDormitoryReview]);
 
   // 라벨에 맞는 아이콘 찾기 - 기숙사 필터 지원
@@ -334,13 +369,13 @@ const ReviewConfirmPage: React.FC = () => {
       return;
     }
 
-    if (!review.latitude || !review.longitude) {
-      alert(
-        "주소 정보를 불러오는 중 오류가 발생했습니다. 주소를 다시 선택해주세요."
-      );
-      setShowConfirmModal(false);
-      return;
-    }
+    // if (!review.latitude || !review.longitude) {
+    //   alert(
+    //     "주소 정보를 불러오는 중 오류가 발생했습니다. 주소를 다시 선택해주세요."
+    //   );
+    //   setShowConfirmModal(false);
+    //   return;
+    // }
 
     setIsSubmitting(true);
 
@@ -382,31 +417,32 @@ const ReviewConfirmPage: React.FC = () => {
 
         // DormitoryInputPage에서 저장된 campusId 사용
         // selectedTypeNum (대학교 ID)가 campusId로 저장되어 있음
-        const campusId = (review as any).campusId;
+        const dormitoryId = (review as any).dormitoryId;
 
-        if (!campusId) {
-          alert(
-            "대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요."
-          );
-          navigate("/review/dormitory");
-          return;
-        }
+        // if (!campusId) {
+        //   alert(
+        //     "대학교 캠퍼스 정보가 없습니다. 기숙사 정보를 다시 입력해주세요."
+        //   );
+        //   navigate("/review/university-input");
+        //   return;
+        // }
 
-        if (!review.buildingCode) {
+        if (!dormitoryId) {
           alert(
             "기숙사 위치 정보를 찾을 수 없습니다. 주소를 다시 입력해주세요."
           );
-          navigate("/review/address");
+          navigate("/review/university-input");
           return;
         }
 
+        const cap =
+          review.dormitoryConditions?.roomCapacity ??
+          (dormitoryReview.roomType === "1인실" ? 1 : 2);
+
         reviewData = {
           dormitoryReview: {
-            campusId: campusId,
-            capacity:
-              review.roomCapacity || dormitoryReview.roomType === "1인실"
-                ? 1
-                : 2,
+            dormitoryId: dormitoryId,
+            capacity: cap,
             dormFee: review.dormitoryFee || 0,
             floor:
               review.floorType === "지하층"
@@ -428,19 +464,19 @@ const ReviewConfirmPage: React.FC = () => {
               "",
           },
           imageUrls: review.images || dormitoryReview.images || [],
-          buildingRequest: {
-            // 기숙사는 buildingCode에 Kakao 장소 ID를 저장
-            // DormitoryInputPage에서 키워드 검색 API로 얻은 장소 ID 사용
-            buildingCode: review.buildingCode,
-            name:
-              (review as any).dormitoryName ||
-              review.detailedAddress ||
-              "기숙사명",
-            type: "DORMITORY",
-            address: review.address || "",
-            latitude: review.latitude!,
-            longitude: review.longitude!,
-          },
+          // buildingRequest: {
+          //   // 기숙사는 buildingCode에 Kakao 장소 ID를 저장
+          //   // DormitoryInputPage에서 키워드 검색 API로 얻은 장소 ID 사용
+          //   buildingCode: review.buildingCode,
+          //   name:
+          //     (review as any).dormitoryName ||
+          //     review.detailedAddress ||
+          //     "기숙사명",
+          //   type: "DORMITORY",
+          //   address: review.address || "",
+          //   latitude: review.latitude!,
+          //   longitude: review.longitude!,
+          // },
           keywords: {
             positive: positiveKeywords,
             negative: negativeKeywords,
@@ -705,6 +741,7 @@ const ReviewConfirmPage: React.FC = () => {
             buildingName: review.detailedAddress || "",
           },
           buildingName: review.detailedAddress || "",
+          roomCapacity: review.dormitoryConditions?.roomCapacity || 0,
           floor: review.floorType || "",
           from: "confirm",
         },
@@ -842,6 +879,22 @@ const ReviewConfirmPage: React.FC = () => {
     });
   };
 
+  const navigateToUniversityInput = () => {
+    navigate("/review/university-input", {
+      state: {
+          address: {
+            roadAddress: review.address || "",
+            jibunAddress: review.addressDetail || "",
+            buildingName: review.detailedAddress || "",
+          },
+          buildingName: review.detailedAddress || "",
+          university: review.universityName || "",
+          from: "confirm",
+        },
+        replace: true,
+    })
+  }
+
   // 65자 이상일 경우 ... 표시하는 함수
   const truncateReviewText = (text: string): string => {
     if (!text) return "후기를 작성해주세요";
@@ -854,6 +907,7 @@ const ReviewConfirmPage: React.FC = () => {
 
     return text;
   };
+
 
   // 태그 표시 함수 수정
   const renderTags = (tags: string[]) => {
@@ -927,7 +981,7 @@ const ReviewConfirmPage: React.FC = () => {
 
             <div
               className={styles.infoItem}
-              onClick={() => handleItemClick(navigateToAddress)}
+              onClick={() => isDormitory ? null : handleItemClick(navigateToAddress)}
             >
               <span className={styles.label}>주소</span>
               <div className={styles.value}>
@@ -936,9 +990,27 @@ const ReviewConfirmPage: React.FC = () => {
                     {review.address || "주소를 입력해주세요"}
                   </span>
                 </div>
-                <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                {!isDormitory && <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />}
               </div>
             </div>
+
+            {isDormitory && (
+              <div
+                className={styles.infoItem}
+                onClick={() => handleItemClick(navigateToUniversityInput)}
+              >
+                <span className={styles.label}>기숙사명</span>
+                <div className={styles.value}>
+                  <span className={styles.valueText}>
+                      {(review as any).universityName || "대학교를 입력해주세요"}
+                      <br />
+                      {(review as any).dormitoryName ||
+                        "기숙사명을 입력해주세요"}
+                  </span>
+                  <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+                </div>
+              </div>
+            )}
 
             <div
               className={styles.infoItem}
@@ -949,14 +1021,7 @@ const ReviewConfirmPage: React.FC = () => {
               </span>
               <div className={styles.value}>
                 <span className={styles.valueText}>
-                  {isDormitory ? (
-                    <>
-                      {(review as any).university || "대학교를 입력해주세요"}
-                      <br />
-                      {(review as any).dormitoryName ||
-                        "기숙사명을 입력해주세요"}
-                    </>
-                  ) : isAgency ? (
+                  {isDormitory ? `${confirmedRoomCapacity ?? ""}인실` : isAgency ? (
                     review.detailedAddress || "상호명을 입력해주세요"
                   ) : (
                     review.detailedAddress || "상세 주소를 입력해주세요"
