@@ -6,7 +6,6 @@ import PreviewReview from "../components/PreviewReview";
 import { isLoginState } from "../recoil/auth/isLoginState";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "../api/baseAPI";
-import emptyCharacterIcon from '../assets/image/emptyCharacterIcon.svg';
 import { useRecoilValue } from "recoil";
 
 const getReviewKey = (review: any) => {

@@ -22,7 +22,7 @@ import ReviewEventBanner from "../assets/image/content/banner/ReviewEventbanner.
 import { useNavigate } from "react-router-dom";
 import { imageReloadVersionState } from "../recoil/util/imageReloadVersion";
 import EventPopupSheet from "../components/util/EventPopup";
-import { geoCoordsState, geoStatusState, geoErrorState } from "../recoil/location/locationState";
+import { geoCoordsState} from "../recoil/location/locationState";
 import { geoWatchEnabledState } from '../recoil/location/locationPermissionState';
 import { useNearUniversities } from "../hooks/useNearUniversities";
 import { CampusResponse } from '../types/entity/user/UnivInterface';
