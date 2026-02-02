@@ -27,7 +27,6 @@ import ReviewTypePage from "./pages/review/ReviewTypePage";
 import AddressInputPage from "./pages/review/AddressInputPage";
 import AddressSearchPage from "./pages/review/AddressSearchPage";
 import AddressResultPage from "./pages/review/AddressResultPage";
-import DormitoryInputPage from "./pages/review/DormitoryInputPage";
 import DormitoryConditionsPage from "./pages/review/DormitoryConditionsPage";
 import DormitoryAmenitiesPage from "./pages/review/DormitoryAmenitiesPage";
 import FloorInputPage from "./pages/review/FloorInputPage";
@@ -63,8 +62,7 @@ import ContentPage from "./pages/content/Content";
 import ContentDetail from "./pages/content/ContentDetail";
 import LatestReveiwList from "./pages/LatestReviewList";
 import MyReviewList from "./pages/MyReviewList";
-import RecoilNexus, { setRecoil } from "./util/RecoilNexus";
-import { explorationFrequencyState } from "./recoil/util/explorationFrequencyState";
+import RecoilNexus from "./util/RecoilNexus";
 import ContentLoginPage from "./pages/content/ContentLogin";
 import ContentManagePage from "./pages/content/ContentManage";
 import ContentWritePage from "./pages/content/ContentWrite";
@@ -77,6 +75,7 @@ import DormitoryInputPage2 from "./pages/review/DormitoryInputPage2";
 import {geoWatchEnabledState} from "./recoil/location/locationPermissionState";
 import {useGlobalGeolocation} from "./hooks/useGlobalGeolocation";
 import { geoCoordsState, geoStatusState, geoErrorState } from "./recoil/location/locationState";
+import QnAPage from "./pages/QnAPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,8 +109,10 @@ const AppContent: React.FC = () => {
     minUpdateMs: 1000,
   });
 
+  const allowPaths = ["/", "/map"];
+  
   useEffect(() => {
-    if (location.pathname !== "/") return;
+    if (!allowPaths.includes(location.pathname)) return;
     const nav = window.navigator;
     if (!("geolocation" in navigator)) return;
 
@@ -121,7 +122,7 @@ const AppContent: React.FC = () => {
       try {
         // Permissions API 지원 브라우저
         if ("permissions" in navigator) {
-          const perm = await (navigator as any).permissions.query({ name: "geolocation" });
+          const perm = await (navigator).permissions.query({ name: "geolocation" });
           if (cancelled) return;
 
           if (perm.state === "granted") {
@@ -177,7 +178,7 @@ const AppContent: React.FC = () => {
     const run = async () => {
       if (!("permissions" in navigator)) return; // fallback은 위 sync가 처리
 
-      const perm = await (navigator as any).permissions.query({ name: "geolocation" });
+      const perm = await (navigator).permissions.query({ name: "geolocation" });
 
       // prompt일 때만 confirm
       if (perm.state !== "prompt") return;
@@ -297,7 +298,8 @@ const AppContent: React.FC = () => {
 
           # 3-3_agency_input
           <Route path="agency" element={<AgencyInputPage />} />
-
+          <Route path="agency/report" element={<QnAPage/>}/>
+          
           # 4_room_info
           <Route path="room-info" element={<RoomInfoPage />} />
           # 5.1_filter_ad
