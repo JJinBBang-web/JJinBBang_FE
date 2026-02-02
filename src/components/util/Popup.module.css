@@ -19,16 +19,6 @@
     transform: translate(-50%, -50%);
 }
 
-.popupImg {
-    z-index: 10000; /* 가장 앞에 보이도록 설정 */
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-
-    max-width: calc(393px * 0.9);
-}
-
 .overlay {
     position: fixed;
     top: 0;
@@ -127,4 +117,25 @@
 .arrowImg {
     width: 18px;
     height: 18px;
+}
+
+.wrap{
+    z-index: 10000; /* 가장 앞에 보이도록 설정 */
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.popupImg {
+    max-width: calc(393px * 0.9);
+}
+
+.icon {
+    width: 24px;
+    position: relative;
+    bottom: -2rem;
 }
