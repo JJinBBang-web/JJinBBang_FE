@@ -36,7 +36,7 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&set SSL_CRT_FILE=.\\localhost.pem&&set SSL_KEY_FILE=.\\localhost-key.pem&&react-scripts start",
     "prebuild": "node scripts/generateSitemap.js",
     "build": "ESLINT_NO_DEV_ERRORS=true react-scripts build",
     "test": "react-scripts test",
