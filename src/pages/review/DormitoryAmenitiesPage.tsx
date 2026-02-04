@@ -3,8 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { dormitoryReviewState } from '../../recoil/review/dormitoryReviewAtoms';
+import { reviewState } from '../../recoil/review/reviewAtoms';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
+import { reviewAutoSave, REVIEW_STEPS } from '../../util/reviewAutoSave';
 import styles from '../../styles/review/DormitoryAmenities.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import backArrowIcon from '../../assets/image/backArrowIcon.svg';
@@ -30,6 +33,7 @@ const DormitoryAmenitiesPage: React.FC = () => {
   const { facilities, from } = (location.state as LocationState) || {};
   const [dormitoryReview, setDormitoryReview] =
     useRecoilState(dormitoryReviewState);
+  const [review, setReview] = useRecoilState(reviewState);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // 각 편의시설에 대한 선택 상태 관리 - 타입 명시
@@ -44,12 +48,20 @@ const DormitoryAmenitiesPage: React.FC = () => {
 
   useReviewStepTracking('3-2.3_dormitory_amenities');
 
+  // 자동 저장 기능 추가
+  useReviewAutoSave('dormitory-amenities');
+
   const {
     showCancelModal,
     handleCloseButtonClick,
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 페이지 진입 시 currentStep만 업데이트 (reviewState 덮어쓰기 방지)
+  useEffect(() => {
+    reviewAutoSave.updateCurrentStepOnNext(REVIEW_STEPS.DORMITORY_AMENITIES);
+  }, []);
 
   useEffect(() => {
     // confirm 페이지에서 돌아온 경우 기존 selections 복원
@@ -94,13 +106,46 @@ const DormitoryAmenitiesPage: React.FC = () => {
   );
 
   // 다음 버튼 클릭 처리 - PhotoUploadPage로 이동
-  const handleNext = () => {
-    const updatedReview = {
+  const handleNext = async () => {
+    const updatedDormitoryReview = {
       ...dormitoryReview,
       facilityConditions: selections,
     };
 
-    setDormitoryReview(updatedReview);
+    setDormitoryReview(updatedDormitoryReview);
+
+    // reviewState에도 facilityConditions 저장 (auto-save 감지용)
+    const updatedReview = {
+      ...review,
+      facilityConditions: {
+        private: {
+          화장실: selections['화장실']?.['개인'] || false,
+          샤워실: selections['샤워실']?.['개인'] || false,
+          냉장고: selections['냉장고']?.['개인'] || false,
+          전자레인지: selections['전자레인지']?.['개인'] || false,
+          세탁기: selections['세탁기']?.['개인'] || false,
+        },
+        public: {
+          화장실: selections['화장실']?.['공용'] || false,
+          샤워실: selections['샤워실']?.['공용'] || false,
+          냉장고: selections['냉장고']?.['공용'] || false,
+          전자레인지: selections['전자레인지']?.['공용'] || false,
+          세탁기: selections['세탁기']?.['공용'] || false,
+        },
+        lounge: {
+          있음: selections['휴게시설']?.['있음'] || false,
+        },
+      },
+    };
+    setReview(updatedReview);
+
+    // 다음 페이지로 이동 전 자동 저장 (다음 step으로)
+    await reviewAutoSave.save({
+      reviewState: updatedReview,
+      dormitoryReviewState: updatedDormitoryReview,
+      currentStep: REVIEW_STEPS.ROOM_INFO,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
 
     if (from === 'confirm') {
       navigate('/review/confirm', {

@@ -59,6 +59,11 @@ const PhotoUploadPage: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
+  // 페이지 진입 시 currentStep만 업데이트 (reviewState 덮어쓰기 방지)
+  useEffect(() => {
+    reviewAutoSave.updateCurrentStepOnNext(REVIEW_STEPS.ROOM_INFO);
+  }, []);
+
   // 컴포넌트 마운트 시 기존 이미지 로드 (confirm 페이지에서 돌아온 경우)
   useEffect(() => {
     if (locationState?.from === 'confirm' && review.images && review.images.length > 0) {
@@ -144,7 +149,7 @@ const PhotoUploadPage: React.FC = () => {
   };
 
   // 다음 페이지로 이동 핸들러 - 현재 선택된 사진들과 함께 상태 전달
-  const handleNext = () => {
+  const handleNext = async () => {
     // confirm 페이지에서 온 경우 다시 confirm 페이지로 돌아가기
     if (locationState?.from === 'confirm') {
       navigate("/review/confirm", {
@@ -156,8 +161,8 @@ const PhotoUploadPage: React.FC = () => {
       });
     } else {
       // "다음" 버튼 클릭 시 자동저장에 다음 단계 기록
-      reviewAutoSave.save({
-        reviewState: review,
+      await reviewAutoSave.save({
+        reviewState: { ...review, images: photos },
         dormitoryReviewState: null,
         currentStep: REVIEW_STEPS.FILTER_AD,
         uuid: reviewAutoSave.load()?.uuid

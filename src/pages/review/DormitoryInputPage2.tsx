@@ -7,6 +7,7 @@ import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+import { useReviewAutoSave } from "../../hooks/useReviewAutoSave";
 import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 
 import styles from "../../styles/review/DormitoryInputPage.module.css";
@@ -41,6 +42,9 @@ const DormitoryInputPage2: React.FC = () => {
 
   useReviewStepTracking("3-2.1_dormitory_input");
 
+  // 자동 저장 기능 추가
+  useReviewAutoSave('dormitory');
+
   const {
     showCancelModal,
     handleCloseButtonClick,
@@ -48,14 +52,9 @@ const DormitoryInputPage2: React.FC = () => {
     handleConfirmCancel,
   } = useCancelModal();
 
-  // 페이지 진입 시 currentStep 저장
+  // 페이지 진입 시 currentStep만 업데이트 (reviewState 덮어쓰기 방지)
   useEffect(() => {
-    reviewAutoSave.save({
-      reviewState: review,
-      dormitoryReviewState: null,
-      currentStep: REVIEW_STEPS.DORMITORY,
-      uuid: reviewAutoSave.load()?.uuid,
-    });
+    reviewAutoSave.updateCurrentStepOnNext(REVIEW_STEPS.DORMITORY);
   }, []);
 
   useEffect(() => {
@@ -95,7 +94,7 @@ const DormitoryInputPage2: React.FC = () => {
     setSelectedFloor(floor);
   };
 
-  const proceedToNextStep = () => {
+  const proceedToNextStep = async () => {
     const capNum = roomCapacity.trim() === "" ? undefined : Number(roomCapacity);
 
     const updatedReview = {
@@ -114,7 +113,7 @@ const DormitoryInputPage2: React.FC = () => {
     setReview(updatedReview);
 
     // 다음 페이지로 이동 전 자동 저장 (다음 step으로)
-    reviewAutoSave.save({
+    await reviewAutoSave.save({
       reviewState: updatedReview,
       dormitoryReviewState: null,
       currentStep: REVIEW_STEPS.DORMITORY_CONDITIONS,

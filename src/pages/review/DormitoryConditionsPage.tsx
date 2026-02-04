@@ -5,6 +5,8 @@ import { useRecoilState } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
 import CancelModal from '../../components/review/CancelModal';
 import { useCancelModal } from '../../util/useCancelModal';
+import { useReviewAutoSave } from '../../hooks/useReviewAutoSave';
+import { reviewAutoSave, REVIEW_STEPS } from '../../util/reviewAutoSave';
 import styles from '../../styles/review/DormitoryConditions.module.css';
 import closeIcon from '../../assets/image/iconClose.svg';
 import useReviewStepTracking from '../../hooks/useReviewStepTracking';
@@ -47,12 +49,20 @@ const DormitoryConditionsPage: React.FC = () => {
 
   useReviewStepTracking('3-2.2_dormitory_conditions');
 
+  // 자동 저장 기능 추가
+  useReviewAutoSave('dormitory-conditions');
+
   const {
     showCancelModal,
     handleCloseButtonClick,
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 페이지 진입 시 currentStep만 업데이트 (reviewState 덮어쓰기 방지)
+  useEffect(() => {
+    reviewAutoSave.updateCurrentStepOnNext(REVIEW_STEPS.DORMITORY_CONDITIONS);
+  }, []);
 
   useEffect(() => {
     // 확인 페이지에서 온 경우 기존 값 설정
@@ -137,7 +147,7 @@ const DormitoryConditionsPage: React.FC = () => {
     return isValid;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setReview((prev) => {
       const prevDorm = prev.dormitoryConditions ?? {
         hasDistanceCriteria: false,
@@ -169,6 +179,18 @@ const DormitoryConditionsPage: React.FC = () => {
       semesterGrade: hasGradeCriteria ? parseFloat(semesterGrade) : undefined,
     };
 
+    // 다음 페이지로 이동 전 자동 저장 (다음 step으로)
+    const updatedReviewForSave = {
+      ...review,
+      dormitoryFee: parseFloat(dormitoryFee),
+      dormitoryConditions,
+    };
+    await reviewAutoSave.save({
+      reviewState: updatedReviewForSave,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.DORMITORY_AMENITIES,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
 
     if (from === 'confirm') {
       navigate('/review/confirm', {
