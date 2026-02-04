@@ -11,6 +11,7 @@ import CancelModal from "../../components/review/CancelModal";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/lottie/loading.json";
 import bigSearchIcon from "../../assets/image/bigSearchIcon.svg";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 
 interface LocationState {
   address: {
@@ -62,6 +63,16 @@ const UniversityInputPage:React.FC = () => {
       handleConfirmCancel,
     } = useCancelModal();
 
+  // 페이지 진입 시 currentStep 저장
+  useEffect(() => {
+    reviewAutoSave.save({
+      reviewState: review,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.UNIVERSITY_INPUT,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
+  }, []);
+
   useEffect(() => {
     setSelectedCampusId(null);
   }, [debouncedQuery]);
@@ -90,17 +101,27 @@ const UniversityInputPage:React.FC = () => {
   const handleNext = () => {
     if (!selectedItem) return;
 
-    setReview(prev => ({
-        ...prev,
+    const updatedReview = {
+        ...review,
         campusId: selectedItem.campusId,
         universityName: selectedItem.fullName,
-    }));
+    };
+
+    setReview(updatedReview);
+
+    // 다음 페이지로 이동 전 자동 저장 (다음 step으로)
+    reviewAutoSave.save({
+      reviewState: updatedReview,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.DORMITORY_SELECT,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
 
     const nextState = {
         ...location.state,
         campusId: selectedItem.campusId,
     };
-    
+
     navigate("/review/dormitory-select", {
     state: nextState
     });

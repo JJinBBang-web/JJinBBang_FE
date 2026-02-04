@@ -17,6 +17,8 @@ export const REVIEW_STEPS = {
   ADDRESS_INPUT: 'input-address',
   FLOOR: 'floor',
   ADDRESS_RESULT: 'address-result',
+  UNIVERSITY_INPUT: 'university-input',
+  DORMITORY_SELECT: 'dormitory-select',
   DORMITORY: 'dormitory',
   DORMITORY_CONDITIONS: 'dormitory-conditions',
   DORMITORY_AMENITIES: 'dormitory-amenities',
@@ -38,6 +40,8 @@ export const STEP_FLOW: { [key: string]: string } = {
   'type': 'input-address',
   'input-address': 'floor', // 일반적인 경우
   'floor': 'price', // 기본값, 실제로는 housingType에 따라 달라짐
+  'university-input': 'dormitory-select', // 기숙사: 대학교 입력 -> 기숙사 선택
+  'dormitory-select': 'dormitory', // 기숙사: 기숙사 선택 -> 기숙사 상세
   'dormitory': 'dormitory-conditions',
   'dormitory-conditions': 'dormitory-amenities',
   'dormitory-amenities': 'room-info',
@@ -249,9 +253,40 @@ export const reviewAutoSave = {
 
     // 각 단계에서 다음으로 이동할 페이지를 결정
     const stepFlow: { [key: string]: () => { path: string; state: any } | null } = {
-      'type': () => ({
-        path: '/review/input-address',
-        state: { housingType: review.housingType, from: 'autosave' }
+      'type': () => {
+        if (isDormitory) {
+          return {
+            path: '/review/university-input',
+            state: { housingType: review.housingType, from: 'autosave' }
+          };
+        } else if (isAgency) {
+          return {
+            path: '/review/agency',
+            state: { housingType: review.housingType, from: 'autosave' }
+          };
+        }
+        return {
+          path: '/review/input-address',
+          state: { housingType: review.housingType, from: 'autosave' }
+        };
+      },
+      'university-input': () => ({
+        path: '/review/dormitory-select',
+        state: {
+          housingType: review.housingType,
+          campusId: review.campusId,
+          from: 'autosave'
+        }
+      }),
+      'dormitory-select': () => ({
+        path: '/review/dormitory',
+        state: {
+          housingType: review.housingType,
+          campusId: review.campusId,
+          dormitoryId: review.dormitoryId,
+          dormitoryName: review.dormitoryName,
+          from: 'autosave'
+        }
       }),
       'input-address': () => ({
         path: '/review/floor',
@@ -567,6 +602,21 @@ export const reviewAutoSave = {
           from: 'autosave',
         }
       },
+      'university-input': {
+        path: '/review/university-input',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        }
+      },
+      'dormitory-select': {
+        path: '/review/dormitory-select',
+        state: {
+          housingType: review.housingType,
+          campusId: review.campusId,
+          from: 'autosave',
+        }
+      },
       'dormitory': {
         path: '/review/dormitory',
         state: {
@@ -707,13 +757,25 @@ export const reviewAutoSave = {
 
     // currentStep이 있을 때
     if (currentStep) {
-      // "다음" 버튼을 클릭하지 않았다면 현재 페이지에 머물러야 함
-      // 완료 여부와 관계없이 현재 단계로 이동
-      const currentPage = currentPageMap[currentStep];
-      if (currentPage) return currentPage;
+      // 예외: currentStep이 'type'인데 실제로 더 많은 데이터가 있는 경우
+      // (기존 코드에서 currentStep을 제대로 업데이트하지 않은 데이터)
+      // 이 경우 데이터 추론 로직으로 넘어감
+      const hasMoreData = review.address || review.campusId || review.dormitoryId ||
+                          review.pros?.length > 0 || review.cons?.length > 0;
+
+      if (currentStep === 'type' && hasMoreData) {
+        console.log('[AutoSave] currentStep이 type이지만 더 많은 데이터 있음, 데이터 추론 로직 사용');
+        // 아래 데이터 추론 로직으로 넘어감
+      } else {
+        // "다음" 버튼을 클릭하지 않았다면 현재 페이지에 머물러야 함
+        // 완료 여부와 관계없이 현재 단계로 이동
+        const currentPage = currentPageMap[currentStep];
+        if (currentPage) return currentPage;
+      }
     }
 
-    // currentStep이 없는 경우 데이터를 기반으로 추론 (하위 호환성)
+    // currentStep이 없거나 'type'이지만 더 많은 데이터가 있는 경우
+    // 데이터를 기반으로 추론 (하위 호환성)
     // 이 로직은 이전 버전의 자동저장 데이터를 위한 것
 
     // 콘텐츠 작성까지 완료
@@ -793,8 +855,8 @@ export const reviewAutoSave = {
       };
     }
 
-    // 기숙사 - 입주 조건까지 완료
-    if (isDormitory && review.dormitoryConditions) {
+    // 기숙사 - 입주 조건까지 완료 (실제로 입력된 경우만)
+    if (isDormitory && (review.dormitoryConditions?.residenceArea || review.dormitoryConditions?.semesterGrade)) {
       return {
         path: '/review/dormitory-conditions',
         state: {
@@ -804,19 +866,48 @@ export const reviewAutoSave = {
       };
     }
 
-    // 기숙사 - 기숙사 정보까지 완료
-    if (isDormitory && review.detailedAddress) {
+    // 기숙사 - 방 인원/층수 입력까지 완료 (다음은 dormitory-conditions)
+    if (isDormitory && review.dormitoryConditions?.roomCapacity && review.floorType) {
+      return {
+        path: '/review/dormitory-conditions',
+        state: {
+          housingType: review.housingType,
+          from: 'autosave',
+        },
+      };
+    }
+
+    // 기숙사 - 기숙사 선택까지 완료 (다음은 dormitory)
+    if (isDormitory && review.dormitoryId) {
       return {
         path: '/review/dormitory',
         state: {
           housingType: review.housingType,
-          address: {
-            roadAddress: review.address || '',
-            jibunAddress: review.addressDetail || '',
-            buildingName: review.detailedAddress || '',
-          },
-          buildingName: review.detailedAddress || '',
-          floor: review.floorType || '',
+          dormitoryId: review.dormitoryId,
+          dormitoryName: review.dormitoryName,
+          from: 'autosave',
+        },
+      };
+    }
+
+    // 기숙사 - 대학교 선택까지 완료 (다음은 dormitory-select)
+    if (isDormitory && (review.campusId || review.universityName)) {
+      return {
+        path: '/review/dormitory-select',
+        state: {
+          housingType: review.housingType,
+          campusId: review.campusId,
+          from: 'autosave',
+        },
+      };
+    }
+
+    // 기숙사 - 유형만 선택한 경우 (다음은 university-input)
+    if (isDormitory) {
+      return {
+        path: '/review/university-input',
+        state: {
+          housingType: review.housingType,
           from: 'autosave',
         },
       };

@@ -7,10 +7,10 @@ import { reviewState } from "../../recoil/review/reviewAtoms";
 import CancelModal from "../../components/review/CancelModal";
 import { useCancelModal } from "../../util/useCancelModal";
 import useReviewStepTracking from "../../hooks/useReviewStepTracking";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 
 import styles from "../../styles/review/DormitoryInputPage.module.css";
 import closeIcon from "../../assets/image/iconClose.svg";
-import { floor } from "lodash";
 
 interface LocationState {
   address?: {
@@ -47,6 +47,16 @@ const DormitoryInputPage2: React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
+
+  // 페이지 진입 시 currentStep 저장
+  useEffect(() => {
+    reviewAutoSave.save({
+      reviewState: review,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.DORMITORY,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
+  }, []);
 
   useEffect(() => {
     // confirm에서 돌아온 경우 값 복원
@@ -88,10 +98,10 @@ const DormitoryInputPage2: React.FC = () => {
   const proceedToNextStep = () => {
     const capNum = roomCapacity.trim() === "" ? undefined : Number(roomCapacity);
 
-    setReview((prev) => ({
-      ...prev,
+    const updatedReview = {
+      ...review,
       dormitoryConditions: {
-        ...(prev.dormitoryConditions ?? {
+        ...(review.dormitoryConditions ?? {
           hasDistanceCriteria: false,
           hasGradeCriteria: false,
           dormitoryFee: 0,
@@ -99,7 +109,17 @@ const DormitoryInputPage2: React.FC = () => {
         roomCapacity: capNum,
       },
       floorType: selectedFloor,
-    }));
+    };
+
+    setReview(updatedReview);
+
+    // 다음 페이지로 이동 전 자동 저장 (다음 step으로)
+    reviewAutoSave.save({
+      reviewState: updatedReview,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.DORMITORY_CONDITIONS,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
 
     const nextState = {
       ...location.state,

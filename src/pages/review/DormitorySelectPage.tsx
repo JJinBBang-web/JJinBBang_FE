@@ -11,6 +11,7 @@ import CancelModal from "../../components/review/CancelModal";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/lottie/loading.json";
 import bigSearchIcon from "../../assets/image/bigSearchIcon.svg";
+import { reviewAutoSave, REVIEW_STEPS } from "../../util/reviewAutoSave";
 
 interface LocationState {
   address: {
@@ -27,13 +28,16 @@ const DormitorySelectPage:React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [review, setReview] = useRecoilState(reviewState);
-  const { from, campusId } = (location.state as LocationState) || {};
+  const { from, campusId: stateCampusId } = (location.state as LocationState) || {};
+
+  // location.state에 campusId가 없으면 review에서 가져옴 (자동 저장 복원 시)
+  const campusId = stateCampusId ?? review.campusId;
 
   const [selectedDormitoryId, setSelectedDormitoryId] = useState<number | null>(null);
 
   const dormQuery = useDormitoriesByCampusId({
     campusId,
-    enabled: true,
+    enabled: !!campusId,
   });
 
   const dormitories = dormQuery.data?.dormitories ?? []; 
@@ -51,7 +55,17 @@ const DormitorySelectPage:React.FC = () => {
     handleCancelModalClose,
     handleConfirmCancel,
   } = useCancelModal();
-    
+
+  // 페이지 진입 시 currentStep 저장
+  useEffect(() => {
+    reviewAutoSave.save({
+      reviewState: review,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.DORMITORY_SELECT,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
+  }, []);
+
   const handleBack = () => {
     if (from === "confirm") {
       navigate("/review/confirm", {
@@ -71,21 +85,28 @@ const DormitorySelectPage:React.FC = () => {
   const handleNext = () => {
     if (!selectedDormitory) return;
 
-    setReview(prev => ({
-        ...prev,
+    const updatedReview = {
+        ...review,
         dormitoryId: selectedDormitory.dormitoryId,
         dormitoryName: selectedDormitory.dormitoryName,
-        address: selectedDormitory.dormitoryAddress,   // ✅ Confirm 주소에 뜸
-        detailedAddress: selectedDormitory.dormitoryName, // UI에 쓸 거면
-        // latitude: selectedDormitory.latitude,          // ✅ 제출 체크 통과
-        // longitude: selectedDormitory.longitude,
-        // buildingCode: selectedDormitory.buildingCode,  // ✅ 카카오 place id 같은 값
-    }));
+        address: selectedDormitory.dormitoryAddress,
+        detailedAddress: selectedDormitory.dormitoryName,
+    };
+
+    setReview(updatedReview);
+
+    // 다음 페이지로 이동 전 자동 저장 (다음 step으로)
+    reviewAutoSave.save({
+      reviewState: updatedReview,
+      dormitoryReviewState: null,
+      currentStep: REVIEW_STEPS.DORMITORY,
+      uuid: reviewAutoSave.load()?.uuid,
+    });
 
     const nextState = {
       ...location.state,
       dormitoryId: selectedDormitory.dormitoryId,
-      dormitoryName: selectedDormitory.dormitoryName, // 필드명 맞춰서
+      dormitoryName: selectedDormitory.dormitoryName,
     };
 
     if (from === "confirm") {

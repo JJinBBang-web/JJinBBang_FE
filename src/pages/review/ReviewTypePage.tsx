@@ -25,13 +25,23 @@ const ReviewTypePage: React.FC = () => {
   const [showAutoSaveSheet, setShowAutoSaveSheet] = useState(false);
 
   // 자동 저장 기능 - type 페이지 진입 시 초기 저장
+  // 단, 이미 진행 중인 리뷰가 있으면 덮어쓰지 않음
   useEffect(() => {
     const initAutoSave = async () => {
+      const existingData = reviewAutoSave.load();
+
+      // 이미 저장된 데이터가 있고, currentStep이 'type'이 아니면 덮어쓰지 않음
+      // (이미 진행 중인 리뷰가 있는 경우)
+      if (existingData && existingData.currentStep && existingData.currentStep !== REVIEW_STEPS.TYPE) {
+        console.log('[AutoSave] 이미 진행 중인 리뷰 있음, 덮어쓰지 않음');
+        return;
+      }
+
       await reviewAutoSave.save({
         reviewState: review,
         dormitoryReviewState: dormitoryReview,
         currentStep: REVIEW_STEPS.TYPE,
-        uuid: reviewAutoSave.load()?.uuid,
+        uuid: existingData?.uuid,
       });
 
       // GA4 Review Funnel Tracking: Step 1
@@ -116,10 +126,18 @@ const ReviewTypePage: React.FC = () => {
       } else {
         // "다음" 버튼 클릭 시:
         // 1. 현재 페이지 데이터를 즉시 저장 (다음 step으로)
+        // 유형에 따라 다음 step을 다르게 설정
+        let nextStep = REVIEW_STEPS.ADDRESS_INPUT;
+        if (selectedType === "기숙사") {
+          nextStep = REVIEW_STEPS.UNIVERSITY_INPUT;
+        } else if (selectedType === "공인중개사") {
+          nextStep = REVIEW_STEPS.AGENCY;
+        }
+
         reviewAutoSave.save({
-          reviewState: review,
+          reviewState: { ...review, housingType: selectedType },
           dormitoryReviewState: null,
-          currentStep: REVIEW_STEPS.ADDRESS_INPUT, // 다음 페이지
+          currentStep: nextStep,
           uuid: reviewAutoSave.load()?.uuid
         });
 
@@ -173,6 +191,9 @@ const ReviewTypePage: React.FC = () => {
   // 자동 저장 복원 - 이어서 작성
   const handleContinueFromAutoSave = () => {
     const savedData = reviewAutoSave.load();
+    console.log('[AutoSave] 저장된 데이터:', savedData);
+    console.log('[AutoSave] currentStep:', savedData?.currentStep);
+
     if (savedData) {
       // Recoil 상태 복원
       if (savedData.reviewState) {
@@ -184,14 +205,19 @@ const ReviewTypePage: React.FC = () => {
 
       // 마지막 작성 페이지로 이동
       const lastPage = reviewAutoSave.getLastEditedPage();
+      console.log('[AutoSave] 이동할 페이지:', lastPage);
+
       if (lastPage) {
+        // 먼저 navigate 후 모달 닫기
+        navigate(lastPage.path, { state: lastPage.state, replace: true });
         setShowAutoSaveSheet(false);
-        navigate(lastPage.path, { state: lastPage.state });
       } else {
         // 페이지를 찾을 수 없으면 현재 페이지에서 계속
+        console.log('[AutoSave] 이동할 페이지를 찾을 수 없음');
         setShowAutoSaveSheet(false);
       }
     } else {
+      console.log('[AutoSave] 저장된 데이터 없음');
       setShowAutoSaveSheet(false);
     }
   };
