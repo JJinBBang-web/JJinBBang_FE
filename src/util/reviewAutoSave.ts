@@ -512,7 +512,14 @@ export const reviewAutoSave = {
       'floor': () => !!(review.floorType && review.floorType !== ''),
       'dormitory': () => !!(review.detailedAddress && review.detailedAddress !== ''),
       'dormitory-conditions': () => !!review.dormitoryConditions,
-      'dormitory-amenities': () => !!dormitory?.facilityConditions,
+      'dormitory-amenities': () => {
+        const facilityData = dormitory?.facilityConditions || review?.facilityConditions;
+        return facilityData && (
+          (facilityData.private && Object.values(facilityData.private).some(v => v === true)) ||
+          (facilityData.public && Object.values(facilityData.public).some(v => v === true)) ||
+          (facilityData.lounge && Object.values(facilityData.lounge).some(v => v === true))
+        );
+      },
       'agency': () => !!(review.detailedAddress && review.detailedAddress !== ''),
       'price': () => !!(review.contractType && review.contractType !== ''),
       'jeonse': () => (
@@ -548,6 +555,14 @@ export const reviewAutoSave = {
     const isDormitory = review.housingType === '기숙사';
     const isAgency = review.housingType === '공인중개사';
     const currentStep = data.currentStep;
+
+    // Debug logging
+    console.log('[AutoSave] getLastEditedPage - currentStep:', currentStep);
+    console.log('[AutoSave] getLastEditedPage - isDormitory:', isDormitory);
+    console.log('[AutoSave] getLastEditedPage - campusId:', review.campusId);
+    console.log('[AutoSave] getLastEditedPage - dormitoryId:', review.dormitoryId);
+    console.log('[AutoSave] getLastEditedPage - dormitory?.facilityConditions:', dormitory?.facilityConditions);
+    console.log('[AutoSave] getLastEditedPage - review.facilityConditions:', review.facilityConditions);
 
     // 현재 단계에 해당하는 페이지 맵 정의
     const currentPageMap: { [key: string]: { path: string; state: any } } = {
@@ -845,7 +860,14 @@ export const reviewAutoSave = {
     }
 
     // 기숙사 - 편의시설까지 완료
-    if (isDormitory && dormitory?.facilityConditions) {
+    // facilityConditions가 존재하고 실제로 선택된 시설이 있는지 확인
+    const facilityData = dormitory?.facilityConditions || review.facilityConditions;
+    const hasFacilityData = facilityData && (
+      (facilityData.private && Object.values(facilityData.private).some(v => v === true)) ||
+      (facilityData.public && Object.values(facilityData.public).some(v => v === true)) ||
+      (facilityData.lounge && Object.values(facilityData.lounge).some(v => v === true))
+    );
+    if (isDormitory && hasFacilityData) {
       return {
         path: '/review/dormitory-amenities',
         state: {
