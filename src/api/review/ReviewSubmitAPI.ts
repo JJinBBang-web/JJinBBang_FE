@@ -29,7 +29,7 @@ export interface GeneralReviewRequest {
 
 export interface DormitoryReviewRequest {
   dormitoryReview: {
-    campusId: number;
+    dormitoryId: number;
     capacity: number;
     dormFee: number;
     floor: 'LOW' | 'MID' | 'HIGH';
@@ -37,14 +37,6 @@ export interface DormitoryReviewRequest {
     content: string;
   };
   imageUrls: string[];
-  buildingRequest: {
-    buildingCode: string;
-    name: string;
-    type: 'DORMITORY';
-    address: string;
-    latitude: number;
-    longitude: number;
-  };
   keywords: {
     positive: string[];
     negative: string[];
@@ -109,18 +101,10 @@ export class ReviewSubmitAPI {
    * 기숙사 리뷰 제출
    */
   static async submitDormitoryReview(data: DormitoryReviewRequest) {
-    const requestData = {
-      ...data,
-      buildingRequest: {
-        ...data.buildingRequest,
-        buildingCode: String(data.buildingRequest.buildingCode),
-      },
-    };
-
     // 기숙사 리뷰 POST 요청 형식 출력
-    // console.log('🚀 Dormitory Review POST:', JSON.stringify(requestData, null, 2));
+    // console.log('🚀 Dormitory Review POST:', JSON.stringify(data, null, 2));
 
-    return await postAPI('/api/v1/review/DORMITORY', requestData, true);
+    return await postAPI('/api/v1/review/DORMITORY', data, true);
   }
 
   /**

@@ -64,7 +64,6 @@ export interface DormitoryUpdateReviewRequest {
   dormitoryReview: DormitoryReview;
   imageUrls: string[];
   keywords: Keywords;
-  buildingRequest?: BuildingRequest;
   condition: Condition;
   facilities: Facilities;
 }
