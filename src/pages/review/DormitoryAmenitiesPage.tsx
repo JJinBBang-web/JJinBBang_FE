@@ -63,9 +63,12 @@ const DormitoryAmenitiesPage: React.FC = () => {
     reviewAutoSave.updateCurrentStepOnNext(REVIEW_STEPS.DORMITORY_AMENITIES);
   }, []);
 
+  // 초기 마운트 여부 추적
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
-    // confirm 페이지에서 돌아온 경우 기존 selections 복원
-    if (from === 'confirm' && dormitoryReview.facilityConditions) {
+    // confirm 페이지 또는 자동저장에서 복원 시 기존 selections 복원
+    if ((from === 'confirm' || from === 'autosave') && dormitoryReview.facilityConditions) {
       setSelections(dormitoryReview.facilityConditions);
     } else if (facilities) {
       // 이전 페이지에서 넘어온 경우, 시설 데이터에 따라 선택 상태 업데이트
@@ -74,6 +77,51 @@ const DormitoryAmenitiesPage: React.FC = () => {
       setSelections(newSelections);
     }
   }, [facilities, from, dormitoryReview.facilityConditions]);
+
+  // selections 변경 시 review/dormitoryReview 상태 업데이트 (자동저장 트리거)
+  useEffect(() => {
+    // 초기 마운트 시에는 스킵 (자동저장 데이터 덮어쓰기 방지)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // 모든 시설에 대해 최소 하나가 선택되었는지 확인 (초기 상태 스킵)
+    const hasAnySelection = Object.values(selections).some((facility) =>
+      Object.values(facility).some((value) => value === true)
+    );
+    if (!hasAnySelection) return;
+
+    // dormitoryReview 상태 업데이트
+    setDormitoryReview((prev) => ({
+      ...prev,
+      facilityConditions: selections,
+    }));
+
+    // reviewState에도 facilityConditions 저장 (auto-save 감지용)
+    setReview((prev) => ({
+      ...prev,
+      facilityConditions: {
+        private: {
+          화장실: selections['화장실']?.['개인'] || false,
+          샤워실: selections['샤워실']?.['개인'] || false,
+          냉장고: selections['냉장고']?.['개인'] || false,
+          전자레인지: selections['전자레인지']?.['개인'] || false,
+          세탁기: selections['세탁기']?.['개인'] || false,
+        },
+        public: {
+          화장실: selections['화장실']?.['공용'] || false,
+          샤워실: selections['샤워실']?.['공용'] || false,
+          냉장고: selections['냉장고']?.['공용'] || false,
+          전자레인지: selections['전자레인지']?.['공용'] || false,
+          세탁기: selections['세탁기']?.['공용'] || false,
+        },
+        lounge: {
+          있음: selections['휴게시설']?.['있음'] || false,
+        },
+      },
+    }));
+  }, [selections, setDormitoryReview, setReview]);
 
   // 옵션 선택 처리 함수 수정
   const handleOptionSelect = (facility: string, option: string) => {

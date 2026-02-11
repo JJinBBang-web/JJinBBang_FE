@@ -1,5 +1,5 @@
 // src/pages/review/DormitoryConditionsPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { reviewState } from '../../recoil/review/reviewAtoms';
@@ -64,9 +64,12 @@ const DormitoryConditionsPage: React.FC = () => {
     reviewAutoSave.updateCurrentStepOnNext(REVIEW_STEPS.DORMITORY_CONDITIONS);
   }, []);
 
+  // 초기 마운트 여부 추적
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
-    // 확인 페이지에서 온 경우 기존 값 설정
-    if (from === 'confirm' && review.dormitoryConditions) {
+    // 확인 페이지 또는 자동저장에서 복원 시 기존 값 설정
+    if ((from === 'confirm' || from === 'autosave') && review.dormitoryConditions) {
       const {
         hasDistanceCriteria,
         hasGradeCriteria,
@@ -83,6 +86,38 @@ const DormitoryConditionsPage: React.FC = () => {
       setSemesterGrade(semesterGrade ? semesterGrade.toString() : '');
     }
   }, [from, review]);
+
+  // 입력값 변경 시 review 상태 업데이트 (자동저장 트리거)
+  useEffect(() => {
+    // 초기 마운트 시에는 스킵 (자동저장 데이터 덮어쓰기 방지)
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    setReview((prev) => {
+      const prevDorm = prev.dormitoryConditions ?? {
+        hasDistanceCriteria: false,
+        hasGradeCriteria: false,
+        dormitoryFee: 0,
+      };
+
+      const nextDorm = {
+        ...prevDorm,
+        hasDistanceCriteria,
+        hasGradeCriteria,
+        dormitoryFee: dormitoryFee ? parseFloat(dormitoryFee) : 0,
+        residenceArea: hasDistanceCriteria ? residenceArea : '',
+        semesterGrade: hasGradeCriteria && semesterGrade ? parseFloat(semesterGrade) : undefined,
+      };
+
+      return {
+        ...prev,
+        dormitoryFee: dormitoryFee ? parseFloat(dormitoryFee) : 0,
+        dormitoryConditions: nextDorm,
+      };
+    });
+  }, [dormitoryFee, residenceArea, semesterGrade, hasDistanceCriteria, hasGradeCriteria, setReview]);
 
   const handleDormitoryFeeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

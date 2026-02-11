@@ -548,9 +548,10 @@ export const reviewAutoSave = {
   // 자동 저장된 데이터를 기반으로 마지막 작성 페이지 경로 반환
   getLastEditedPage: (): { path: string; state: any } | null => {
     const data = reviewAutoSave.load();
-    if (!data || !data.reviewState) return null;
+    if (!data) return null;
 
-    const review = data.reviewState;
+    // reviewState가 없어도 currentStep이 있으면 처리 가능
+    const review = data.reviewState || {};
     const dormitory = data.dormitoryReviewState;
     const isDormitory = review.housingType === '기숙사';
     const isAgency = review.housingType === '공인중개사';
@@ -878,7 +879,8 @@ export const reviewAutoSave = {
     }
 
     // 기숙사 - 입주 조건까지 완료 (실제로 입력된 경우만)
-    if (isDormitory && (review.dormitoryConditions?.residenceArea || review.dormitoryConditions?.semesterGrade)) {
+    // dormitoryFee도 체크 (조건 없음 선택 시에도 복원되도록)
+    if (isDormitory && (review.dormitoryConditions?.residenceArea || review.dormitoryConditions?.semesterGrade || review.dormitoryConditions?.dormitoryFee)) {
       return {
         path: '/review/dormitory-conditions',
         state: {

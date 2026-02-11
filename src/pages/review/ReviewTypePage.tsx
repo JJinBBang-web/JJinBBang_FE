@@ -211,6 +211,40 @@ const ReviewTypePage: React.FC = () => {
         // 먼저 navigate 후 모달 닫기
         navigate(lastPage.path, { state: lastPage.state, replace: true });
         setShowAutoSaveSheet(false);
+      } else if (savedData.currentStep) {
+        // getLastEditedPage가 실패하면 currentStep을 직접 사용하여 페이지 결정
+        console.log('[AutoSave] getLastEditedPage 실패, currentStep으로 직접 이동:', savedData.currentStep);
+        const stepToPath: { [key: string]: string } = {
+          'type': '/review/type',
+          'university-input': '/review/university-input',
+          'dormitory-select': '/review/dormitory-select',
+          'dormitory': '/review/dormitory',
+          'dormitory-conditions': '/review/dormitory-conditions',
+          'dormitory-amenities': '/review/dormitory-amenities',
+          'room-info': '/review/room-info',
+          'filter-ad': '/review/filter-ad',
+          'filter-disad': '/review/filter-disad',
+          'content': '/review/content',
+          'confirm': '/review/confirm',
+          'input-address': '/review/input-address',
+          'floor': '/review/floor',
+          'address-result': '/review/result',
+          'price': '/review/price',
+          'jeonse': '/review/jeonse',
+          'wolse': '/review/wolse',
+          'agency': '/review/agency',
+        };
+        const path = stepToPath[savedData.currentStep];
+        if (path) {
+          navigate(path, {
+            state: {
+              housingType: savedData.reviewState?.housingType || '기숙사',
+              from: 'autosave'
+            },
+            replace: true
+          });
+        }
+        setShowAutoSaveSheet(false);
       } else {
         // 페이지를 찾을 수 없으면 현재 페이지에서 계속
         console.log('[AutoSave] 이동할 페이지를 찾을 수 없음');
@@ -226,15 +260,32 @@ const ReviewTypePage: React.FC = () => {
   const handleNewStartFromAutoSave = async() => {
     // 자동 저장 데이터 삭제
     reviewAutoSave.clear();
+
+    // 초기 상태 정의 (dormitoryReview용)
+    const defaultDormitoryReviewState = {
+      dormitoryName: '',
+      university: '',
+      period: '',
+      roomType: '',
+      rating: 0,
+      pros: [],
+      cons: [],
+      description: '',
+      images: [],
+    };
+
     // Recoil 상태 초기화
     setReview(defaultReviewState);
+    setDormitoryReview(defaultDormitoryReviewState);
+
     // 바텀 시트 닫기
     setShowAutoSaveSheet(false);
 
     // 명시적으로 새로운 상태와 UUID로 저장해야 합니다.
+    // 주의: setReview는 비동기이므로 defaultReviewState를 직접 사용
     await reviewAutoSave.save({
-      reviewState: review,
-      dormitoryReviewState: dormitoryReview,
+      reviewState: defaultReviewState,
+      dormitoryReviewState: defaultDormitoryReviewState,
       currentStep: REVIEW_STEPS.TYPE,
       uuid: crypto.randomUUID(), // 새로 시작하므로 명시적으로 새 UUID 생성
     });
