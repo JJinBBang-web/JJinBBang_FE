@@ -73,6 +73,19 @@ const Home: React.FC = () => {
   || geoStatus === "unsupported"
   || geoStatus === "error";
 
+  const quantize = (v: number, digits = 3) => {
+    const p = 10 ** digits;
+    return Math.round(v * p) / p;
+  };
+
+  const stableCoords = React.useMemo(() => {
+    if (!coords) return null;
+    return {
+      lat: quantize(coords.lat, 3), // 3자리 ≈ 100m 단위
+      lng: quantize(coords.lng, 3),
+    };
+  }, [coords?.lat, coords?.lng]);
+
   const {
     data: userData,
     isFetching: isFetchingUser,
@@ -117,9 +130,9 @@ const Home: React.FC = () => {
     isFetching: isFetchingNearUniv,
     isError: isErrorNearUniv,
   } = useNearUniversities({
-    lat: canUseLocation ? coords?.lat : null,
-    lng: canUseLocation ? coords?.lng : null,
-    enabled: canUseLocation || isGuestNoLocation,
+    lat: canUseLocation ? stableCoords?.lat : null,
+    lng: canUseLocation ? stableCoords?.lng : null,
+    enabled: (canUseLocation && !!stableCoords) || isGuestNoLocation,
     keepPreviousData: true,
   });
 

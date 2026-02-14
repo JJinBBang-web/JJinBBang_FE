@@ -107,6 +107,8 @@ const AppContent: React.FC = () => {
   useGlobalGeolocation({
     enabled: geoWatchEnabled,
     minUpdateMs: 1000,
+    minDistanceM: 50,    // 30~80m 추천
+    maxAccuracyM: 150,
   });
 
   const allowPaths = ["/", "/map"];
