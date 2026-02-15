@@ -33,10 +33,10 @@ import { trackExplorationStep } from '../hooks/useExplorationTracking';
 import { geoCoordsState } from "../recoil/location/locationState";
 import { geoWatchEnabledState } from "../recoil/location/locationPermissionState";
 import { useNearUniversities } from "../hooks/useNearUniversities";
+import { mapViewState } from '../recoil/map/mapRecoilState';
+
 
 type MarkerItem = { id: number; latitude: number; longitude: number; type: 'ROOM'|'HOUSE'|'OFFICETEL'|'APARTMENT'|'BOARDING_HOUSE'|'DORMITORY'|'AGENCY' };
-
-const DEFAULT_CENTER = { lat: 35.153237, lng: 128.101090 };
 
 const splitIds = (arr: MarkerItem[]) => {
   const buildingIds:number[] = [];
@@ -65,7 +65,8 @@ const MapPage = () => {
         FILTER_ATOMS.forEach(reset);
     }, []);
     const didResetRef = useRef(false);
-    const didCampusMoveRef = useRef(false);
+    // const didCampusMoveRef = useRef(false);
+    const prevCampusCenterRef = useRef<{lat: number; lng: number} | null>(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -88,6 +89,7 @@ const MapPage = () => {
     const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
     const kakaoMarkersRef = useRef<kakao.maps.Marker[]>([]);
     const clusterOverlaysRef = useRef<kakao.maps.CustomOverlay[]>([]);
+    const [savedMapView, setSavedMapView] = useRecoilState(mapViewState);
     
     // 초기 위치 저장용 ref
     const initialCenterRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -143,9 +145,11 @@ const MapPage = () => {
     const firstLat = firstValid?.campusInfo?.latitude;
     const firstLng = firstValid?.campusInfo?.longitude;
 
+    
+
     // 초기 center 확정(한 번만)
     useEffect(() => {
-        if (readyCenter) return;
+        if (readyCenter && campusCenter) return;
 
         // 1) Home에서 캠퍼스 점프해서 넘어온 경우 (location.state lat/lng)
         const jumpLat = location.state?.latitude;
@@ -174,6 +178,7 @@ const MapPage = () => {
     // setReadyCenter(DEFAULT_CENTER);
     }, [
         readyCenter,
+        campusCenter,
         location.state,
         campusCenter,
         enableNearUnivQuery,
@@ -233,6 +238,93 @@ const MapPage = () => {
             setCampusCenter({ lat, lng });
         }
     }, [location.state]);
+
+    // 지도 생성 시 저장된 상태 복원
+    const onCreate = (map: kakao.maps.Map) => {
+        mapRef.current = map;
+
+        // 저장된 상태가 있으면 복원
+        if (savedMapView) {
+            if (savedMapView.center) {
+                map.setCenter(new kakao.maps.LatLng(savedMapView.center.lat, savedMapView.center.lng));
+            }
+            if (savedMapView.level) {
+                map.setLevel(savedMapView.level);
+            }
+            if (savedMapView.bounds) {
+                setMapBounds(savedMapView.bounds);
+                setTempBounds(savedMapView.bounds);
+                initialBoundsRef.current = savedMapView.bounds;
+            }
+            if (savedMapView.center) {
+                setMapCenter(savedMapView.center);
+                initialCenterRef.current = savedMapView.center;
+            }
+            
+            // 복원 후 저장된 상태 클리어 (선택사항)
+            // setSavedMapView(null);
+
+            isInitialized.current = true;
+
+            skipFirstBoundsChangedRef.current = true;
+            setSavedMapView(null);
+        }
+
+        // 클러스터러 초기화 (기존 코드)
+        if (!clustererRef.current) {
+                const clusterer = new kakao.maps.MarkerClusterer({
+                    map,
+                    averageCenter: true,
+                    minLevel: 3,
+                    styles: [
+                        {
+                        width: "44px",
+                        height: "44px",
+                        borderRadius: "50%",
+                        border: "0.95px solid #ffffff",
+                        background: "rgba(244, 105, 64, 0.8)",
+                        color: "#ffffff",
+                        textAlign: "center",
+                        lineHeight: "44px",
+                        fontFamily: "Spoqa Han Sans Neo",
+                        fontSize: "16px",
+                        fontWeight: "500",
+                        },
+                    ],
+                    
+                    });
+
+                // 클러스터 클릭 이벤트 추가
+                kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster: any) {
+                    trackExplorationStep("3.7_map_view_cluster");
+                });
+
+            clustererRef.current = clusterer;
+        }
+
+        // 초기 bounds 설정 (저장된 상태가 없을 때만)
+        if (!savedMapView && !isInitialized.current) {
+            const bounds = map.getBounds();
+            const ne = bounds.getNorthEast();
+            const sw = bounds.getSouthWest();
+
+            const extractedBounds = {
+                neLat: ne.getLat(),
+                neLng: ne.getLng(),
+                swLat: sw.getLat(),
+                swLng: sw.getLng(),
+            };
+
+            setMapBounds(extractedBounds);
+            if (!initialBoundsRef.current) initialBoundsRef.current = extractedBounds;
+            if (!initialCenterRef.current) {
+                const center = map.getCenter();
+                initialCenterRef.current = { lat: center.getLat(), lng: center.getLng() };
+            }
+            setTempBounds(extractedBounds);
+            isInitialized.current = true;
+        }
+    };
 
     // filter Recoil
     const [buildType, setBuildType] = useRecoilState(housingTypeState);
@@ -556,9 +648,13 @@ const MapPage = () => {
     useEffect(() => {
         if (!campusCenter || !mapRef.current) return;
         if (!readyCenter) return;
-        if (didCampusMoveRef.current) return; //한 번만
 
-        didCampusMoveRef.current = true;
+        const prev = prevCampusCenterRef.current;
+        if (prev && prev.lat === campusCenter.lat && prev.lng === campusCenter.lng) {
+            return; // 같은 값이면 스킵
+        }
+
+        prevCampusCenterRef.current = { lat: campusCenter.lat, lng: campusCenter.lng };
 
         const offset = 0.01;
         mapRef.current.panTo(new kakao.maps.LatLng(campusCenter.lat, campusCenter.lng));
@@ -649,6 +745,31 @@ const MapPage = () => {
             setIsLoadingMore(false); 
         } 
     }, [nearByData, nearByCurrentPage]);
+
+    // 페이지 떠날 때 현재 지도 상태 저장
+    useEffect(() => {
+        return () => {
+            const map = mapRef.current;
+            if (map) {
+                const center = map.getCenter();
+                const level = map.getLevel();
+                const bounds = map.getBounds();
+                const ne = bounds.getNorthEast();
+                const sw = bounds.getSouthWest();
+
+                setSavedMapView({
+                    center: { lat: center.getLat(), lng: center.getLng() },
+                    level: level,
+                    bounds: {
+                        neLat: ne.getLat(),
+                        neLng: ne.getLng(),
+                        swLat: sw.getLat(),
+                        swLng: sw.getLng(),
+                    },
+                });
+            }
+        };
+    }, [setSavedMapView]);
 
 
     const handleMarkerClick = (markerId: number) => {
@@ -900,67 +1021,68 @@ const MapPage = () => {
                 <KakaoMap
                 center={mapCenter}
                 style={{ width: '100%', height: '100%' }}
-                level={5}
+                level={savedMapView?.level ?? 5}
                 draggable
                 zoomable
-                onCreate={(map) => {
-                    mapRef.current = map;
+                onCreate={onCreate}
+                // {(map) => {
+                //     mapRef.current = map;
 
-                    if (!clustererRef.current) {
-                    const clusterer = new kakao.maps.MarkerClusterer({
-                        map,
-                        averageCenter: true,
-                        minLevel: 3,
-                        styles: [
-                            {
-                            width: "44px",
-                            height: "44px",
-                            borderRadius: "50%",
-                            border: "0.95px solid #ffffff",
-                            background: "rgba(244, 105, 64, 0.8)",
-                            color: "#ffffff",
-                            textAlign: "center",
-                            lineHeight: "44px", // ✅ 여기 중요 (flex 대신 lineHeight가 안정적)
-                            fontFamily: "Spoqa Han Sans Neo",
-                            fontSize: "16px",
-                            fontWeight: "500",
-                            },
-                      ],
+                //     if (!clustererRef.current) {
+                //     const clusterer = new kakao.maps.MarkerClusterer({
+                //         map,
+                //         averageCenter: true,
+                //         minLevel: 3,
+                //         styles: [
+                //             {
+                //             width: "44px",
+                //             height: "44px",
+                //             borderRadius: "50%",
+                //             border: "0.95px solid #ffffff",
+                //             background: "rgba(244, 105, 64, 0.8)",
+                //             color: "#ffffff",
+                //             textAlign: "center",
+                //             lineHeight: "44px", // ✅ 여기 중요 (flex 대신 lineHeight가 안정적)
+                //             fontFamily: "Spoqa Han Sans Neo",
+                //             fontSize: "16px",
+                //             fontWeight: "500",
+                //             },
+                //       ],
                         
-                        });
+                //         });
 
-                    // 클러스터 클릭 이벤트 추가
-                    kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster: any) {
-                      trackExplorationStep("3.7_map_view_cluster");
-                    });
+                //     // 클러스터 클릭 이벤트 추가
+                //     kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster: any) {
+                //       trackExplorationStep("3.7_map_view_cluster");
+                //     });
 
-                    clustererRef.current = clusterer;
-                    }
+                //     clustererRef.current = clusterer;
+                //     }
 
-                    if (isInitialized.current) return;
+                //     if (isInitialized.current) return;
 
-                    const bounds = map.getBounds();
-                    const ne = bounds.getNorthEast();
-                    const sw = bounds.getSouthWest();
+                //     const bounds = map.getBounds();
+                //     const ne = bounds.getNorthEast();
+                //     const sw = bounds.getSouthWest();
 
-                    const extractedBounds = {
-                        neLat: ne.getLat(),
-                        neLng: ne.getLng(),
-                        swLat: sw.getLat(),
-                        swLng: sw.getLng(),
-                    };
+                //     const extractedBounds = {
+                //         neLat: ne.getLat(),
+                //         neLng: ne.getLng(),
+                //         swLat: sw.getLat(),
+                //         swLng: sw.getLng(),
+                //     };
 
-                    setMapBounds(extractedBounds);
+                //     setMapBounds(extractedBounds);
 
-                    if (!initialBoundsRef.current) initialBoundsRef.current = extractedBounds;
-                    if (!initialCenterRef.current) {
-                        const center = map.getCenter();
-                        initialCenterRef.current = { lat: center.getLat(), lng: center.getLng() };
-                    }
+                //     if (!initialBoundsRef.current) initialBoundsRef.current = extractedBounds;
+                //     if (!initialCenterRef.current) {
+                //         const center = map.getCenter();
+                //         initialCenterRef.current = { lat: center.getLat(), lng: center.getLng() };
+                //     }
 
-                    setTempBounds(extractedBounds);
-                    isInitialized.current = true;
-                }}
+                //     setTempBounds(extractedBounds);
+                //     isInitialized.current = true;
+                // }}
                 onBoundsChanged={(map) => {
                     const bounds = map.getBounds();
                     const ne = bounds.getNorthEast();
