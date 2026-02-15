@@ -178,30 +178,20 @@ const AppContent: React.FC = () => {
     if (!("geolocation" in navigator)) return;
 
     const run = async () => {
-      if (!("permissions" in navigator)) return; // fallback은 위 sync가 처리
-
-      const perm = await (navigator).permissions.query({ name: "geolocation" });
-
-      // prompt일 때만 confirm
-      if (perm.state !== "prompt") return;
-
       const key = "askedLocationPermission";
       if (sessionStorage.getItem(key) === "1") return;
       sessionStorage.setItem(key, "1");
 
-      const ok = window.confirm(
-        "내 주변 대학/캠퍼스를 자동으로 추천하려면 위치 권한이 필요해요.\n지금 허용할까요?"
-      );
-      if (!ok) return;
-
+      // ⭐ confirm 없이 바로 네이티브 권한 요청
       navigator.geolocation.getCurrentPosition(
         () => setGeoWatchEnabled(true),
-        () => undefined,
+        () => undefined, // 거부해도 조용히 넘어감
         { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 }
       );
     };
 
-    run();
+    const timer = setTimeout(run, 500);
+    return () => clearTimeout(timer);
   }, [location.pathname, setGeoWatchEnabled]);
 
 
