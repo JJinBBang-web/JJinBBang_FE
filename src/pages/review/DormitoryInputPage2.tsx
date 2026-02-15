@@ -143,8 +143,16 @@ const DormitoryInputPage2: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (from === "confirm") navigate("/review/confirm");
-    else navigate(-1);
+    if (from === "confirm") {
+      navigate("/review/confirm");
+    } else {
+      // 기숙사 플로우: 이전 페이지는 dormitory-select
+      navigate("/review/dormitory-select", {
+        state: {
+          ...location.state,
+        },
+      });
+    }
   };
 
   const isNextEnabled = roomCapacity !== "" && selectedFloor !== "";

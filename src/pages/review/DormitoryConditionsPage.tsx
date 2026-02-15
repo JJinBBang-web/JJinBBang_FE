@@ -249,7 +249,12 @@ const DormitoryConditionsPage: React.FC = () => {
     if (from === 'confirm') {
       navigate('/review/confirm');
     } else {
-      navigate(-1);
+      // 기숙사 플로우: 이전 페이지는 dormitory (인원/층수 입력)
+      navigate('/review/dormitory', {
+        state: {
+          ...location.state,
+        },
+      });
     }
   };
 

@@ -255,11 +255,16 @@ const PhotoUploadPage: React.FC = () => {
         <button
           className={styles.prevButton}
           onClick={() => {
-            // 공인중개사인 경우 주소 확인 페이지로, 그 외에는 가격 입력 페이지로 이동
+            // housingType에 따라 이전 페이지 결정
             let previousPage;
             if (housingType === "공인중개사") {
+              // 공인중개사: 주소 확인 페이지로 이동
               previousPage = "/review/result";
+            } else if (housingType === "기숙사") {
+              // 기숙사: 편의시설 페이지로 이동
+              previousPage = "/review/dormitory-amenities";
             } else {
+              // 일반 주거: 전세/월세 페이지로 이동
               previousPage =
                 locationState?.paymentType === "전세"
                   ? "/review/jeonse"
