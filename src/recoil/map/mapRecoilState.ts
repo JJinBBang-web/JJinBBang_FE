@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { MarkerRequest } from "../../types/entity/map/MapInterface";
 
 // 매물 유형 상태
 export const housingTypeState = atom<string> ({
@@ -92,3 +93,13 @@ export const selectedMarkerState = atom({
     key: "selectedMarkerState",
     default: null,
   });
+
+// MapView 상태
+export const mapViewState = atom<{
+  center: { lat: number; lng: number } | null;
+  bounds: MarkerRequest['bounds'] | null;
+  level: number;
+} | null>({
+  key: 'mapViewState',
+  default: null,
+});
