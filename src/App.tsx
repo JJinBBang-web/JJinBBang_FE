@@ -178,11 +178,18 @@ const AppContent: React.FC = () => {
     if (!("geolocation" in navigator)) return;
 
     const run = async () => {
+      if ("permissions" in navigator) {
+        try {
+          const perm = await navigator.permissions.query({ name: "geolocation" });
+          if (perm.state === "granted" || perm.state === "denied") return;
+        } catch {}
+      }
+
       const key = "askedLocationPermission";
       if (sessionStorage.getItem(key) === "1") return;
       sessionStorage.setItem(key, "1");
 
-      // ⭐ confirm 없이 바로 네이티브 권한 요청
+      // confirm 없이 바로 네이티브 권한 요청
       navigator.geolocation.getCurrentPosition(
         () => setGeoWatchEnabled(true),
         () => undefined, // 거부해도 조용히 넘어감
