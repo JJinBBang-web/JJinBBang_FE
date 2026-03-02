@@ -1,6 +1,7 @@
 // src/types/entity/content/ContentInterface.ts
 
 export type ReportCategory =
+  | 'ALL'           // 전체
   | 'REAL_ESTATE'   // 부동산
   | 'TIPS'          // 자취꿀팁
   | 'CAMPUS_LIFE'   // 대학 생활

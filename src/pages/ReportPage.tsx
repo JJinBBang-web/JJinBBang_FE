@@ -55,16 +55,16 @@ const ReportPage: React.FC = () => {
 
     const { reviewId, buildingId } = useParams();
 
-    const from: 'review' | 'building' = location.state?.from ?? 'review';
-    
+    const from: 'review' | 'building' | 'general' = location.state?.from ?? 'review'; 
+
     const { report, isLoading, isError, error } = useReport();
 
     const goBack = () => {
-    if (location.state?.from === 'review') {
-        navigate(`/building/review/${reviewId}`, { replace: true, state: location.state });
-    } else {
-        navigate(`/building/${buildingId}`, { replace: true, state: location.state });
-    }
+        if (location.state?.from === 'review') {
+            navigate(`/building/review/${reviewId}`, { replace: true, state: location.state });
+        } else {
+            navigate(`/building/${buildingId}`, { replace: true, state: location.state });
+        }
     };
           
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -78,11 +78,15 @@ const ReportPage: React.FC = () => {
     };
 
     const handleReportSubmit = () => {
-        const targetId = from === 'review' ? reviewId : buildingId;
+        const targetId: string | number | null =
+            from === "general"
+                ? null
+                : from === "review"
+                ? (reviewId ?? null)
+                : (buildingId ?? null);
 
-        if (!targetId) {
-            console.error('신고 대상 ID가 없습니다.');
-            // 필요시 사용자 피드백 UI 추가
+        if (from !== "general" && !targetId) {
+            console.error("신고 대상 ID가 없습니다.");
             return;
         }
 
