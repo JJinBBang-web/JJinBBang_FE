@@ -1,4 +1,8 @@
 export const CATEGORY_DESCRIPTION = {
+  전체: {
+    title: "찐빵 리포트",
+    sub: "자취 생활의 모든 것을 담은 리포트!",
+  },
   부동산: {
     title: "자취방 A to Z",
     sub: "자취방이 처음이라면? 필수 확인 목록들!",

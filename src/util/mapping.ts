@@ -40,6 +40,7 @@ export const koreanToFloor: Record<string, string> = Object.entries(floorToKorea
 }, {} as Record<string, string>);
 
 export const KOR_TO_CATEGORY = {
+  전체: "ALL",
   부동산: "REAL_ESTATE",
   자취꿀팁: "TIPS",
   대학생활: "CAMPUS_LIFE",
@@ -47,6 +48,7 @@ export const KOR_TO_CATEGORY = {
 } as const;
 
 export const CATEGORY_TO_KOR = {
+  ALL: "전체",
   REAL_ESTATE: "부동산",
   TIPS: "자취꿀팁",
   CAMPUS_LIFE: "대학생활",

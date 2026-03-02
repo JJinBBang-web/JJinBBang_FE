@@ -16,7 +16,7 @@ const ContentManagePage: React.FC = () => {
     const navigation = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-    const initialCategory = (searchParams.get("category") as KorCategory) ?? "부동산";
+    const initialCategory = (searchParams.get("category") as KorCategory) ?? "전체";
     const [activeCategory, setActiveCategory] = useState<KorCategory>(initialCategory);
 
     const serverCategory = KOR_TO_CATEGORY[activeCategory];

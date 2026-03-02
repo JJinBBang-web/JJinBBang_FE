@@ -12,18 +12,18 @@ import { getInitial } from "../../util/getInitial";
 import { UnivAPI } from "../../api/user/UnivAPI";
 import { CampusResponse, UnivCampusInterface } from "../../types/entity/user/UnivInterface";
 import { imageReloadVersionState } from "../../recoil/util/imageReloadVersion";
+import { geoCoordsState } from "../../recoil/location/locationState";
+import { geoWatchEnabledState } from "../../recoil/location/locationPermissionState";
+import { useNearUniversities } from "../../hooks/useNearUniversities";
 
 const INITIAL_LIST = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ",];
 
 type GroupedUniversity = {
+  id: number;
   universityName: string;
+  universityLogo?: string;
   campuses: UnivCampusInterface[];
   initial: string;
-};
-
-const DEFAULT_CAMPUS_CENTER = {
-    lat: 35.154,  // 경상국립대 위도
-    lng: 128.1, // 경상국립대 경도
 };
 
 const UniversityFilterModal = () => {
@@ -48,6 +48,15 @@ const UniversityFilterModal = () => {
     // 대학교 바운더리 상태관리
     const setCampusCenter = useSetRecoilState(campusCenterState);
 
+    const coords = useRecoilValue(geoCoordsState);
+    const geoWatchEnabled = useRecoilValue(geoWatchEnabledState);
+    const enableNearUnivQuery = !geoWatchEnabled || !!coords;
+
+    const { data: nearUnivData } = useNearUniversities({
+        lat: coords?.lat ?? null,
+        lng: coords?.lng ?? null,
+        enabled: enableNearUnivQuery,
+    });
 
 
     const handleConfirm = () => {
@@ -62,7 +71,19 @@ const UniversityFilterModal = () => {
                 university: null,
             }));
             setUniversityLabel(""); // UI에서 대학명 표시 없앰
-            setCampusCenter(DEFAULT_CAMPUS_CENTER);  // 지도 초기화 (기본 중심점으로?)
+
+            const firstValid = nearUnivData?.find(
+                (u) => u?.campusInfo?.latitude != null && u?.campusInfo?.longitude != null
+            );
+            
+            if (firstValid?.campusInfo) {
+                setCampusCenter({
+                    lat: firstValid.campusInfo.latitude,
+                    lng: firstValid.campusInfo.longitude,
+                });
+            }
+
+            // setCampusCenter(null);  // 지도 초기화 (기본 중심점으로?)
             setBottomSheet({ isOpenModal: false, type: "university" });
             return;
         }
@@ -92,6 +113,8 @@ const UniversityFilterModal = () => {
     // 초성별 대학교 필터링
     const groupCampusesByUniversity = (data: CampusResponse[]): GroupedUniversity[] => {
         return data.map((univ) => ({
+        id: univ.id,
+        universityLogo: univ.universityLogo,
         universityName: univ.universityName,
         campuses: univ.campuses.map((campus) => ({
             ...campus,
@@ -152,6 +175,8 @@ const UniversityFilterModal = () => {
         .flatMap((uni) => uni.campuses)
         .find((campus) => campus.id === selectedTypeNum);
 
+    console.log(filteredUniversities);
+
     return (
         <div className={`${styles.content} ${styles.univModalSlickScope}`}>
             {/* 초성필터슬라이더 */}
@@ -186,9 +211,37 @@ const UniversityFilterModal = () => {
             {/* 대학교 선택 슬라이더 */}
             <div className={styles.uni_slider}>
             <Slider {...settingsUniversity}>
-                {filteredUniversities.map((uni) =>
-                    uni.campuses.map((campus) => (
-                    <div className={styles.uni_wrap} key={`${uni.universityName}-${campus.id}`}>
+                {filteredUniversities.map((uni) =>{
+                    if (uni.campuses.length === 0) {
+                        const shouldDuplicate = filteredUniversities.length === 1;
+                        const itemCount = shouldDuplicate ? 2 : 1;
+                        return Array.from({ length: itemCount }).map((_, index) => (
+                            <div className={styles.uni_wrap} key={`${uni.id}-noCampus-${index}`}>
+                                <button
+                                    className={`${styles.uni_btn} ${selectedTypeNum === uni.id ? styles.selected_uni_btn : ""}`}
+                                    onClick={() => {
+                                        setSelectedTypeNum(uni.id);
+                                        setSelectedUniversityKey(`${uni.universityName}`);
+                                    }}
+                                >
+                                    <img
+                                        src={
+                                            uni.universityLogo 
+                                                ? `${uni.universityLogo}${uni.universityLogo.includes("?") ? "&" : "?"}v=${imageVersion}`
+                                                : ""
+                                        }
+                                        alt={uni.universityName}
+                                        className={styles.univLogo}
+                                    />
+                                    <p className={`${styles.uni_title} ${selectedTypeNum === uni.id ? styles.selected_text : ""}`}>
+                                        {uni.universityName}
+                                    </p>
+                                </button>
+                            </div>
+                        ));
+                    }
+                    return uni.campuses.map((campus) => (
+                    <div className={styles.uni_wrap} key={`${uni.id}-${campus.id}`}>
                         <button
                         className={`${styles.uni_btn} ${selectedTypeNum === campus.id ? styles.selected_uni_btn : ""}`}
                         onClick={() => {
@@ -200,6 +253,7 @@ const UniversityFilterModal = () => {
                             src={
                                 campus.logoImageUrl
                                 ? `${campus.logoImageUrl}${campus.logoImageUrl.includes("?") ? "&" : "?"}v=${imageVersion}`
+                                : uni.universityLogo ? `${uni.universityLogo}${uni.universityLogo.includes("?") ? "&" : "?"}v=${imageVersion}`
                                 : ""
                             }
                             alt={uni.universityName}
@@ -210,6 +264,7 @@ const UniversityFilterModal = () => {
                         </button>
                     </div>
                     ))
+                }
                 )}
             </Slider>
             </div>

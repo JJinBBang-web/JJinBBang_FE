@@ -11,6 +11,9 @@ type Options = {
 
   /** enabled=false일 때 coords를 지울지 (기본 false 추천) */
   clearCoordsOnDisable?: boolean;
+
+  minDistanceM?: number;
+  maxAccuracyM?: number;
 };
 
 export function useGlobalGeolocation({
@@ -20,6 +23,8 @@ export function useGlobalGeolocation({
   maximumAgeMs = 5_000,
   minUpdateMs = 1_000,
   clearCoordsOnDisable = false,
+  minDistanceM = 50,
+  maxAccuracyM = 150,
 }: Options) {
   const setStatus = useSetRecoilState(geoStatusState);
   const setCoords = useSetRecoilState(geoCoordsState);
@@ -33,6 +38,19 @@ export function useGlobalGeolocation({
       navigator.geolocation.clearWatch(watchIdRef.current);
     }
     watchIdRef.current = null;
+  };
+
+  const lastCoordRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  const distMeters = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+    const R = 6371000;
+    const toRad = (x: number) => (x * Math.PI) / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const s =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(s));
   };
 
   useEffect(() => {
@@ -64,12 +82,25 @@ export function useGlobalGeolocation({
       (pos) => {
         const now = Date.now();
         if (now - lastEmitRef.current < minUpdateMs) return;
+
+        const accuracy = pos.coords.accuracy ?? Infinity;
+        if (accuracy > maxAccuracyM) return;
+
+        const next = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const prev = lastCoordRef.current;
+
+        if (prev) {
+          const d = distMeters(prev, next);
+          if (d < minDistanceM) return;
+        }
+
         lastEmitRef.current = now;
+        lastCoordRef.current = next;
 
         setCoords({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          accuracy: pos.coords.accuracy,
+          lat: next.lat,
+          lng: next.lng,
+          accuracy,
           heading: pos.coords.heading,
           speed: pos.coords.speed,
           timestamp: pos.timestamp,
@@ -104,6 +135,8 @@ export function useGlobalGeolocation({
     maximumAgeMs,
     minUpdateMs,
     clearCoordsOnDisable,
+    minDistanceM,
+    maxAccuracyM,
     setStatus,
     setCoords,
     setErr,

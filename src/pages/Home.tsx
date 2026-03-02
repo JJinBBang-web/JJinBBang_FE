@@ -6,12 +6,9 @@ import React from "react";
 import styles from "./Home.module.css";
 import home_logo from "../assets/logo/homeLogo.svg";
 import campus_icon from "../assets/image/campusIcon.svg";
-// import Banner from "../components/Banner";
 import CampusSlide from "../components/CampusSlide";
 import PreviewReview from "../components/PreviewReview";
 import emptyCharacterIcon from "../assets/image/emptyCharacterIcon.svg";
-// import pencil from "../assets/image/pencil.svg";
-// import iconRight from "../assets/image/iconRight.svg";
 import { useQuery } from "@tanstack/react-query";
 import { getAPI } from "../api/baseAPI";
 import { isLoginState } from "../recoil/auth/isLoginState";
@@ -73,6 +70,19 @@ const Home: React.FC = () => {
   || geoStatus === "unsupported"
   || geoStatus === "error";
 
+  const quantize = (v: number, digits = 3) => {
+    const p = 10 ** digits;
+    return Math.round(v * p) / p;
+  };
+
+  const stableCoords = React.useMemo(() => {
+    if (!coords) return null;
+    return {
+      lat: quantize(coords.lat, 3), // 3자리 ≈ 100m 단위
+      lng: quantize(coords.lng, 3),
+    };
+  }, [coords?.lat, coords?.lng]);
+
   const {
     data: userData,
     isFetching: isFetchingUser,
@@ -117,9 +127,9 @@ const Home: React.FC = () => {
     isFetching: isFetchingNearUniv,
     isError: isErrorNearUniv,
   } = useNearUniversities({
-    lat: canUseLocation ? coords?.lat : null,
-    lng: canUseLocation ? coords?.lng : null,
-    enabled: canUseLocation || isGuestNoLocation,
+    lat: canUseLocation ? stableCoords?.lat : null,
+    lng: canUseLocation ? stableCoords?.lng : null,
+    enabled: (canUseLocation && !!stableCoords) || isGuestNoLocation,
     keepPreviousData: true,
   });
 
