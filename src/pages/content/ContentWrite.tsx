@@ -26,7 +26,7 @@ const ContentWritePage: React.FC = () => {
 
   const [value, setValue] = useState<string>("");
   const [title, setTitle] = useState("");
-  const categories = Object.keys(CATEGORY_DESCRIPTION) as KorCategory[];
+  const categories = (Object.keys(CATEGORY_DESCRIPTION) as KorCategory[]).filter((cat) => cat !== "전체");
   const [selectedCategory, setSelectedCategory] = useState<KorCategory>("부동산");
 
   const [isUploading, setIsUploading] = useState(false);
@@ -71,7 +71,7 @@ const ContentWritePage: React.FC = () => {
 
     setTitle(data.title ?? "");
     setValue(data.content ?? "");
-     const serverCategory = data.category as keyof typeof CATEGORY_TO_KOR; // "REAL_ESTATE" | ...
+    const serverCategory = data.category as keyof typeof CATEGORY_TO_KOR; // "REAL_ESTATE" | ...
     const korCategory = CATEGORY_TO_KOR[serverCategory] ?? "부동산";
     setSelectedCategory(korCategory);
   }, [isEdit, id, data, isLoading, isError]);
