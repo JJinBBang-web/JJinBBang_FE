@@ -2,18 +2,18 @@
 import { useMutation } from '@tanstack/react-query';
 import { postAPI } from '../api/baseAPI';
 
-export type FromType = 'review' | 'building';
-export type OpinionType = 'REVIEW_REPORT' | 'BUILDING_REPORT';
+export type FromType = 'review' | 'building' | 'general'; // 신고 대상이 리뷰인지 건물인지 일반적인 신고인지 구분하는 타입
+export type OpinionType = 'REVIEW_REPORT' | 'BUILDING_REPORT' | 'GENERAL';
 
 export interface CreateReportPayload {
-  targetId: string | number;
+  targetId: string | number | null;
   opinionType: OpinionType;
   opinion: string; // 신고 의견
 }
 
 export interface ReportRequest {
   from: FromType;
-  targetId: string | number;
+  targetId: string | number | null;
   opinion: string;
 }
 
@@ -21,13 +21,13 @@ export interface ReportRequest {
 const REPORT_ENDPOINT = '/api/v1/user/getOpinion';
 
 const mapFromToOpinionType = (from: FromType): OpinionType =>
-  from === 'review' ? 'REVIEW_REPORT' : 'BUILDING_REPORT';
+  from === 'general' ? 'GENERAL' : from === 'review' ? 'REVIEW_REPORT' : 'BUILDING_REPORT';
 
 export const useReport = () => {
   const mutation = useMutation({
     mutationFn: async ({ from, targetId, opinion }: ReportRequest) => {
       const body: CreateReportPayload = {
-        targetId,
+        targetId: from === 'general' ? null : targetId,
         opinionType: mapFromToOpinionType(from),
         opinion,
       };

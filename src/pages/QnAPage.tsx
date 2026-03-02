@@ -4,6 +4,7 @@ import closeIcon from '../assets/image/iconClose.svg';
 import { useLayoutEffect, useRef, useState } from "react";
 import Modal from "../components/review/Modal";
 import verifyCompleteIcon from "../assets/image/verifyCompleteIcon.svg"
+import { useReport } from "../hooks/useReport";
 
 const AutoHeightTextarea: React.FC<{
     value: string;
@@ -51,8 +52,7 @@ const QnAPage: React.FC = () => {
 
     const maxLength = 1000;
     
-    // TODO : api 변경
-    // const { report, isLoading, isError, error } = useReport();
+    const { report, isLoading, isError, error } = useReport();
 
     const goBack = () => {
         navigate(-1);
@@ -69,7 +69,26 @@ const QnAPage: React.FC = () => {
     };
 
     const handleReportSubmit = () => {
-        // TODO : api 연결
+        const opinion = content.trim();
+        if (!opinion) return;
+        if (isLoading) return;
+
+        report(
+            {
+                from: "general",
+                targetId: null,
+                opinion,
+            },
+            {
+            onSuccess: () => {
+                setIsReported(true);
+                setIsOpen(true); // 완료 모달 표시
+            },
+            onError: () => {
+                alert("문의 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+            },
+            }
+        );
     }
 
     return (
@@ -103,10 +122,10 @@ const QnAPage: React.FC = () => {
                 className={`${styles.nextButton} ${
                     content.trim().length > 0 ? styles.enabled : ''
                 }`}
-                onClick={()=> setIsOpen(true)}
-                disabled={content.trim().length === 0}
+                onClick={handleReportSubmit}
+                disabled={content.trim().length === 0 || isLoading}
                 >
-                확인
+                {isLoading ? "전송 중..." : "확인"}
                 </button>
             </footer>
             
