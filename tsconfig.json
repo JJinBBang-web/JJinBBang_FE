@@ -1,29 +1,11 @@
 {
-    "compilerOptions": {
-        "lib": [
-            "DOM",
-            "DOM.Iterable",
-            "ESNext"
-        ],
-        "allowJs": true,
-        "skipLibCheck": false,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "noFallthroughCasesInSwitch": true,
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "isolatedModules": false, // 나중에 수정
-        "noEmit": true,
-        "jsx": "react-jsx",
-        "resolveJsonModule": true,
-        "types": [
-            "kakao.maps.d.ts",
-            "node", "react", "react-dom",
-        ]
-    },
-    "include": [
-        "src", "src/util/svg.d.ts"
-    ],
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
 }

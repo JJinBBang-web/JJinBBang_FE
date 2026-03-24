@@ -1,10 +1,10 @@
-name: CI (develop)
+name: CI (v2.0.0 develop)
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["v2/develop"]
   pull_request:
-    branches: ["develop"]
+    branches: ["v2/develop"]
 
 jobs:
   ci:
