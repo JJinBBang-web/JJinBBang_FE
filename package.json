@@ -1,15 +1,17 @@
 {
   "name": "jjinbbang_fe",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.6",
+    "eslint-config-expo": "~55.0.0",
     "expo": "~55.0.8",
     "expo-router": "~55.0.7",
     "expo-splash-screen": "~55.0.12",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "eslint": "^9.39.4",
     "typescript": "~5.9.2"
   },
   "private": true
