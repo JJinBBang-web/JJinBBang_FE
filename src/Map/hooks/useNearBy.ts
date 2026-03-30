@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { NearByRequest, NearByResponse } from "../../types/entity/map/MapInterface";
-import { MapAPI } from "../../api/Map/MapAPI";
+import { MapAPI } from "../../api/map/MapAPI";
 
 export const useNearBy = (params?: NearByRequest) => {
   return useQuery<NearByResponse>({

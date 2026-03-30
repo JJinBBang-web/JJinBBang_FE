@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { MapAPI } from "../../api/Map/MapAPI";
+import { MapAPI } from "../../api/map/MapAPI";
 import { SearchRequest, SearchResponse } from "../../types/entity/map/MapInterface";
 
 export const useSearch = (params?: SearchRequest) => {
