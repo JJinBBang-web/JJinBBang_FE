@@ -1,17 +1,18 @@
 import { Tabs } from 'expo-router';
-import { colors } from '@/constants/colors';
-import TabBarIcon from '@/components/tabs/tabBarIcon';
 
-import TabsOnHome from '@/assets/icons/tabs/tabsOnHome.svg';
-import TabsOffHome from '@/assets/icons/tabs/tabsOffHome.svg';
-import TabsOnHeartList from '@/assets/icons/tabs/tabsOnHeartList.svg';
+import TabsOffContent from '@/assets/icons/tabs/tabsOffContent.svg';
 import TabsOffHeartList from '@/assets/icons/tabs/tabsOffHeartList.svg';
-import TabsOnReview from '@/assets/icons/tabs/tabsOnReview.svg';
+import TabsOffHome from '@/assets/icons/tabs/tabsOffHome.svg';
+import TabsOffMyPage from '@/assets/icons/tabs/tabsOffMyPage.svg';
 import TabsOffReview from '@/assets/icons/tabs/tabsOffReview.svg';
 import TabsOnContent from '@/assets/icons/tabs/tabsOnContent.svg';
-import TabsOffContent from '@/assets/icons/tabs/tabsOffContent.svg';
+import TabsOnHeartList from '@/assets/icons/tabs/tabsOnHeartList.svg';
+import TabsOnHome from '@/assets/icons/tabs/tabsOnHome.svg';
 import TabsOnMyPage from '@/assets/icons/tabs/tabsOnMyPage.svg';
-import TabsOffMyPage from '@/assets/icons/tabs/tabsOffMyPage.svg';
+import TabsOnReview from '@/assets/icons/tabs/tabsOnReview.svg';
+import { colors } from '@/constants/colors';
+import { TabBarIcon } from '@/features/tabs/components/TabBarIcon';
+
 
 export default function TabLayout() {
   return (
@@ -34,66 +35,66 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(main)/index"
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused: isFocused }) => (
             <TabBarIcon
               ActiveIcon={TabsOnHome}
               InactiveIcon={TabsOffHome}
               label="홈"
-              focused={focused}
+              isFocused={isFocused}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="heartList"
+        name="(heartList)/heartList"
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused: isFocused }) => (
             <TabBarIcon
               ActiveIcon={TabsOnHeartList}
               InactiveIcon={TabsOffHeartList}
               label="관심 목록"
-              focused={focused}
+              isFocused={isFocused}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="review"
+        name="(review)/review"
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused: isFocused }) => (
             <TabBarIcon
               ActiveIcon={TabsOnReview}
               InactiveIcon={TabsOffReview}
               label="리뷰"
-              focused={focused}
+              isFocused={isFocused}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="content"
+        name="(content)/content"
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused: isFocused }) => (
             <TabBarIcon
               ActiveIcon={TabsOnContent}
               InactiveIcon={TabsOffContent}
               label="콘텐츠"
-              focused={focused}
+              isFocused={isFocused}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="myPage"
+        name="(myPage)/myPage"
         options={{
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused: isFocused }) => (
             <TabBarIcon
               ActiveIcon={TabsOnMyPage}
               InactiveIcon={TabsOffMyPage}
               label="MY"
-              focused={focused}
+              isFocused={isFocused}
             />
           ),
         }}
