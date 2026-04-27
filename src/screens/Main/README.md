@@ -14,5 +14,15 @@
 
 ## 🏗️ 구성 요소
 - **Screen**: `src/screens/Main/MainScreen.tsx`
-- **Components**: `src/screens/Main/components/`
-- **Hooks**: `src/screens/Main/hooks/`
+- **Components**
+  - `MainTopHeader`
+  - `MainBannerSection`
+  - `MainSearchBar`
+  - `MainCategoryTabs`
+  - `MainUniversitySection`
+  - `MainUniversityGridItem`
+  - `MainRentPriceCard`
+- **Hooks**
+  - `useMainHomeStore` (Zustand)
+- **Constants**
+  - `types/mainData.ts` (카테고리/대학 데이터)
