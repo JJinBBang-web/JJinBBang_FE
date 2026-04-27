@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import '@/styles/global.css';
 
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
