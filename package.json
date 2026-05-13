@@ -7,7 +7,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "check:naming": "node scripts/check-naming.js",
+    "check:manifest": "node scripts/check-manifest.js",
+    "check:guidelines": "node scripts/check-guidelines.js",
+    "check:jsdoc": "node scripts/check-jsdoc.js",
+    "check:route-mapping": "node scripts/check-route-mapping.js",
+    "check:cross-import": "node scripts/check-cross-import.js",
+    "check:all": "node scripts/check-naming.js && node scripts/check-manifest.js && node scripts/check-guidelines.js && node scripts/check-jsdoc.js && node scripts/check-route-mapping.js && node scripts/check-cross-import.js"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.6",
@@ -29,6 +36,8 @@
   "devDependencies": {
     "@types/react": "~19.2.2",
     "eslint": "^9.39.4",
+    "eslint-plugin-check-file": "^3.3.1",
+    "eslint-plugin-import": "^2.32.0",
     "typescript": "~5.9.2"
   },
   "private": true
