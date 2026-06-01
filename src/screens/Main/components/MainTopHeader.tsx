@@ -1,5 +1,8 @@
 import { Text, View } from 'react-native';
 
+/**
+ * 메인 상단 헤더 컴포넌트
+ */
 export const MainTopHeader = () => {
   return (
     <View className="flex-row items-center justify-between bg-white px-4 pb-3 pt-3">
