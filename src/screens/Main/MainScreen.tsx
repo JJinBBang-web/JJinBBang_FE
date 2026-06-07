@@ -44,8 +44,7 @@ export const MainScreen = () => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 40 }}>
+        className="flex-1">
         <MainBannerSection />
 
         <MainSearchBar
@@ -63,6 +62,8 @@ export const MainScreen = () => {
         <MainRentPriceCard />
 
         <MainHotContentsSection contents={hotContents} />
+
+        <View className='w-full h-2 bg-grayWhite my-5'/>
 
         <MainRecentReviewSection reviews={recentReviews} />
       </ScrollView>

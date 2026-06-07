@@ -29,6 +29,14 @@ module.exports = {
         popup: '#cfd4d8',
         unactiveBtn: '#f3f5f9',
         selected: '#fff7f4',
+        gradientYellow: {
+          from: '#FFF5E2',
+          to: '#FFF0C6',
+        },
+        gradientGray: {
+          from: '#FFFFFF',
+          to: '#F3F5F9',
+        }
       },
       fontFamily: {
         pretendard: ['PretendardVariable'],

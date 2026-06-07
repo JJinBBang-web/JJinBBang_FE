@@ -17,7 +17,7 @@ export const MainCategoryTabs = (props: MainCategoryTabsProps) => {
   };
 
   return (
-    <View className="mt-4 flex-row border-b border-black10 px-4">
+    <View className="pt-3 flex-row border-b border-black10 px-4">
       {MAIN_CATEGORY_TABS.map((tab) => {
         const isSelected = tab.key === selectedCategory;
 
@@ -26,13 +26,13 @@ export const MainCategoryTabs = (props: MainCategoryTabsProps) => {
             key={tab.key}
             onPress={() => handleTabPress(tab.key)}
             className={cn(
-              'mr-6 border-b-2 pb-2',
+              'px-2 pb-2 mr-4 border-b-2',
               isSelected ? 'border-black' : 'border-transparent',
             )}>
             <Text
               className={cn(
                 'font-pretendard text-[16px]',
-                isSelected ? 'font-bold text-black' : 'font-medium text-black80',
+                isSelected ? 'font-bold text-black100' : 'font-medium text-black80',
               )}>
               {tab.label}
             </Text>

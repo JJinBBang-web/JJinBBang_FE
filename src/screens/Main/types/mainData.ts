@@ -7,14 +7,14 @@ export const MAIN_CATEGORY_TABS: { key: MainCategoryType; label: string }[] = [
 ];
 
 export const MAIN_UNIVERSITIES = [
-  { id: 'snu', shortName: '서울대', accentColor: '#1f4f9a' },
-  { id: 'pusan', shortName: '부산대', accentColor: '#4da0d8' },
-  { id: 'kangwon', shortName: '강원대', accentColor: '#3b82f6' },
-  { id: 'chungbuk', shortName: '충북대', accentColor: '#a43152' },
-  { id: 'chungnam', shortName: '충남대', accentColor: '#4f8ed1' },
-  { id: 'jeonbuk', shortName: '전북대', accentColor: '#be2f6d' },
-  { id: 'jeonnam', shortName: '전남대', accentColor: '#2cb878' },
-  { id: 'kyungbuk', shortName: '경북대', accentColor: '#e3342f' },
-  { id: 'gnu', shortName: '경상국립대', accentColor: '#47a9ff' },
-  { id: 'jeju', shortName: '제주대', accentColor: '#42b883' },
+  { id: 'snu', shortName: '서울대', logoUrl: require('@/assets/icons/univ/SNU.png') },
+  { id: 'pusan', shortName: '부산대', logoUrl: require('@/assets/icons/univ/PNU.png') },
+  { id: 'kangwon', shortName: '강원대', logoUrl: require('@/assets/icons/univ/KWU.png') },
+  { id: 'chungbuk', shortName: '충북대', logoUrl: require('@/assets/icons/univ/CBNU.png') },
+  { id: 'chungnam', shortName: '충남대', logoUrl: require('@/assets/icons/univ/CNU.png') },
+  { id: 'jeonbuk', shortName: '전북대', logoUrl: require('@/assets/icons/univ/JBNU.png') },
+  { id: 'jeonnam', shortName: '전남대', logoUrl: require('@/assets/icons/univ/JNU.png') },
+  { id: 'kyungbuk', shortName: '경북대', logoUrl: require('@/assets/icons/univ/KNU.png') },
+  { id: 'gnu', shortName: '경상국립대', logoUrl: require('@/assets/icons/univ/GNU.png') },
+  { id: 'jeju', shortName: '제주대', logoUrl: require('@/assets/icons/univ/JEJUNU.png') },
 ];

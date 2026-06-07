@@ -8,7 +8,7 @@ import { colors } from '@/constants/colors';
 export const MainBannerSection = () => {
   return (
     <View
-      className="px-12 pb-6 pt-10"
+      className="px-4 pb-6 pt-10"
       style={{ backgroundColor: colors.blue40 }}>
       <Text className="font-pretendard text-[40px] font-bold text-black100">
         Banner 영역
@@ -21,7 +21,7 @@ export const MainBannerSection = () => {
         지금 확인하기 {'>'}
       </Text>
 
-      <View className="mt-4 flex-row items-center justify-end gap-2">
+      <View className="mt-4 flex-row items-center justify-end gap-2 pb-3">
         <View
           className="rounded-full px-3 py-1"
           style={{ backgroundColor: colors.black30 }}>

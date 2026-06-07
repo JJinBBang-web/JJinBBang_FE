@@ -10,8 +10,8 @@ export const MainSectionTitle = (props: MainSectionTitleProps) => {
   const { title, rightElement } = props;
 
   return (
-    <View className="mb-4 flex-row items-center justify-between px-5">
-      <Text className="font-pretendard text-[22px] font-bold text-black100">
+    <View className="mb-5 flex-row items-center justify-between px-4">
+      <Text className="font-pretendard text-[18px] font-semibold text-black100">
         {title}
       </Text>
 

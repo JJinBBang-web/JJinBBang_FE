@@ -6,12 +6,12 @@ import { Text, TouchableOpacity, View } from 'react-native';
  */
 export const MainReviewRewardBanner = () => {
   return (
-    <View className="mx-5 mt-2 flex-row items-center justify-between rounded-full border border-primary bg-salmon px-6 py-5">
-      <Text className="font-pretendard text-[20px] font-bold text-black100">
-        리뷰쓰면 최대 <Text className="text-primary">25,000원!</Text>
+    <View className="mx-4 mt-3 flex-row items-center justify-between rounded-full border border-primary bg-gradient-to-t from-gradientYellow-to to-white px-4 py-4">
+      <Text className="flex-1 text-center font-pretendard text-[16px] font-semiBold text-black100">
+        리뷰쓰면 최대 <Text className="text-primary font-bold">25,000원!</Text>
       </Text>
 
-      <TouchableOpacity className="h-8 w-8 items-center justify-center rounded-full bg-black10">
+      <TouchableOpacity className="h-6 w-6 items-center justify-center rounded-full bg-white">
         <Text className="text-[12px] text-black40">✕</Text>
       </TouchableOpacity>
     </View>

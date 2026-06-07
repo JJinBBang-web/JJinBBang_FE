@@ -9,8 +9,8 @@ export const MainReviewTag = (props: MainReviewTagProps) => {
   const { label } = props;
 
   return (
-    <View className="mr-2 rounded-lg bg-blue10 px-2 py-1">
-      <Text className="font-pretendard text-[12px] font-medium text-primary">
+    <View className="mr-2 rounded-md bg-blue10 px-2 py-1">
+      <Text className="font-pretendard text-[11px] font-semiBold text-blue">
         {label}
       </Text>
     </View>

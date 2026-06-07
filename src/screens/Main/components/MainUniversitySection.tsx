@@ -13,7 +13,7 @@ export const MainUniversitySection = (props: MainUniversitySectionProps) => {
 
   if (selectedCategory !== 'university') {
     return (
-      <View className="px-4 py-9">
+      <View className="px-4 py-5">
         <Text className="font-pretendard text-[14px] text-black80">
           준비 중인 카테고리예요.
         </Text>
@@ -22,12 +22,12 @@ export const MainUniversitySection = (props: MainUniversitySectionProps) => {
   }
 
   return (
-    <View className="flex-row flex-wrap gap-y-6 px-4 pb-6 pt-5">
+    <View className="flex-row flex-wrap gap-y-6 px-4 pb-7 pt-5">
       {MAIN_UNIVERSITIES.map((university) => (
         <MainUniversityGridItem
           key={university.id}
           shortName={university.shortName}
-          accentColor={university.accentColor}
+          logoSource={university.logoUrl}
         />
       ))}
     </View>

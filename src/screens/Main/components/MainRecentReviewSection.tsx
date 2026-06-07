@@ -15,12 +15,15 @@ export const MainRecentReviewSection = (props: MainRecentReviewSectionProps) => 
   const { reviews } = props;
 
   return (
-    <View className="mt-4 pb-8">
+    <View className="pb-8">
       <MainSectionTitle title="최근 본 후기" />
 
-      {reviews.map((review) => (
-        <MainRecentReviewCard key={review.id} review={review} />
-      ))}
+      <View className='mx-4'>
+        {reviews.map((review) => (
+          <MainRecentReviewCard key={review.id} review={review} />
+        ))}
+      </View>
+
 
       <MainReviewRewardBanner />
     </View>

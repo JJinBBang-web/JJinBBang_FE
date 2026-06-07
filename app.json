@@ -27,7 +27,8 @@
       "favicon": "./src/assets/icons/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ]
   }
 }
